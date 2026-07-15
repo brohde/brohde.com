@@ -19,7 +19,7 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 ## Where we are
 
-**Phase 1 Astro scaffold COMMITTED and live on localhost:4321.** Chat behavior **signed off 38/38 (#61)** at `poc/chat/`. Direction decided: **Option C "the phosphor slab" (#67)** — terminal as one always-night physical object holding everything interactive, editorial Circular page around it, **chat expands the slab** toward full window and collapses back home with an **elegant designed transition both ways (#69)**. Supporting behaviors: hello = natural-language page tour with underlined links, external ↗ arrows never underlined (#68).
+**DEV LINK LIVE: https://brohde-com.pages.dev** (Cloudflare Pages, auto-deploys on push to `main`; validated on the rendered surface). NOTE: the URL is public-but-unlisted; don't circulate until editorial sign-offs below clear. **Phase 1 Astro scaffold COMMITTED and live on localhost:4321.** Chat behavior **signed off 38/38 (#61)** at `poc/chat/`. Direction decided: **Option C "the phosphor slab" (#67)** — terminal as one always-night physical object holding everything interactive, editorial Circular page around it, **chat expands the slab** toward full window and collapses back home with an **elegant designed transition both ways (#69)**. Supporting behaviors: hello = natural-language page tour with underlined links, external ↗ arrows never underlined (#68).
 
 - Site: Astro 5 + Tailwind v4 static at repo root; `npm run dev` (localhost:4321), `npm run build` = `astro check && astro build` → `dist/`. Full build reference: **`docs/ENGINEERING.md`** (merged f199195, verified against source).
 - Content: 5 real case studies render on the site (validated on rendered HTML after the content-store staleness fix, see ENGINEERING.md §2); `brohde-com-build` stubbed `draft: true`; `twilio-hackpack-v4` is an `external:` entry.
@@ -31,14 +31,13 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 2. **Perf (opus) — DONE, merged bab2a76**: inline critical CSS + cache headers + binding facade contract (#70); Lighthouse mobile Perf 100/TBT 0/CLS 0, validated on built dist. Its HIGH finding (boot = ~1.3s blank screen; prompt is `.bseq`-hidden so hello types invisibly) routed to the interaction agent as part of its #64 boot work.
 3. **Docs (sonnet) — DONE, merged f199195**: `docs/ENGINEERING.md` + README. Flags 4 decision-vs-code gaps inline (all in the interaction agent's scope) → needs a **reconciliation pass after the interaction merge** (resume the same agent or quick lead edit).
 4. **Demo 04 refinements (fable, `a6e3a77096f9cda8d`)**: finishing all three refinements (contain-fit, background fallback, brand palettes incl. Eight Angle logo source) per #72's quality-first call, then republishes the aurora artifact + reports. Works in the MAIN tree on `docs/design/lab/aurora-terminal.html` (currently modified — do not commit or revert it under the agent).
-5. **Cloudflare Pages setup (opus, browser, `addb206b9ab895145`)**: RESUMED after Brian granted the repo ("Just added brohde.com for Cloudflare!"). Completing the wizard (project `brohde-com`, branch `main`, Astro preset, `npm run build` → `dist`, no env vars) → pages.dev URL.
+5. **Cloudflare Pages setup — DONE**: https://brohde-com.pages.dev live, auto-deploys on push to `main`. Follow-ups: custom domain (needs registrar answer), PostHog env var later, 2 cosmetic `z` deprecation hints in content.config.ts.
 
 **Only the interaction worktree remains to merge.** Lead reviews commits, merges, validates on the RENDERED surface (standing rule: agent reports are claims, not evidence), then ENGINEERING.md reconciliation.
 
 ## Next actions
 
-1. Cloudflare agent reports the pages.dev URL (in flight; repo grant done).
-2. Merge the interaction worktree when it lands; validate rendered; republish artifacts at their existing URLs.
+1. Merge the interaction worktree when it lands; validate rendered (localhost + pages.dev after push); republish artifacts at their existing URLs.
 3. ENGINEERING.md reconciliation once interaction merges (its §3 gap flags become stale).
 4. **Option C implementation phase (#67/#68/#69)** — the next numbered phase, planned per #56 (phased, agent-reviewable): slab architecture, Circular on designed surfaces (GATED on Lineto license), designed article pages, chat-expands-slab with the elegant both-way transition. **Model policy: #72** (Fable re-greenlit for the remaining window, quality first, per the #50 split: Fable core engineering + taste-critical design, Opus general, Sonnet content/audits; don't burn Fable on rote work).
 5. Then **#59 aurora + tide integration** (per-page themes, matrix-style per-character animation) and **chat production wiring** (Worker + AI Gateway + Turnstile + per-IP rate limits) behind the #49 security-audit launch gate.
