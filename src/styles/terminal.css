@@ -343,6 +343,8 @@
   color: var(--dim);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap; /* dates never wrap mid-string; long titles wrap instead */
+  flex-shrink: 0;
 }
 .ttl {
   font-family: var(--font-sans);
