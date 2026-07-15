@@ -18,8 +18,8 @@
 
 :root {
   /* type stacks: system only, no webfonts (font discipline, E6) */
-  --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Mono",
-    monospace;
+  --font-mono:
+    ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Mono", monospace;
   --font-sans: system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
 
   /* --- night ground is the default (dark) --- */
@@ -34,7 +34,8 @@
   --well: #12201a;
 
   /* phosphor wordmark glow + CRT scanline (night only) */
-  --wm-glow: 0 0 26px rgba(126, 231, 135, 0.3), 0 0 3px rgba(126, 231, 135, 0.35);
+  --wm-glow:
+    0 0 26px rgba(126, 231, 135, 0.3), 0 0 3px rgba(126, 231, 135, 0.35);
   --crt-alpha: 0.45;
   --glow-field: rgba(126, 231, 135, 0.07);
 

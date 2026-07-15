@@ -1,9 +1,10 @@
 ---
 /**
  * The build.log: article list, newest first, title + pre-date (#2, #3).
- * Description renders as a quiet sub-line when present (optional per template).
- * Each entry is a real link to /log/<id> so it is crawlable and keyboard
- * reachable; the terminal controller only enhances, never gates, navigation.
+ * Clean terminal layout (ported from build-log-v3.html): [date] then title.
+ * Descriptions live on the article pages, meta, and RSS. Each entry is a real
+ * link to /log/<id> so it is crawlable and keyboard reachable; the terminal
+ * controller only enhances, never gates, navigation.
  */
 import { getCollection } from "astro:content";
 import { logHref, logStamp } from "@/lib/site";
@@ -21,17 +22,37 @@ const posts = (await getCollection("articles", ({ data }) => !data.draft)).sort(
 <section class:list={["log", { bseq: boot }]} id="log" aria-label="Article log">
   <h2 class="sr">Writing and project log</h2>
   {
-    posts.map((post) => (
-      <a class="entry" href={logHref(post.id)}>
-        <span class="ts">{logStamp(post.data.date)}</span>
-        <span class="entry-main">
-          <span class="p" aria-hidden="true">&#10095;</span>{" "}
-          <span class="ttl">{post.data.title}</span>
-        </span>
-        {post.data.description && (
-          <span class="entry-desc">{post.data.description}</span>
-        )}
-      </a>
-    ))
+    posts.map((post) =>
+      post.data.external ? (
+        <a
+          class="entry"
+          href={post.data.external}
+          target="_blank"
+          rel="noopener"
+          aria-label={`${post.data.title} (external, opens in a new tab)`}
+        >
+          <span class="ts">{logStamp(post.data.date)}</span>
+          <span class="entry-main">
+            <span class="p" aria-hidden="true">
+              &#10095;
+            </span>{" "}
+            <span class="ttl">{post.data.title}</span>
+            <span class="ext" aria-hidden="true">
+              &#8599;
+            </span>
+          </span>
+        </a>
+      ) : (
+        <a class="entry" href={logHref(post.id)}>
+          <span class="ts">{logStamp(post.data.date)}</span>
+          <span class="entry-main">
+            <span class="p" aria-hidden="true">
+              &#10095;
+            </span>{" "}
+            <span class="ttl">{post.data.title}</span>
+          </span>
+        </a>
+      )
+    )
   }
 </section>

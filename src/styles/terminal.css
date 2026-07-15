@@ -69,7 +69,10 @@
 .hv1::before {
   content: "";
   position: absolute;
-  inset: -28px -40px -10px;
+  /* vertical bleed only: horizontal bleed would overflow the viewport at
+     narrow widths (scrollWidth > clientWidth). The soft upper-left glow reads
+     the same without it. */
+  inset: -28px 0 -10px;
   background: radial-gradient(
     420px 200px at 16% 12%,
     var(--glow-field),
@@ -80,7 +83,7 @@
 .hv1::after {
   content: "";
   position: absolute;
-  inset: -6px -12px 0;
+  inset: -6px 0 0;
   background: repeating-linear-gradient(
     0deg,
     rgba(0, 0, 0, 0.2) 0 1px,
@@ -348,10 +351,12 @@
   color: var(--bright);
   line-height: 1.35;
 }
-.entry-desc {
+/* external log entries: a dim, leaves-the-site marker after the title */
+.ext {
   color: var(--dim);
-  font-size: 12.5px;
-  margin: 2px 0 0 20px;
+  font-size: 12px;
+  margin-left: 6px;
+  vertical-align: 1px;
 }
 .entry:hover,
 .entry:focus-visible {
@@ -362,9 +367,11 @@
 .entry:hover .ts,
 .entry:hover .p,
 .entry:hover .ttl,
+.entry:hover .ext,
 .entry:focus-visible .ts,
 .entry:focus-visible .p,
-.entry:focus-visible .ttl {
+.entry:focus-visible .ttl,
+.entry:focus-visible .ext {
   color: var(--on-accent);
 }
 
@@ -587,9 +594,6 @@ html.boot .bseq.bon {
   }
   .entry .entry-main {
     display: block;
-  }
-  .entry-desc {
-    margin-left: 0;
   }
 }
 @media (max-width: 480px) {

@@ -1,0 +1,14 @@
+# Formatting is scoped to the site source only. Everything below is authored
+# or generated content that prettier must never rewrite: Brian's docs and
+# drafts, the approved design prototypes, the chat POC, agent configs, and
+# build output.
+dist/
+.astro/
+node_modules/
+docs/
+poc/
+assets/
+.claude/
+PLAN.md
+CLAUDE.md
+*.log

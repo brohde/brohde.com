@@ -35,8 +35,6 @@ const COMMANDS: Cmd[] = [
   { name: "home", desc: "back to the log" },
   { name: "clear", desc: "wipe this chat" },
 ];
-const CMD_NAMES = new Set(COMMANDS.map((c) => c.name));
-
 /* static console strings (innerHTML sinks below take only these) */
 const HELP_HTML =
   "commands\n" +
@@ -430,7 +428,11 @@ function runBoot() {
     if (!root.classList.contains("boot")) return;
     clearInterval(timer);
     root.classList.remove("boot");
-    if (clearInput && input && HELLO.slice(0, input.value.length) === input.value) {
+    if (
+      clearInput &&
+      input &&
+      HELLO.slice(0, input.value.length) === input.value
+    ) {
       input.value = "";
     }
     document.removeEventListener("keydown", skip, true);
@@ -486,11 +488,7 @@ function initPage() {
   pendingFocus = null;
 
   const root = document.documentElement;
-  if (
-    currentScreen() === "home" &&
-    root.classList.contains("boot") &&
-    !RM()
-  ) {
+  if (currentScreen() === "home" && root.classList.contains("boot") && !RM()) {
     runBoot();
   } else {
     root.classList.remove("boot");
@@ -506,17 +504,44 @@ function initPage() {
 /* ------------------------------------------------------------- setup once -- */
 
 function setupOnce() {
-  // form submit: run whatever is typed
-  document.addEventListener("submit", (e) => {
-    const form = (e.target as HTMLElement).closest?.("form[data-screen-form]");
-    if (!form) return;
-    e.preventDefault();
-    const input = form.querySelector<HTMLInputElement>("input");
-    if (!input) return;
-    run(input.value, true);
-    input.value = "";
-    closeAC();
+  // Astro's ClientRouter calls document.startViewTransition() on navigation.
+  // The View Transitions spec aborts with InvalidStateError when the document
+  // is not visible (a navigation fired from a backgrounded tab, or mid
+  // visibility change). The navigation still completes; only the animation is
+  // skipped. Swallow just that one benign rejection so it never noises the
+  // console; anything else propagates normally.
+  window.addEventListener("unhandledrejection", (e) => {
+    const r = e.reason as { name?: string; message?: string } | undefined;
+    if (
+      r &&
+      r.name === "InvalidStateError" &&
+      String(r.message).includes("Transition was aborted")
+    ) {
+      e.preventDefault();
+    }
   });
+
+  // Form submit fallback (virtual keyboards / IME that submit without a
+  // keydown Enter). Capture phase + preventDefault so it lands before Astro's
+  // ClientRouter submit handler, which would otherwise hijack the GET form and
+  // navigate to /?q=... Keyboard Enter is handled in keydown below, which
+  // cancels the submit before it ever fires.
+  document.addEventListener(
+    "submit",
+    (e) => {
+      const form = (e.target as HTMLElement).closest?.(
+        "form[data-screen-form]"
+      );
+      if (!form) return;
+      e.preventDefault();
+      const input = form.querySelector<HTMLInputElement>("input");
+      if (!input) return;
+      run(input.value, true);
+      input.value = "";
+      closeAC();
+    },
+    true
+  );
 
   // clicks: autocomplete chips, menu/keybar buttons. Anchors (back link, log
   // entries) fall through to ClientRouter untouched.
@@ -565,6 +590,17 @@ function setupOnce() {
     if (!t.matches?.(".prompt input")) return;
     const input = t as HTMLInputElement;
 
+    // Enter runs the highlighted suggestion, or the typed text. preventDefault
+    // here cancels the native form submission, so ClientRouter never sees it.
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (ac.open && ac.sel >= 0) run(ac.items[ac.sel].name, true);
+      else run(input.value, true);
+      input.value = "";
+      closeAC();
+      return;
+    }
+
     if (ac.open) {
       if (e.key === "ArrowDown") {
         e.preventDefault();
@@ -588,13 +624,6 @@ function setupOnce() {
       ) {
         e.preventDefault();
         acceptTop();
-        return;
-      }
-      if (e.key === "Enter" && ac.sel >= 0) {
-        e.preventDefault();
-        run(ac.items[ac.sel].name, true);
-        input.value = "";
-        closeAC();
         return;
       }
       return;

@@ -1,0 +1,68 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Topbar from "@/components/Topbar.astro";
+import CommandMenu from "@/components/CommandMenu.astro";
+import { SITE, logHref, logStamp, isoDate } from "@/lib/site";
+
+export async function getStaticPaths() {
+  // External entries live off-site: no page is generated for them.
+  const posts = await getCollection(
+    "articles",
+    ({ data }) => !data.draft && !data.external
+  );
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, description, date } = post.data;
+
+const canonical = new URL(logHref(post.id), SITE.url).href;
+
+const articleLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  ...(description ? { description } : {}),
+  datePublished: isoDate(date),
+  dateModified: isoDate(date),
+  author: { "@type": "Person", name: SITE.author, url: SITE.url },
+  publisher: { "@type": "Person", name: SITE.author },
+  mainEntityOfPage: canonical,
+  url: canonical,
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description ?? SITE.description}
+  ogType="article"
+  jsonLd={articleLd}
+>
+  <section class="screen" data-screen="log" tabindex="-1">
+    <Topbar label={`log/${post.id}`} />
+    <main id="main" class="wrap aboutpad">
+      <article>
+        <p class="artmeta">
+          <span class="p" aria-hidden="true">$</span> cat {logHref(post.id)}
+        </p>
+        <h1 class="arttitle">{title}</h1>
+        <p class="artmeta">
+          <time datetime={isoDate(date)}>{logStamp(date)}</time>
+        </p>
+        {
+          description && (
+            <p class="prose" style="margin-top:10px">
+              {description}
+            </p>
+          )
+        }
+        <div class="prose">
+          <Content />
+        </div>
+      </article>
+      <CommandMenu items={["home", "work", "about"]} label="More commands" />
+    </main>
+  </section>
+</BaseLayout>

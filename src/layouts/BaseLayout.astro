@@ -23,7 +23,12 @@ const props = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE.name}
+      href="/rss.xml"
+    />
     <meta name="generator" content={Astro.generator} />
 
     {/* theme-color follows the ground on both schemes (#40) */}
@@ -40,13 +45,15 @@ const props = Astro.props;
 
     <SEO {...props} />
 
-    {/*
+    {
+      /*
       Boot gate (decisions #36, #41). Runs before first paint so full content
       never flashes: on a genuine load of the homepage (and not under reduced
       motion) it adds html.boot, which hides the .bseq blocks until the reveal
       runs. All content is server-rendered and stays in the DOM either way, so
       the page is fully crawlable. terminal.ts handles the reveal + a failsafe.
-    */}
+    */
+    }
     <script is:inline>
       (function () {
         try {

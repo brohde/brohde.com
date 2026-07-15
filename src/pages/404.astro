@@ -1,0 +1,19 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Topbar from "@/components/Topbar.astro";
+import CommandMenu from "@/components/CommandMenu.astro";
+---
+
+<BaseLayout title="404" noindex={true}>
+  <section class="screen" data-screen="404" tabindex="-1">
+    <Topbar label="404" />
+    <main id="main" class="wrap aboutpad">
+      <h1 class="arttitle">command not found</h1>
+      <p class="prose" style="margin-top:8px">
+        That page is not on the log. Head home and browse the work, or ask a
+        question at the prompt.
+      </p>
+      <CommandMenu items={["home", "work", "about"]} label="Commands" />
+    </main>
+  </section>
+</BaseLayout>

@@ -1,0 +1,53 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Topbar from "@/components/Topbar.astro";
+import Prompt from "@/components/Prompt.astro";
+
+const keys = ["home", "help", "clear"];
+---
+
+<BaseLayout
+  title="chat"
+  description="Ask about Brian Rohde's work. Live chat is coming soon."
+  noindex={true}
+>
+  <section class="screen" id="scr-chat" data-screen="chat" tabindex="-1">
+    <Topbar label="chat · preview" />
+    <main id="main" class="wrap chatwrap">
+      <h1 class="sr">Chat</h1>
+      <div class="chatlog" id="chatlog">
+        <p class="cmt">
+          # the live model (claude haiku) ships with the site. this is a
+          preview.
+        </p>
+        <p class="cmt">
+          # type help for commands <span aria-hidden="true">·</span> esc returns home
+        </p>
+      </div>
+      <div class="sr" aria-live="polite" id="announce"></div>
+
+      <div class="dock">
+        <nav class="keybar" aria-label="Commands">
+          {
+            keys.map((cmd) => (
+              <button type="button" class="cbtn" data-cmd={cmd}>
+                <span class="br" aria-hidden="true">
+                  [
+                </span>
+                {cmd}
+                <span class="br" aria-hidden="true">
+                  ]
+                </span>
+              </button>
+            ))
+          }
+        </nav>
+        <Prompt
+          id="chat"
+          placeholder="ask or type a command…"
+          label="Ask a question or type a command"
+        />
+      </div>
+    </main>
+  </section>
+</BaseLayout>

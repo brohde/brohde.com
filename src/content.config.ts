@@ -10,12 +10,20 @@ import { glob } from "astro/loaders";
  * in the template (#2).
  */
 const articles = defineCollection({
-  loader: glob({ pattern: "**/index.md", base: "./src/content/articles" }),
+  loader: glob({
+    pattern: "**/index.md",
+    base: "./src/content/articles",
+    // one folder per article: use the folder name as the id (drop /index)
+    generateId: ({ entry }) => entry.replace(/\/index\.md$/, ""),
+  }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
     date: z.coerce.date(),
     draft: z.boolean().default(false),
+    // External log entries (Brian's writing published elsewhere). When set,
+    // the homepage log links out to this URL and no article page is generated.
+    external: z.string().url().optional(),
   }),
 });
 

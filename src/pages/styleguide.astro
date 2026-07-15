@@ -1,0 +1,230 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Topbar from "@/components/Topbar.astro";
+
+// Specimen page (D4 pattern). Forces both grounds side by side regardless of
+// system scheme, so a token change can be eyeballed in light and dark at once.
+// noindex + excluded from the sitemap.
+
+const swatches = [
+  { name: "ground", desc: "page background" },
+  { name: "ink", desc: "body text" },
+  { name: "bright", desc: "headings / strong" },
+  { name: "dim", desc: "muted / metadata" },
+  { name: "accent", desc: "phosphor / links" },
+  { name: "line", desc: "hairline" },
+  { name: "line-strong", desc: "stronger hairline" },
+  { name: "well", desc: "input / code well" },
+];
+
+const themes = [
+  { cls: "theme-night", label: "night (dark)" },
+  { cls: "theme-light", label: "light" },
+];
+---
+
+<BaseLayout title="styleguide" noindex={true}>
+  <section class="screen" data-screen="styleguide" tabindex="-1">
+    <Topbar label="styleguide" />
+    <main id="main" class="wrap aboutpad">
+      <h1 class="arttitle">styleguide</h1>
+      <p class="cmt">
+        # design tokens + component specimens, forced into both grounds (#40).
+        This page is noindex and out of the sitemap.
+      </p>
+
+      {
+        themes.map((t) => (
+          <div class={`sg-panel ${t.cls}`}>
+            <p class="sg-panel-label">{t.label}</p>
+
+            <h2 class="sg-h">tokens</h2>
+            <div class="sg-swatches">
+              {swatches.map((s) => (
+                <div class="sg-swatch">
+                  <span
+                    class="sg-chip"
+                    style={`background: var(--${s.name})`}
+                  />
+                  <span class="sg-swatch-meta">
+                    <code>--{s.name}</code>
+                    <span class="d">{s.desc}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <h2 class="sg-h">header</h2>
+            <p class="pline">
+              <span class="p">$</span> hello
+            </p>
+            <p class="wordmark">brian rohde</p>
+            <p class="bio">
+              full-stack engineer <span class="d">·</span> san francisco
+            </p>
+            <p class="bio">
+              ships AI products end to end <span class="d">·</span> founder,{" "}
+              <a class="clink" href="#">
+                eight angle
+              </a>
+            </p>
+
+            <h2 class="sg-h">links + commands</h2>
+            <ul class="links">
+              <li>
+                <a class="blink" href="#">
+                  <span class="br">[</span>
+                  <span class="lbl">linkedin</span>
+                  <span class="br">]</span>
+                </a>
+              </li>
+              <li>
+                <a class="blink" href="#">
+                  <span class="br">[</span>
+                  <span class="lbl">resume</span>
+                  <span class="br">]</span>
+                </a>
+              </li>
+            </ul>
+            <div class="menu">
+              {["work", "about", "resume", "contact"].map((c) => (
+                <span class="cbtn">
+                  <span class="br">[</span>
+                  {c}
+                  <span class="br">]</span>
+                </span>
+              ))}
+            </div>
+
+            <h2 class="sg-h">prompt + autocomplete</h2>
+            <div class="promptzone" style="margin-bottom:14px">
+              <div class="ac" style="position:static;margin-bottom:8px">
+                <p class="ac-head">commands · Tab to accept · ↑↓ to cycle</p>
+                <ul class="ac-list">
+                  <li class="ac-chip" aria-selected="true">
+                    <span>work</span>
+                    <span class="ac-desc">browse the log</span>
+                  </li>
+                  <li class="ac-chip">
+                    <span>about</span>
+                    <span class="ac-desc">who I am</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="prompt">
+                <span class="p">$</span>
+                <span class="iwrap">
+                  <span style="color:var(--bright);font-size:16px">wor</span>
+                </span>
+              </div>
+            </div>
+
+            <h2 class="sg-h">log entry</h2>
+            <div class="log" style="margin-top:0">
+              <span class="entry">
+                <span class="ts">[2026-02-12]</span>
+                <span class="entry-main">
+                  <span class="p">&#10095;</span>{" "}
+                  <span class="ttl">
+                    Building the ML model behind Eight Angle
+                  </span>
+                </span>
+              </span>
+            </div>
+
+            <h2 class="sg-h">prose</h2>
+            <div class="prose" style="margin-top:0">
+              <p>
+                Body copy sets in the sans stack. Metric-first, plain nouns:
+                47-class classifier at 92.2% accuracy, roughly 20fps on-device.
+              </p>
+            </div>
+          </div>
+        ))
+      }
+    </main>
+  </section>
+</BaseLayout>
+
+<style is:global>
+  /* Force each ground explicitly so the specimen ignores system scheme. */
+  .theme-night {
+    --ground: #0e1512;
+    --ink: #d6e5dc;
+    --bright: #f2f7f3;
+    --dim: #8fa79a;
+    --accent: #7ee787;
+    --on-accent: #0e1512;
+    --line: #2e4a3c;
+    --line-strong: #33523f;
+    --well: #12201a;
+    --wm-glow:
+      0 0 26px rgba(126, 231, 135, 0.3), 0 0 3px rgba(126, 231, 135, 0.35);
+    --glow-field: rgba(126, 231, 135, 0.07);
+    color-scheme: dark;
+  }
+  .theme-light {
+    --ground: #fbfbf8;
+    --ink: #14211a;
+    --bright: #14211a;
+    --dim: #3f5348;
+    --accent: #086148;
+    --on-accent: #fbfbf8;
+    --line: #dae0d6;
+    --line-strong: #c7d0c4;
+    --well: #f1f2ec;
+    --wm-glow: none;
+    --glow-field: rgba(8, 97, 72, 0.05);
+    color-scheme: light;
+  }
+  .sg-panel {
+    background: var(--ground);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px 0;
+  }
+  .sg-panel-label {
+    font-size: 12px;
+    color: var(--dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+  }
+  .sg-h {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--dim);
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+    margin: 22px 0 10px;
+  }
+  .sg-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  .sg-swatch {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sg-chip {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    flex: none;
+  }
+  .sg-swatch-meta {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+  }
+  .sg-swatch-meta code {
+    color: var(--ink);
+  }
+</style>

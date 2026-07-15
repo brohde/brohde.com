@@ -37,11 +37,7 @@ if (canonicalURL.pathname !== "/") {
 const canonical = canonicalURL.href;
 const imageURL = new URL(image, SITE.url).href;
 
-const ldBlocks = jsonLd
-  ? Array.isArray(jsonLd)
-    ? jsonLd
-    : [jsonLd]
-  : [];
+const ldBlocks = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
 ---
 
 <title>{pageTitle}</title>
@@ -74,6 +70,7 @@ const ldBlocks = jsonLd
 {
   ldBlocks.map((block) => (
     <script
+      is:inline
       type="application/ld+json"
       set:html={JSON.stringify(block)}
     />
