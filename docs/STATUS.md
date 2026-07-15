@@ -66,6 +66,12 @@ See the ⚠️ in-flight agents section at the top: aurora dark-ground rework, A
 - Legacy brohde.com assets recovered: screenshots staged at `assets/images/legacy-site/` (see its README), demo videos located (newsroom.mp4, afw.mp4, nownow.mp4, platform-surfaces.mp4 in the legacy repo), Circular web formats at `assets/fonts/circular/web/`, full old-site copy in the legacy SQL dump
 - v3 prototype updated + republished: "$ hello" header line, boot on every visit (#41, #42)
 
+## v2 / backlog (parked, Brian-approved ideas)
+- **Contact form inside the chat** (Brian, 2026-07-15: "that would be pretty cool"): the chat collects name/email/message conversationally and submits via the production Worker; pairs naturally with the deterministic layer
+- Ephemeral visitor-to-visitor chat (#32, parked)
+- Presence planes with your-plane marker + steering (#43), post-v1
+- Real brand marks in the glyph tide pending trademark-use check (#45/#59 note)
+
 ## Open questions for Brian
 
 - Where is brohde.com registered? (Not on his Cloudflare account; needed for the eventual domain cutover. Pages setup proceeds on a pages.dev URL once the scaffold is committed: Claude drives the dashboard, Brian clicks the GitHub authorize step)
