@@ -270,20 +270,19 @@
    so full content never flashes. All page content is server rendered and
    stays in the DOM either way; the sequence only toggles visibility, and
    production keeps the full page crawlable for SEO and LLMs.
-   Plays once per browser session; deep links (#/chat, #/about) and
+   Plays on EVERY full page load of the homepage (Brian's call 2026-07-15,
+   documented so we can revisit if it grows tiresome; it was once per
+   browser session before). Deep links (#/chat, #/about) and
    prefers-reduced-motion always render instantly. */
 (function () {
   try {
-    var seen = sessionStorage.getItem('brohde.boot');
-    sessionStorage.setItem('brohde.boot', '1');
-    if (!seen &&
-        location.hash !== '#/chat' && location.hash !== '#/about' &&
+    if (location.hash !== '#/chat' && location.hash !== '#/about' &&
         !matchMedia('(prefers-reduced-motion: reduce)').matches) {
       document.documentElement.classList.add('boot');
       /* failsafe: never leave content hidden if the main script dies */
       setTimeout(function () { document.documentElement.classList.remove('boot'); }, 6000);
     }
-  } catch (e) { /* storage blocked (private mode): skip the sequence */ }
+  } catch (e) { /* any failure: skip the sequence, content stays visible */ }
 })();
 </script>
 
@@ -299,7 +298,7 @@
            then the wordmark flushes in). bseq on the container reveals the
            CRT texture (its pseudo elements) as the first frame. -->
       <div class="hv bseq" data-h="1">
-        <p class="pline bseq"><span class="p">$</span> whoami</p>
+        <p class="pline bseq"><span class="p">$</span> hello</p>
         <h1 class="wordmark bseq">brian rohde<span class="caret" aria-hidden="true"></span></h1>
         <p class="bio bseq">full-stack engineer <span class="d">·</span> san francisco</p>
         <p class="bio bseq">ships AI products end to end <span class="d">·</span> founder, <a class="clink" href="https://eightangle.com" target="_blank" rel="noopener">eight angle</a></p>
@@ -715,7 +714,7 @@
   if (initial !== 'home') show(initial);
   booted = true;
 
-  /* ---------- boot sequence (first home load per session) ---------- */
+  /* ---------- boot sequence (every home page load, see gate above) ---------- */
   /* The gate script near the top adds html.boot before first paint.
      Presentation only: all content is in the DOM from the first byte and
      the reveal just toggles visibility, so production keeps the full page

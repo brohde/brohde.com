@@ -36,9 +36,9 @@ The homepage centered on a guided, scroll-triggered animation sequence next to a
 
 ## Image candidates
 
-As with the Facebook Newsroom case study, no original screenshots or image assets from this project survived in the Wayback Machine's archive of brohde.com. Only favicons, font files, and plugin assets were captured under that domain in 2018 to 2019.
+**RESOLVED 2026-07-15: the original demo video survived in the legacy brohde.com WordPress codebase.** `afw.mp4` (50MB, not copied into this repo; lives at `brohde-com-wordpress/public_html/wp-content/themes/brohde_com_src/assets/videos/afw.mp4`) is the screen capture the old case study page embedded, presumably showing the guided scroll animation the draft describes. Stills or a compressed loop can be cut from it for the article; contents still need a watch-through to confirm.
 
-Working options, pending Brian's input:
+Wayback fallbacks, still useful:
 
 1. **https://web.archive.org/web/20160120070456/https://www.google.com/work/android/**: a full, rendered snapshot of the actual site, with hero headline "Work the way you live," a Nexus 6 phone mockup, and the scroll-guided section structure. Best available screenshot of what shipped, though I can't confirm from Wayback alone whether this exact capture matches the version you built versus a later iteration by Google's own team.
 2. **https://web.archive.org/web/20190329082817/https://brohde.com/work/google-android-for-work/**: the original brohde.com case study page (text recovered and used as source for this draft).
@@ -60,5 +60,5 @@ So the site was taken down between 2016-09-25 and 2016-11-08, roughly 14 months 
 
 1. **Team and timeline.** The old copy names only a designer and a QA engineer beyond you. Any names or project duration (weeks or months) you're comfortable citing?
 2. **Exact pre-date, now with a wrinkle.** The old case study says only "Released 2016," but Wayback shows the "Work the way you live" design already live by 2015-09-05, and the 2015-05-31 capture still shows Google's earlier launch page. So the redesign shipped sometime between June and early September 2015, not in 2016. Two readings: the build actually launched in mid 2015 and "Released 2016" was approximate, or your work was a 2016 iteration on a structure that already existed. Which is it, and what date should the article carry? (See Site lifespan above for the capture trail.)
-3. **Assets.** Same gap as Newsroom: do you have local screenshots or files from this project? None survived in Wayback's brohde.com archive, so the current plan is to screenshot the reconstructed google.com/work/android page from archive.org instead.
+3. **Assets: partially ANSWERED 2026-07-15.** Brian supplied the legacy brohde.com WordPress codebase; the original demo video (`afw.mp4`) was recovered (see Image candidates). No AfW still screenshots were in the legacy uploads, so stills come from the video or from the Wayback reconstruction.
 4. **Product context.** I added one factual sentence describing what Android for Work was (Google's enterprise mobile management product) for reader context, since the old case study assumed the reader already knew. Confirm that's accurate and welcome, or prefer the piece stay narrowly about the build with no product description?

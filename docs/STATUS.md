@@ -42,18 +42,26 @@ See the ⚠️ in-flight agents section at the top: aurora dark-ground rework, A
 ### Standing rules (recent additions)
 - Full keyboard accessibility for the terminal (#28) · no dashes anywhere (#18) · no aggregate years-of-experience/age phrasing in any copy or LLM output (#27/#29) · FB/Google = agency work via Beyond (#21)
 
-## Next actions
-1. Collect the 5 workstreams: review drafts against VOICE, publish aurora lab artifact, bring open questions to Brian
-2. Brian: header treatment pick (1/2/3 in v3 prototype) · aurora state-color reaction · draft reviews · answers to open questions below
-3. Then: converge build.log v3 + aurora direction into v4; start Phase 1 scaffold (Astro + Cloudflare + PostHog per prior-project conventions)
+## Next actions (Phase 1 greenlit territory; Brian's 2026-07-15 review: "I LOVE where this is going")
+1. Brian: run the chat POC validation (`cd poc/chat && npm i && ANTHROPIC_API_KEY=... npm start`; eval harness: `node eval.mjs` → `transcript.md`) — gates V2/V3
+2. Brian: pick a glyph-tide placement from the presented ideas; answer AfW 2015-vs-2016; draft reviews
+3. Studio: Phase 1 Astro scaffold (Astro + Tailwind v4 + Cloudflare Pages + PostHog per `docs/reference/prior-project-conventions.md`), build.log design system as components with light+dark themes (#40), boot sequence + header ported from the prototype
+4. Then: chat production Worker (AI Gateway, Turnstile, rate limits) after POC gates pass; aurora + glyph tide integration; presence (planes + your-plane marker) after v1
+
+### Recent additions (2026-07-15 late)
+- Legacy brohde.com assets recovered: screenshots staged at `assets/images/legacy-site/` (see its README), demo videos located (newsroom.mp4, afw.mp4, nownow.mp4, platform-surfaces.mp4 in the legacy repo), Circular web formats at `assets/fonts/circular/web/`, full old-site copy in the legacy SQL dump
+- v3 prototype updated + republished: "$ hello" header line, boot on every visit (#41, #42)
 
 ## Open questions for Brian
+- Glyph tide placement in build.log: ideas presented (article heroes + right gutter recommended; full background at whisper strength; boot-moment assembly; chat-only). Awaiting his pick, then lab-build the top contenders
+- Presence planes: "your plane" marker agreed (#43); steering mechanism to design (opt-in fly command recommended over raw arrow-key hijack, a11y #28)
 - Header company link targets: official sites picked (gong.io, twilio.com, bynd.com, eightangle.com); veto or retarget any to internal case-study pages?
-- Boot sequence: greeting word ("hello" vs "whoami" vs "hi")? once per session (current) vs per visit vs once ever? fake caret during the auto-type?
-- Aurora: night glow strength (.4 faint / .55 current / .65 theatrical)? amber chat tag vs all-mint? keep or drop the light-ground comparison toggle?
-- Android for Work: Wayback shows the redesign live by Sept 2015, but the old case study says "Released 2016". Shipped mid 2015, or was your work a 2016 iteration? Draft holds "shipped in 2016" until answered.
+- Aurora details (tweak later per Brian): night glow strength, amber chat tag vs all-mint, drop the light-ground toggle now that light mode is real (#40)
+- Android for Work: Wayback shows the redesign live by Sept 2015, but the old case study says "Released 2016". Shipped mid 2015, or was your work a 2016 iteration? Draft holds "shipped in 2016" until answered
+- New legacy material: want drafts for NowNow, Platform Surfaces, or Foundation for Peripheral Neuropathy? Videos found for the first two
 - Resume command behavior (print link vs open PDF)
 - ATG draft: repo evidence says ~11-hour build vs PLAN.md's "under 4 hours"; which framing?
+- Boot: fake caret during the auto-type? (input deliberately unfocused, so none shows today)
 - Supply images (folder path) for the glyph-tide-from-images pipeline whenever ready
 - LL Circular web license purchase (only matters if any Circular use survives into build.log)
 - Earlier open items: writing samples for VOICE, Substack canonical, travel placement, pre-dates, resume format

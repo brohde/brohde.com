@@ -38,9 +38,14 @@ The site itself had a long run. It kept publishing under its own newsroom.fb.com
 
 ## Image candidates
 
-None of the original case study's screenshots, in-page images, or embedded demo video survived in the Wayback Machine's archive of brohde.com. The CDX index for brohde.com in 2018 to 2019 shows only favicons, font files, and Gravity Forms plugin assets, no project screenshots. The old case study page itself still renders with the video element present but broken (`Your browser does not support the video tag`, no working source).
+**RESOLVED 2026-07-15: original assets recovered from the legacy brohde.com WordPress codebase** (`/Users/brian/Projects/brohde-com-wordpress`). Screenshots staged in this repo at `assets/images/legacy-site/`:
 
-Working options, pending Brian's input:
+1. **Timeline-Mobile.png**: the interactive "Our History" timeline component on mobile, the exact touch-capable feature the draft calls out as the hard piece of the build. Strongest single image for this article.
+2. **Homepage-Localized.png**: the Japanese Newsroom edition (ja.newsroom.fb.com), full homepage. Perfect visual for the internationalization beat. Content dates it July 2017.
+3. **Homepage-Mobile.png**: the responsive mobile homepage ("Two Billion People Coming Together on Facebook," June 2017). Good responsive-design evidence.
+4. **newsroom.mp4** (26MB, NOT copied into this repo; lives at `brohde-com-wordpress/public_html/wp-content/themes/brohde_com_src/assets/videos/newsroom.mp4`): the demo video the old case study page embedded, the one Wayback never captured. Can supply stills or a compressed loop for the article.
+
+Note the screenshots carry 2017 content, three years after the 2014 launch, but it is the same template identity, which itself supports the longevity point. Wayback fallbacks below remain useful for "before" and "after" shots:
 
 1. **https://web.archive.org/web/20141001003032/https://newsroom.fb.com/**: the relaunched, fully styled, responsive WordPress homepage (card layout, nav: Home / News / Products / Company Info / Directory / Investor Relations). Best available "after" screenshot of the actual shipped site.
 2. **https://web.archive.org/web/20120430203451/http://newsroom.fb.com/**: confirmed predecessor, the pre-Beyond newsroom as it existed on April 30, 2012, the earliest capture Wayback has of this URL. Facebook-blue header, a sponsor-logo carousel, sidebar nav. Good "before" shot; this is a real capture of the old site, not a partial/broken one like I'd flagged in the prior draft.
@@ -61,5 +66,5 @@ Working options, pending Brian's input:
 2. **Budget figure.** Your resume cites Beyond projects "budgeted up to $½ million," tied to the Google and Facebook relationship generally, not Newsroom specifically. Want a project-specific figure in this piece, or leave it unstated as I did?
 3. **"First responsive consumer site on WordPress VIP" framing.** This is a platform-wide claim (not just "Facebook's first"), sourced from your resume. Comfortable keeping that exact framing in published copy, or prefer something softer like "one of the first"?
 4. **Exact pre-date.** Wayback snapshots show the old, unstyled newsroom still live on June 1, 2014, and the new, styled site fully live by October 1, 2014, with a transitional capture on July 1, 2014. That puts the relaunch in a June to July 2014 window. Want me to lock the article's dateline to a specific month, or keep it loose as "2014"?
-5. **Assets.** Do you have local copies of any original screenshots, the demo video referenced on the old case study page, or design files from this project? None of that survived in Wayback's archive of brohde.com itself.
+5. **Assets: ANSWERED 2026-07-15.** Brian supplied the legacy brohde.com WordPress codebase; three screenshots and the original demo video recovered (see Image candidates above). Remaining choice is just which to feature.
 6. **The eight-language claim.** Comfortable with the draft naming all seven languages explicitly (Portuguese, German, Spanish, French, Italian, Japanese, Korean), or would you rather it just say "seven languages" without listing them?
