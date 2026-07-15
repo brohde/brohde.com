@@ -7,8 +7,10 @@ Proof of concept for the site chat, per `docs/reference/llm-terminal-plan.md`. R
 ```sh
 cd poc/chat
 npm install
-ANTHROPIC_API_KEY=sk-ant-... npm start   # → http://localhost:8787
+npm start   # → http://localhost:8787
 ```
+
+The key comes from `poc/chat/.env` (gitignored): paste it there once as `ANTHROPIC_API_KEY=sk-ant-...`. Passing it inline (`ANTHROPIC_API_KEY=... npm start`) still works and takes precedence.
 
 Every reply prints its real token usage and dollar cost.
 

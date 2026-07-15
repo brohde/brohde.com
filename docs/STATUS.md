@@ -33,8 +33,9 @@ None. All three from this session landed and both artifacts were republished at 
 - `facebook-newsroom.md` (640w, incl. researched predecessor/5-year-lifespan/verified 7+1 languages) + `google-android-for-work.md` (495w) — archive.org-sourced
 - Each draft ends with image candidates + open questions for Brian
 
-### Chat POC: BUILT at `poc/chat/` (decision #34)
-Real Haiku 4.5 (confirmed, #30) via official SDK; facts pack (`facts.md`, age-safe per #31); deny-list + injection-resistant system prompt; open_page vs prose tool router; per-reply cost readout; 26-question eval harness → `transcript.md` with pass/fail rows (gates V2-V3). Run: `cd poc/chat && npm i && ANTHROPIC_API_KEY=... npm start`
+### Chat POC: BUILT at `poc/chat/` (decision #34) — SETUP DONE, WAITING ON BRIAN'S KEY
+Real Haiku 4.5 (confirmed, #30) via official SDK; facts pack (`facts.md`, age-safe per #31); deny-list + injection-resistant system prompt; open_page vs prose tool router; per-reply cost readout; 26-question eval harness (`npm run eval` → `transcript.md` pass/fail rows, gates V2-V3).
+**Current state (2026-07-15 late):** deps installed; server reads the key from `poc/chat/.env` (gitignored; Brian pastes `ANTHROPIC_API_KEY=sk-ant-...` there, key never goes through chat); server fails fast with a clear message if the key is missing/placeholder; index.html shows run instructions if opened via file://. **Claude manages the server**: once the key is in `.env`, run `npm start` in `poc/chat` as a background task, verify with `curl -s localhost:8787 | head`, then give Brian http://localhost:8787. Brian was getting his key from console.anthropic.com when the session ended.
 
 ### Still in flight (background)
 See the ⚠️ in-flight agents section at the top: aurora dark-ground rework, Android for Work lifespan research (re-run), boot sequence + header links for v3. Newsroom follow-up research is DONE and folded into the draft.
@@ -43,7 +44,8 @@ See the ⚠️ in-flight agents section at the top: aurora dark-ground rework, A
 - Full keyboard accessibility for the terminal (#28) · no dashes anywhere (#18) · no aggregate years-of-experience/age phrasing in any copy or LLM output (#27/#29) · FB/Google = agency work via Beyond (#21)
 
 ## Next actions (Phase 1 greenlit territory; Brian's 2026-07-15 review: "I LOVE where this is going")
-1. Brian: run the chat POC validation (`cd poc/chat && npm i && ANTHROPIC_API_KEY=... npm start`; eval harness: `node eval.mjs` → `transcript.md`) — gates V2/V3
+0. **Phase 1 official build: Brian asked if we're ready → YES, nothing blocks the scaffold.** Studio recommendation pending his confirm: amend #14 to a model split — Opus for scaffold/plumbing (Astro config, collections, SEO/PostHog ports per prior-project-conventions), Fable stays on design-system components, terminal interactions, and all aesthetic/motion work
+1. Brian: paste API key into `poc/chat/.env`, then the studio runs the server and hands him http://localhost:8787 (see Chat POC section); eval via `npm run eval` — gates V2/V3
 2. Brian: pick a glyph-tide placement from the presented ideas; answer AfW 2015-vs-2016; draft reviews
 3. Studio: Phase 1 Astro scaffold (Astro + Tailwind v4 + Cloudflare Pages + PostHog per `docs/reference/prior-project-conventions.md`), build.log design system as components with light+dark themes (#40), boot sequence + header ported from the prototype
 4. Then: chat production Worker (AI Gateway, Turnstile, rate limits) after POC gates pass; aurora + glyph tide integration; presence (planes + your-plane marker) after v1

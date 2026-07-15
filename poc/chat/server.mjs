@@ -12,6 +12,19 @@ const SYSTEM =
   "\n\n# FACTS PACK\n\n" +
   readFileSync(path.join(here, "facts.md"), "utf8");
 
+// load poc/chat/.env if present (ANTHROPIC_API_KEY=sk-ant-...), so the key
+// lives in a gitignored file instead of shell history or a chat transcript
+try {
+  for (const line of readFileSync(path.join(here, ".env"), "utf8").split("\n")) {
+    const m = line.match(/^\s*([A-Z_]+)\s*=\s*(.+?)\s*$/);
+    if (m && !process.env[m[1]]) process.env[m[1]] = m[2];
+  }
+} catch {}
+if (!process.env.ANTHROPIC_API_KEY || /your-key/.test(process.env.ANTHROPIC_API_KEY)) {
+  console.error("No real ANTHROPIC_API_KEY found. Paste it into poc/chat/.env as: ANTHROPIC_API_KEY=sk-ant-...");
+  process.exit(1);
+}
+
 const client = new Anthropic();
 const MODEL = "claude-haiku-4-5";
 // $ per MTok: input / output / cache read / cache write (5m ttl)
