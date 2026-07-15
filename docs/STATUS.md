@@ -28,19 +28,19 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 ## ⚠️ In-flight background agents (5 spawned; 1 landed)
 
 1. **Interaction cluster (fable, worktree `a7593d05a409df7a7`)**: single-cursor #63, boot entry-only #64, ~140ms wipe #64, hover unification, chat dev-bridge (terminal free-form → localhost:8787), hello tour + arrow underline #68, "ask me anything" on the chat screen #65. Sent mid-flight: docs-audit code pointers + **#69 requirement** (transition layer must treat the slab expand/collapse morph as a first-class transition type, e.g. persistent `view-transition-name` on the slab).
-2. **Perf (opus, worktree `ae290c01f8305a4fd`)**: #62, Lighthouse before/after on built `dist/`, facades for heavy layers.
+2. **Perf (opus) — DONE, merged bab2a76**: inline critical CSS + cache headers + binding facade contract (#70); Lighthouse mobile Perf 100/TBT 0/CLS 0, validated on built dist. Its HIGH finding (boot = ~1.3s blank screen; prompt is `.bseq`-hidden so hello types invisibly) routed to the interaction agent as part of its #64 boot work.
 3. **Docs (sonnet) — DONE, merged f199195**: `docs/ENGINEERING.md` + README. Flags 4 decision-vs-code gaps inline (all in the interaction agent's scope) → needs a **reconciliation pass after the interaction merge** (resume the same agent or quick lead edit).
-4. **Demo 04 refinements (fable, `a6e3a77096f9cda8d`)**: contain-fit sources, background fallback when the gutter collapses, per-page brand palettes (Facebook blue, Google 4-color, Eight Angle logo + brand colors). Works in the MAIN tree on `docs/design/lab/aurora-terminal.html` (currently modified — do not commit or revert it under the agent). Republishes the aurora artifact.
-5. **Cloudflare Pages setup (opus, browser, `addb206b9ab895145`)**: polls the Pages wizard. **BLOCKED on Brian's one click**: GitHub "Confirm access" page is open — grant the Cloudflare Pages app access to the `brohde.com` repo. Agent then completes the wizard (project `brohde-com`, branch `main`, `npm run build` → `dist`, no env vars) and reports the pages.dev URL.
+4. **Demo 04 refinements (fable, `a6e3a77096f9cda8d`)**: finishing all three refinements (contain-fit, background fallback, brand palettes incl. Eight Angle logo source) per #72's quality-first call, then republishes the aurora artifact + reports. Works in the MAIN tree on `docs/design/lab/aurora-terminal.html` (currently modified — do not commit or revert it under the agent).
+5. **Cloudflare Pages setup (opus, browser, `addb206b9ab895145`)**: RESUMED after Brian granted the repo ("Just added brohde.com for Cloudflare!"). Completing the wizard (project `brohde-com`, branch `main`, Astro preset, `npm run build` → `dist`, no env vars) → pages.dev URL.
 
-**Merge order when worktrees land: interaction → perf.** Lead reviews commits, merges, validates on the RENDERED surface (standing rule: agent reports are claims, not evidence), then ENGINEERING.md reconciliation.
+**Only the interaction worktree remains to merge.** Lead reviews commits, merges, validates on the RENDERED surface (standing rule: agent reports are claims, not evidence), then ENGINEERING.md reconciliation.
 
 ## Next actions
 
-1. **Brian**: the GitHub grant click above (unblocks the pages.dev dev link).
-2. Merge interaction + perf worktrees as they land; validate rendered; republish artifacts at their existing URLs.
+1. Cloudflare agent reports the pages.dev URL (in flight; repo grant done).
+2. Merge the interaction worktree when it lands; validate rendered; republish artifacts at their existing URLs.
 3. ENGINEERING.md reconciliation once interaction merges (its §3 gap flags become stale).
-4. **Option C implementation phase (#67/#68/#69)** — the next numbered phase, planned per #56 (phased, agent-reviewable): slab architecture, Circular on designed surfaces (GATED on Lineto license), designed article pages, chat-expands-slab with the elegant both-way transition.
+4. **Option C implementation phase (#67/#68/#69)** — the next numbered phase, planned per #56 (phased, agent-reviewable): slab architecture, Circular on designed surfaces (GATED on Lineto license), designed article pages, chat-expands-slab with the elegant both-way transition. **Model policy: #72** (Fable re-greenlit for the remaining window, quality first, per the #50 split: Fable core engineering + taste-critical design, Opus general, Sonnet content/audits; don't burn Fable on rote work).
 5. Then **#59 aurora + tide integration** (per-page themes, matrix-style per-character animation) and **chat production wiring** (Worker + AI Gateway + Turnstile + per-IP rate limits) behind the #49 security-audit launch gate.
 
 ## v2 / backlog (parked, Brian-approved ideas)
