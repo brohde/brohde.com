@@ -15,8 +15,7 @@ _Last updated: 2026-07-15 (session 1, late). Brian may clear the session; this f
 
 ## ⚠️ In-flight background agents (die if session clears; contingency inline)
 
-1. **Newsroom history research** → should update `docs/drafts/facebook-newsroom.md` with: predecessor site before the 2014 build, decommission window (site lifespan), archive-verified localized-language list. If the draft lacks those: re-run research via Wayback in-browser (web.archive.org is blocked for WebFetch; use claude-in-chrome; CDX for URL discovery).
-2. **Boot sequence for build.log v3** (decision #36) → should modify `docs/design/lab/build-log-v3.html` in place: first load starts blank with just the chatbox, "hello" auto-types, then the homepage reveals as the terminal's answer (once per session, any input skips, reduced-motion disabled, content stays in DOM for SEO, deep links skip it). If the file lacks it in a new session: re-brief a design-director with this paragraph. After it lands, republish the artifact from the same file path (URL in table above).
+1. **Boot sequence for build.log v3** (decision #36) → should modify `docs/design/lab/build-log-v3.html` in place: first load starts blank with just the chatbox, "hello" auto-types, then the homepage reveals as the terminal's answer (once per session, any input skips, reduced-motion disabled, content stays in DOM for SEO, deep links skip it). If the file lacks it in a new session: re-brief a design-director with this paragraph. After it lands, republish the artifact from the same file path (URL in table above).
 
 ## Where we are
 
@@ -31,7 +30,7 @@ _Last updated: 2026-07-15 (session 1, late). Brian may clear the session; this f
 - `eight-angle-ml.md` (~1,570w; flags a hidden-pose-class facts discrepancy vs training config)
 - `atg-llm-migration.md` (~885w; **flags: repo evidence says ~11-hour build, not "under 4 hours"; DNS cutover was pending**)
 - `gold-coast.md` (~1,040w; needs Dragan's consent)
-- `facebook-newsroom.md` (545w) + `google-android-for-work.md` (495w) — archive.org-sourced
+- `facebook-newsroom.md` (640w, incl. researched predecessor/5-year-lifespan/verified 7+1 languages) + `google-android-for-work.md` (495w) — archive.org-sourced
 - Each draft ends with image candidates + open questions for Brian
 
 ### Chat POC: BUILT at `poc/chat/` (decision #34)
