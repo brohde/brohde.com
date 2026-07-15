@@ -60,7 +60,7 @@ Also in flight:
 
 - **Brian's C-lab questions**: ~~lowercase vs sentence case~~ ANSWERED: sentence case (#76, sweep in flight); still open: always-dark slab on light ground OK?; does "build.log" stay the archive's public name?
 - Title line: Brian weighing "from training the model to shipping the app" clause + "AI Engineer" in metadata only (batch 46); copywriter exploration offered, not yet ordered
-- LL Circular web license: confirm/purchase with Lineto before production ships it (#20; gates Option C's editorial type)
+- ~~LL Circular web license~~ CONFIRMED (#78): C build ships Circular self-hosted on editorial surfaces
 - Where is brohde.com registered? (Not on his Cloudflare account; needed for the domain cutover. Pages ships on a pages.dev URL meanwhile)
 - Editorial before public deploy: pre-date tension (retrospective passages inside pre-dated articles; studio recommends a dated postscript block convention); Eight Angle unconfirmed numbers (pricing, 47-class vs 49-pose, decoy examples); ATG client sign-off + "Workers vs Pages" naming + SiteGround figure; Gold Coast pending Dragan's consent
 - Resume command behavior (print link vs open PDF in new tab — code currently opens same tab, output text claims new tab)
