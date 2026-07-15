@@ -20,33 +20,37 @@ npm run format    # prettier (astro + tailwind plugins)
 
 Deploy target: Cloudflare Pages. Build command `npm run build`, output directory `dist`.
 
+**New to this repo? Read `docs/ENGINEERING.md` next.** It covers the full architecture (pages, layouts, the terminal controller, the theme token system, content collections), the content-layer staleness gotcha you will otherwise lose an afternoon to, the interaction model as actually decided and shipped, the content review workflow, deploy details (env vars, `_headers`, the chat production plan), and the binding engineering rules.
+
 ## Repo map
 
-| Path                           | Purpose                                                                                                          |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| `astro.config.mjs`             | Astro config: static output, sitemap (excludes /chat, /styleguide), prefetch, Tailwind v4 vite plugin            |
-| `src/content.config.ts`        | Content collections: `articles` schema (title, description, date, draft, external)                               |
-| `src/content/articles/`        | One folder per article (`<slug>/index.md`)                                                                       |
-| `src/pages/`                   | Routes: `/` (terminal home), `/about`, `/chat` (stub), `/styleguide`, `/log/[...slug]`, `/404`, `/rss.xml`       |
-| `src/layouts/BaseLayout.astro` | HTML shell: head, SEO, theme-color, ClientRouter, boot gate, analytics, terminal mount                           |
-| `src/components/`              | `SEO`, `Analytics` (PostHog), `TerminalHeader`, `Prompt` (+ autocomplete), `CommandMenu`, `ArticleLog`, `Topbar` |
-| `src/scripts/terminal.ts`      | Command router, autocomplete (#48), prompt history (#44), boot sequence (#36/#41)                                |
-| `src/styles/global.css`        | Tailwind import, design tokens (both grounds, #40), base + View-Transition rules                                 |
-| `src/styles/terminal.css`      | Terminal UI component classes (ported from the prototypes)                                                       |
-| `src/lib/site.ts`              | Site constants: metadata, social links, company links, log helpers                                               |
-| `public/`                      | `_headers` (CSP + security), `robots.txt`, `favicon.svg`, `og-default.svg`, `resume.pdf`                         |
-| `PLAN.md`                      | Original project brief from Brian                                                                                |
-| `CLAUDE.md`                    | Working agreement for Claude sessions — read first                                                               |
-| `docs/STATUS.md`               | **Current state + next steps** — the session-resume anchor                                                       |
-| `docs/DECISIONS.md`            | Every decision made, with rationale                                                                              |
-| `docs/COMMS-LOG.md`            | Running log of Brian ↔ Claude communications and delegated sub-agent work                                        |
-| `docs/TEAM.md`                 | The studio roster (dynamic) — expert roles and model policy                                                      |
-| `docs/CONTENT.md`              | Article backlog and content pipeline                                                                             |
-| `docs/VOICE.md`                | Brian's writing style guide — binding for all published copy                                                     |
-| `docs/design/`                 | Design deliverables + the approved prototypes (`lab/build-log-v3.html`, `lab/aurora-terminal.html`)              |
-| `docs/reference/`              | Source material: resume PDF, prior-project conventions brief                                                     |
-| `poc/chat/`                    | Chat POC (real Haiku, validated separately); not wired into the site yet                                         |
-| `.claude/agents/`              | Reusable sub-agent definitions for the studio experts                                                            |
+| Path                           | Purpose                                                                                                                                          |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `astro.config.mjs`             | Astro config: static output, sitemap (excludes /chat, /styleguide), prefetch, Tailwind v4 vite plugin                                            |
+| `src/content.config.ts`        | Content collections: `articles` schema (title, description, date, draft, external)                                                               |
+| `src/content/articles/`        | One folder per article (`<slug>/index.md`)                                                                                                       |
+| `src/pages/`                   | Routes: `/` (terminal home), `/about`, `/chat` (stub), `/styleguide`, `/log/[...slug]`, `/404`, `/rss.xml`                                       |
+| `src/layouts/BaseLayout.astro` | HTML shell: head, SEO, theme-color, ClientRouter, boot gate, analytics, terminal mount                                                           |
+| `src/components/`              | `SEO`, `Analytics` (PostHog), `TerminalHeader`, `Prompt` (+ autocomplete), `CommandMenu`, `ArticleLog`, `Topbar`                                 |
+| `src/scripts/terminal.ts`      | Command router, autocomplete (#48), prompt history (#44), boot sequence (#36/#41)                                                                |
+| `src/styles/global.css`        | Tailwind import, design tokens (both grounds, #40), base + View-Transition rules                                                                 |
+| `src/styles/terminal.css`      | Terminal UI component classes (ported from the prototypes)                                                                                       |
+| `src/lib/site.ts`              | Site constants: metadata, social links, company links, log helpers                                                                               |
+| `public/`                      | `_headers` (CSP + security), `robots.txt`, `favicon.svg`, `og-default.svg`, `resume.pdf`                                                         |
+| `PLAN.md`                      | Original project brief from Brian                                                                                                                |
+| `CLAUDE.md`                    | Working agreement for Claude sessions, read first                                                                                                |
+| `docs/STATUS.md`               | **Current state + next steps**: the session-resume anchor                                                                                        |
+| `docs/DECISIONS.md`            | Every decision made, with rationale                                                                                                              |
+| `docs/COMMS-LOG.md`            | Running log of Brian ↔ Claude communications and delegated sub-agent work                                                                        |
+| `docs/ENGINEERING.md`          | **Build reference for engineers**: architecture, run/build/deploy, the interaction model as shipped, content workflow, binding engineering rules |
+| `docs/TEAM.md`                 | The studio roster (dynamic): expert roles and model policy                                                                                       |
+| `docs/CONTENT.md`              | Article backlog and content pipeline                                                                                                             |
+| `docs/VOICE.md`                | Brian's writing style guide, binding for all published copy                                                                                      |
+| `docs/drafts/`                 | Article drafts with editorial meta (title options, open questions) awaiting review; approved bodies move to `src/content/articles/`              |
+| `docs/design/`                 | Design deliverables + the approved prototypes (`lab/build-log-v3.html`, `lab/aurora-terminal.html`)                                              |
+| `docs/reference/`              | Source material: resume PDF, prior-project conventions brief, chat feasibility research, the LLM-terminal build plan                             |
+| `poc/chat/`                    | Chat POC (real Haiku, validated separately); not wired into the site yet                                                                         |
+| `.claude/agents/`              | Reusable sub-agent definitions for the studio experts                                                                                            |
 
 ## Working model
 
