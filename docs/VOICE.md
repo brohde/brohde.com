@@ -19,8 +19,7 @@ A sharp practitioner writing quickly and well: first person, concrete, confident
 
 ## Mechanics
 
-- **NEVER use en dashes (–).** Brian's explicit rule. Use a comma, a colon, or split the sentence. For ranges, use "to" ("2019 to 2021") or a hyphen in tight metadata ("2019-2021").
-- Em dashes (—): not explicitly banned, but avoid the LLM tell of em-dash-studded prose; default to periods and commas. (Confirm with Brian whether em dashes are banned outright.)
+- **NEVER use en dashes (–) or em dashes (—). Anywhere.** Brian's rule, given twice (2026-07-15), including flagging them in design mockups. This covers prose, UI copy, navigation separators, metadata, and design comps. Use a comma, a colon, a middot (in metadata), or split the sentence. For ranges, use "to" ("2019 to 2021") or a hyphen in tight metadata ("2019-2021"). v1.1 update: the original draft treated em dashes as "avoid by default, confirm"; Brian's concept-04 feedback settled it, they are banned outright.
 - Middots (·) are Brian's own separator in metadata contexts ("Founder, Eight Angle · Full-Stack Engineer") — fine in headers/meta, not in prose.
 - Arrows (→) acceptable in technical metric contexts, as in his resume ("71% → 97%").
 - Sentence case for headings. No title case except proper nouns.

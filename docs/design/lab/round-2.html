@@ -1,0 +1,642 @@
+<title>brohde.com · Round 2: four refined directions</title>
+<style>
+  /* ---------- gallery chrome tokens (theme-aware; concept plates keep fixed palettes by design) ---------- */
+  :root {
+    --bg: #F7F6F3;
+    --text: #1C1B19;
+    --muted: #6D6A63;
+    --hairline: #E3E1DB;
+    --chip: #ECEAE4;
+    --chip-text: #3B3A36;
+    --frame-edge: #D8D5CE;
+    --plate-bg: #FFFFFF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151412; --text: #E8E6E1; --muted: #98948B; --hairline: #2C2A26;
+      --chip: #232119; --chip-text: #C9C5BC; --frame-edge: #3A3833; --plate-bg: #1C1B18;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #151412; --text: #E8E6E1; --muted: #98948B; --hairline: #2C2A26;
+    --chip: #232119; --chip-text: #C9C5BC; --frame-edge: #3A3833; --plate-bg: #1C1B18;
+  }
+  :root[data-theme="light"] {
+    --bg: #F7F6F3; --text: #1C1B19; --muted: #6D6A63; --hairline: #E3E1DB;
+    --chip: #ECEAE4; --chip-text: #3B3A36; --frame-edge: #D8D5CE; --plate-bg: #FFFFFF;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Helvetica Neue", sans-serif;
+    line-height: 1.55;
+    margin: 0;
+    overflow-x: clip;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  header.masthead { padding: 60px 0 8px; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+  h1 { font-size: clamp(28px, 4.5vw, 44px); line-height: 1.08; margin: 0 0 16px; text-wrap: balance; letter-spacing: -0.015em; }
+  .standfirst { font-size: 17px; max-width: 64ch; margin: 0 0 10px; }
+  .note { font-size: 14px; color: var(--muted); max-width: 64ch; margin: 0; }
+  .note strong { color: var(--text); font-weight: 600; }
+
+  nav.jump {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--hairline);
+    padding: 10px 0; margin-top: 28px;
+  }
+  nav.jump .wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+  nav.jump a {
+    font-size: 12.5px; text-decoration: none; color: var(--chip-text);
+    background: var(--chip); border: 1px solid var(--hairline);
+    padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+  }
+  nav.jump a:hover { color: var(--text); border-color: var(--muted); }
+  nav.jump a:focus-visible { outline: 2px solid var(--muted); outline-offset: 1px; color: var(--text); }
+  nav.jump a b { font-variant-numeric: tabular-nums; font-weight: 600; margin-right: 4px; }
+
+  section.plate { padding: 56px 0 28px; border-bottom: 1px solid var(--hairline); scroll-margin-top: 64px; }
+  .plate-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 4px; }
+  .plate-num { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--muted); }
+  .plate-head h2 { font-size: 26px; margin: 0; letter-spacing: -0.01em; }
+  .tag {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--chip-text); background: var(--chip); border-radius: 4px; padding: 3px 8px;
+  }
+  .fb { font-size: 14px; color: var(--muted); margin: 6px 0 0; max-width: 74ch; }
+  .fb b { color: var(--text); font-weight: 600; }
+  .vibe { font-size: 15.5px; color: var(--muted); max-width: 74ch; margin: 10px 0 22px; }
+
+  /* browser frame (desktop) */
+  .frame { border: 1px solid var(--frame-edge); border-radius: 10px; overflow: hidden; background: var(--plate-bg); }
+  .frame-bar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 12px; border-bottom: 1px solid var(--frame-edge); background: var(--chip);
+  }
+  .frame-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--frame-edge); }
+  .frame-bar span { font-size: 11px; color: var(--muted); margin-left: 10px; font-family: "SF Mono", Menlo, monospace; }
+  .deskscroll { overflow-x: auto; }
+  .desk-inner { min-width: 740px; }
+  .deskhint { display: none; font-size: 11.5px; color: var(--muted); margin: 6px 2px 0; }
+  @media (max-width: 800px) { .deskhint { display: block; } }
+
+  /* phone frame (mobile, true 375px, shrinks fluidly below that) */
+  .pair { display: grid; grid-template-columns: minmax(280px, 400px) minmax(0, 1fr); gap: 30px; align-items: start; margin-top: 24px; }
+  @media (max-width: 860px) { .pair { grid-template-columns: 1fr; } }
+  .phone {
+    width: min(375px, 100%);
+    border: 1px solid var(--frame-edge); border-radius: 30px; overflow: hidden;
+    background: var(--plate-bg);
+  }
+  .phone-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 20px 7px; font-size: 10.5px; color: var(--muted);
+    background: var(--chip); border-bottom: 1px solid var(--frame-edge);
+    font-family: "SF Mono", Menlo, monospace;
+  }
+  .caption { font-size: 11.5px; color: var(--muted); margin: 8px 2px 0; font-family: "SF Mono", Menlo, monospace; }
+
+  /* spec rail */
+  aside.spec { font-size: 13.5px; display: grid; gap: 16px; }
+  .spec h3 {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 6px; font-weight: 600;
+  }
+  .spec p { margin: 0; color: var(--text); }
+  .spec .sub { color: var(--muted); }
+  .swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+  .sw { display: grid; gap: 3px; justify-items: center; }
+  .sw i { width: 44px; height: 30px; border-radius: 5px; border: 1px solid var(--hairline); }
+  .sw code { font-size: 10px; color: var(--muted); font-family: "SF Mono", Menlo, monospace; }
+  .changed ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+  .changed li { padding-left: 15px; position: relative; font-size: 13px; line-height: 1.5; color: var(--text); }
+  .changed li::before { content: ""; position: absolute; left: 0; top: 7px; width: 6px; height: 6px; background: var(--muted); }
+  .changed li b { font-weight: 600; }
+
+  /* open questions + footer */
+  .oq { padding: 52px 0 24px; }
+  .oq h2 { font-size: 26px; margin: 0 0 18px; }
+  .oq ol { margin: 0; padding-left: 22px; max-width: 72ch; display: grid; gap: 10px; font-size: 14.5px; }
+  footer.fin { border-top: 1px solid var(--hairline); padding: 24px 0 60px; color: var(--muted); font-size: 13.5px; margin-top: 40px; }
+
+  /* =========================================================
+     01 THE QUARTERLY v2 · cold press
+     ========================================================= */
+  .q { background: #FFFFFF; color: #17181A; font-family: system-ui, -apple-system, "Helvetica Neue", sans-serif; }
+  .q .pad { padding: 34px 38px 30px; }
+  .q .mhead { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; border-bottom: 2px solid #17181A; padding-bottom: 14px; }
+  .q .mast { font-family: Charter, "Bitstream Charter", Georgia, serif; font-size: 26px; font-weight: 700; letter-spacing: -0.005em; }
+  .q .mnav { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #5B5E63; white-space: nowrap; }
+  .q .mnav a { color: #5B5E63; text-decoration: none; }
+  .q .mnav a:hover { color: #2242C8; }
+  .q .mnav a:focus-visible { outline: 2px solid #2242C8; outline-offset: 2px; color: #2242C8; }
+  .q .intro { font-size: 14.5px; color: #17181A; max-width: 54ch; margin: 18px 0 6px; line-height: 1.6; }
+  .q .folio { font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #5B5E63; margin: 20px 0 10px; }
+  .q .row { display: grid; grid-template-columns: 92px 1fr; gap: 18px; padding: 15px 0; border-top: 1px solid #E4E6EA; }
+  .q .date { font-size: 10.5px; color: #5B5E63; text-align: right; text-transform: uppercase; letter-spacing: 0.08em; padding-top: 8px; font-variant-numeric: tabular-nums; }
+  .q .title a {
+    font-family: Charter, "Bitstream Charter", Georgia, serif; font-size: 21px; color: #17181A; text-decoration: none;
+    background-image: linear-gradient(#2242C8, #2242C8); background-repeat: no-repeat;
+    background-size: 0% 2px; background-position: 0 100%; transition: background-size 300ms, color 200ms;
+  }
+  .q .title a:hover, .q .title a:focus-visible { background-size: 100% 2px; color: #2242C8; }
+  .q .title a:focus-visible { outline: 2px solid #2242C8; outline-offset: 3px; }
+  .q .desc { font-size: 13px; color: #5B5E63; margin-top: 4px; max-width: 52ch; }
+  /* phone variant */
+  .phone .q .pad { padding: 24px 20px; }
+  .phone .q .mhead { display: block; }
+  .phone .q .mnav { margin-top: 8px; white-space: normal; }
+  .phone .q .row { display: block; padding: 14px 0; }
+  .phone .q .date { text-align: left; padding: 0 0 4px; }
+  .phone .q .title a { font-size: 18.5px; }
+
+  /* =========================================================
+     04 BLACKLETTER MODERN v2 · Circular pending
+     ========================================================= */
+  .b { background: #F5F5F3; color: #111111; font-family: "Avenir Next", "Helvetica Neue", Helvetica, sans-serif; }
+  .b .pad { padding: 32px 38px 30px; }
+  .b .mast { font-size: 48px; font-weight: 800; letter-spacing: -0.03em; line-height: 0.95; text-transform: uppercase; }
+  .b .mnav { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 16px; row-gap: 6px; font-size: 12.5px; margin-top: 16px; }
+  .b .mnav a { color: #111111; font-weight: 500; text-decoration: none; }
+  .b .mnav a:hover { color: #D6001C; }
+  .b .mnav a:focus-visible { outline: 2px solid #D6001C; outline-offset: 2px; color: #D6001C; }
+  .b .mnav .sep { color: #63635E; }
+  .b .intro { font-size: 15.5px; max-width: 46ch; margin: 22px 0 24px; line-height: 1.5; }
+  .b a.row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 13px 0; border-top: 1px solid #C9C9C4; text-decoration: none; color: #111111; transition: transform 180ms ease-out; }
+  .b a.row:hover { transform: translateX(6px); }
+  .b a.row:focus-visible { outline: 2px solid #D6001C; outline-offset: 2px; }
+  .b .title { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+  .b .date { font-size: 12px; color: #63635E; font-variant-numeric: tabular-nums; white-space: nowrap; transition: color 180ms; }
+  .b a.row:hover .date, .b a.row:focus-visible .date { color: #D6001C; }
+  /* phone variant */
+  .phone .b .pad { padding: 26px 20px; }
+  .phone .b .mast { font-size: 38px; }
+  .phone .b .mnav { flex-direction: column; align-items: flex-start; row-gap: 10px; margin-top: 18px; }
+  .phone .b .sep { display: none; }
+  .phone .b a.row { display: block; padding: 13px 0; }
+  .phone .b .title { font-size: 17px; }
+  .phone .b .date { display: block; margin-top: 4px; }
+
+  /* =========================================================
+     05 EXPOSED GRID v2 · three title faces, mobile solved
+     ========================================================= */
+  .g { background: #FFFFFF; color: #0B0B0B; font-family: "Helvetica Neue", Helvetica, sans-serif; }
+  .g .cell { padding: 16px 20px; }
+  .g .top { display: grid; grid-template-columns: 1fr 190px; border-bottom: 1px solid #6E6E6E; }
+  .g .top .cell:first-child { border-right: 1px solid #6E6E6E; }
+  .g .lbl { font-family: Menlo, monospace; font-size: 10px; color: #6E6E6E; letter-spacing: 0.1em; margin-bottom: 6px; }
+  .g .mast { font-weight: 700; font-size: 21px; letter-spacing: 0.01em; }
+  .g .intro { font-size: 13px; max-width: 48ch; line-height: 1.5; margin: 6px 0 0; }
+  .g .navlist { font-family: Menlo, monospace; font-size: 11px; line-height: 2; }
+  .g .navlist a { color: #0B0B0B; text-decoration: none; }
+  .g .navlist a:hover { color: #4D00FF; }
+  .g .navlist a:focus-visible { outline: 2px solid #4D00FF; outline-offset: 1px; color: #4D00FF; }
+  .g .filters { display: flex; border-bottom: 1px solid #6E6E6E; overflow-x: auto; scrollbar-width: none; }
+  .g .filters::-webkit-scrollbar { display: none; }
+  .g .filters button {
+    font-family: Menlo, monospace; font-size: 10.5px; letter-spacing: 0.08em;
+    padding: 9px 14px; border: none; border-right: 1px solid #6E6E6E;
+    background: #FFFFFF; color: #0B0B0B; white-space: nowrap; cursor: pointer;
+  }
+  .g .filters button.on { background: #4D00FF; color: #FFFFFF; }
+  .g .filters button:hover { background: #F0EBFF; }
+  .g .filters button.on:hover { background: #4D00FF; }
+  .g .filters button:focus-visible { outline: 2px solid #4D00FF; outline-offset: -3px; }
+  .g .face { font-family: Menlo, monospace; font-size: 10px; letter-spacing: 0.12em; color: #0B0B0B; background: #F2F2F0; padding: 7px 20px; border-bottom: 1px solid #6E6E6E; }
+  .g a.row { display: grid; grid-template-columns: 56px 1fr auto; align-items: baseline; border-bottom: 1px solid #6E6E6E; text-decoration: none; color: #0B0B0B; transition: background 120ms, color 120ms; }
+  .g a.row > span { padding: 13px 16px; }
+  .g .ix { font-family: Menlo, monospace; font-size: 11px; color: #6E6E6E; border-right: 1px solid #6E6E6E; }
+  .g .ttl { font-size: 17px; font-weight: 600; }
+  .g a.row.fa .ttl { font-family: "Helvetica Neue", Helvetica, sans-serif; }
+  .g a.row.fb .ttl { font-family: Menlo, monospace; font-size: 15px; font-weight: 400; }
+  .g a.row.fc .ttl { font-family: "Times New Roman", Times, serif; font-size: 19.5px; font-weight: 400; }
+  .g .date { font-family: Menlo, monospace; font-size: 11px; color: #6E6E6E; }
+  .g a.row:hover, .g a.row:focus-visible { background: #4D00FF; color: #FFFFFF; }
+  .g a.row:hover .ix, .g a.row:hover .date, .g a.row:focus-visible .ix, .g a.row:focus-visible .date { color: #FFFFFF; }
+  .g a.row:focus-visible { outline: 2px solid #0B0B0B; outline-offset: -3px; }
+  /* phone variant: index folds into the title line, date drops below, filters scroll in their own rail */
+  .phone .g .top { display: block; }
+  .phone .g .top .cell:first-child { border-right: none; }
+  .phone .g .top .cell:last-child { border-top: 1px solid #6E6E6E; padding: 10px 20px; }
+  .phone .g .navlist { display: flex; gap: 18px; line-height: 1.6; }
+  .phone .g a.row { display: block; padding: 13px 20px; }
+  .phone .g a.row > span { padding: 0; }
+  .phone .g .ix { border-right: none; margin-right: 9px; }
+  .phone .g .ttl { font-size: 16.5px; }
+  .phone .g a.row.fc .ttl { font-size: 18px; }
+  .phone .g .date { display: block; margin-top: 5px; }
+
+  /* =========================================================
+     08 BUILD.LOG v2 · readability first
+     ========================================================= */
+  .t { background: #0E1512; color: #D6E5DC; font-family: Menlo, Monaco, monospace; font-size: 13.5px; line-height: 1.7; }
+  .t .pad { padding: 30px 30px 26px; }
+  .t .p { color: #7EE787; }
+  .t .ts { color: #8FA79A; font-size: 12px; }
+  .t .who { margin-bottom: 24px; }
+  .t .who div { margin: 3px 0; }
+  .t .caret { display: inline-block; width: 8px; height: 15px; background: #7EE787; vertical-align: -2px; animation: tblink 1.1s steps(1) infinite; }
+  @keyframes tblink { 50% { opacity: 0; } }
+  .t a.entry {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 10px 10px; margin: 0 -10px; border-radius: 4px;
+    text-decoration: none; color: #D6E5DC; transition: background 120ms, color 120ms;
+  }
+  .t .line2 { display: contents; }
+  .t .entry .ttl {
+    font-family: system-ui, -apple-system, "Helvetica Neue", sans-serif;
+    font-size: 16.5px; font-weight: 600; color: #F2F7F3; line-height: 1.35;
+  }
+  .t a.entry:hover, .t a.entry:focus-visible { background: #7EE787; }
+  .t a.entry:hover .ts, .t a.entry:hover .p, .t a.entry:hover .ttl,
+  .t a.entry:focus-visible .ts, .t a.entry:focus-visible .p, .t a.entry:focus-visible .ttl { color: #0E1512; }
+  .t a.entry:focus-visible { outline: 2px solid #7EE787; outline-offset: 2px; }
+  .t .cmt { color: #8FA79A; font-size: 12px; margin: 4px 0; }
+  .t .status { border-top: 1px solid #2E4A3C; margin-top: 22px; padding-top: 12px; color: #8FA79A; font-size: 11.5px; }
+  .t .chatnote { color: #8FA79A; font-size: 11.5px; margin-top: 20px; }
+  .t .chat {
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid #33523F; background: #12201A; border-radius: 8px;
+    padding: 13px 15px; margin-top: 8px;
+  }
+  .t .chat .ph { color: #8FA79A; font-size: 13px; }
+  /* phone variant: entries stack, tap targets 44px+ */
+  .phone .t .pad { padding: 22px 18px; }
+  .phone .t { font-size: 13px; }
+  .phone .t a.entry { display: block; padding: 11px 10px; }
+  .phone .t .entry .ts { display: block; margin-bottom: 3px; }
+  .phone .t .line2 { display: block; }
+  .phone .t .entry .ttl { font-size: 16px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">brohde.com · design lab · round 2 · 2026-07-15</p>
+    <h1>Four directions, refined</h1>
+    <p class="standfirst">Brian picked four of the ten round-1 concepts and gave notes. Each plate below applies them: a desktop frame, a true 375px mobile frame, and a list of exactly what changed and why.</p>
+    <p class="note">Type renders in macOS stand-ins here; production webfonts are named in each rail. <strong>No em or en dashes appear anywhere on this page</strong>; per Brian, that rule is now global. Bios corrected throughout: Facebook and Google were agency projects at Beyond, not employers.</p>
+  </div>
+</header>
+
+<nav class="jump" aria-label="Jump to direction">
+  <div class="wrap">
+    <a href="#c1"><b>01</b>Quarterly v2</a>
+    <a href="#c4"><b>04</b>Blackletter v2</a>
+    <a href="#c5"><b>05</b>Exposed Grid v2</a>
+    <a href="#c8"><b>08</b>build.log v2</a>
+    <a href="#oq"><b>?</b>Open questions</a>
+  </div>
+</nav>
+
+<main>
+  <!-- ============ 01 THE QUARTERLY v2 ============ -->
+  <section class="plate" id="c1">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">01</span>
+        <h2>The Quarterly · v2</h2>
+        <span class="tag">Editorial · de-AI pass</span>
+      </div>
+      <p class="fb"><b>Brian:</b> "I like the structure. I like the editorial feel, but it is definitely going a bit AI."</p>
+      <p class="vibe">The literary review, colder press. The warm-cream, bookish-serif, oxblood trio is the current generated-design cliche, so the ground goes to gallery white with cool ink, the serif is reserved for titles only, and the accent becomes a plain editorial link blue. The margin-hung dates and the calm stay.</p>
+
+      <div class="frame">
+        <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com · desktop</span></div>
+        <div class="deskscroll"><div class="desk-inner q">
+          <div class="pad">
+            <div class="mhead">
+              <span class="mast">Brian Rohde</span>
+              <span class="mnav"><a href="#c1">About</a> &nbsp;·&nbsp; <a href="#c1">Work</a> &nbsp;·&nbsp; <a href="#c1">Resume</a></span>
+            </div>
+            <p class="intro">Full-stack engineer shipping AI products end to end. Currently building Eight Angle; previously Gong and Twilio, with agency projects for Facebook and Google while at Beyond.</p>
+            <div class="folio">Archive · 2014 to 2026</div>
+            <div class="row"><div class="date">Feb 12 2026</div><div><div class="title"><a href="#c1">Building the ML model behind Eight Angle</a></div><div class="desc">A 47-class pose classifier, trained solo, running on-device at 20fps.</div></div></div>
+            <div class="row"><div class="date">May 28 2026</div><div><div class="title"><a href="#c1">How I run parallel Claude Code agents</a></div></div></div>
+            <div class="row"><div class="date">Nov 14 2025</div><div><div class="title"><a href="#c1">From idea to production in four hours</a></div></div></div>
+            <div class="row"><div class="date">Sep 30 2025</div><div><div class="title"><a href="#c1">Alternatives to Squarespace</a></div></div></div>
+            <div class="row"><div class="date">Jul 22 2014</div><div><div class="title"><a href="#c1">Facebook&rsquo;s first WordPress site</a></div></div></div>
+          </div>
+        </div></div>
+      </div>
+      <p class="deskhint">Desktop plate: pans sideways inside its own frame on small screens.</p>
+
+      <div class="pair">
+        <div>
+          <div class="phone">
+            <div class="phone-bar"><span>9:41</span><span>brohde.com</span></div>
+            <div class="q">
+              <div class="pad">
+                <div class="mhead">
+                  <span class="mast">Brian Rohde</span>
+                  <span class="mnav"><a href="#c1">About</a> &nbsp;·&nbsp; <a href="#c1">Work</a> &nbsp;·&nbsp; <a href="#c1">Resume</a></span>
+                </div>
+                <p class="intro">Full-stack engineer shipping AI products end to end. Currently building Eight Angle; previously Gong and Twilio, with agency projects for Facebook and Google while at Beyond.</p>
+                <div class="folio">Archive · 2014 to 2026</div>
+                <div class="row"><div class="date">Feb 12 2026</div><div><div class="title"><a href="#c1">Building the ML model behind Eight Angle</a></div><div class="desc">A 47-class pose classifier, trained solo, running on-device at 20fps.</div></div></div>
+                <div class="row"><div class="date">May 28 2026</div><div><div class="title"><a href="#c1">How I run parallel Claude Code agents</a></div></div></div>
+                <div class="row"><div class="date">Nov 14 2025</div><div><div class="title"><a href="#c1">From idea to production in four hours</a></div></div></div>
+                <div class="row"><div class="date">Sep 30 2025</div><div><div class="title"><a href="#c1">Alternatives to Squarespace</a></div></div></div>
+              </div>
+            </div>
+          </div>
+          <p class="caption">375px frame · date column folds above the title</p>
+        </div>
+        <aside class="spec">
+          <div class="changed"><h3>What changed</h3>
+            <ul>
+              <li><b>Cream is out.</b> Warm cream plus high-contrast serif plus oxblood is the most recognizable AI-generated look of 2026; the ground is now gallery white with cool ink, which reads printed rather than prompted.</li>
+              <li><b>The accent is a plain editorial link blue,</b> used for links and nothing else. Generated palettes studiously avoid default-looking blue; human editors never have. Links look like links.</li>
+              <li><b>Serif and sans split the work.</b> Newsreader keeps titles only; masthead, nav, dates, and the intro move to a quiet grotesk. The division of labor is an editorial convention machines rarely pick.</li>
+              <li><b>The italic serif intro is gone,</b> the single most common AI-editorial tell.</li>
+              <li><b>Kept, per Brian:</b> margin-hung dates, the list structure, hairline rules, the calm, and the grow-on-hover underline (now blue).</li>
+            </ul>
+          </div>
+          <div><h3>Type</h3><p>Newsreader (titles only) + Inter (interface and prose)</p><p class="sub">Shown in Charter / system sans</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#FFFFFF"></i><code>#FFFFFF</code></span>
+            <span class="sw"><i style="background:#17181A"></i><code>#17181A</code></span>
+            <span class="sw"><i style="background:#2242C8"></i><code>#2242C8</code></span>
+            <span class="sw"><i style="background:#5B5E63"></i><code>#5B5E63</code></span>
+          </div><p class="sub">On white: ink 17.8:1 · gray 6.5:1 · link blue 7.8:1. All pass 4.5:1.</p></div>
+          <div><h3>Motion</h3><p class="sub">Unchanged from round 1: rows fade-rise on scroll with a 60ms stagger; underlines grow left→right; both disabled under reduced motion.</p></div>
+          <div><h3>Signature</h3><p>Dates hung in the margin, like a printed quarterly's folios.</p></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 BLACKLETTER MODERN v2 ============ -->
+  <section class="plate" id="c4">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">04</span>
+        <h2>Blackletter Modern · v2</h2>
+        <span class="tag">Bold · heritage</span>
+      </div>
+      <p class="fb"><b>Brian:</b> "Very clean, simple. Like this."</p>
+      <p class="vibe">Round 1's monument, untouched where it worked. The wordmark stays huge and tight; the nav separators become space and middots; and the whole plate is re-set for LL Circular, the face on Brian's resume, standing in here as Avenir Next until his files arrive.</p>
+
+      <div class="frame">
+        <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com · desktop</span></div>
+        <div class="deskscroll"><div class="desk-inner b">
+          <div class="pad">
+            <div class="mast">Brian<br>Rohde</div>
+            <div class="mnav">
+              <a href="#c4">Read my bio</a><span class="sep" aria-hidden="true">·</span>
+              <a href="#c4">View my work</a><span class="sep" aria-hidden="true">·</span>
+              <a href="#c4">Start a conversation</a>
+            </div>
+            <p class="intro">Full-stack engineer shipping AI products end to end. Founder of Eight Angle. Previously Gong and Twilio; project work for Facebook and Google while at Beyond.</p>
+            <a class="row" href="#c4"><span class="title">Building the ML model behind Eight Angle</span><span class="date">02.12.2026</span></a>
+            <a class="row" href="#c4"><span class="title">How I run parallel Claude Code agents</span><span class="date">05.28.2026</span></a>
+            <a class="row" href="#c4"><span class="title">From idea to production in four hours</span><span class="date">11.14.2025</span></a>
+            <a class="row" href="#c4"><span class="title">Alternatives to Squarespace</span><span class="date">09.30.2025</span></a>
+            <a class="row" href="#c4"><span class="title">Facebook&rsquo;s first WordPress site</span><span class="date">07.22.2014</span></a>
+          </div>
+        </div></div>
+      </div>
+      <p class="deskhint">Desktop plate: pans sideways inside its own frame on small screens.</p>
+
+      <div class="pair">
+        <div>
+          <div class="phone">
+            <div class="phone-bar"><span>9:41</span><span>brohde.com</span></div>
+            <div class="b">
+              <div class="pad">
+                <div class="mast">Brian<br>Rohde</div>
+                <div class="mnav">
+                  <a href="#c4">Read my bio</a><span class="sep" aria-hidden="true">·</span>
+                  <a href="#c4">View my work</a><span class="sep" aria-hidden="true">·</span>
+                  <a href="#c4">Start a conversation</a>
+                </div>
+                <p class="intro">Full-stack engineer shipping AI products end to end. Founder of Eight Angle. Previously Gong and Twilio; project work for Facebook and Google while at Beyond.</p>
+                <a class="row" href="#c4"><span class="title">Building the ML model behind Eight Angle</span><span class="date">02.12.2026</span></a>
+                <a class="row" href="#c4"><span class="title">How I run parallel Claude Code agents</span><span class="date">05.28.2026</span></a>
+                <a class="row" href="#c4"><span class="title">From idea to production in four hours</span><span class="date">11.14.2025</span></a>
+                <a class="row" href="#c4"><span class="title">Alternatives to Squarespace</span><span class="date">09.30.2025</span></a>
+              </div>
+            </div>
+          </div>
+          <p class="caption">375px frame · nav stacks, spacing alone separates</p>
+        </div>
+        <aside class="spec">
+          <div class="changed"><h3>What changed</h3>
+            <ul>
+              <li><b>Every em dash removed.</b> The nav separators are now generous spacing with small middots on desktop; on mobile the links stack and spacing alone does the separating. The no-dash rule now applies to all design copy, sitewide.</li>
+              <li><b>Production face set to LL Circular</b> (Lineto), matching Brian's resume. Files and web license pending from Brian; rendered here in Avenir Next, the closest macOS stand-in, with Helvetica Neue as fallback.</li>
+              <li><b>Bio corrected:</b> Facebook and Google were agency projects at Beyond, not employers.</li>
+              <li><b>Date gray darkened</b> from #8A8A86 to #63635E: the round-1 value measured 3.2:1 at 12px, an AA failure our contrast check caught this round.</li>
+              <li><b>Kept, per Brian:</b> the oversized masthead, signal red on hover only, the right-nudge rows, the restraint.</li>
+            </ul>
+          </div>
+          <div><h3>Type</h3><p>LL Circular, files + web license pending from Brian</p><p class="sub">Shown in Avenir Next (Heavy masthead, Demi titles); Helvetica Neue fallback. Inter as interim webfont if Circular slips.</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#F5F5F3"></i><code>#F5F5F3</code></span>
+            <span class="sw"><i style="background:#111111"></i><code>#111111</code></span>
+            <span class="sw"><i style="background:#D6001C"></i><code>#D6001C</code></span>
+            <span class="sw"><i style="background:#63635E"></i><code>#63635E</code></span>
+          </div><p class="sub">On #F5F5F3: ink 17.3:1 · red 5.0:1 · gray 5.5:1. All pass 4.5:1.</p></div>
+          <div><h3>Motion</h3><p class="sub">Unchanged: rules draw in on scroll; rows nudge 6px right on hover as the date flips red; masthead tracking tightens on load.</p></div>
+          <div><h3>Signature</h3><p>The oversized black masthead: a wordmark with no logo.</p></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 EXPOSED GRID v2 ============ -->
+  <section class="plate" id="c5">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">05</span>
+        <h2>Exposed Grid · v2</h2>
+        <span class="tag">Brutalist · type trial</span>
+      </div>
+      <p class="fb"><b>Brian:</b> "I like the grid design and the category filter. Don't like the font used for post titles. Curious how this would look on mobile/desktop."</p>
+      <p class="vibe">The visible system survives contact with a phone. Same grid, same filters, same indigo flood; the title face is now a decision, with three candidates set live in the grid below. Groups A, B, and C each carry two real articles so the faces are judged in situ, not on a specimen sheet.</p>
+
+      <div class="frame">
+        <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com · desktop · title-face trial</span></div>
+        <div class="deskscroll"><div class="desk-inner g">
+          <div class="top">
+            <div class="cell"><div class="lbl">[00] INTRO</div><div class="mast">Brian Rohde</div><p class="intro">Full-stack engineer shipping AI products end to end. Founder of Eight Angle; ex-Gong, ex-Twilio.</p></div>
+            <div class="cell"><div class="lbl">[NAV]</div><div class="navlist"><a href="#c5">about</a><br><a href="#c5">resume</a><br><a href="#c5">contact</a></div></div>
+          </div>
+          <div class="filters">
+            <button class="on" type="button">ALL [06]</button>
+            <button type="button">WORK [03]</button>
+            <button type="button">AI [01]</button>
+            <button type="button">OFF-TOPIC [02]</button>
+          </div>
+          <div class="face">TITLE FACE A · INTER TIGHT SEMIBOLD · SHOWN IN HELVETICA NEUE</div>
+          <a class="row fa" href="#c5"><span class="ix">[01]</span><span class="ttl">Building the ML model behind Eight Angle</span><span class="date">2026-02-12</span></a>
+          <a class="row fa" href="#c5"><span class="ix">[02]</span><span class="ttl">How I run parallel Claude Code agents</span><span class="date">2026-05-28</span></a>
+          <div class="face">TITLE FACE B · IBM PLEX MONO · SHOWN IN MENLO</div>
+          <a class="row fb" href="#c5"><span class="ix">[03]</span><span class="ttl">From idea to production in four hours</span><span class="date">2025-11-14</span></a>
+          <a class="row fb" href="#c5"><span class="ix">[04]</span><span class="ttl">Alternatives to Squarespace</span><span class="date">2025-09-30</span></a>
+          <div class="face">TITLE FACE C · TIMES NEW ROMAN · WEB-SAFE, NO WEBFONT NEEDED</div>
+          <a class="row fc" href="#c5"><span class="ix">[05]</span><span class="ttl">Luxe &amp; affordable: Hawaii</span><span class="date">2025-06-17</span></a>
+          <a class="row fc" href="#c5"><span class="ix">[06]</span><span class="ttl">Facebook&rsquo;s first WordPress site</span><span class="date">2014-07-22</span></a>
+        </div></div>
+      </div>
+      <p class="deskhint">Desktop plate: pans sideways inside its own frame on small screens.</p>
+
+      <div class="pair">
+        <div>
+          <div class="phone">
+            <div class="phone-bar"><span>9:41</span><span>brohde.com</span></div>
+            <div class="g">
+              <div class="top">
+                <div class="cell"><div class="lbl">[00] INTRO</div><div class="mast">Brian Rohde</div><p class="intro">Full-stack engineer shipping AI products end to end. Founder of Eight Angle; ex-Gong, ex-Twilio.</p></div>
+                <div class="cell"><div class="lbl">[NAV]</div><div class="navlist"><a href="#c5">about</a> <a href="#c5">resume</a> <a href="#c5">contact</a></div></div>
+              </div>
+              <div class="filters">
+                <button class="on" type="button">ALL [06]</button>
+                <button type="button">WORK [03]</button>
+                <button type="button">AI [01]</button>
+                <button type="button">OFF-TOPIC [02]</button>
+                <button type="button">ABOUT</button>
+              </div>
+              <a class="row fa" href="#c5"><span class="ix">[01]</span><span class="ttl">Building the ML model behind Eight Angle</span><span class="date">2026-02-12</span></a>
+              <a class="row fa" href="#c5"><span class="ix">[02]</span><span class="ttl">How I run parallel Claude Code agents</span><span class="date">2026-05-28</span></a>
+              <a class="row fa" href="#c5"><span class="ix">[03]</span><span class="ttl">From idea to production in four hours</span><span class="date">2025-11-14</span></a>
+              <a class="row fa" href="#c5"><span class="ix">[04]</span><span class="ttl">Alternatives to Squarespace</span><span class="date">2025-09-30</span></a>
+              <a class="row fa" href="#c5"><span class="ix">[05]</span><span class="ttl">Luxe &amp; affordable: Hawaii</span><span class="date">2025-06-17</span></a>
+            </div>
+          </div>
+          <p class="caption">375px frame · face A shown; filters scroll sideways in their own rail</p>
+        </div>
+        <aside class="spec">
+          <div class="changed"><h3>What changed</h3>
+            <ul>
+              <li><b>Three title faces, rendered in the live grid.</b> A: Inter Tight semibold, the neutral engineering grotesk. B: IBM Plex Mono, the fully machine-native option. C: Times New Roman, the knowing editorial-brutalist contrast, web-safe with zero font payload. Pick one; the studio leans A, with C as the boldest and most memorable.</li>
+              <li><b>Mobile genuinely solved at 375px.</b> Filters become a horizontally scrollable row inside their own rail (the page never scrolls sideways); the index folds into the title line; the date drops below; the nav cell becomes a strip under the intro. Tap targets exceed 44px.</li>
+              <li><b>Filter chips now carry live counts</b> ([06], [03]...), more exposed system for free, and they signal the scroll on narrow screens.</li>
+              <li><b>Kept, per Brian:</b> the exposed grid, the category filter, bracketed indices, and the indigo flood hover.</li>
+            </ul>
+          </div>
+          <div><h3>Type</h3><p>Title face A/B/C above + JetBrains Mono (labels) + IBM Plex Sans (body)</p><p class="sub">Shown in Helvetica Neue / Menlo / Times New Roman; labels in Menlo</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#FFFFFF"></i><code>#FFFFFF</code></span>
+            <span class="sw"><i style="background:#0B0B0B"></i><code>#0B0B0B</code></span>
+            <span class="sw"><i style="background:#4D00FF"></i><code>#4D00FF</code></span>
+            <span class="sw"><i style="background:#6E6E6E"></i><code>#6E6E6E</code></span>
+          </div><p class="sub">Indigo 7.6:1 both ways · meta gray 5.1:1 on white. All pass 4.5:1.</p></div>
+          <div><h3>Motion</h3><p class="sub">Unchanged: hovered rows flood indigo and invert (live above); a thin crosshair tracks the cursor along grid lines on desktop only; indices count up on load.</p></div>
+          <div><h3>Signature</h3><p>The always-visible structural grid with bracketed indices.</p></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 08 BUILD.LOG v2 ============ -->
+  <section class="plate" id="c8">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">08</span>
+        <h2>build.log · v2</h2>
+        <span class="tag">Terminal · readability first</span>
+      </div>
+      <p class="fb"><b>Brian:</b> "Needs to be a lot more readable and make sure it works perfectly on mobile. The post names should be more readable."</p>
+      <p class="vibe">The terminal grows up: mono for the machine, a humanist sans for the words a human should read. Post names are real titles now, set larger in near-white; timestamps, prompt glyphs, and the phosphor mint stay. Where terminal authenticity and readability conflict, readability wins.</p>
+
+      <div class="frame">
+        <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com · desktop</span></div>
+        <div class="deskscroll"><div class="desk-inner t">
+          <div class="pad">
+            <div class="who">
+              <div><span class="p">$</span> whoami</div>
+              <div>brian rohde · full-stack engineer · san francisco</div>
+              <div>ships AI products end to end · founder, eight angle</div>
+              <div>prev: gong · twilio · beyond (projects for facebook + google) <span class="caret" aria-hidden="true"></span></div>
+            </div>
+            <a class="entry" href="#c8"><span class="ts">[2026-02-12]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Building the ML model behind Eight Angle</span></span></a>
+            <a class="entry" href="#c8"><span class="ts">[2026-05-28]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">How I run parallel Claude Code agents</span></span></a>
+            <a class="entry" href="#c8"><span class="ts">[2025-11-14]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">From idea to production in four hours</span></span></a>
+            <div class="cmt"># migrated a live WordPress site to Astro before lunch</div>
+            <a class="entry" href="#c8"><span class="ts">[2025-09-30]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Alternatives to Squarespace</span></span></a>
+            <a class="entry" href="#c8"><span class="ts">[2014-07-22]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Facebook&rsquo;s first WordPress site</span></span></a>
+            <div class="status">status: available for freelance · build 7d5cd51 · uptime 13y</div>
+            <div class="chatnote"># static mock, not functional: conversational layer under exploration</div>
+            <div class="chat"><span class="p">$</span><span class="ph">ask about my work&hellip;</span><span class="caret" aria-hidden="true"></span></div>
+          </div>
+        </div></div>
+      </div>
+      <p class="deskhint">Desktop plate: pans sideways inside its own frame on small screens.</p>
+
+      <div class="pair">
+        <div>
+          <div class="phone">
+            <div class="phone-bar"><span>9:41</span><span>brohde.com</span></div>
+            <div class="t">
+              <div class="pad">
+                <div class="who">
+                  <div><span class="p">$</span> whoami</div>
+                  <div>brian rohde · full-stack engineer · san francisco</div>
+                  <div>ships AI products end to end · founder, eight angle</div>
+                  <div>prev: gong · twilio · beyond (projects for facebook + google) <span class="caret" aria-hidden="true"></span></div>
+                </div>
+                <a class="entry" href="#c8"><span class="ts">[2026-02-12]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Building the ML model behind Eight Angle</span></span></a>
+                <a class="entry" href="#c8"><span class="ts">[2026-05-28]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">How I run parallel Claude Code agents</span></span></a>
+                <a class="entry" href="#c8"><span class="ts">[2025-11-14]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">From idea to production in four hours</span></span></a>
+                <a class="entry" href="#c8"><span class="ts">[2025-09-30]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Alternatives to Squarespace</span></span></a>
+                <div class="status">status: available for freelance · uptime 13y</div>
+                <div class="chatnote"># static mock, not functional</div>
+                <div class="chat"><span class="p">$</span><span class="ph">ask about my work&hellip;</span><span class="caret" aria-hidden="true"></span></div>
+              </div>
+            </div>
+          </div>
+          <p class="caption">375px frame · entries stack, timestamp above title, no sideways scroll</p>
+        </div>
+        <aside class="spec">
+          <div class="changed"><h3>What changed</h3>
+            <ul>
+              <li><b>Post names are real, human-readable titles</b> in a humanist sans at 16px+, near-white, sentence case. No more kebab-case slugs. Mono stays for timestamps, glyphs, comments, and the status line: the machine speaks mono, the writing speaks sans.</li>
+              <li><b>Type scale up across the plate:</b> base 12.5px to 13.5px, titles to 16.5px; timestamps brightened from #6E8B7C to #8FA79A (5.0:1 to 7.2:1).</li>
+              <li><b>whoami corrected:</b> prev: gong · twilio · beyond (projects for facebook + google). No employment claim for Facebook or Google anywhere.</li>
+              <li><b>Mobile works properly:</b> entries stack with the timestamp above the title, tap targets exceed 44px, nothing scrolls sideways at 375px.</li>
+              <li><b>New: a static chat-prompt mock at the foot</b> ("ask about my work" with a blinking caret). Visual placeholder only, zero behavior; it marks where Brian's conversational-site idea would live.</li>
+              <li><b>Kept, per Brian:</b> the terminal soul: timestamps, prompt glyphs, phosphor mint on dark, the whole-line selection hover, the ticking status line.</li>
+            </ul>
+          </div>
+          <div><h3>Type</h3><p>JetBrains Mono (terminal chrome) + Inter (titles and article prose)</p><p class="sub">Shown in Menlo / system sans</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#0E1512"></i><code>#0E1512</code></span>
+            <span class="sw"><i style="background:#F2F7F3;border-color:#999"></i><code>#F2F7F3</code></span>
+            <span class="sw"><i style="background:#7EE787"></i><code>#7EE787</code></span>
+            <span class="sw"><i style="background:#8FA79A"></i><code>#8FA79A</code></span>
+          </div><p class="sub">On #0E1512: titles 17.1:1 · body 14.2:1 · mint 12.1:1 · timestamps 7.2:1. All pass 4.5:1.</p></div>
+          <div><h3>Motion</h3><p class="sub">Rows type themselves in once on first load, slower and calmer than round 1; hover selects the whole line, terminal-style; carets blink. Reduced motion: everything renders instantly, carets hold steady.</p></div>
+          <div><h3>Signature</h3><p>The homepage boots as a live log; the log now speaks two scripts, mono for the machine and sans for the human.</p></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OPEN QUESTIONS ============ -->
+  <section class="oq" id="oq">
+    <div class="wrap">
+      <h2>Open questions for Brian</h2>
+      <ol>
+        <li><strong>Circular files:</strong> which LL Circular weights does the license cover (Book, Medium, Bold, Black), and when can we expect the woff2 files? Avenir Next stands in until then; Inter is the interim webfont if Circular slips past build start.</li>
+        <li><strong>Exposed Grid title face:</strong> A (Inter Tight), B (IBM Plex Mono), or C (Times New Roman)? Studio leans A for client credibility; C is the most memorable and costs zero font bytes.</li>
+        <li><strong>Quarterly accent:</strong> does the plain link blue land, or would you rather go fully monochrome (black ink only, underlines as the sole link affordance)?</li>
+        <li><strong>Conversational layer:</strong> is the chat prompt a real roadmap item? If yes, it affects architecture (an API endpoint on Cloudflare, likely a small LLM route) and should be scoped before the build, even if it ships after launch.</li>
+        <li><strong>Dash policy:</strong> em and en dashes are now banned in all design copy on this page; VOICE.md still lists em dashes as "confirm with Brian" for article prose. Recommend logging the ban as global in DECISIONS.md.</li>
+        <li><strong>Which direction advances</strong> to a full system pass (article page, about page, tokens, motion spec)? One winner or a final two-way bake-off.</li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer class="fin">
+  <div class="wrap">Round 2 · prepared by the studio for Brian Rohde · evolves round-1 concepts 01, 04, 05, and 08 per Brian's notes · hover states are live · production motion specs in each rail · no em or en dashes on this page, by rule.</div>
+</footer>
