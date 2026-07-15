@@ -24,3 +24,4 @@ Brian, 2026-07-15: "We need a perfect build for a long running product." The stu
 - Recon/audit-style agents should be read-only where possible (scope tools to Read/Grep/Glob) so they can fan out in parallel safely — pattern proven in the dragan project.
 - Every delegation gets a one-line entry in `docs/COMMS-LOG.md`: what was sent, what came back.
 - Audit work (`seo-a11y-auditor`) runs before anything ships, not after.
+- **Phased delivery (Brian, 2026-07-15)**: large work is briefed as numbered phases that land and get reviewed independently (agent review counts); never one monolithic build. Briefs state the phase boundaries up front.

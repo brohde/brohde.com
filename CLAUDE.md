@@ -16,6 +16,7 @@ Portfolio + blog-style site for Brian Rohde (brohde.com). Audience: potential cl
 - **Log decisions**: anything decided (by Brian or recommended-and-accepted) goes in `docs/DECISIONS.md` with date and rationale.
 - **Session continuity**: Brian may clear/compact at any moment. `docs/STATUS.md` must always let a cold session pick up without Brian re-explaining.
 - **Delegate + parallelize**: run work through the studio sub-agents (`.claude/agents/`, roster in `docs/TEAM.md`) concurrently where it genuinely helps. Pick model/effort appropriate to the task.
+- **Phase large work**: break big builds/designs into systematic phases (Phase 1, 2, 3...) that land and get reviewed independently, instead of one huge chunk that consumes massive context. The review between phases can be an agent review, not necessarily Brian; the point is progressive, checkable delivery.
 - **Be a partner**: challenge Brian's asks when there's a better path; surface unknown unknowns; recommend, don't just comply.
 
 ## Tech + platform decisions (settled)
