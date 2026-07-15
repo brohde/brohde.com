@@ -1,0 +1,110 @@
+// brohde.com chat POC: real Claude Haiku 4.5 behind the terminal.
+// Run: ANTHROPIC_API_KEY=sk-... node server.mjs  →  http://localhost:8787
+import Anthropic from "@anthropic-ai/sdk";
+import http from "node:http";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+const SYSTEM =
+  readFileSync(path.join(here, "system-prompt.md"), "utf8") +
+  "\n\n# FACTS PACK\n\n" +
+  readFileSync(path.join(here, "facts.md"), "utf8");
+
+const client = new Anthropic();
+const MODEL = "claude-haiku-4-5";
+// $ per MTok: input / output / cache read / cache write (5m ttl)
+const PRICE = { input: 1.0, output: 5.0, cacheRead: 0.1, cacheWrite: 1.25 };
+
+const tools = [
+  {
+    name: "open_page",
+    description:
+      "Navigate the visitor to a page on brohde.com. Use for broad asks about Brian or his work when a page answers better than prose.",
+    strict: true,
+    input_schema: {
+      type: "object",
+      properties: {
+        slug: {
+          type: "string",
+          enum: ["about", "work", "eight-angle", "contact", "resume"],
+        },
+      },
+      required: ["slug"],
+      additionalProperties: false,
+    },
+  },
+];
+
+export async function chat(message, history = []) {
+  const messages = [...history.slice(-8), { role: "user", content: message }];
+  const response = await client.messages.create({
+    model: MODEL,
+    max_tokens: 400,
+    system: [{ type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } }],
+    tools,
+    messages,
+  });
+
+  let text = "";
+  let open_page = null;
+  for (const block of response.content) {
+    if (block.type === "text") text += block.text;
+    if (block.type === "tool_use" && block.name === "open_page") open_page = block.input.slug;
+  }
+
+  const u = response.usage;
+  const cost =
+    (u.input_tokens * PRICE.input +
+      u.output_tokens * PRICE.output +
+      (u.cache_read_input_tokens || 0) * PRICE.cacheRead +
+      (u.cache_creation_input_tokens || 0) * PRICE.cacheWrite) /
+    1_000_000;
+
+  return {
+    text: text.trim(),
+    open_page,
+    usage: {
+      input: u.input_tokens,
+      output: u.output_tokens,
+      cache_read: u.cache_read_input_tokens || 0,
+      cache_write: u.cache_creation_input_tokens || 0,
+    },
+    cost,
+  };
+}
+
+// Serve the POC UI + endpoint only when run directly (eval.mjs imports chat()).
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const INDEX = readFileSync(path.join(here, "index.html"));
+  http
+    .createServer(async (req, res) => {
+      if (req.method === "GET") {
+        res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+        return res.end(INDEX);
+      }
+      if (req.method === "POST" && req.url === "/chat") {
+        let body = "";
+        req.on("data", (c) => (body += c));
+        req.on("end", async () => {
+          try {
+            const { message, history } = JSON.parse(body || "{}");
+            if (!message || typeof message !== "string" || message.length > 500) {
+              res.writeHead(400, { "content-type": "application/json" });
+              return res.end(JSON.stringify({ error: "message required (max 500 chars)" }));
+            }
+            const out = await chat(message, Array.isArray(history) ? history : []);
+            res.writeHead(200, { "content-type": "application/json" });
+            res.end(JSON.stringify(out));
+          } catch (err) {
+            res.writeHead(500, { "content-type": "application/json" });
+            res.end(JSON.stringify({ error: String(err.message || err) }));
+          }
+        });
+        return;
+      }
+      res.writeHead(404).end();
+    })
+    .listen(8787, () => console.log("chat POC → http://localhost:8787"));
+}

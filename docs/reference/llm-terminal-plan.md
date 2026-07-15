@@ -59,9 +59,10 @@ Everything operable without a pointer: single tab ring per screen, visible focus
 
 P1: Astro scaffold + static terminal homepage w/ deterministic layer (no LLM yet, fully useful site). P2: Worker + AI Gateway + Haiku behind a flag; facts pack + evals; validation gates V1-V3. P3: chat public (V4-V5) + presence-lite (counter, `who`). P4: presence visualization (aurora planes) + statuses.
 
-## Open questions for Brian
+## Resolved (2026-07-15, Brian)
 
-1. Clarify one constraint as written: "I don't want to actively reveal my name." The site is brohde.com with your name in the header, so we read this as the age/YOE class of constraint. What exactly should the model not reveal?
-2. Approve the deny-list approach for years-of-experience deflection (individual project dates stay public, aggregation is banned).
-3. Ephemeral visitor chat: OK to park for v1?
-4. X handle (still needed for the header links).
+1. Model: **Claude Haiku 4.5 confirmed** as primary.
+2. Constraint clarified: the model must never reveal Brian's **AGE** (or anything enabling age math: birth/graduation year, career start, aggregate years of experience). His name is obviously public and shown.
+3. Ephemeral visitor chat: **parked**.
+4. X handle: **@brianxbuilds** (wired into the v3 prototype).
+5. Brian asked for a **POC first** to validate behavior before the full build: it lives at `poc/chat/` (real Haiku calls, facts pack, deny-list, page-vs-prose router, eval harness writing `transcript.md` for the V2-V3 gates). See `poc/chat/README.md`.

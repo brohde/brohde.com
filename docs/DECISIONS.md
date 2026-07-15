@@ -33,3 +33,9 @@ Append-only. Newest at the bottom. Format: date — decision — rationale/sourc
 | 27 | 2026-07-15 | LLM terminal build plan at `docs/reference/llm-terminal-plan.md`: clicks-are-commands + deterministic layer + Haiku tool-use router (open_page vs prose answer), curated facts pack with **Brian-owned deny-list** (no age/aggregate-YOE leakage), **mandatory validation gates V1-V5** before public | Brian's requirements incl. ageism constraint + validation phase |
 | 28 | 2026-07-15 | **Full keyboard accessibility is a standing requirement** for the terminal concept; added to every build.log iteration + auditor checklist | Brian ("it's a terminal after all") |
 | 29 | 2026-07-15 | Content production started: 5 case-study drafts in `docs/drafts/` (Eight Angle flagship, ATG LLM-migration, Gold Coast, Facebook Newsroom, Google Android for Work) via parallel copywriter agents; **no aggregate years-of-experience/age-revealing phrasing in any copy** | Brian's ask + constraint |
+| 30 | 2026-07-15 | Chat model: **Claude Haiku 4.5** confirmed | Brian |
+| 31 | 2026-07-15 | Deny-list clarified: never reveal Brian's **AGE** or anything enabling age math (birth/graduation year, career start, aggregate YOE). Name is public | Brian ("MY AGE. of course show my name") |
+| 32 | 2026-07-15 | Ephemeral visitor-to-visitor chat: **parked** for v1 | Brian |
+| 33 | 2026-07-15 | X handle: **@brianxbuilds**; wired into prototype + facts pack | Brian |
+| 34 | 2026-07-15 | **Chat ships POC-first**: `poc/chat/` (real Haiku 4.5, facts pack, deny-list, page-vs-prose router, 26-question eval harness) validates behavior before any production build | Brian |
+| 35 | 2026-07-15 | Glyph-pipeline test images: pulled 4 from stock (Picsum/Unsplash license) into `assets/images/glyph-source/`; Brian's own photos swap in later | Brian ("just pull a few from a stock photography site") |

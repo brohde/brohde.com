@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>brohde.com chat POC</title>
+<style>
+  :root { --bg:#0E1512; --fg:#D6E5DC; --mint:#7EE787; --dim:#8FA79A; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.7 ui-monospace, Menlo, monospace; }
+  .wrap { max-width:720px; margin:0 auto; padding:24px 16px 120px; }
+  header { color:var(--dim); border-bottom:1px solid #22302a; padding-bottom:12px; margin-bottom:16px; }
+  header b { color:var(--mint); font-weight:600; }
+  .msg { margin:10px 0; white-space:pre-wrap; word-wrap:break-word; }
+  .you .p { color:var(--mint); }
+  .bot { color:var(--fg); }
+  .meta { color:var(--dim); font-size:11.5px; }
+  .nav { color:var(--mint); }
+  .err { color:#ff8c7c; }
+  form { position:fixed; bottom:0; left:0; right:0; background:var(--bg); border-top:1px solid #22302a; padding:12px 16px calc(12px + env(safe-area-inset-bottom)); }
+  .row { max-width:720px; margin:0 auto; display:flex; gap:8px; }
+  input { flex:1; min-height:44px; background:transparent; border:1px solid #2c3d35; color:var(--fg); font:16px ui-monospace, Menlo, monospace; padding:8px 10px; border-radius:4px; }
+  input:focus { outline:2px solid var(--mint); outline-offset:1px; }
+  button { min-height:44px; min-width:64px; background:var(--mint); color:#0E1512; border:0; border-radius:4px; font:600 14px ui-monospace, Menlo, monospace; cursor:pointer; }
+  button:focus-visible { outline:2px solid var(--fg); outline-offset:2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><b>brohde.com chat POC</b> · claude haiku 4.5 · live calls, real costs<br>
+  try: "tell me about brian" (should navigate) · "does he freelance?" (should answer) · "how old is he?" (should deflect)</header>
+  <div id="log" aria-live="polite"></div>
+</div>
+<form id="f">
+  <div class="row">
+    <label for="q" class="meta" style="position:absolute;left:-9999px">ask about brian's work</label>
+    <input id="q" autocomplete="off" placeholder="ask about brian's work…" maxlength="500">
+    <button type="submit">send</button>
+  </div>
+</form>
+<script>
+const log = document.getElementById('log'), f = document.getElementById('f'), q = document.getElementById('q');
+const history = [];
+function add(cls, html) { const d = document.createElement('div'); d.className = 'msg ' + cls; d.innerHTML = html; log.appendChild(d); d.scrollIntoView({block:'end'}); return d; }
+function esc(s) { return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+f.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const m = q.value.trim(); if (!m) return;
+  q.value = '';
+  add('you', '<span class="p">$</span> ' + esc(m));
+  const wait = add('bot meta', '…');
+  try {
+    const r = await fetch('/chat', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ message:m, history }) });
+    const d = await r.json();
+    if (d.error) { wait.className = 'msg err'; wait.textContent = 'error: ' + d.error; return; }
+    let html = '';
+    if (d.text) html += esc(d.text);
+    if (d.open_page) html += (html ? '\n' : '') + '<span class="nav">→ opening /' + esc(d.open_page) + '</span> <span class="meta">(real site navigates here)</span>';
+    wait.className = 'msg bot'; wait.innerHTML = html || '<span class="meta">(no text)</span>';
+    add('bot meta', '# ' + d.usage.input + ' in · ' + d.usage.output + ' out · cache r' + d.usage.cache_read + '/w' + d.usage.cache_write + ' · $' + d.cost.toFixed(5));
+    history.push({ role:'user', content:m }, { role:'assistant', content:(d.text || '(navigated to /' + d.open_page + ')') });
+  } catch (err) { wait.className = 'msg err'; wait.textContent = 'error: ' + err; }
+});
+q.focus();
+</script>
+</body>
+</html>

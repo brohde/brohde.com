@@ -11,12 +11,19 @@ _Last updated: 2026-07-15 (session 1, build.log chosen; 5 parallel workstreams i
 - `docs/reference/chat-feasibility.md` (costs/options/presence research) + `docs/reference/llm-terminal-plan.md` (**the build plan**: clicks-are-commands, deterministic layer, Haiku tool-use router page-vs-prose, Brian-owned deny-list incl. no age/YOE leakage, validation gates V1-V5, abuse controls, keyboard a11y, phases P1-P4)
 - LL Circular staged (`assets/fonts/circular/`, web license needed; note: Circular was for the parked Blackletter direction)
 
-### In flight (background agents, results land in repo)
-1. `docs/drafts/eight-angle-ml.md` — flagship case study (repo-researched)
-2. `docs/drafts/atg-llm-migration.md` — LLM site-migration story (repo + session logs)
-3. `docs/drafts/gold-coast.md` — client-designed-with-ChatGPT + Pastel loop story
-4. `docs/drafts/facebook-newsroom.md` + `google-android-for-work.md` — retrospectives (archive.org verbatim source)
-5. `docs/design/lab/aurora-terminal.html` — aurora-on-white, two-state palettes (home vs chat), glyph-tide-from-image demo, presence planes mock
+### Content drafts: ALL 5 DELIVERED to `docs/drafts/` (awaiting Brian's review)
+- `eight-angle-ml.md` (~1,570w; flags a hidden-pose-class facts discrepancy vs training config)
+- `atg-llm-migration.md` (~885w; **flags: repo evidence says ~11-hour build, not "under 4 hours"; DNS cutover was pending**)
+- `gold-coast.md` (~1,040w; needs Dragan's consent)
+- `facebook-newsroom.md` (545w) + `google-android-for-work.md` (495w) — archive.org-sourced
+- Each draft ends with image candidates + open questions for Brian
+
+### Chat POC: BUILT at `poc/chat/` (decision #34)
+Real Haiku 4.5 (confirmed, #30) via official SDK; facts pack (`facts.md`, age-safe per #31); deny-list + injection-resistant system prompt; open_page vs prose tool router; per-reply cost readout; 26-question eval harness → `transcript.md` with pass/fail rows (gates V2-V3). Run: `cd poc/chat && npm i && ANTHROPIC_API_KEY=... npm start`
+
+### Still in flight (background)
+- `docs/design/lab/aurora-terminal.html` — aurora-on-white two-state lab + glyph-from-image + presence planes
+- Newsroom follow-up research: predecessor site, decommission date/lifespan, archive-verified language list (updates the draft when done)
 
 ### Standing rules (recent additions)
 - Full keyboard accessibility for the terminal (#28) · no dashes anywhere (#18) · no aggregate years-of-experience/age phrasing in any copy or LLM output (#27/#29) · FB/Google = agency work via Beyond (#21)

@@ -293,7 +293,7 @@
         <ul class="links" aria-label="Profiles and resume">
           <li><a class="blink" href="https://www.linkedin.com/in/brian-rohde-4ba3558/" target="_blank" rel="noopener"><span class="br" aria-hidden="true">[</span><span class="lbl">linkedin</span><span class="br" aria-hidden="true">]</span></a></li>
           <li><a class="blink" href="/resume.pdf"><span class="br" aria-hidden="true">[</span><span class="lbl">resume</span><span class="br" aria-hidden="true">]</span></a></li>
-          <li><a class="blink" id="xlink" href="#" title="handle TBD" aria-label="X, handle TBD"><span class="br" aria-hidden="true">[</span><span class="lbl">x</span><span class="br" aria-hidden="true">]</span></a></li>
+          <li><a class="blink" id="xlink" href="https://x.com/brianxbuilds" target="_blank" rel="noopener" title="@brianxbuilds" aria-label="X, at brianxbuilds"><span class="br" aria-hidden="true">[</span><span class="lbl">x</span><span class="br" aria-hidden="true">]</span></a></li>
         </ul>
         <div class="hswitch" role="group" aria-label="Header treatment switcher, prototype only">
           <span class="hsl" aria-hidden="true"># header</span>
@@ -424,7 +424,7 @@
 
   var CONTACT_HTML = 'email     <a href="mailto:brian@brohde.com">brian@brohde.com</a>\n' +
     'linkedin  <a href="https://www.linkedin.com/in/brian-rohde-4ba3558/" target="_blank" rel="noopener">/in/brian-rohde-4ba3558</a>\n' +
-    'x         handle TBD';
+    'x         <a href="https://x.com/brianxbuilds" target="_blank" rel="noopener">@brianxbuilds</a>';
 
   var RESUME_HTML = 'resume    <a href="/resume.pdf">resume.pdf</a>\n' +
     '<span class="c"># placeholder link in this prototype</span>';
@@ -672,8 +672,6 @@
     if (h) { setHeader(h.getAttribute('data-hset')); return; }
     var entry = e.target.closest ? e.target.closest('.entry') : null;
     if (entry) { e.preventDefault(); transient('hint-log', '# article pages ship with the real site'); return; }
-    var x = e.target.closest ? e.target.closest('#xlink') : null;
-    if (x) { e.preventDefault(); transient('hint-top', '# x handle TBD'); return; }
   });
 
   document.addEventListener('keydown', function (e) {
