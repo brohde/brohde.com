@@ -37,6 +37,9 @@ Deploy target: Cloudflare Pages. Build command `npm run build`, output directory
 | `src/styles/terminal.css`      | Terminal UI component classes (ported from the prototypes)                                                                                       |
 | `src/lib/site.ts`              | Site constants: metadata, social links, company links, log helpers                                                                               |
 | `public/`                      | `_headers` (CSP + security), `robots.txt`, `favicon.svg`, `og-default.svg`, `resume.pdf`                                                         |
+| `functions/api/chat.ts`        | Cloudflare Pages Function: production chat backend, POST `/api/chat`. Haiku router ported from `poc/chat/` (behavior frozen, #61) + Turnstile + per-IP rate limiting (#49). `_chat-prompt.generated.ts` beside it is built from `poc/chat/` (gitignored) |
+| `scripts/build-chat-prompt.mjs`| Prebuild codegen (runs in `npm run build`): bundles `poc/chat/system-prompt.md` + `facts.md` into the chat Function, single source of truth       |
+| `wrangler.toml`                | Cloudflare Pages config-as-code: output dir + `nodejs_compat` for the chat Function (secrets/KV bindings stay in the dashboard)                    |
 | `PLAN.md`                      | Original project brief from Brian                                                                                                                |
 | `CLAUDE.md`                    | Working agreement for Claude sessions, read first                                                                                                |
 | `docs/STATUS.md`               | **Current state + next steps**: the session-resume anchor                                                                                        |
