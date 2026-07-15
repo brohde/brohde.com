@@ -3,7 +3,7 @@
 **Status:** Draft v1, ready for review
 **Type:** Project case study, agency work via Beyond (not Facebook employment)
 **Suggested pre-date:** 2014-07-01 (see rationale in open questions; Wayback evidence puts the relaunch between June 1 and July 1, 2014)
-**Source material:** 2018 to 2019 brohde.com case study page (recovered via Wayback Machine), 2026 resume, `docs/VOICE.md`
+**Source material:** 2018 to 2019 brohde.com case study page (recovered via Wayback Machine), 2026 resume, `docs/VOICE.md`, plus follow-up Wayback research on the predecessor site, the localized editions, and the site's eventual decommission (see below)
 
 ## Title options
 
