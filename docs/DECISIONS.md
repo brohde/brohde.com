@@ -16,3 +16,8 @@ Append-only. Newest at the bottom. Format: date — decision — rationale/sourc
 | 10 | 2026-07-15 | Eight Angle (eightangle.com) is the flagship project and gets a dedicated deep-dive article | Brian |
 | 11 | 2026-07-15 | Analytics: PostHog | Brian — already uses it (Eight Angle has a 60-event PostHog schema) |
 | 12 | 2026-07-15 | Resume 2026 PDF stored at `docs/reference/` as source of truth for copy; site will link to a public resume (format TBD) | Brian shared the PDF |
+| 13 | 2026-07-15 | Commits/PRs attributed to Brian only — no Claude co-author trailer, set Claude Code-wide + in-repo via `attribution` settings | Brian. Existing 2 commits keep old trailer (history rewrite blocked by permissions; harmless in private repo) |
+| 14 | 2026-07-15 | Model policy: **Fable for all design work and all frontend work** (design-director + frontend-engineer agents set to fable) | Brian |
+| 15 | 2026-07-15 | Team roster is **dynamic**: studio lead freely creates/refines/retires expert agents in service of the best work; roster changes update TEAM.md + agent defs together | Brian |
+| 16 | 2026-07-15 | Brian's voice documented and maintained in `docs/VOICE.md`; binding for all published copy. Hard rule: **never use en dashes** | Brian; guide seeded from resume, LinkedIn, old site, PLAN.md |
+| 17 | 2026-07-15 | Adopt prior-project conventions per `docs/reference/prior-project-conventions.md` (SEO component port, PostHog wiring incl. no-double-pageview gotcha, VT-safety rule, font discipline, Tailwind v4 via vite plugin, `astro check` in build, `_headers` security, prettier+astro, styleguide-page pattern). **Skip Keystatic entirely.** | Brian asked what to copy; studio-curated list, Brian may veto items |

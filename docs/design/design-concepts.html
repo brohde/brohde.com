@@ -1,0 +1,855 @@
+<title>brohde.com — 10 Design Concepts</title>
+<style>
+  /* ---------- chrome tokens (theme-aware; concept plates keep fixed palettes by design) ---------- */
+  :root {
+    --bg: #F7F6F3;
+    --text: #1C1B19;
+    --muted: #6D6A63;
+    --hairline: #E3E1DB;
+    --chip: #ECEAE4;
+    --chip-text: #3B3A36;
+    --frame-edge: #D8D5CE;
+    --plate-bg: #FFFFFF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151412;
+      --text: #E8E6E1;
+      --muted: #98948B;
+      --hairline: #2C2A26;
+      --chip: #232119;
+      --chip-text: #C9C5BC;
+      --frame-edge: #3A3833;
+      --plate-bg: #1C1B18;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #151412; --text: #E8E6E1; --muted: #98948B; --hairline: #2C2A26;
+    --chip: #232119; --chip-text: #C9C5BC; --frame-edge: #3A3833; --plate-bg: #1C1B18;
+  }
+  :root[data-theme="light"] {
+    --bg: #F7F6F3; --text: #1C1B19; --muted: #6D6A63; --hairline: #E3E1DB;
+    --chip: #ECEAE4; --chip-text: #3B3A36; --frame-edge: #D8D5CE; --plate-bg: #FFFFFF;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Helvetica Neue", sans-serif;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- header ---------- */
+  header.masthead { padding: 64px 0 8px; }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 14px;
+  }
+  h1 { font-size: clamp(28px, 4.5vw, 44px); line-height: 1.08; margin: 0 0 16px; text-wrap: balance; letter-spacing: -0.015em; }
+  .standfirst { font-size: 17px; max-width: 62ch; color: var(--text); margin: 0 0 10px; }
+  .note { font-size: 14px; color: var(--muted); max-width: 62ch; margin: 0; }
+  .note strong { color: var(--text); font-weight: 600; }
+
+  /* ---------- jump nav ---------- */
+  nav.jump {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--hairline);
+    padding: 10px 0; margin-top: 28px;
+  }
+  nav.jump .wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+  nav.jump a {
+    font-size: 12.5px; text-decoration: none; color: var(--chip-text);
+    background: var(--chip); border: 1px solid var(--hairline);
+    padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+  }
+  nav.jump a:hover, nav.jump a:focus-visible { color: var(--text); border-color: var(--muted); }
+  nav.jump a:focus-visible { outline: 2px solid var(--muted); outline-offset: 1px; }
+  nav.jump a b { font-variant-numeric: tabular-nums; font-weight: 600; margin-right: 4px; }
+
+  /* ---------- concept plates ---------- */
+  section.plate { padding: 56px 0 24px; border-bottom: 1px solid var(--hairline); scroll-margin-top: 64px; }
+  .plate-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+  .plate-num { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--muted); }
+  .plate-head h2 { font-size: 26px; margin: 0; letter-spacing: -0.01em; }
+  .tag {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--chip-text); background: var(--chip); border-radius: 4px; padding: 3px 8px;
+  }
+  .motion-meter { display: inline-flex; gap: 3px; align-items: center; margin-left: auto; }
+  .motion-meter i { width: 7px; height: 7px; border-radius: 50%; background: var(--hairline); }
+  .motion-meter i.on { background: var(--muted); }
+  .motion-meter span { font-size: 11px; color: var(--muted); margin-left: 6px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .vibe { font-size: 15.5px; color: var(--muted); max-width: 72ch; margin: 0 0 22px; }
+
+  .duo { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 24px; align-items: start; }
+  @media (max-width: 820px) { .duo { grid-template-columns: 1fr; } }
+
+  /* browser frame */
+  .frame { border: 1px solid var(--frame-edge); border-radius: 10px; overflow: hidden; background: var(--plate-bg); }
+  .frame-bar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 12px; border-bottom: 1px solid var(--frame-edge);
+    background: var(--chip);
+  }
+  .frame-bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--frame-edge); }
+  .frame-bar span {
+    font-size: 11px; color: var(--muted); margin-left: 10px;
+    font-family: "SF Mono", Menlo, monospace;
+  }
+  .shot { min-height: 430px; }
+
+  /* spec rail */
+  aside.spec { font-size: 13.5px; display: grid; gap: 14px; }
+  .spec h3 {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 6px; font-weight: 600;
+  }
+  .spec p { margin: 0; color: var(--text); }
+  .spec .sub { color: var(--muted); }
+  .swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+  .sw { display: grid; gap: 3px; justify-items: center; }
+  .sw i { width: 44px; height: 30px; border-radius: 5px; border: 1px solid var(--hairline); }
+  .sw code { font-size: 10px; color: var(--muted); font-family: "SF Mono", Menlo, monospace; }
+  .fr { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; }
+  .fr dt { font-weight: 600; }
+  .fr dd { margin: 0; color: var(--muted); }
+
+  /* ---------- comparison + recommendation ---------- */
+  .compare { padding: 56px 0 12px; }
+  .compare h2, .rec h2 { font-size: 26px; margin: 0 0 18px; }
+  .tablewrap { overflow-x: auto; border: 1px solid var(--hairline); border-radius: 10px; }
+  table.cmp { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 760px; }
+  .cmp th, .cmp td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+  .cmp th { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .cmp tr:last-child td { border-bottom: none; }
+  .cmp td.n { font-variant-numeric: tabular-nums; color: var(--muted); }
+  .rec { padding: 40px 0 80px; }
+  .rec p { max-width: 68ch; }
+  .rec .pick { border-left: 3px solid var(--muted); padding-left: 16px; }
+  footer.fin { border-top: 1px solid var(--hairline); padding: 24px 0 60px; color: var(--muted); font-size: 13.5px; }
+
+  /* =========================================================
+     C1 — The Quarterly
+     ========================================================= */
+  .c1 .shot { background: #FBF7EF; color: #1A1714; font-family: Charter, Georgia, serif; padding: 34px 30px; }
+  .c1 .mast { font-family: "Hoefler Text", Georgia, serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em; }
+  .c1 .mnav { font-size: 12px; color: #6B655C; margin-top: 4px; letter-spacing: 0.08em; }
+  .c1 .intro { font-family: "Hoefler Text", Georgia, serif; font-style: italic; font-size: 17px; margin: 22px 0 26px; max-width: 52ch; }
+  .c1 .row { display: grid; grid-template-columns: 76px 1fr; gap: 16px; padding: 15px 0; border-top: 1px solid #E4DCCB; }
+  .c1 .date { font-size: 11px; color: #6B655C; text-align: right; font-variant-caps: small-caps; letter-spacing: 0.06em; padding-top: 6px; }
+  .c1 .title a {
+    font-family: "Hoefler Text", Georgia, serif; font-size: 21px; color: #1A1714; text-decoration: none;
+    background-image: linear-gradient(#7A1F1B, #7A1F1B); background-repeat: no-repeat;
+    background-size: 0% 1px; background-position: 0 100%; transition: background-size 300ms, color 200ms;
+  }
+  .c1 .title a:hover, .c1 .title a:focus-visible { background-size: 100% 1px; color: #7A1F1B; }
+  .c1 .desc { font-size: 13.5px; color: #6B655C; margin-top: 3px; }
+
+  /* =========================================================
+     C2 — Index
+     ========================================================= */
+  .c2 .shot { background: #F4F1EA; color: #16161A; font-family: "Helvetica Neue", Helvetica, sans-serif; padding: 30px; }
+  .c2 .mast { font-weight: 800; font-size: 26px; letter-spacing: 0.04em; text-transform: uppercase; transform: scaleX(1.12); transform-origin: left; }
+  .c2 .kicker { font-family: Menlo, monospace; font-size: 10.5px; color: #57544E; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 6px; }
+  .c2 .intro { font-size: 14px; max-width: 55ch; margin: 20px 0 24px; line-height: 1.5; }
+  .c2 .row { display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: baseline; padding: 11px 0; border-top: 1px solid #16161A22; position: relative; }
+  .c2 .row::before {
+    content: ""; position: absolute; top: -1px; left: 0; height: 1px; width: 100%;
+    background: #BE3A22; transform: scaleX(0); transform-origin: left; transition: transform 250ms ease-out;
+  }
+  .c2 .row:hover::before { transform: scaleX(1); }
+  .c2 .ix { font-family: Menlo, monospace; font-size: 12px; color: #57544E; }
+  .c2 .title { font-size: 16.5px; font-weight: 500; }
+  .c2 .row:hover .title { color: #BE3A22; }
+  .c2 .meta { font-family: Menlo, monospace; font-size: 11.5px; color: #57544E; font-variant-numeric: tabular-nums; }
+  .c2 .cat { font-family: Menlo, monospace; font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: #57544E; margin-left: 8px; }
+
+  /* =========================================================
+     C3 — Letterpress
+     ========================================================= */
+  .c3 .shot {
+    background: #F6EEE3 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    color: #2B2118; font-family: Optima, "Gill Sans", sans-serif; padding: 34px 30px;
+  }
+  .c3 .mast { font-family: "Iowan Old Style", Palatino, serif; font-size: 27px; font-weight: 600; }
+  .c3 .intro { font-size: 14.5px; max-width: 40ch; color: #2B2118; margin: 16px 0 30px; line-height: 1.6; }
+  .c3 .entry { margin: 0 0 24px; }
+  .c3 .entry a {
+    font-family: "Iowan Old Style", Palatino, serif; font-size: 22px; color: #2B2118; text-decoration: none;
+    transition: color 250ms, letter-spacing 250ms;
+  }
+  .c3 .entry a:hover, .c3 .entry a:focus-visible { color: #9E3B1A; letter-spacing: 0.008em; }
+  .c3 .date { font-size: 11px; color: #6E6252; font-variant-caps: small-caps; letter-spacing: 0.08em; margin-top: 4px; }
+  .c3 .desc { font-size: 13px; color: #6E6252; margin-top: 4px; max-width: 52ch; }
+  .c3 .cathead { font-size: 11px; color: #9E3B1A; letter-spacing: 0.14em; text-transform: uppercase; border-bottom: 1px solid #9E3B1A44; padding-bottom: 5px; margin: 26px 0 18px; }
+
+  /* =========================================================
+     C4 — Blackletter Modern
+     ========================================================= */
+  .c4 .shot { background: #F5F5F3; color: #111; font-family: "Helvetica Neue", Helvetica, sans-serif; padding: 30px; }
+  .c4 .mast { font-size: 44px; font-weight: 900; letter-spacing: -0.03em; line-height: 0.95; text-transform: uppercase; }
+  .c4 .mnav { font-size: 12px; color: #8A8A86; margin-top: 10px; }
+  .c4 .mnav b { color: #111; font-weight: 500; }
+  .c4 .intro { font-size: 16px; max-width: 46ch; margin: 24px 0 26px; line-height: 1.45; }
+  .c4 .row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 13px 0; border-top: 1px solid #8A8A86; transition: transform 180ms ease-out; }
+  .c4 .row:hover { transform: translateX(6px); }
+  .c4 .title { font-size: 20px; font-weight: 700; letter-spacing: -0.015em; }
+  .c4 .date { font-size: 11.5px; color: #8A8A86; font-variant-numeric: tabular-nums; white-space: nowrap; transition: color 180ms; }
+  .c4 .row:hover .date { color: #D6001C; }
+
+  /* =========================================================
+     C5 — Exposed Grid
+     ========================================================= */
+  .c5 .shot { background: #FFF; color: #0B0B0B; font-family: "Helvetica Neue", Helvetica, sans-serif; }
+  .c5 .cell { border-bottom: 1px solid #6E6E6E; padding: 18px 22px; }
+  .c5 .topgrid { display: grid; grid-template-columns: 1fr auto; border-bottom: 1px solid #6E6E6E; }
+  .c5 .topgrid .cell:first-child { border-right: 1px solid #6E6E6E; border-bottom: none; }
+  .c5 .topgrid .cell:last-child { border-bottom: none; }
+  .c5 .mast { font-family: Futura, "Avenir Next", sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 0.01em; }
+  .c5 .lbl { font-family: Menlo, monospace; font-size: 10px; color: #6E6E6E; letter-spacing: 0.1em; margin-bottom: 6px; }
+  .c5 .intro { font-size: 13.5px; max-width: 48ch; line-height: 1.5; }
+  .c5 .filters { display: flex; gap: 0; border-bottom: 1px solid #6E6E6E; }
+  .c5 .filters span { font-family: Menlo, monospace; font-size: 10.5px; letter-spacing: 0.1em; padding: 8px 14px; border-right: 1px solid #6E6E6E; }
+  .c5 .filters span.on { background: #4D00FF; color: #FFF; }
+  .c5 .row { display: grid; grid-template-columns: 52px 1fr auto; align-items: baseline; border-bottom: 1px solid #6E6E6E; cursor: default; transition: background 120ms, color 120ms; }
+  .c5 .row > div { padding: 13px 16px; }
+  .c5 .row .ix { font-family: Menlo, monospace; font-size: 11px; color: #6E6E6E; border-right: 1px solid #6E6E6E; }
+  .c5 .title { font-family: Futura, "Avenir Next", sans-serif; font-weight: 600; font-size: 17px; }
+  .c5 .date { font-family: Menlo, monospace; font-size: 11px; color: #6E6E6E; }
+  .c5 .row:hover { background: #4D00FF; color: #FFF; }
+  .c5 .row:hover .ix, .c5 .row:hover .date { color: #FFF; }
+
+  /* =========================================================
+     C6 — Hard Shadow
+     ========================================================= */
+  .c6 .shot { background: #FBF7EF; color: #141414; font-family: "Helvetica Neue", Helvetica, sans-serif; padding: 26px; }
+  .c6 .mastblock { display: inline-block; border: 2px solid #141414; background: #FFF; box-shadow: 5px 5px 0 #141414; padding: 12px 18px; margin-bottom: 22px; }
+  .c6 .mast { font-family: "Gill Sans", "Avenir Next", sans-serif; font-weight: 700; font-size: 22px; }
+  .c6 .mast small { display: block; font-size: 12px; font-weight: 400; margin-top: 2px; }
+  .c6 .panel {
+    border: 2px solid #141414; background: #FFF; box-shadow: 6px 6px 0 #141414;
+    padding: 16px 18px; margin: 0 0 18px;
+    transition: transform 140ms ease-out, box-shadow 140ms ease-out;
+  }
+  .c6 .panel:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 #141414; }
+  .c6 .panel:active { transform: translate(4px, 4px); box-shadow: 0 0 0 #141414; }
+  .c6 .title { font-family: "Gill Sans", "Avenir Next", sans-serif; font-weight: 600; font-size: 18.5px; }
+  .c6 .meta { display: flex; gap: 8px; align-items: center; margin-top: 9px; }
+  .c6 .pill { font-size: 10.5px; border: 1.5px solid #141414; border-radius: 999px; padding: 2px 9px; background: #FFF; }
+  .c6 .pill.hot { background: #FF4D2E; font-weight: 600; }
+  .c6 .lnk { font-size: 12px; color: #2D4EFF; font-weight: 600; margin-left: auto; }
+
+  /* =========================================================
+     C7 — Cadence
+     ========================================================= */
+  .c7 .shot { background: #FAF7F0; color: #16130E; font-family: Georgia, serif; padding: 36px 30px; text-align: center; }
+  .c7 .mast {
+    font-family: "Hoefler Text", Georgia, serif; font-size: 40px; font-weight: 700; letter-spacing: -0.01em;
+    color: #16130E; animation: c7breathe 5s ease-in-out infinite;
+  }
+  @keyframes c7breathe {
+    0%, 100% { letter-spacing: -0.012em; opacity: 0.92; }
+    50% { letter-spacing: 0.012em; opacity: 1; }
+  }
+  .c7 .mast em { color: #E5443B; font-style: normal; }
+  .c7 .intro { font-size: 15.5px; max-width: 48ch; margin: 14px auto 30px; line-height: 1.6; }
+  .c7 .row { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; text-align: left; padding: 14px 0; border-top: 1px solid #E5E0D6; }
+  .c7 .title a { font-family: "Hoefler Text", Georgia, serif; font-size: 20px; color: #16130E; text-decoration: none; transition: color 240ms, text-shadow 240ms; }
+  .c7 .title a:hover, .c7 .title a:focus-visible { color: #C7362E; text-shadow: 0 0 0.6px #C7362E; }
+  .c7 .date { font-size: 11px; color: #6B6459; font-variant-caps: small-caps; letter-spacing: 0.07em; white-space: nowrap; }
+
+  /* =========================================================
+     C8 — build.log
+     ========================================================= */
+  .c8 .shot { background: #0E1512; color: #D6E5DC; font-family: Menlo, Monaco, monospace; padding: 28px 26px; font-size: 12.5px; line-height: 1.75; }
+  .c8 .prompt { color: #7EE787; }
+  .c8 .ts { color: #6E8B7C; }
+  .c8 .cmt { color: #6E8B7C; }
+  .c8 .whoami { margin-bottom: 22px; }
+  .c8 .caret { display: inline-block; width: 7px; height: 14px; background: #7EE787; vertical-align: -2px; animation: c8blink 1.1s steps(1) infinite; }
+  @keyframes c8blink { 50% { opacity: 0; } }
+  .c8 .row { display: block; padding: 3px 6px; margin: 0 -6px; color: #D6E5DC; text-decoration: none; transition: background 120ms, color 120ms; }
+  .c8 .row:hover, .c8 .row:focus-visible { background: #7EE787; color: #0E1512; }
+  .c8 .row:hover .ts, .c8 .row:hover .prompt, .c8 .row:focus-visible .ts, .c8 .row:focus-visible .prompt { color: #0E1512; }
+  .c8 .status { border-top: 1px solid #6E8B7C55; margin-top: 20px; padding-top: 10px; color: #6E8B7C; font-size: 11px; }
+
+  /* =========================================================
+     C9 — Eight Angle (showpiece)
+     ========================================================= */
+  .c9 .shot { position: relative; background: #EEF1F5; color: #11141B; font-family: Avenir, "Avenir Next", sans-serif; overflow: hidden; }
+  .c9 canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .c9 .content { position: relative; padding: 30px; }
+  .c9 .mast { font-family: Futura, "Avenir Next", sans-serif; font-weight: 700; font-size: 24px; letter-spacing: 0.01em; }
+  .c9 .intro { font-size: 13.5px; max-width: 46ch; margin: 12px 0 26px; color: #11141B; background: #EEF1F5EE; display: inline-block; line-height: 1.55; }
+  .c9 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 22px; }
+  @media (max-width: 560px) { .c9 .grid2 { grid-template-columns: 1fr; } }
+  .c9 .node { background: #EEF1F5F2; padding: 10px 12px; border: 1px solid #4534E622; transition: border-color 160ms; }
+  .c9 .node:hover { border-color: #4534E6; }
+  .c9 .nix { font-family: Menlo, monospace; font-size: 10px; color: #4534E6; }
+  .c9 .title { font-family: Futura, "Avenir Next", sans-serif; font-weight: 600; font-size: 15.5px; margin-top: 3px; }
+  .c9 .date { font-size: 11px; color: #566072; margin-top: 3px; }
+
+  /* =========================================================
+     C10 — Detection
+     ========================================================= */
+  .c10 .shot { background: #FBFBF9; color: #1A1A1A; font-family: "Helvetica Neue", Helvetica, sans-serif; padding: 30px; }
+  .c10 .boxed { position: relative; border: 1.5px solid #E8460E; padding: 16px 18px; max-width: 54ch; margin-bottom: 30px; }
+  .c10 .chip {
+    position: absolute; top: -10px; left: 12px;
+    font-family: Monaco, Menlo, monospace; font-size: 9.5px; letter-spacing: 0.06em;
+    background: #E8460E; color: #1A1A1A; padding: 2px 7px; font-weight: 600;
+  }
+  .c10 .mast { font-family: "Avenir Next Condensed", "Arial Narrow", sans-serif; font-weight: 700; font-size: 26px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .c10 .intro { font-size: 13px; line-height: 1.55; margin-top: 6px; }
+  .c10 .det { position: relative; padding: 14px 16px; margin-bottom: 12px; transition: background 160ms; }
+  .c10 .det::before, .c10 .det::after { content: ""; position: absolute; width: 12px; height: 12px; border: 1.5px solid #1A1A1A55; transition: border-color 160ms; }
+  .c10 .det::before { top: 0; left: 0; border-right: none; border-bottom: none; }
+  .c10 .det::after { bottom: 0; right: 0; border-left: none; border-top: none; }
+  .c10 .det:hover::before, .c10 .det:hover::after { border-color: #E8460E; }
+  .c10 .det:hover { background: #E8460E08; }
+  .c10 .title { font-family: "Avenir Next Condensed", "Arial Narrow", sans-serif; font-weight: 600; font-size: 19px; letter-spacing: 0.01em; }
+  .c10 .coords { font-family: Monaco, Menlo, monospace; font-size: 10.5px; color: #0E7C86; margin-top: 4px; }
+  .c10 .conf { float: right; font-family: Monaco, Menlo, monospace; font-size: 10px; color: #0E7C86; border: 1px solid #0E7C8644; padding: 1px 6px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">brohde.com · design exploration · 2026-07-15</p>
+    <h1>Ten directions for brohde.com</h1>
+    <p class="standfirst">Each plate below is a live miniature of the homepage — real article titles, real palette, real type behavior. Hover the article rows: the motion language is working in every one.</p>
+    <p class="note">Type renders in macOS stand-ins here; production uses the named webfonts. Concepts are grouped quiet → loud: <strong>01–03 editorial</strong>, <strong>04–06 bold</strong>, <strong>07–10 kinetic &amp; experimental</strong>. A comparison table and the studio recommendation close the page.</p>
+  </div>
+</header>
+
+<nav class="jump" aria-label="Jump to concept">
+  <div class="wrap">
+    <a href="#c1"><b>01</b>Quarterly</a>
+    <a href="#c2"><b>02</b>Index</a>
+    <a href="#c3"><b>03</b>Letterpress</a>
+    <a href="#c4"><b>04</b>Blackletter</a>
+    <a href="#c5"><b>05</b>Exposed Grid</a>
+    <a href="#c6"><b>06</b>Hard Shadow</a>
+    <a href="#c7"><b>07</b>Cadence</a>
+    <a href="#c8"><b>08</b>build.log</a>
+    <a href="#c9"><b>09</b>Eight Angle</a>
+    <a href="#c10"><b>10</b>Detection</a>
+    <a href="#compare"><b>→</b>Compare</a>
+  </div>
+</nav>
+
+<main>
+  <!-- ============ 01 THE QUARTERLY ============ -->
+  <section class="plate" id="c1">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">01</span>
+        <h2>The Quarterly</h2>
+        <span class="tag">Editorial</span>
+        <span class="motion-meter" aria-label="Motion level 1 of 5"><i class="on"></i><i></i><i></i><i></i><i></i><span>subtle</span></span>
+      </div>
+      <p class="vibe">A literary review run by an engineer — ink on ivory, serifs with a spine, dates hung in the margin like a printed journal's folios.</p>
+      <div class="duo">
+        <div class="frame c1">
+          <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com</span></div>
+          <div class="shot">
+            <div class="mast">Brian Rohde</div>
+            <div class="mnav">ABOUT&ensp;·&ensp;WORK&ensp;·&ensp;RESUME</div>
+            <p class="intro">Full-stack engineer shipping AI products end to end — currently building Eight Angle; previously Gong, Twilio, and agency work for Facebook and Google.</p>
+            <div class="row"><div class="date">Feb 12 2026</div><div><div class="title"><a href="#c1">Building the ML model behind Eight Angle</a></div><div class="desc">A 47-class pose classifier, trained solo, running on-device at 20fps.</div></div></div>
+            <div class="row"><div class="date">May 28 2026</div><div><div class="title"><a href="#c1">How I run parallel Claude Code agents</a></div></div></div>
+            <div class="row"><div class="date">Nov 14 2025</div><div><div class="title"><a href="#c1">From idea to production in four hours</a></div></div></div>
+            <div class="row"><div class="date">Jul 22 2014</div><div><div class="title"><a href="#c1">Facebook&rsquo;s first WordPress site</a></div></div></div>
+          </div>
+        </div>
+        <aside class="spec">
+          <div><h3>Type</h3><p>Newsreader (display) + Source Serif 4 (body)</p><p class="sub">Shown in Hoefler Text / Charter</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#FBF7EF"></i><code>#FBF7EF</code></span>
+            <span class="sw"><i style="background:#1A1714"></i><code>#1A1714</code></span>
+            <span class="sw"><i style="background:#7A1F1B"></i><code>#7A1F1B</code></span>
+            <span class="sw"><i style="background:#6B655C"></i><code>#6B655C</code></span>
+          </div><p class="sub">All pairings pass 4.5:1</p></div>
+          <div><h3>Motion</h3><p class="sub">Rows fade-rise on scroll (60ms stagger); underlines grow left→right; hover shifts to oxblood.</p></div>
+          <div><h3>Signature</h3><p>Dates hung in the margin, like a printed quarterly.</p></div>
+          <dl class="fr"><dt>Fits</dt><dd>Sells depth and judgment to clients who read.</dd><dt>Risk</dt><dd>Can read "writer" over "engineer".</dd></dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 INDEX ============ -->
+  <section class="plate" id="c2">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">02</span>
+        <h2>Index</h2>
+        <span class="tag">Editorial</span>
+        <span class="motion-meter" aria-label="Motion level 1 of 5"><i class="on"></i><i></i><i></i><i></i><i></i><span>subtle</span></span>
+      </div>
+      <p class="vibe">Swiss precision on warm paper — the archive as a numbered ledger, every date locked to a monospaced column, one vermilion tick.</p>
+      <div class="duo">
+        <div class="frame c2">
+          <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com</span></div>
+          <div class="shot">
+            <div class="mast">Brian Rohde</div>
+            <div class="kicker">Full-stack engineer · AI products, end to end · San Francisco</div>
+            <p class="intro">I build and ship complete products — from a custom ML pipeline to the marketing site. Founder of Eight Angle. Previously Gong, Twilio, Facebook, Google.</p>
+            <div class="row"><span class="ix">01</span><span class="title">Building the ML model behind Eight Angle<span class="cat">Work</span></span><span class="meta">2026.02</span></div>
+            <div class="row"><span class="ix">02</span><span class="title">How I run parallel Claude Code agents<span class="cat">AI</span></span><span class="meta">2026.05</span></div>
+            <div class="row"><span class="ix">03</span><span class="title">From idea to production in four hours<span class="cat">Work</span></span><span class="meta">2025.11</span></div>
+            <div class="row"><span class="ix">04</span><span class="title">Alternatives to Squarespace<span class="cat">Work</span></span><span class="meta">2025.09</span></div>
+            <div class="row"><span class="ix">05</span><span class="title">Luxe &amp; affordable: Hawaii<span class="cat">Off&nbsp;topic</span></span><span class="meta">2025.06</span></div>
+          </div>
+        </div>
+        <aside class="spec">
+          <div><h3>Type</h3><p>Archivo (display/body) + IBM Plex Mono (meta)</p><p class="sub">Shown in Helvetica Neue / Menlo</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#F4F1EA"></i><code>#F4F1EA</code></span>
+            <span class="sw"><i style="background:#16161A"></i><code>#16161A</code></span>
+            <span class="sw"><i style="background:#BE3A22"></i><code>#BE3A22</code></span>
+            <span class="sw"><i style="background:#57544E"></i><code>#57544E</code></span>
+          </div><p class="sub">All pairings pass 4.5:1</p></div>
+          <div><h3>Motion</h3><p class="sub">Hairlines draw left→right on hover; masthead condenses on scroll; vermilion tick slides in.</p></div>
+          <div><h3>Signature</h3><p>The monospaced date column, aligned down the page like a ledger.</p></div>
+          <dl class="fr"><dt>Fits</dt><dd>Systems-thinking made visible — the "ships end to end" promise.</dd><dt>Risk</dt><dd>Grid-and-grotesque can drift generic without its warmth.</dd></dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 LETTERPRESS ============ -->
+  <section class="plate" id="c3">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">03</span>
+        <h2>Letterpress</h2>
+        <span class="tag">Warm minimal</span>
+        <span class="motion-meter" aria-label="Motion level 2 of 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><span>subtle</span></span>
+      </div>
+      <p class="vibe">Paper-craft warmth — a soft old-style serif over humanist text, terracotta ink, a whisper of grain behind everything. No rules; whitespace does the separating.</p>
+      <div class="duo">
+        <div class="frame c3">
+          <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com</span></div>
+          <div class="shot">
+            <div class="mast">Brian Rohde</div>
+            <p class="intro">I'm a full-stack engineer in San Francisco. I ship AI products end to end — most recently Eight Angle, a yoga app with an ML model I trained myself.</p>
+            <div class="cathead">Writing</div>
+            <div class="entry"><a href="#c3">Building the ML model behind Eight Angle</a><div class="date">February 12, 2026</div><div class="desc">From scraped data to a calibrated classifier running at 20fps on an iPhone.</div></div>
+            <div class="entry"><a href="#c3">How I run parallel Claude Code agents</a><div class="date">May 28, 2026</div></div>
+            <div class="entry"><a href="#c3">From idea to production in four hours</a><div class="date">November 14, 2025</div></div>
+          </div>
+        </div>
+        <aside class="spec">
+          <div><h3>Type</h3><p>Fraunces (variable display) + Alegreya Sans (body)</p><p class="sub">Shown in Iowan Old Style / Optima</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#F6EEE3"></i><code>#F6EEE3</code></span>
+            <span class="sw"><i style="background:#2B2118"></i><code>#2B2118</code></span>
+            <span class="sw"><i style="background:#9E3B1A"></i><code>#9E3B1A</code></span>
+            <span class="sw"><i style="background:#6E6252"></i><code>#6E6252</code></span>
+          </div><p class="sub">All pairings pass 4.5:1</p></div>
+          <div><h3>Motion</h3><p class="sub">Production signature: Fraunces weight "blooms" 360→520 on hover like ink soaking paper (approximated here with a color shift). Content rises 6px on load.</p></div>
+          <div><h3>Signature</h3><p>The variable-font ink-bloom; tactile paper grain at 3% opacity.</p></div>
+          <dl class="fr"><dt>Fits</dt><dd>Human and crafted — a solo builder, not an agency template.</dd><dt>Risk</dt><dd>Tips "boutique" if the warmth is pushed too far.</dd></dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 BLACKLETTER MODERN ============ -->
+  <section class="plate" id="c4">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">04</span>
+        <h2>Blackletter Modern</h2>
+        <span class="tag">Bold · heritage</span>
+        <span class="motion-meter" aria-label="Motion level 2 of 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><span>subtle+</span></span>
+      </div>
+      <p class="vibe">Your 2018 site's austerity returned as a monument — the wordmark rebuilt as pure typography, bigger and tighter, with signal red as the only voice raised.</p>
+      <div class="duo">
+        <div class="frame c4">
+          <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com</span></div>
+          <div class="shot">
+            <div class="mast">Brian<br>Rohde</div>
+            <div class="mnav"><b>Read my bio</b> — <b>View my work</b> — <b>Start a conversation</b></div>
+            <p class="intro">Full-stack engineer shipping AI products end to end. Founder of Eight Angle. Previously Gong, Twilio, Facebook, Google.</p>
+            <div class="row"><span class="title">Building the ML model behind Eight Angle</span><span class="date">02.12.2026</span></div>
+            <div class="row"><span class="title">How I run parallel Claude Code agents</span><span class="date">05.28.2026</span></div>
+            <div class="row"><span class="title">From idea to production in four hours</span><span class="date">11.14.2025</span></div>
+            <div class="row"><span class="title">Facebook&rsquo;s first WordPress site</span><span class="date">07.22.2014</span></div>
+          </div>
+        </div>
+        <aside class="spec">
+          <div><h3>Type</h3><p>Archivo Expanded/Black (display) + Inter (body)</p><p class="sub">Shown in Helvetica Neue</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#F5F5F3"></i><code>#F5F5F3</code></span>
+            <span class="sw"><i style="background:#111111"></i><code>#111111</code></span>
+            <span class="sw"><i style="background:#D6001C"></i><code>#D6001C</code></span>
+            <span class="sw"><i style="background:#8A8A86"></i><code>#8A8A86</code></span>
+          </div><p class="sub">All pairings pass 4.5:1</p></div>
+          <div><h3>Motion</h3><p class="sub">Rules draw in on scroll; rows nudge right on hover as the date flips red; masthead tracking tightens on load.</p></div>
+          <div><h3>Signature</h3><p>The oversized black masthead — a wordmark with no logo.</p></div>
+          <dl class="fr"><dt>Fits</dt><dd>The confident senior engineer who edits ruthlessly; clear lineage from 2018.</dd><dt>Risk</dt><dd>Restraint undersells if the copy isn't sharp.</dd></dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 EXPOSED GRID ============ -->
+  <section class="plate" id="c5">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">05</span>
+        <h2>Exposed Grid</h2>
+        <span class="tag">Brutalist</span>
+        <span class="motion-meter" aria-label="Motion level 3 of 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><span>moderate</span></span>
+      </div>
+      <p class="vibe">The site as visible system — a spreadsheet skeleton with monospace indices, category toggles, and one electric jolt of indigo. The engineer's mental model, exposed.</p>
+      <div class="duo">
+        <div class="frame c5">
+          <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com</span></div>
+          <div class="shot">
+            <div class="topgrid">
+              <div class="cell"><div class="lbl">[00] INTRO</div><div class="mast">Brian Rohde</div><p class="intro">Full-stack engineer shipping AI products end to end — founder of Eight Angle; ex-Gong, ex-Twilio.</p></div>
+              <div class="cell"><div class="lbl">[NAV]</div><div style="font-family:Menlo,monospace;font-size:11px;line-height:2">about<br>resume<br>contact</div></div>
+            </div>
+            <div class="filters"><span class="on">ALL</span><span>WORK</span><span>AI</span><span>OFF-TOPIC</span></div>
+            <div class="row"><div class="ix">[01]</div><div class="title">Building the ML model behind Eight Angle</div><div class="date">2026-02-12</div></div>
+            <div class="row"><div class="ix">[02]</div><div class="title">How I run parallel Claude Code agents</div><div class="date">2026-05-28</div></div>
+            <div class="row"><div class="ix">[03]</div><div class="title">From idea to production in four hours</div><div class="date">2025-11-14</div></div>
+            <div class="row"><div class="ix">[04]</div><div class="title">Alternatives to Squarespace</div><div class="date">2025-09-30</div></div>
+          </div>
+        </div>
+        <aside class="spec">
+          <div><h3>Type</h3><p>Space Grotesk (display) + JetBrains Mono (labels) + IBM Plex Sans (body)</p><p class="sub">Shown in Futura / Menlo / Helvetica Neue</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#FFFFFF"></i><code>#FFFFFF</code></span>
+            <span class="sw"><i style="background:#0B0B0B"></i><code>#0B0B0B</code></span>
+            <span class="sw"><i style="background:#4D00FF"></i><code>#4D00FF</code></span>
+            <span class="sw"><i style="background:#6E6E6E"></i><code>#6E6E6E</code></span>
+          </div><p class="sub">Indigo 7.6:1 both ways — passes</p></div>
+          <div><h3>Motion</h3><p class="sub">Hovered cells flood indigo and invert (live above); a thin crosshair tracks the cursor across grid lines; indices count up on load.</p></div>
+          <div><h3>Signature</h3><p>The always-visible structural grid with bracketed indices.</p></div>
+          <dl class="fr"><dt>Fits</dt><dd>Perfect frame for the AI-workflow writing.</dd><dt>Risk</dt><dd>Can skew cold for non-technical clients.</dd></dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 HARD SHADOW ============ -->
+  <section class="plate" id="c6">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">06</span>
+        <h2>Hard Shadow</h2>
+        <span class="tag">Neo-brutalist</span>
+        <span class="motion-meter" aria-label="Motion level 3 of 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><span>moderate</span></span>
+      </div>
+      <p class="vibe">Chunky bordered blocks with offset shadows you can almost press — warm, punchy, personable. Try clicking a panel: it physically depresses.</p>
+      <div class="duo">
+        <div class="frame c6">
+          <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com</span></div>
+          <div class="shot">
+            <div class="mastblock"><div class="mast">Brian Rohde<small>Full-stack engineer · AI products end to end</small></div></div>
+            <div class="panel"><div class="title">Building the ML model behind Eight Angle</div><div class="meta"><span class="pill">Feb 12 2026</span><span class="pill hot">Flagship</span><span class="lnk">Read →</span></div></div>
+            <div class="panel"><div class="title">How I run parallel Claude Code agents</div><div class="meta"><span class="pill">May 28 2026</span><span class="pill">AI</span><span class="lnk">Read →</span></div></div>
+            <div class="panel"><div class="title">From idea to production in four hours</div><div class="meta"><span class="pill">Nov 14 2025</span><span class="pill">Work</span><span class="lnk">Read →</span></div></div>
+          </div>
+        </div>
+        <aside class="spec">
+          <div><h3>Type</h3><p>Bricolage Grotesque (display) + Public Sans (body)</p><p class="sub">Shown in Gill Sans / Helvetica Neue</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#FBF7EF"></i><code>#FBF7EF</code></span>
+            <span class="sw"><i style="background:#141414"></i><code>#141414</code></span>
+            <span class="sw"><i style="background:#FF4D2E"></i><code>#FF4D2E</code></span>
+            <span class="sw"><i style="background:#2D4EFF"></i><code>#2D4EFF</code></span>
+          </div><p class="sub">Accent blocks always carry black text</p></div>
+          <div><h3>Motion</h3><p class="sub">Panels lift on hover (shadow 6→8px) and press flat on click — physical UI. Tags pop 4% on hover.</p></div>
+          <div><h3>Signature</h3><p>The offset hard-shadow press physics.</p></div>
+          <dl class="fr"><dt>Fits</dt><dd>A builder who makes interfaces feel good — great for product clients.</dd><dt>Risk</dt><dd>Neo-brutalism trends fast; needs restraint to age well.</dd></dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 07 CADENCE ============ -->
+  <section class="plate" id="c7">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">07</span>
+        <h2>Cadence</h2>
+        <span class="tag">Kinetic editorial</span>
+        <span class="motion-meter" aria-label="Motion level 3 of 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><span>moderate</span></span>
+      </div>
+      <p class="vibe">A calm editorial page whose headline physically breathes — in production, scroll position drives the display face's weight and width, so the type itself has a pulse (watch the masthead above the fold).</p>
+      <div class="duo">
+        <div class="frame c7">
+          <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com</span></div>
+          <div class="shot">
+            <div class="mast">Brian <em>Rohde</em></div>
+            <p class="intro">Full-stack engineer shipping AI products end to end — founder of Eight Angle, previously Gong and Twilio.</p>
+            <div class="row"><div class="title"><a href="#c7">Building the ML model behind Eight Angle</a></div><div class="date">Feb 12 2026</div></div>
+            <div class="row"><div class="title"><a href="#c7">How I run parallel Claude Code agents</a></div><div class="date">May 28 2026</div></div>
+            <div class="row"><div class="title"><a href="#c7">From idea to production in four hours</a></div><div class="date">Nov 14 2025</div></div>
+            <div class="row"><div class="title"><a href="#c7">Alternatives to Squarespace</a></div><div class="date">Sep 30 2025</div></div>
+          </div>
+        </div>
+        <aside class="spec">
+          <div><h3>Type</h3><p>Fraunces (variable display) + Newsreader (body)</p><p class="sub">Shown in Hoefler Text / Georgia</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#FAF7F0"></i><code>#FAF7F0</code></span>
+            <span class="sw"><i style="background:#16130E"></i><code>#16130E</code></span>
+            <span class="sw"><i style="background:#E5443B"></i><code>#E5443B</code></span>
+            <span class="sw"><i style="background:#6B6459"></i><code>#6B6459</code></span>
+          </div><p class="sub">Vermilion display-size only; links use #C7362E (4.9:1)</p></div>
+          <div><h3>Motion</h3><p class="sub">Production: scroll maps to font-variation weight 320→680 via <code>animation-timeline: scroll()</code>; row hover eases weight up; words rise on load. Approximated here with a breathing masthead.</p></div>
+          <div><h3>Signature</h3><p>The headline whose weight visibly inhales as you scroll.</p></div>
+          <dl class="fr"><dt>Fits</dt><dd>Typographic craft for design-literate clients.</dd><dt>Risk</dt><dd>Variable-axis animation must be perf-budgeted or it reads janky.</dd></dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 08 BUILD.LOG ============ -->
+  <section class="plate" id="c8">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">08</span>
+        <h2>build.log</h2>
+        <span class="tag">Terminal</span>
+        <span class="motion-meter" aria-label="Motion level 3 of 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><span>moderate</span></span>
+      </div>
+      <p class="vibe">The site boots like a developer's terminal — your career printed as a clean, syntax-lit engineering log. Articles are log entries with real timestamps.</p>
+      <div class="duo">
+        <div class="frame c8">
+          <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com</span></div>
+          <div class="shot">
+            <div class="whoami">
+              <div><span class="prompt">$</span> whoami</div>
+              <div>brian rohde — full-stack engineer, san francisco</div>
+              <div>ships AI products end to end · founder, eight angle</div>
+              <div>prev: gong · twilio · facebook · google <span class="caret"></span></div>
+            </div>
+            <a class="row" href="#c8"><span class="ts">[2026-02-12]</span> <span class="prompt">$</span> building-the-ml-model-behind-eight-angle</a>
+            <a class="row" href="#c8"><span class="ts">[2026-05-28]</span> <span class="prompt">$</span> how-i-run-parallel-claude-code-agents</a>
+            <a class="row" href="#c8"><span class="ts">[2025-11-14]</span> <span class="prompt">$</span> from-idea-to-production-in-4-hours</a>
+            <div class="cmt"># migrated a live WordPress site to Astro before lunch</div>
+            <a class="row" href="#c8"><span class="ts">[2014-07-22]</span> <span class="prompt">$</span> facebooks-first-wordpress-site</a>
+            <div class="status">status: available for freelance · build 7d5cd51 · uptime 13y</div>
+          </div>
+        </div>
+        <aside class="spec">
+          <div><h3>Type</h3><p>JetBrains Mono (chrome) + Inter (article prose)</p><p class="sub">Shown in Menlo / Helvetica Neue</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#0E1512"></i><code>#0E1512</code></span>
+            <span class="sw"><i style="background:#D6E5DC;border-color:#999"></i><code>#D6E5DC</code></span>
+            <span class="sw"><i style="background:#7EE787"></i><code>#7EE787</code></span>
+            <span class="sw"><i style="background:#6E8B7C"></i><code>#6E8B7C</code></span>
+          </div><p class="sub">All pairings pass 4.5:1 (mint 12.1:1)</p></div>
+          <div><h3>Motion</h3><p class="sub">Rows type themselves in with a blinking block caret (live above); hover selects the line, terminal-style; a footer status line ticks.</p></div>
+          <div><h3>Signature</h3><p>The homepage boots as a live log; prose switches to a humanist sans for comfort.</p></div>
+          <dl class="fr"><dt>Fits</dt><dd>Instant credibility with engineering-led buyers — his native habitat.</dd><dt>Risk</dt><dd>Terminal tropes are common; restraint keeps it premium, not cosplay.</dd></dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 09 EIGHT ANGLE ============ -->
+  <section class="plate" id="c9">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">09</span>
+        <h2>Eight Angle</h2>
+        <span class="tag">Showpiece</span>
+        <span class="motion-meter" aria-label="Motion level 5 of 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><span>showpiece</span></span>
+      </div>
+      <p class="vibe">A living angular constellation — articles are nodes in a slowly tessellating mesh, a direct nod to the geometric features behind your pose classifier and to the name itself. The mesh below is real and running.</p>
+      <div class="duo">
+        <div class="frame c9">
+          <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com</span></div>
+          <div class="shot">
+            <canvas id="mesh" aria-hidden="true"></canvas>
+            <div class="content">
+              <div class="mast">Brian Rohde</div>
+              <p class="intro">Full-stack engineer shipping AI products end to end. Founder of Eight Angle — a 47-class pose classifier, running on-device.</p>
+              <div class="grid2">
+                <div class="node"><div class="nix">01/</div><div class="title">Building the ML model behind Eight Angle</div><div class="date">Feb 12, 2026</div></div>
+                <div class="node"><div class="nix">02/</div><div class="title">How I run parallel Claude Code agents</div><div class="date">May 28, 2026</div></div>
+                <div class="node"><div class="nix">03/</div><div class="title">From idea to production in four hours</div><div class="date">Nov 14, 2025</div></div>
+                <div class="node"><div class="nix">04/</div><div class="title">Alternatives to Squarespace</div><div class="date">Sep 30, 2025</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="spec">
+          <div><h3>Type</h3><p>Space Grotesk (display) + Manrope (body)</p><p class="sub">Shown in Futura / Avenir</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#EEF1F5"></i><code>#EEF1F5</code></span>
+            <span class="sw"><i style="background:#11141B"></i><code>#11141B</code></span>
+            <span class="sw"><i style="background:#4534E6"></i><code>#4534E6</code></span>
+            <span class="sw"><i style="background:#566072"></i><code>#566072</code></span>
+          </div><p class="sub">All pairings pass 4.5:1</p></div>
+          <div><h3>Motion</h3><p class="sub">Canvas mesh drifts at a capped frame rate, pauses off-screen, and freezes to a static frame under reduced-motion; hovering an article lights its nearest vertices; SVG dividers draw in on article pages.</p></div>
+          <div><h3>Signature</h3><p>The Delaunay-style mesh in which each article is a literal node.</p></div>
+          <dl class="fr"><dt>Fits</dt><dd>Shows — doesn't tell — that he ships generative/ML front-of-house work.</dd><dt>Risk</dt><dd>Highest build + perf cost; the static fallback must still look intentional.</dd></dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 10 DETECTION ============ -->
+  <section class="plate" id="c10">
+    <div class="wrap">
+      <div class="plate-head">
+        <span class="plate-num">10</span>
+        <h2>Detection</h2>
+        <span class="tag">CV / experimental</span>
+        <span class="motion-meter" aria-label="Motion level 4 of 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><span>moderate+</span></span>
+      </div>
+      <p class="vibe">The archive reads like your model's output — every article is a labeled detection with corner brackets, coordinates, and a confidence chip. Your flagship's domain becomes the site's entire visual grammar.</p>
+      <div class="duo">
+        <div class="frame c10">
+          <div class="frame-bar"><i></i><i></i><i></i><span>brohde.com</span></div>
+          <div class="shot">
+            <div class="boxed">
+              <span class="chip">intro · 0.98</span>
+              <div class="mast">Brian Rohde</div>
+              <p class="intro">Full-stack engineer shipping AI products end to end. Founder of Eight Angle — on-device pose detection, 47 classes, ~20fps. Previously Gong, Twilio, Facebook, Google.</p>
+            </div>
+            <div class="det"><span class="conf">0.97</span><div class="title">Building the ML model behind Eight Angle</div><div class="coords">[y:2026] [m:02] [class:work]</div></div>
+            <div class="det"><span class="conf">0.94</span><div class="title">How I run parallel Claude Code agents</div><div class="coords">[y:2026] [m:05] [class:ai]</div></div>
+            <div class="det"><span class="conf">0.91</span><div class="title">From idea to production in four hours</div><div class="coords">[y:2025] [m:11] [class:work]</div></div>
+            <div class="det"><span class="conf">0.88</span><div class="title">Luxe &amp; affordable: Hawaii</div><div class="coords">[y:2025] [m:06] [class:off-topic]</div></div>
+          </div>
+        </div>
+        <aside class="spec">
+          <div><h3>Type</h3><p>Archivo (labels/titles) + IBM Plex Mono (coords) + IBM Plex Sans (body)</p><p class="sub">Shown in Avenir Next Condensed / Monaco / Helvetica Neue</p></div>
+          <div><h3>Palette</h3><div class="swatches">
+            <span class="sw"><i style="background:#FBFBF9"></i><code>#FBFBF9</code></span>
+            <span class="sw"><i style="background:#1A1A1A"></i><code>#1A1A1A</code></span>
+            <span class="sw"><i style="background:#E8460E"></i><code>#E8460E</code></span>
+            <span class="sw"><i style="background:#0E7C86"></i><code>#0E7C86</code></span>
+          </div><p class="sub">Orange strokes/large only; links use #C23A0A (5.3:1)</p></div>
+          <div><h3>Motion</h3><p class="sub">Bounding boxes draw their strokes on load; corner brackets ignite on hover (live above); a small keypoint skeleton near the hero springs toward the cursor.</p></div>
+          <div><h3>Signature</h3><p>Every article is a "detection" with a confidence score — the archive as model output.</p></div>
+          <dl class="fr"><dt>Fits</dt><dd>Turns the flagship ML domain into the site's language — unforgettable, on-message.</dd><dt>Risk</dt><dd>Must stay elegant restraint, not sci-fi HUD kitsch.</dd></dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMPARISON ============ -->
+  <section class="compare" id="compare">
+    <div class="wrap">
+      <h2>Side by side</h2>
+      <div class="tablewrap">
+        <table class="cmp">
+          <thead><tr><th>#</th><th>Concept</th><th>Family</th><th>Base</th><th>Loudness</th><th>Motion</th><th>Build</th><th>Choose it for…</th></tr></thead>
+          <tbody>
+            <tr><td class="n">01</td><td>The Quarterly</td><td>Editorial</td><td>Light, warm</td><td>Quiet</td><td>Subtle</td><td>S</td><td>Long-form gravitas; clients who read before they buy</td></tr>
+            <tr><td class="n">02</td><td>Index</td><td>Editorial</td><td>Light, warm</td><td>Quiet</td><td>Subtle</td><td>S</td><td>Precision signal; cleanest scaling archive</td></tr>
+            <tr><td class="n">03</td><td>Letterpress</td><td>Warm minimal</td><td>Light, warm</td><td>Quiet</td><td>Subtle</td><td>M</td><td>Human warmth; standing out from agency sameness</td></tr>
+            <tr><td class="n">04</td><td>Blackletter Modern</td><td>Bold</td><td>Light, neutral</td><td>Mid</td><td>Subtle+</td><td>S</td><td>Direct lineage from your 2018 site, modernized</td></tr>
+            <tr><td class="n">05</td><td>Exposed Grid</td><td>Brutalist</td><td>Light, stark</td><td>Loud</td><td>Moderate</td><td>M</td><td>Systems-thinking made literal; technical buyers</td></tr>
+            <tr><td class="n">06</td><td>Hard Shadow</td><td>Neo-brutalist</td><td>Light, warm</td><td>Loud</td><td>Moderate</td><td>M</td><td>Playful tactility; product-minded clients</td></tr>
+            <tr><td class="n">07</td><td>Cadence</td><td>Kinetic editorial</td><td>Light, warm</td><td>Mid</td><td>Moderate</td><td>M</td><td>Typographic craft with a living pulse</td></tr>
+            <tr><td class="n">08</td><td>build.log</td><td>Terminal</td><td><strong>Dark</strong></td><td>Mid</td><td>Moderate</td><td>M</td><td>Engineering-native identity; memorable dark look</td></tr>
+            <tr><td class="n">09</td><td>Eight Angle</td><td>Showpiece</td><td>Light, cool</td><td>Loud</td><td>Showpiece</td><td>L</td><td>Maximum wow; proving generative range live</td></tr>
+            <tr><td class="n">10</td><td>Detection</td><td>CV / experimental</td><td>Light, studio</td><td>Mid-loud</td><td>Moderate+</td><td>M</td><td>The most on-message idea: flagship ML as visual grammar</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RECOMMENDATION ============ -->
+  <section class="rec">
+    <div class="wrap">
+      <h2>Studio recommendation</h2>
+      <div class="pick">
+        <p><strong>Develop 10 — Detection.</strong> It's the only direction where the aesthetic *is* the argument: a potential client lands on the site and immediately understands that this person ships computer-vision products, before reading a word. It's distinctive without a single stock photo, scales to an image-light homepage, and the motif deepens naturally in the Eight Angle deep-dive (real annotated screenshots). Its risk — HUD kitsch — is a restraint problem, and restraint is executable.</p>
+        <p><strong>Keep 02 — Index as the runner-up</strong> (quietest concept that still signals engineering precision; lowest build cost; safest with conservative corporate clients), and consider a <strong>blend</strong>: Index's ledger structure as the skeleton, Detection's brackets/confidence chips reserved for work articles only — off-topic travel posts would drop the CV grammar entirely, which also solves the category-separation question elegantly.</p>
+        <p><strong>If you want dark:</strong> 08 build.log is the strongest dark identity, but it's also the most common trope in dev portfolios; I'd rather see its log-entry date format adopted inside Index or Detection than run it whole.</p>
+      </div>
+      <p style="margin-top:24px"><strong>How to respond:</strong> name a winner, a shortlist of 2–3 to push further, or elements to blend ("Detection's chips on Index's grid"). I'll then have the design team develop the pick into a full system — article page, about, tokens, motion spec — before any build.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="fin">
+  <div class="wrap">Prepared by the studio for Brian Rohde · brohde.com project · Concepts 01–03, 04–06, 07–10 by three design-director explorations; curation and plates by the studio lead. Hover states are live; production motion specs are in each rail.</div>
+</footer>
+
+<script>
+(function () {
+  var canvas = document.getElementById('mesh');
+  if (!canvas) return;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var ctx = canvas.getContext('2d');
+  var pts = [], W = 0, H = 0, running = false, raf = null, last = 0;
+  var N = 26, LINK = 130, SPEED = 0.012;
+
+  function resize() {
+    var r = canvas.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = r.width; H = r.height;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function seed() {
+    pts = [];
+    var s = 8;
+    function rnd() { s = (s * 16807) % 2147483647; return s / 2147483647; }
+    for (var i = 0; i < N; i++) {
+      pts.push({ x: rnd() * W, y: rnd() * H, vx: (rnd() - 0.5), vy: (rnd() - 0.5) });
+    }
+  }
+  function frame(t) {
+    raf = null;
+    if (t - last < 33) { if (running) raf = requestAnimationFrame(frame); return; }
+    last = t;
+    ctx.clearRect(0, 0, W, H);
+    for (var i = 0; i < pts.length; i++) {
+      var p = pts[i];
+      p.x += p.vx * SPEED * 33; p.y += p.vy * SPEED * 33;
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+    }
+    ctx.strokeStyle = 'rgba(69,52,230,0.18)';
+    ctx.lineWidth = 1;
+    for (i = 0; i < pts.length; i++) {
+      for (var j = i + 1; j < pts.length; j++) {
+        var dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+        if (dx * dx + dy * dy < LINK * LINK) {
+          ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y); ctx.stroke();
+        }
+      }
+    }
+    ctx.fillStyle = 'rgba(69,52,230,0.5)';
+    for (i = 0; i < pts.length; i++) {
+      ctx.beginPath(); ctx.arc(pts[i].x, pts[i].y, 1.8, 0, Math.PI * 2); ctx.fill();
+    }
+    if (running) raf = requestAnimationFrame(frame);
+  }
+  function start() { if (!running) { running = true; if (!raf) raf = requestAnimationFrame(frame); } }
+  function stop() { running = false; }
+
+  resize(); seed();
+  if (reduced) { frame(100); }
+  else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { e.isIntersecting ? start() : stop(); });
+    }, { threshold: 0.05 });
+    io.observe(canvas);
+    document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+    window.addEventListener('resize', function () { resize(); seed(); if (reduced) frame(100); });
+  }
+})();
+</script>

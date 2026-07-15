@@ -32,4 +32,5 @@ Portfolio + blog-style site for Brian Rohde (brohde.com). Audience: potential cl
 
 - Content collections for articles (Astro content layer), one folder per article if assets needed
 - Conventional-ish commits; commit at meaningful checkpoints
+- Commits are authored by Brian only — no Claude co-author trailer (enforced via `attribution` in settings; Brian's explicit preference)
 - Keep README.md's repo map current as structure grows

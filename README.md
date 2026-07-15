@@ -17,7 +17,11 @@ Personal portfolio + writing site for Brian Rohde. Showcases client work and pro
 | `docs/STATUS.md` | **Current state + next steps** — the session-resume anchor |
 | `docs/DECISIONS.md` | Every decision made, with rationale |
 | `docs/COMMS-LOG.md` | Running log of Brian ↔ Claude communications and delegated sub-agent work |
-| `docs/TEAM.md` | The studio roster — expert roles and when to use each |
+| `docs/TEAM.md` | The studio roster (dynamic) — expert roles and model policy |
+| `docs/CONTENT.md` | Article backlog and content pipeline |
+| `docs/VOICE.md` | Brian's writing style guide — binding for all published copy |
+| `docs/design/` | Design deliverables (10-concept artifact source) |
+| `docs/reference/` | Source material: resume PDF, prior-project conventions brief |
 | `.claude/agents/` | Reusable sub-agent definitions for the studio experts |
 
 Site source will live in the standard Astro layout (`src/`, `public/`) once the design concept is chosen.
