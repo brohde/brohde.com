@@ -58,7 +58,8 @@ See the ⚠️ in-flight agents section at the top: aurora dark-ground rework, A
    1b. Launch gates: pre-launch SECURITY AUDIT (#49: Turnstile, per-IP rate limits, AI Gateway spend cap verified live, headers/CSP, key handling) + existing seo-a11y audit
 2. Brian: pick a glyph-tide placement from the presented ideas; answer AfW 2015-vs-2016; draft reviews
 3. Studio: Phase 1 Astro scaffold (Astro + Tailwind v4 + Cloudflare Pages + PostHog per `docs/reference/prior-project-conventions.md`), build.log design system as components with light+dark themes (#40), boot sequence + header ported from the prototype
-4. Then: chat production Worker (AI Gateway, Turnstile, rate limits) after POC gates pass; aurora + glyph tide integration; presence (planes + your-plane marker) after v1
+4. QUEUED PHASE (gated on Brian's Phase 1 review, #59): aurora + image tide integration per demo 04 verdict, with per-page color themes and matrix-style per-character animation
+5. Then: chat production Worker (AI Gateway, Turnstile, rate limits); presence (planes + your-plane marker) after v1
 
 ### Recent additions (2026-07-15 late)
 
