@@ -19,7 +19,10 @@
  * listbox with aria-activedescendant; focus is never trapped; arrow keys act
  * only while a prompt input is focused, so page scrolling is never hijacked.
  */
-import { navigate } from "astro:transitions/client";
+import {
+  navigate,
+  TransitionBeforePreparationEvent,
+} from "astro:transitions/client";
 
 interface Cmd {
   name: string;
@@ -130,6 +133,66 @@ function hint(msg: string) {
       el.style.opacity = "1";
     }, 350);
   }, 2600);
+}
+
+/* ---------------------------------------------- route transitions (#64) --- */
+/* Every internal navigation shares one transition, both directions: the
+ * ~140ms terminal wipe from build-log-v3.html. A ground-colored cover with a
+ * resting block caret drops before the old page changes, the swap happens
+ * underneath (the underlying view transition is set to animation:none in
+ * global.css), and the cover lifts ~50ms after the new page has rendered, so
+ * the destination is always visually complete when it appears.
+ *
+ * Structured as named kinds so the next phase (option C: the slab
+ * expand/collapse morph into chat) can slot in as another kind here instead
+ * of reworking this layer: resolveTransition() picks per navigation, each
+ * kind covers/uncovers around the ClientRouter lifecycle. Under reduced
+ * motion navigation is instant: no cover, no held loader.
+ */
+type TransitionKind = "wipe" | "instant";
+
+const WIPE_HOLD_MS = 140; // cover time before the swap may land
+const WIPE_LIFT_MS = 50; // settle time after the new page renders
+
+let wipeEl: HTMLElement | null = null;
+let wipeTimer = 0; // one handle for pending lift AND failsafe: a new drop cancels both
+
+function resolveTransition(): TransitionKind {
+  return RM() ? "instant" : "wipe";
+}
+
+function wipe(): HTMLElement {
+  if (!wipeEl) {
+    wipeEl = document.createElement("div");
+    wipeEl.id = "wipe";
+    wipeEl.hidden = true;
+    wipeEl.setAttribute("aria-hidden", "true");
+    wipeEl.appendChild(document.createElement("span"));
+    // Attached to <html>, not <body>: the router swaps the body wholesale,
+    // and the cover must survive the swap to bridge old and new page.
+    document.documentElement.appendChild(wipeEl);
+  }
+  return wipeEl;
+}
+
+function dropWipe() {
+  const w = wipe();
+  w.hidden = false;
+  clearTimeout(wipeTimer);
+  // never leave the page covered if a navigation dies midway
+  wipeTimer = window.setTimeout(() => {
+    w.hidden = true;
+  }, 4000);
+}
+
+function liftWipe() {
+  if (!wipeEl || wipeEl.hidden) return;
+  clearTimeout(wipeTimer);
+  // plain timeout, deliberately no rAF: rAF never fires in a hidden or
+  // throttled tab and would leave the cover stuck over the page
+  wipeTimer = window.setTimeout(() => {
+    if (wipeEl) wipeEl.hidden = true;
+  }, WIPE_LIFT_MS);
 }
 
 /* ------------------------------------------------- roving cursor (#63) ---- */
@@ -761,6 +824,28 @@ function setupOnce() {
       recall(1, input);
     }
   });
+
+  // Route transitions (#64): drop the wipe as soon as an internal navigation
+  // starts, and hold the router's loader so the cover stays down for at
+  // least WIPE_HOLD_MS before the swap can land. Applies to every direction
+  // (links, commands, Escape, back/forward all flow through the router).
+  document.addEventListener("astro:before-preparation", (e) => {
+    if (resolveTransition() !== "wipe") return;
+    dropWipe();
+    if (e instanceof TransitionBeforePreparationEvent) {
+      const started = Date.now();
+      const load = e.loader;
+      e.loader = async () => {
+        await load();
+        const left = WIPE_HOLD_MS - (Date.now() - started);
+        if (left > 0) await new Promise((r) => setTimeout(r, left));
+      };
+    }
+  });
+
+  // Lift the wipe only after the new page is rendered and initialized, so
+  // the destination is visually complete the moment it appears.
+  document.addEventListener("astro:page-load", liftWipe);
 
   // Boot plays on SITE ENTRY ONLY (#64): the pre-paint gate in BaseLayout
   // sets html.boot on genuine full loads of the homepage, and Astro never

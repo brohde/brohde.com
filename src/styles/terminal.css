@@ -603,6 +603,27 @@ html.boot .bseq-keep {
   }
 }
 
+/* --------------------------- screen-clear wipe (#64) --------------------- */
+/* The uniform internal-navigation transition, ported from build-log-v3.html:
+   a ground-colored cover with a resting block caret. Timing + lifecycle live
+   in terminal.ts; tokens keep it correct on both grounds. The element sits
+   outside <body> (terminal.ts appends it to <html>) so router swaps never
+   remove it; the global [hidden] rule keeps it display:none at rest. */
+#wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: var(--ground);
+}
+#wipe span {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  width: 9px;
+  height: 18px;
+  background: var(--accent);
+}
+
 /* ------------------------------ small screens ---------------------------- */
 @media (max-width: 560px) {
   .entry {
@@ -622,6 +643,9 @@ html.boot .bseq-keep {
   }
   .wrap {
     padding: 0 16px;
+  }
+  #wipe span {
+    left: 16px;
   }
 }
 @media (max-width: 360px) {
