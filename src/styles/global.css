@@ -1,0 +1,158 @@
+@import "tailwindcss";
+@import "./terminal.css";
+
+/* ============================================================================
+   brohde.com design tokens
+   Two grounds, one system (decision #40): the site matches the visitor's
+   system color scheme via prefers-color-scheme, with a live matchMedia
+   listener (see terminal.ts) that keeps <meta name="theme-color"> in sync.
+
+   Semantic token names only (never "dark"/"light" in component code). The
+   values swap under the media queries below; Tailwind utilities (bg-ground,
+   text-ink, ...) map to these through @theme.
+
+   Night palette  : ground #0E1512, mint #7EE787, inks #D6E5DC/#F2F7F3/#8FA79A
+   Light palette  : ground #FBFBF8, accent #086148, inks #14211A/#3F5348
+   (ported from docs/design/lab/aurora-terminal.html)
+   ========================================================================== */
+
+:root {
+  /* type stacks: system only, no webfonts (font discipline, E6) */
+  --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Mono",
+    monospace;
+  --font-sans: system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  /* --- night ground is the default (dark) --- */
+  --ground: #0e1512;
+  --ink: #d6e5dc;
+  --bright: #f2f7f3;
+  --dim: #8fa79a;
+  --accent: #7ee787;
+  --on-accent: #0e1512;
+  --line: #2e4a3c;
+  --line-strong: #33523f;
+  --well: #12201a;
+
+  /* phosphor wordmark glow + CRT scanline (night only) */
+  --wm-glow: 0 0 26px rgba(126, 231, 135, 0.3), 0 0 3px rgba(126, 231, 135, 0.35);
+  --crt-alpha: 0.45;
+  --glow-field: rgba(126, 231, 135, 0.07);
+
+  color-scheme: dark;
+}
+
+/* Some browsers honor an explicit light preference; mirror the tokens. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --ground: #fbfbf8;
+    --ink: #14211a;
+    --bright: #14211a;
+    --dim: #3f5348;
+    --accent: #086148;
+    --on-accent: #fbfbf8;
+    --line: #dae0d6;
+    --line-strong: #c7d0c4;
+    --well: #f1f2ec;
+
+    --wm-glow: none;
+    --crt-alpha: 0; /* scanlines read as dirt on paper; drop them in light */
+    --glow-field: rgba(8, 97, 72, 0.05);
+
+    color-scheme: light;
+  }
+}
+
+/* Expose the tokens to Tailwind as utilities + keep the type scale here. */
+@theme {
+  --color-ground: var(--ground);
+  --color-ink: var(--ink);
+  --color-bright: var(--bright);
+  --color-dim: var(--dim);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-well: var(--well);
+
+  --font-mono: var(--font-mono);
+  --font-sans: var(--font-sans);
+
+  --default-font-family: var(--font-mono);
+}
+
+/* ------------------------------- base ------------------------------------- */
+
+html {
+  background: var(--ground);
+  scroll-behavior: auto; /* terminal-style: never smooth-scroll (#24) */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.7;
+  overflow-x: clip;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+a {
+  color: var(--accent);
+}
+
+/* Full keyboard accessibility: a visible focus ring everywhere (#28). */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.screen:focus {
+  outline: none;
+}
+
+/* Screen-reader-only helper. */
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Instant, terminal-style route swaps under View Transitions (no cross-fade;
+   honors "instant transitions" in #24). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

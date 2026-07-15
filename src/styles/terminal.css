@@ -1,0 +1,607 @@
+/* ============================================================================
+   Terminal UI, ported from the approved prototypes:
+     docs/design/lab/build-log-v3.html   (homepage treatment + boot)
+     docs/design/lab/aurora-terminal.html (two-ground palette)
+   All colors reference the semantic tokens in global.css, so every class
+   works on both grounds automatically.
+   ========================================================================== */
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 22px;
+  width: 100%;
+}
+
+.screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.p {
+  color: var(--accent);
+}
+.d,
+.k,
+.br {
+  color: var(--dim);
+}
+.cmt {
+  color: var(--dim);
+  font-size: 12px;
+  margin: 8px 0;
+}
+.pline {
+  margin: 0 0 4px;
+}
+
+.caret {
+  display: inline-block;
+  width: 9px;
+  height: 17px;
+  background: var(--accent);
+  vertical-align: -3px;
+  animation: blink 1.1s steps(1) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .caret {
+    animation: none;
+  }
+}
+
+/* ---------------------------- header ------------------------------------- */
+.hd {
+  position: relative;
+  padding: 28px 0 4px;
+}
+.hv1 {
+  position: relative;
+}
+/* CRT phosphor glow warms the corner; scanlines are a dark repeating gradient
+   (night only, via --crt-alpha). Both are the boot sequence's first frame. */
+.hv1::before {
+  content: "";
+  position: absolute;
+  inset: -28px -40px -10px;
+  background: radial-gradient(
+    420px 200px at 16% 12%,
+    var(--glow-field),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+.hv1::after {
+  content: "";
+  position: absolute;
+  inset: -6px -12px 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.2) 0 1px,
+    transparent 1px 3px
+  );
+  opacity: var(--crt-alpha);
+  pointer-events: none;
+}
+.wordmark {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(28px, 9vw, 46px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+  margin: 8px 0 14px;
+  text-shadow: var(--wm-glow);
+}
+.wordmark .caret {
+  width: 0.42em;
+  height: 0.82em;
+  vertical-align: -0.06em;
+}
+.bio {
+  margin: 3px 0;
+  overflow-wrap: anywhere;
+}
+/* quiet company links inside bio lines (#39): terminal output first, link
+   second; they never compete with the wordmark or the nav row. */
+.clink {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+}
+.clink:hover,
+.clink:focus-visible {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+.hrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  margin: 6px 0 0;
+}
+.links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
+  margin: 0;
+  padding: 0;
+}
+.blink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 4px;
+  color: var(--accent);
+  text-decoration: none;
+}
+.blink .lbl {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.blink:hover .lbl,
+.blink:focus-visible .lbl {
+  background: var(--accent);
+  color: var(--on-accent);
+  text-decoration: none;
+}
+
+/* ---------------------- command menu + prompt ---------------------------- */
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
+  margin: 8px 0 0;
+}
+.cbtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  background: none;
+  border: 0;
+  padding: 0 6px;
+  cursor: pointer;
+  color: var(--accent);
+  font: inherit;
+}
+.cbtn:hover,
+.cbtn:focus-visible {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.cbtn:hover .br,
+.cbtn:focus-visible .br {
+  color: var(--on-accent);
+}
+
+/* the prompt + its autocomplete popover share a positioning context */
+.promptzone {
+  position: relative;
+  margin-top: 6px;
+}
+
+.prompt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line-strong);
+  background: var(--well);
+  border-radius: 8px;
+  padding: 2px 14px;
+  min-height: 52px;
+}
+.prompt:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 14px rgba(126, 231, 135, 0.14);
+}
+.iwrap {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+}
+.prompt input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: 0;
+  color: var(--bright);
+  font-family: var(--font-mono);
+  font-size: 16px; /* >=16px: never zooms on iOS focus */
+  line-height: 1.4;
+  caret-color: var(--accent);
+  padding: 13px 0;
+}
+.prompt input::placeholder {
+  color: transparent;
+  opacity: 1;
+}
+.prompt input:focus::placeholder {
+  color: var(--dim);
+}
+.prompt input:focus {
+  outline: none;
+}
+.ph {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+  color: var(--dim);
+  font-size: 16px;
+  white-space: nowrap;
+}
+.ph .caret {
+  margin-left: 2px;
+}
+.prompt input:placeholder-shown:not(:focus) + .ph {
+  display: flex;
+}
+
+/* ------------------- command autocomplete (#48) -------------------------- */
+/* Suggestions render as chips above the prompt. Keyboard: Tab/ArrowRight
+   accept the top match, ArrowUp/Down cycle, Enter runs. Touch: tap a chip. */
+.ac {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 6px);
+  z-index: 30;
+  border: 1px solid var(--line-strong);
+  background: var(--well);
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.22);
+}
+.ac[hidden] {
+  display: none !important;
+}
+.ac-head {
+  color: var(--dim);
+  font-size: 11px;
+  padding: 2px 4px 6px;
+}
+.ac-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ac-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ac-chip .ac-desc {
+  color: var(--dim);
+  font-size: 12px;
+}
+.ac-chip:hover,
+.ac-chip[aria-selected="true"] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.ac-chip:hover .ac-desc,
+.ac-chip[aria-selected="true"] .ac-desc {
+  color: var(--on-accent);
+}
+
+.hint {
+  min-height: 1.4em;
+  margin: 6px 0 0;
+  transition: opacity 300ms;
+}
+
+/* --------------------------------- log ----------------------------------- */
+.log {
+  margin-top: 22px;
+}
+.entry {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 11px 10px;
+  margin: 0 -10px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.entry-main {
+  display: contents;
+}
+.ts {
+  color: var(--dim);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.ttl {
+  font-family: var(--font-sans);
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--bright);
+  line-height: 1.35;
+}
+.entry-desc {
+  color: var(--dim);
+  font-size: 12.5px;
+  margin: 2px 0 0 20px;
+}
+.entry:hover,
+.entry:focus-visible {
+  background: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.entry:hover .ts,
+.entry:hover .p,
+.entry:hover .ttl,
+.entry:focus-visible .ts,
+.entry:focus-visible .p,
+.entry:focus-visible .ttl {
+  color: var(--on-accent);
+}
+
+.status {
+  border-top: 1px solid var(--line);
+  margin-top: 22px;
+  padding-top: 12px;
+  color: var(--dim);
+  font-size: 12px;
+}
+.proto {
+  font-size: 11.5px;
+  margin: 6px 0 0;
+}
+.homepad {
+  padding-top: 4px;
+  padding-bottom: 36px;
+}
+
+/* ----------------- alternate screens (chat, about) ----------------------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--ground) 90%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+}
+@supports not (background: color-mix(in srgb, red 50%, blue)) {
+  .topbar {
+    background: var(--ground);
+  }
+}
+.tbrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 52px;
+}
+.backbtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  background: none;
+  border: 0;
+  padding: 0 10px;
+  margin-left: -10px;
+  cursor: pointer;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: none;
+}
+.backbtn:hover,
+.backbtn:focus-visible {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.backbtn:hover .br,
+.backbtn:focus-visible .br {
+  color: var(--on-accent);
+}
+.tbl {
+  color: var(--dim);
+  font-size: 12px;
+}
+
+.chatwrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.chatlog {
+  padding: 16px 0 8px;
+}
+.uline {
+  color: var(--bright);
+  margin-top: 18px;
+  overflow-wrap: anywhere;
+}
+.reply {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink);
+  max-width: 62ch;
+  border-left: 2px solid var(--line-strong);
+  padding-left: 13px;
+  margin: 10px 0 2px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.out {
+  white-space: pre-wrap;
+  margin: 8px 0 2px;
+  overflow-wrap: anywhere;
+}
+.out .c {
+  color: var(--dim);
+  font-size: 12px;
+}
+.out a {
+  text-underline-offset: 3px;
+}
+
+.dock {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  background: linear-gradient(to top, var(--ground) 80%, transparent);
+  padding: 6px 0 max(10px, env(safe-area-inset-bottom));
+}
+.keybar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 6px;
+  margin-bottom: 2px;
+}
+
+/* --------------------------- prose (about + article) --------------------- */
+.aboutpad {
+  padding-top: 20px;
+  padding-bottom: 36px;
+}
+.prose {
+  font-family: var(--font-sans);
+  font-size: 16.5px;
+  line-height: 1.7;
+  color: var(--ink);
+  max-width: 62ch;
+  margin-top: 14px;
+}
+.prose p {
+  margin: 0 0 18px;
+}
+.prose h2 {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  color: var(--bright);
+  margin: 28px 0 10px;
+}
+.prose h3 {
+  font-family: var(--font-sans);
+  font-size: 17px;
+  color: var(--bright);
+  margin: 22px 0 8px;
+}
+.prose a {
+  text-underline-offset: 3px;
+}
+.prose ul,
+.prose ol {
+  padding-left: 20px;
+  margin: 0 0 18px;
+}
+.prose li {
+  margin: 4px 0;
+}
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.prose pre {
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+.prose pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+/* --------------------------- article meta -------------------------------- */
+.artmeta {
+  color: var(--dim);
+  font-size: 12.5px;
+  margin: 6px 0 0;
+}
+.arttitle {
+  font-family: var(--font-sans);
+  font-size: clamp(24px, 5vw, 34px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--bright);
+  margin: 10px 0 4px;
+  text-wrap: balance;
+}
+
+/* --------------------------- boot sequence ------------------------------- */
+/* Visibility only: every element is server-rendered and stays in the DOM
+   from the first byte (crawlable for SEO + LLMs, #36). The sequence just
+   toggles visibility. Gate lives in BaseLayout's pre-paint script. */
+html.boot .bseq {
+  visibility: hidden;
+}
+html.boot .bseq.bon {
+  visibility: visible;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* safety net: never leave content hidden under reduced motion */
+  html.boot .bseq {
+    visibility: visible;
+  }
+}
+
+/* ------------------------------ small screens ---------------------------- */
+@media (max-width: 560px) {
+  .entry {
+    display: block;
+  }
+  .entry .ts {
+    display: block;
+    margin-bottom: 3px;
+  }
+  .entry .entry-main {
+    display: block;
+  }
+  .entry-desc {
+    margin-left: 0;
+  }
+}
+@media (max-width: 480px) {
+  body {
+    font-size: 13px;
+  }
+  .wrap {
+    padding: 0 16px;
+  }
+}
+@media (max-width: 360px) {
+  .wrap {
+    padding: 0 13px;
+  }
+}

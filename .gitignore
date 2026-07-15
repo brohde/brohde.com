@@ -1,3 +1,25 @@
+# dependencies
 node_modules/
-.DS_Store
+
+# build output
+dist/
+.output/
+
+# astro
+.astro/
+
+# cloudflare
+.wrangler/
+
+# generated
+.vercel/
+
+# env
 .env
+.env.production
+.env.*.local
+
+# os / editor
+.DS_Store
+*.log
+npm-debug.log*

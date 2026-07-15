@@ -1,0 +1,37 @@
+---
+/**
+ * The build.log: article list, newest first, title + pre-date (#2, #3).
+ * Description renders as a quiet sub-line when present (optional per template).
+ * Each entry is a real link to /log/<id> so it is crawlable and keyboard
+ * reachable; the terminal controller only enhances, never gates, navigation.
+ */
+import { getCollection } from "astro:content";
+import { logHref, logStamp } from "@/lib/site";
+
+interface Props {
+  boot?: boolean;
+}
+const { boot = false } = Astro.props;
+
+const posts = (await getCollection("articles", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<section class:list={["log", { bseq: boot }]} id="log" aria-label="Article log">
+  <h2 class="sr">Writing and project log</h2>
+  {
+    posts.map((post) => (
+      <a class="entry" href={logHref(post.id)}>
+        <span class="ts">{logStamp(post.data.date)}</span>
+        <span class="entry-main">
+          <span class="p" aria-hidden="true">&#10095;</span>{" "}
+          <span class="ttl">{post.data.title}</span>
+        </span>
+        {post.data.description && (
+          <span class="entry-desc">{post.data.description}</span>
+        )}
+      </a>
+    ))
+  }
+</section>

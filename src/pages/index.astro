@@ -1,0 +1,64 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import TerminalHeader from "@/components/TerminalHeader.astro";
+import CommandMenu from "@/components/CommandMenu.astro";
+import Prompt from "@/components/Prompt.astro";
+import ArticleLog from "@/components/ArticleLog.astro";
+import { SITE, LINKS, COMPANIES } from "@/lib/site";
+
+const person = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: SITE.author,
+  url: SITE.url,
+  jobTitle: "Full-stack engineer",
+  email: `mailto:${SITE.email}`,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "San Francisco",
+    addressRegion: "CA",
+    addressCountry: "US",
+  },
+  sameAs: [LINKS.linkedin, LINKS.x, COMPANIES.eightAngle],
+  knowsAbout: [
+    "Machine learning",
+    "iOS development",
+    "Astro",
+    "Web performance",
+    "AI-assisted engineering",
+  ],
+};
+
+const website = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE.name,
+  url: SITE.url,
+  author: { "@type": "Person", name: SITE.author },
+};
+---
+
+<BaseLayout ogType="profile" jsonLd={[person, website]}>
+  <section class="screen" id="scr-home" data-screen="home" tabindex="-1">
+    <div class="wrap homepad">
+      <TerminalHeader />
+
+      <main id="main">
+        <CommandMenu boot />
+
+        <Prompt id="home" boot />
+        <p class="cmt bseq">
+          # questions open a chat screen <span aria-hidden="true">·</span> help lists
+          commands
+        </p>
+        <p class="cmt hint bseq" id="hint-top" aria-live="polite"></p>
+
+        <ArticleLog boot />
+        <p class="cmt hint" id="hint-log" aria-live="polite"></p>
+      </main>
+
+      <footer class="status bseq">status: available for freelance</footer>
+      <p class="cmt proto bseq"># brohde.com</p>
+    </div>
+  </section>
+</BaseLayout>

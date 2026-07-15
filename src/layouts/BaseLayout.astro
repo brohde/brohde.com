@@ -1,0 +1,78 @@
+---
+import { ClientRouter } from "astro:transitions";
+import SEO from "@/components/SEO.astro";
+import Analytics from "@/components/Analytics.astro";
+import { SITE } from "@/lib/site";
+import "@/styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  ogType?: "website" | "article" | "profile";
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const props = Astro.props;
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
+    <meta name="generator" content={Astro.generator} />
+
+    {/* theme-color follows the ground on both schemes (#40) */}
+    <meta
+      name="theme-color"
+      content="#0E1512"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="theme-color"
+      content="#FBFBF8"
+      media="(prefers-color-scheme: light)"
+    />
+
+    <SEO {...props} />
+
+    {/*
+      Boot gate (decisions #36, #41). Runs before first paint so full content
+      never flashes: on a genuine load of the homepage (and not under reduced
+      motion) it adds html.boot, which hides the .bseq blocks until the reveal
+      runs. All content is server-rendered and stays in the DOM either way, so
+      the page is fully crawlable. terminal.ts handles the reveal + a failsafe.
+    */}
+    <script is:inline>
+      (function () {
+        try {
+          if (
+            location.pathname === "/" &&
+            !matchMedia("(prefers-reduced-motion: reduce)").matches
+          ) {
+            document.documentElement.classList.add("boot");
+            setTimeout(function () {
+              document.documentElement.classList.remove("boot");
+            }, 6000);
+          }
+        } catch (e) {
+          /* any failure: skip the sequence, content stays visible */
+        }
+      })();
+    </script>
+
+    <ClientRouter />
+  </head>
+  <body>
+    <a href="#main" class="sr">skip to content</a>
+    <slot />
+    <Analytics />
+    <script>
+      import "@/scripts/terminal.ts";
+    </script>
+  </body>
+</html>

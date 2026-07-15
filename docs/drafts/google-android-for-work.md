@@ -1,8 +1,8 @@
-# Google Android for Work (2016): draft v1
+# Google Android for Work (2015): draft v1.1
 
 **Status:** Draft v1, ready for review
 **Type:** Project case study, agency work via Beyond (not Google employment)
-**Suggested pre-date:** 2016-01-01 (placeholder; Wayback now shows the redesigned site live by September 2015, see open questions)
+**Suggested pre-date:** 2015-09-01 (Brian confirmed 2026-07-15: Wayback is right, the redesign was live by 2015-09-05; the old case study's "Released 2016" was wrong)
 **Source material:** 2018 to 2019 brohde.com case study page (recovered via Wayback Machine), 2026 resume, `docs/VOICE.md`
 
 ## Title options
@@ -14,13 +14,13 @@
 ## Description options
 
 1. How I built Google's Android for Work marketing site front end entirely inside Google's internal CMS, JavaScript libraries, and code standards.
-2. A 2016 case study: shipping a marketing site onto google.com itself, with AngularJS, Google Closure, and no jQuery allowed.
+2. A 2015 case study: shipping a marketing site onto google.com itself, with AngularJS, Google Closure, and no jQuery allowed.
 
 ---
 
 ## Draft
 
-In 2016, I built the marketing site for Android for Work, Google's mobile management product for separating work and personal data on Android devices, aimed at enterprise IT. I was a front end developer and team lead at Beyond, an SF user experience agency, and Google was one of our two biggest clients at the time, alongside Facebook.
+In 2015, I built the marketing site for Android for Work, Google's mobile management product for separating work and personal data on Android devices, aimed at enterprise IT. I was a front end developer and team lead at Beyond, an SF user experience agency, and Google was one of our two biggest clients at the time, alongside Facebook.
 
 **The problem.** The site had to launch on google.com itself, not on outside hosting Beyond controlled. That single fact ruled out my usual front end toolkit before the project even started. It had to run on Google's own internal content publishing platform and clear Google's own front end standards before anything shipped to one of the most trafficked domains on the internet. The constraints were set by Google going in, not negotiated once the build started.
 
@@ -28,7 +28,7 @@ In 2016, I built the marketing site for Android for Work, Google's mobile manage
 
 The homepage centered on a guided, scroll-triggered animation sequence next to a phone mockup walking through the product story, a pattern Google used across its marketing sites at the time rather than a static hero image. Getting that sequence smooth and responsive across devices, inside Closure and Angular instead of the jQuery-plus-CSS approach I'd have reached for on a project of my own, was most of the build. It had to hold up on a phone as well as a desktop, and it had to do it without the animation libraries I'd normally pull in.
 
-**The result.** The site shipped in 2016, live on google.com, meeting Google's front end bar end to end, working closely with a designer and QA engineer to get there. It's a different kind of project than most agency work: I wasn't choosing the stack. I was building inside someone else's, on their infrastructure, to their review standards, for a product built around enterprise trust, which made the standards more than a formality.
+**The result.** The site shipped in mid 2015, live on google.com, meeting Google's front end bar end to end, working closely with a designer and QA engineer to get there. It's a different kind of project than most agency work: I wasn't choosing the stack. I was building inside someone else's, on their infrastructure, to their review standards, for a product built around enterprise trust, which made the standards more than a formality.
 
 **What still holds up.** AngularJS and Closure aren't how anyone builds a marketing site today, mine included. What holds up is the discipline behind it: read the constraints first, pick the smallest solution that satisfies them, and don't smuggle in your own preferences where they don't fit the platform you're building on. That's still how I approach any project built on a client's existing platform instead of my own stack, whether that platform is a Fortune 500 company's internal CMS or a smaller client's existing WordPress install.
 
@@ -59,6 +59,6 @@ So the site was taken down between 2016-09-25 and 2016-11-08, roughly 14 months 
 ## Open questions for Brian
 
 1. **Team and timeline.** The old copy names only a designer and a QA engineer beyond you. Any names or project duration (weeks or months) you're comfortable citing?
-2. **Exact pre-date, now with a wrinkle.** The old case study says only "Released 2016," but Wayback shows the "Work the way you live" design already live by 2015-09-05, and the 2015-05-31 capture still shows Google's earlier launch page. So the redesign shipped sometime between June and early September 2015, not in 2016. Two readings: the build actually launched in mid 2015 and "Released 2016" was approximate, or your work was a 2016 iteration on a structure that already existed. Which is it, and what date should the article carry? (See Site lifespan above for the capture trail.)
+2. **Exact pre-date: RESOLVED 2026-07-15.** Brian confirmed the Wayback evidence over his old case study's "Released 2016": the build shipped mid 2015 (live by 2015-09-05). Dates corrected throughout this draft; article pre-date set to 2015-09-01.
 3. **Assets: partially ANSWERED 2026-07-15.** Brian supplied the legacy brohde.com WordPress codebase; the original demo video (`afw.mp4`) was recovered (see Image candidates). No AfW still screenshots were in the legacy uploads, so stills come from the video or from the Wayback reconstruction.
 4. **Product context.** I added one factual sentence describing what Android for Work was (Google's enterprise mobile management product) for reader context, since the old case study assumed the reader already knew. Confirm that's accurate and welcome, or prefer the piece stay narrowly about the build with no product description?

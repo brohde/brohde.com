@@ -1,0 +1,81 @@
+---
+/**
+ * Centralized SEO: title, description, canonical, Open Graph, Twitter, robots,
+ * and a JSON-LD slot (E2). Per-page props override the global defaults in
+ * SITE. Ported in spirit from the prior-project SEO.astro.
+ */
+import { SITE, LINKS } from "@/lib/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Absolute or root-relative OG image. Defaults to the site image. */
+  image?: string;
+  /** website | article | profile */
+  ogType?: "website" | "article" | "profile";
+  noindex?: boolean;
+  /** Structured data objects; serialized to <script type="application/ld+json">. */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  description = SITE.description,
+  image = SITE.ogImage,
+  ogType = "website",
+  noindex = false,
+  jsonLd,
+} = Astro.props;
+
+const pageTitle = title ? `${title} · ${SITE.name}` : SITE.title;
+
+// Canonical: build.site + current path, normalized (no trailing slash except root).
+const canonicalURL = new URL(Astro.url.pathname, SITE.url);
+if (canonicalURL.pathname !== "/") {
+  canonicalURL.pathname = canonicalURL.pathname.replace(/\/$/, "");
+}
+const canonical = canonicalURL.href;
+const imageURL = new URL(image, SITE.url).href;
+
+const ldBlocks = jsonLd
+  ? Array.isArray(jsonLd)
+    ? jsonLd
+    : [jsonLd]
+  : [];
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{
+  noindex ? (
+    <meta name="robots" content="noindex, nofollow" />
+  ) : (
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+  )
+}
+
+{/* Open Graph */}
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:title" content={title ?? SITE.title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageURL} />
+<meta property="og:locale" content={SITE.locale} />
+
+{/* Twitter / X */}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title ?? SITE.title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageURL} />
+<meta name="twitter:creator" content={LINKS.xHandle} />
+
+{
+  ldBlocks.map((block) => (
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(block)}
+    />
+  ))
+}

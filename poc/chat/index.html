@@ -57,7 +57,10 @@ f.addEventListener('submit', async (e) => {
     const d = await r.json();
     if (d.error) { wait.className = 'msg err'; wait.textContent = 'error: ' + d.error; return; }
     let html = '';
-    if (d.text) html += esc(d.text);
+    // render markdown links, allowlisted internal slugs only; everything else stays escaped text
+    const linkify = s => s.replace(/\[([^\]\n]{1,60})\]\(\/(about|work|eight-angle|contact|resume)\)/g,
+      '<a href="/$2" class="nav" title="navigates on the real site" onclick="return false">$1</a>');
+    if (d.text) html += linkify(esc(d.text));
     if (d.open_page) html += (html ? '\n' : '') + '<span class="nav">→ opening /' + esc(d.open_page) + '</span> <span class="meta">(real site navigates here)</span>';
     wait.className = 'msg bot'; wait.innerHTML = html || '<span class="meta">(no text)</span>';
     add('bot meta', '# ' + d.usage.input + ' in · ' + d.usage.output + ' out · cache r' + d.usage.cache_read + '/w' + d.usage.cache_write + ' · $' + d.cost.toFixed(5));

@@ -58,12 +58,10 @@ See the ⚠️ in-flight agents section at the top: aurora dark-ground rework, A
 - v3 prototype updated + republished: "$ hello" header line, boot on every visit (#41, #42)
 
 ## Open questions for Brian
+- Where is brohde.com registered? (Not on his Cloudflare account; needed for the eventual domain cutover. Pages setup proceeds on a pages.dev URL once the scaffold is committed: Claude drives the dashboard, Brian clicks the GitHub authorize step)
 - Glyph tide placement in build.log: ideas presented (article heroes + right gutter recommended; full background at whisper strength; boot-moment assembly; chat-only). Awaiting his pick, then lab-build the top contenders
 - Presence planes: "your plane" marker agreed (#43); steering mechanism to design (opt-in fly command recommended over raw arrow-key hijack, a11y #28)
-- Header company link targets: official sites picked (gong.io, twilio.com, bynd.com, eightangle.com); veto or retarget any to internal case-study pages?
 - Aurora details (tweak later per Brian): night glow strength, amber chat tag vs all-mint, drop the light-ground toggle now that light mode is real (#40)
-- Android for Work: Wayback shows the redesign live by Sept 2015, but the old case study says "Released 2016". Shipped mid 2015, or was your work a 2016 iteration? Draft holds "shipped in 2016" until answered
-- New legacy material: want drafts for NowNow, Platform Surfaces, or Foundation for Peripheral Neuropathy? Videos found for the first two
 - Resume command behavior (print link vs open PDF)
 - ATG draft: timing being recomputed from Claude Code session logs (Brian: ~4h total incl. LLM waiting; publish hands-on time minus LLM waiting; later touch-ups counted separately; forensics agent in flight). THEN a copywriter revision restructures around Brian's three pillars: the migration, UI refresh preserving the same look and feel, FREE hosting + FREE CMS (verify $0 claims against the repo). Queued behind the forensics agent, same file
 - Boot: fake caret during the auto-type? (input deliberately unfocused, so none shows today)

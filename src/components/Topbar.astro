@@ -1,0 +1,24 @@
+---
+/**
+ * Sticky top bar for the alternate screens (chat, about). A clear, always
+ * present way back home (#24): the [esc] back link is a real anchor to /, so
+ * it works with keyboard, click, and the Escape key alike.
+ */
+interface Props {
+  /** right-hand label, e.g. "about.txt" | "chat · demo mode" */
+  label: string;
+}
+const { label } = Astro.props;
+---
+
+<div class="topbar">
+  <div class="wrap tbrow">
+    <a class="backbtn" href="/" data-cmd="home" aria-label="Back to home">
+      <span class="br" aria-hidden="true">[</span>esc<span
+        class="br"
+        aria-hidden="true">]</span
+      >&nbsp;back
+    </a>
+    <span class="tbl" set:html={label}></span>
+  </div>
+</div>
