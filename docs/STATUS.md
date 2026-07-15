@@ -1,6 +1,22 @@
 # STATUS — session resume point
 
-_Last updated: 2026-07-15 (session 1, build.log chosen; 5 parallel workstreams in flight)_
+_Last updated: 2026-07-15 (session 1, late). Brian may clear the session; this file + DECISIONS + COMMS-LOG are the complete handoff._
+
+## Artifact inventory (published; update via Artifact tool `url` param from any session)
+
+| Artifact | URL | Source file (`docs/design/`) |
+|---|---|---|
+| **build.log v3 interactive prototype** (CURRENT review surface) | https://claude.ai/code/artifact/7ca6a6c4-df52-477a-b6e6-051b8cd40855 | `lab/build-log-v3.html` |
+| Animation Lab (6 ambient demos) | https://claude.ai/code/artifact/6b30f13b-9b24-4825-a7b2-7744d0168e38 | `lab/animations.html` |
+| Parked directions (Quarterly/Blackletter/Exposed Grid, round-2 split) | https://claude.ai/code/artifact/95d8afd0-bf02-4478-8f54-b87ea803c4f3 | `lab/parked-directions.html` |
+| Round 2 (historical, all 4 directions) | https://claude.ai/code/artifact/c0782148-e1c2-4727-9743-f75fb94ab3ff | `lab/round-2.html` |
+| Round 1: 10 concepts (historical) | https://claude.ai/code/artifact/8634c805-be41-4357-b23b-02b22ec5d6e1 | `design-concepts.html` |
+
+## ⚠️ In-flight background agents (die if session clears; contingency inline)
+
+1. **Aurora-terminal lab** → should write `docs/design/lab/aurora-terminal.html` (aurora-on-white, two-state home/chat palettes, glyph-tide-from-image demo, presence planes mock). If that file is missing in a new session: re-brief a design-director (fable) from the COMMS-LOG "batch 3" entry + decisions #26; stock test images ready at `assets/images/glyph-source/` (best: vw-bus.jpg).
+2. **Newsroom history research** → should update `docs/drafts/facebook-newsroom.md` with: predecessor site before the 2014 build, decommission window (site lifespan), archive-verified localized-language list. If the draft lacks those: re-run research via Wayback in-browser (web.archive.org is blocked for WebFetch; use claude-in-chrome; CDX for URL discovery).
+3. **Boot sequence for build.log v3** (decision #36) → should modify `docs/design/lab/build-log-v3.html` in place: first load starts blank with just the chatbox, "hello" auto-types, then the homepage reveals as the terminal's answer (once per session, any input skips, reduced-motion disabled, content stays in DOM for SEO, deep links skip it). If the file lacks it in a new session: re-brief a design-director with this paragraph. After it lands, republish the artifact from the same file path (URL in table above).
 
 ## Where we are
 
