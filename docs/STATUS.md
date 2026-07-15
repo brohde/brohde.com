@@ -8,6 +8,7 @@ _Last updated: 2026-07-15 (session 1, late). Brian may clear the session; this f
 |---|---|---|
 | **build.log v3 interactive prototype** (CURRENT review surface) | https://claude.ai/code/artifact/7ca6a6c4-df52-477a-b6e6-051b8cd40855 | `lab/build-log-v3.html` |
 | **Aurora Terminal Lab** (dusk/golden two-state, glyph-from-image, presence planes) | https://claude.ai/code/artifact/9b0b7ddf-75b3-4e68-bd36-d6b76647bd71 | `lab/aurora-terminal.html` |
+| **Chat eval review** (interactive pass/fail grading; regen via `node poc/chat/make-review.mjs`) | https://claude.ai/code/artifact/55298a58-d9e4-4952-afdf-951c78adcbd2 | `../../poc/chat/eval-review.html` |
 | Animation Lab (6 ambient demos) | https://claude.ai/code/artifact/6b30f13b-9b24-4825-a7b2-7744d0168e38 | `lab/animations.html` |
 | Parked directions (Quarterly/Blackletter/Exposed Grid, round-2 split) | https://claude.ai/code/artifact/95d8afd0-bf02-4478-8f54-b87ea803c4f3 | `lab/parked-directions.html` |
 | Round 2 (historical, all 4 directions) | https://claude.ai/code/artifact/c0782148-e1c2-4727-9743-f75fb94ab3ff | `lab/round-2.html` |
