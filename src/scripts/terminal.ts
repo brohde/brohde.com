@@ -6,7 +6,8 @@
  *     + /slash aliases + free-form -> chat stub), ported from build-log-v3.html
  *   - command autocomplete at the prompt (#48)
  *   - shell-style prompt history (#44)
- *   - the boot sequence (#36, #41)
+ *   - the boot sequence (#36; #64: site entry only, never on internal navs)
+ *   - the roving page cursor (#63) and the terminal wipe transition (#64)
  *
  * View-Transitions safety (E5): all listeners are delegated on `document` and
  * attached exactly once; nothing is bound to a specific node at module scope.
@@ -761,13 +762,13 @@ function setupOnce() {
     }
   });
 
-  // Set the boot class before paint on client-side navigations, so the home
-  // screen never flashes its full content before the reveal. (The initial
-  // hard load is handled by the pre-paint gate in BaseLayout.)
+  // Boot plays on SITE ENTRY ONLY (#64): the pre-paint gate in BaseLayout
+  // sets html.boot on genuine full loads of the homepage, and Astro never
+  // re-runs that unchanged inline script on client-side navigations. Here we
+  // only ever CLEAR the class after a swap, so internal navigation back to
+  // home renders instantly complete and the sequence never replays.
   document.addEventListener("astro:after-swap", () => {
-    const root = document.documentElement;
-    if (location.pathname === "/" && !RM()) root.classList.add("boot");
-    else root.classList.remove("boot");
+    document.documentElement.classList.remove("boot");
   });
 
   // stop a running boot if we navigate away mid-sequence
