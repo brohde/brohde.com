@@ -20,7 +20,7 @@ interface Props {
 }
 const {
   id,
-  placeholder = "ask me anything…",
+  placeholder = "Ask me anything…",
   label = "Ask me anything, or type a command",
 } = Astro.props; // boot accepted (see Props) but unused: prompt never hides
 
@@ -31,7 +31,7 @@ const acId = `ac-${id}`;
 
 <div class="promptzone" data-prompt={id}>
   <div class="ac" id={acId} hidden>
-    <p class="ac-head">commands · Tab to accept · ↑↓ to cycle</p>
+    <p class="ac-head">Commands · Tab to accept · ↑↓ to cycle</p>
     <ul
       class="ac-list"
       id={listId}
