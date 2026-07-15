@@ -1,39 +1,35 @@
 # STATUS — session resume point
 
-_Last updated: 2026-07-15 (session 1, end of round-2 design iteration)_
+_Last updated: 2026-07-15 (session 1, build.log chosen; 5 parallel workstreams in flight)_
 
 ## Where we are
 
-**Phase: 0 — Design exploration, round 2 delivered. No direction locked yet (decision #19); iterating shortlisted directions independently. Palette work deferred until a direction wins.**
+**Phase: 0.5 — build.log is THE direction (decision #22). Chat greenlit as a real LLM (#23). Content production started (#29).**
 
-### Delivered artifacts (all published, sources in `docs/design/`)
-1. **"brohde.com — 10 Design Concepts"** (`design-concepts.html`) — round 1, reviewed by Brian
-2. **"brohde.com — Animation Lab"** (`lab/animations.html`) — 6 ambient background demos for the Eight Angle direction (constellation, aurora gradients, ink drift, isolines, detection sweep, glyph tide)
-3. **"brohde.com — Design Round 2"** (`lab/round-2.html`) — build.log v2 (readable + mobile + chat mock + bio fix), Blackletter v2 (dash-free, Circular pending), Quarterly v2 (de-AI'd), Exposed Grid v2 (3 title-font options + mobile solved)
+### Delivered
+- Artifacts: 10 Concepts (round 1) · Animation Lab · Design Round 2 · **build.log v3 interactive prototype** (3 header treatments, alternate-screen nav, command layer, mobile-verified)
+- `docs/reference/chat-feasibility.md` (costs/options/presence research) + `docs/reference/llm-terminal-plan.md` (**the build plan**: clicks-are-commands, deterministic layer, Haiku tool-use router page-vs-prose, Brian-owned deny-list incl. no age/YOE leakage, validation gates V1-V5, abuse controls, keyboard a11y, phases P1-P4)
+- LL Circular staged (`assets/fonts/circular/`, web license needed; note: Circular was for the parked Blackletter direction)
 
-### Shortlist per Brian's round-1 review
-build.log (loved; chat-interface idea attached) · Blackletter Modern (liked, gets LL Circular) · Quarterly (structure liked, was too "AI") · Eight Angle animations (loved, now its own lab) · Exposed Grid (grid+filters liked, font disliked)
+### In flight (background agents, results land in repo)
+1. `docs/drafts/eight-angle-ml.md` — flagship case study (repo-researched)
+2. `docs/drafts/atg-llm-migration.md` — LLM site-migration story (repo + session logs)
+3. `docs/drafts/gold-coast.md` — client-designed-with-ChatGPT + Pastel loop story
+4. `docs/drafts/facebook-newsroom.md` + `google-android-for-work.md` — retrospectives (archive.org verbatim source)
+5. `docs/design/lab/aurora-terminal.html` — aurora-on-white, two-state palettes (home vs chat), glyph-tide-from-image demo, presence planes mock
 
-### Chat/presence exploration (NOT yet greenlit)
-`docs/reference/chat-feasibility.md` — ~$0.002/reply Haiku vs $0 Workers AI free tier, AI Gateway for comparing LLMs, hybrid static+terminal architecture for SEO, deterministic command layer for "perfect" answers + discoverable nav, 9 presence ideas (top: online counter, `who` command, visitors as constellation nodes/detections via Durable Objects)
-
-### Assets & rules
-- LL Circular Pro TTFs in `assets/fonts/circular/` (⚠️ need Lineto web license + woff2 before production)
-- Dash ban total: no en or em dashes anywhere (VOICE.md v1.1, decision #18)
-- Facebook/Google always framed as agency work via Beyond (#21)
-- Comms log lives at `docs/COMMS-LOG.md` (Brian asked; it is maintained and current)
+### Standing rules (recent additions)
+- Full keyboard accessibility for the terminal (#28) · no dashes anywhere (#18) · no aggregate years-of-experience/age phrasing in any copy or LLM output (#27/#29) · FB/Google = agency work via Beyond (#21)
 
 ## Next actions
-
-1. **Brian reviews Round 2 + Animation Lab artifacts**: pick winners per direction (esp. Exposed Grid title font A/B/C, favorite animations), react to Quarterly de-AI moves
-2. **Brian decides on chat/presence scope** (v1 chat? which presence features?)
-3. Then: begin converging directions toward one unified design; only then palette exploration
-4. Phase 1 (Astro scaffold per `docs/reference/prior-project-conventions.md`, Cloudflare Pages, PostHog) can start in parallel once any direction is close
+1. Collect the 5 workstreams: review drafts against VOICE, publish aurora lab artifact, bring open questions to Brian
+2. Brian: header treatment pick (1/2/3 in v3 prototype) · aurora state-color reaction · draft reviews · answers to open questions below
+3. Then: converge build.log v3 + aurora direction into v4; start Phase 1 scaffold (Astro + Cloudflare + PostHog per prior-project conventions)
 
 ## Open questions for Brian
-
-- Round-2 picks (fonts, animations, direction ranking)
-- Chat + presence greenlight and scope
-- More writing samples for VOICE.md (offered, not yet sent)
-- Substack vs site canonical; travel-content placement; article pre-dates; resume public format; Twitter link
-- OK to buy LL Circular web license when we build?
+- Clarify the "don't actively reveal my name" constraint (we read it as the age/YOE class of redaction; confirm exactly what's off-limits)
+- X handle · header treatment pick · resume command behavior (print link vs open PDF)
+- Ephemeral visitor chat parked for v1, OK?
+- Supply images (folder path) for the glyph-tide-from-images pipeline whenever ready
+- LL Circular web license purchase (only matters if any Circular use survives into build.log)
+- Earlier open items: writing samples for VOICE, Substack canonical, travel placement, pre-dates, resume format

@@ -1,0 +1,692 @@
+<title>brohde.com · build.log v3 · interactive prototype</title>
+<style>
+  :root {
+    --bg: #0E1512;
+    --ink: #D6E5DC;
+    --bright: #F2F7F3;
+    --mint: #7EE787;
+    --dim: #8FA79A;
+    --line: #2E4A3C;
+    --line2: #33523F;
+    --well: #12201A;
+    --mono: ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Mono", monospace;
+    --sans: system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  }
+
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+  }
+  [hidden] { display: none !important; }
+  * { box-sizing: border-box; }
+  ::selection { background: var(--mint); color: var(--bg); }
+  a { color: var(--mint); }
+  :focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+  .screen:focus { outline: none; }
+
+  .sr {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 22px; width: 100%; }
+
+  .screen { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+
+  .p { color: var(--mint); }
+  .d, .k, .br { color: var(--dim); }
+  .cmt { color: var(--dim); font-size: 12px; margin: 8px 0; }
+  .pline { margin: 0 0 4px; }
+
+  .caret {
+    display: inline-block; width: 9px; height: 17px;
+    background: var(--mint); vertical-align: -3px;
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ---------- header ---------- */
+  .hd { position: relative; padding: 28px 0 4px; }
+
+  .hv1 { position: relative; }
+  .hv1::before {
+    content: ""; position: absolute; inset: -28px -40px -10px;
+    background: radial-gradient(420px 200px at 16% 12%, rgba(126, 231, 135, 0.07), transparent 70%);
+    pointer-events: none;
+  }
+  .hv1::after {
+    content: ""; position: absolute; inset: -6px -12px 0;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.20) 0 1px, transparent 1px 3px);
+    opacity: 0.45; pointer-events: none;
+  }
+  .wordmark {
+    font-family: var(--mono); font-weight: 700;
+    font-size: clamp(28px, 9vw, 46px); line-height: 1.12;
+    letter-spacing: -0.02em; color: var(--mint);
+    margin: 8px 0 14px;
+    text-shadow: 0 0 26px rgba(126, 231, 135, 0.30), 0 0 3px rgba(126, 231, 135, 0.35);
+  }
+  .wordmark .caret { width: 0.42em; height: 0.82em; vertical-align: -0.06em; }
+  .bio { margin: 3px 0; overflow-wrap: anywhere; }
+  .bioname { font-size: inherit; font-weight: inherit; font-family: inherit; margin: 3px 0; overflow-wrap: anywhere; }
+
+  .tmux {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 2px 18px;
+    background: var(--mint); color: var(--bg);
+    font-size: 12px; font-weight: 600;
+    padding: 7px 12px; border-radius: 4px; margin: 0 0 16px;
+  }
+  .hv2 .pline { margin-top: 2px; }
+
+  .frame3 {
+    position: relative; border: 1px solid var(--line2); border-radius: 6px;
+    padding: 16px 16px 12px; margin-top: 12px;
+  }
+  .flabel {
+    position: absolute; top: -10px; left: 12px;
+    background: var(--bg); color: var(--mint);
+    padding: 0 7px; font-size: 12px; letter-spacing: 0.06em;
+  }
+
+  .hrow {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 0 12px; margin: 6px 0 0;
+  }
+  .links { list-style: none; display: flex; flex-wrap: wrap; gap: 0 8px; margin: 0; padding: 0; }
+  .blink {
+    display: inline-flex; align-items: center; min-height: 44px;
+    padding: 0 4px; color: var(--mint); text-decoration: none;
+  }
+  .blink .lbl { text-decoration: underline; text-underline-offset: 3px; }
+  .blink:hover .lbl { background: var(--mint); color: var(--bg); text-decoration: none; }
+
+  .hswitch { display: flex; align-items: center; color: var(--dim); font-size: 12px; }
+  .hswitch .hsl { margin-right: 4px; }
+  .hswitch button {
+    min-width: 44px; min-height: 44px;
+    background: none; border: 0; padding: 0; cursor: pointer;
+    color: var(--mint); font: inherit; font-size: 13.5px;
+  }
+  .hswitch button .n { padding: 1px 5px; border-radius: 2px; }
+  .hswitch button[aria-pressed="true"] .n { background: var(--mint); color: var(--bg); }
+  .hswitch button:hover .n { background: var(--mint); color: var(--bg); }
+
+  /* ---------- command menu + prompt ---------- */
+  .menu { display: flex; flex-wrap: wrap; gap: 0 8px; margin: 8px 0 0; }
+  .cbtn {
+    display: inline-flex; align-items: center; min-height: 44px;
+    background: none; border: 0; padding: 0 6px; cursor: pointer;
+    color: var(--mint); font: inherit;
+  }
+  .cbtn:hover { background: var(--mint); color: var(--bg); }
+  .cbtn:hover .br { color: var(--bg); }
+
+  .prompt {
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid var(--line2); background: var(--well);
+    border-radius: 8px; padding: 2px 14px; min-height: 52px; margin-top: 6px;
+  }
+  .prompt:focus-within {
+    border-color: var(--mint);
+    box-shadow: 0 0 14px rgba(126, 231, 135, 0.14);
+  }
+  .iwrap { flex: 1; min-width: 0; position: relative; display: flex; overflow: hidden; }
+  .prompt input {
+    flex: 1; min-width: 0; background: none; border: 0;
+    color: var(--bright); font-family: var(--mono); font-size: 16px;
+    line-height: 1.4; caret-color: var(--mint); padding: 13px 0;
+  }
+  .prompt input::placeholder { color: transparent; opacity: 1; }
+  .prompt input:focus::placeholder { color: var(--dim); }
+  .prompt input:focus { outline: none; }
+  .ph {
+    display: none; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    align-items: center; gap: 2px; pointer-events: none;
+    color: var(--dim); font-size: 16px; white-space: nowrap;
+  }
+  .ph .caret { margin-left: 2px; }
+  .prompt input:placeholder-shown:not(:focus) + .ph { display: flex; }
+
+  .hint { min-height: 1.4em; margin: 6px 0 0; transition: opacity 300ms; }
+
+  /* ---------- log ---------- */
+  .log { margin-top: 22px; }
+  .entry {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 11px 10px; margin: 0 -10px; border-radius: 4px;
+    text-decoration: none; color: var(--ink);
+  }
+  .line2 { display: contents; }
+  .ts { color: var(--dim); font-size: 12px; }
+  .ttl {
+    font-family: var(--sans); font-size: 16.5px; font-weight: 600;
+    color: var(--bright); line-height: 1.35;
+  }
+  .entry:hover, .entry:focus-visible { background: var(--mint); }
+  .entry:hover .ts, .entry:hover .p, .entry:hover .ttl,
+  .entry:focus-visible .ts, .entry:focus-visible .p, .entry:focus-visible .ttl { color: var(--bg); }
+  .entry:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+  .status {
+    border-top: 1px solid var(--line); margin-top: 22px; padding-top: 12px;
+    color: var(--dim); font-size: 12px;
+  }
+  .proto { font-size: 11.5px; margin: 6px 0 0; }
+  .homepad { padding-top: 4px; padding-bottom: 36px; }
+
+  /* ---------- alternate screens (chat, about) ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--bg) 90%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  @supports not (background: color-mix(in srgb, red 50%, blue)) {
+    .topbar { background: rgba(14, 21, 18, 0.93); }
+  }
+  .tbrow { display: flex; justify-content: space-between; align-items: center; min-height: 52px; }
+  .backbtn {
+    display: inline-flex; align-items: center; min-height: 44px;
+    background: none; border: 0; padding: 0 10px; margin-left: -10px;
+    cursor: pointer; color: var(--mint); font: inherit;
+  }
+  .backbtn:hover { background: var(--mint); color: var(--bg); }
+  .backbtn:hover .br { color: var(--bg); }
+  .tbl { color: var(--dim); font-size: 12px; }
+
+  .chatwrap { display: flex; flex-direction: column; flex: 1; }
+  .chatlog { padding: 16px 0 8px; }
+  .uline { color: var(--bright); margin-top: 18px; overflow-wrap: anywhere; }
+  .reply {
+    font-family: var(--sans); font-size: 16px; line-height: 1.65;
+    color: var(--ink); max-width: 62ch;
+    border-left: 2px solid var(--line2); padding-left: 13px;
+    margin: 10px 0 2px; white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  .out { white-space: pre-wrap; margin: 8px 0 2px; overflow-wrap: anywhere; }
+  .out .c { color: var(--dim); font-size: 12px; }
+  .out a { text-underline-offset: 3px; }
+
+  .dock {
+    position: sticky; bottom: 0; margin-top: auto;
+    background: linear-gradient(to top, var(--bg) 80%, transparent);
+    padding: 6px 0 max(10px, env(safe-area-inset-bottom));
+  }
+  .keybar { display: flex; flex-wrap: wrap; gap: 0 6px; margin-bottom: 2px; }
+
+  /* ---------- about ---------- */
+  .aboutpad { padding-top: 20px; padding-bottom: 12px; }
+  .prose {
+    font-family: var(--sans); font-size: 16.5px; line-height: 1.7;
+    color: var(--ink); max-width: 62ch; margin-top: 14px;
+  }
+  .prose p { margin: 0 0 18px; }
+  .prose a { text-underline-offset: 3px; }
+
+  /* ---------- screen-clear wipe ---------- */
+  #wipe { position: fixed; inset: 0; z-index: 99; background: var(--bg); }
+  #wipe span { position: absolute; top: 18px; left: 22px; width: 9px; height: 18px; background: var(--mint); }
+
+  /* ---------- small screens ---------- */
+  @media (max-width: 560px) {
+    .entry { display: block; }
+    .entry .ts { display: block; margin-bottom: 3px; }
+    .entry .line2 { display: block; }
+  }
+  @media (max-width: 480px) {
+    body { font-size: 13px; }
+    .wrap { padding: 0 16px; }
+    #wipe span { left: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    .caret { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+
+<div id="wipe" hidden aria-hidden="true"><span></span></div>
+
+<!-- ================= HOME ================= -->
+<section class="screen" id="scr-home" tabindex="-1">
+  <div class="wrap homepad">
+
+    <header class="hd">
+      <!-- header treatment 1: phosphor wordmark (primary) -->
+      <div class="hv" data-h="1">
+        <p class="pline"><span class="p">$</span> whoami</p>
+        <h1 class="wordmark">brian rohde<span class="caret" aria-hidden="true"></span></h1>
+        <p class="bio">full-stack engineer <span class="d">·</span> san francisco</p>
+        <p class="bio">ships AI products end to end <span class="d">·</span> founder, eight angle</p>
+        <p class="bio"><span class="k">prev:</span> gong <span class="d">·</span> twilio <span class="d">·</span> beyond (projects for facebook + google)</p>
+      </div>
+
+      <!-- header treatment 2: tmux status bar -->
+      <div class="hv" data-h="2" hidden>
+        <div class="tmux"><span>[brohde.com]</span><span>sf <span aria-hidden="true">·</span> available <span aria-hidden="true">·</span> up 13y</span></div>
+        <p class="pline"><span class="p">$</span> whoami</p>
+        <h1 class="bioname">brian rohde <span class="d">·</span> full-stack engineer <span class="d">·</span> san francisco</h1>
+        <p class="bio">ships AI products end to end <span class="d">·</span> founder, eight angle</p>
+        <p class="bio"><span class="k">prev:</span> gong <span class="d">·</span> twilio <span class="d">·</span> beyond (projects for facebook + google)</p>
+      </div>
+
+      <!-- header treatment 3: boxed whoami -->
+      <div class="hv" data-h="3" hidden>
+        <div class="frame3">
+          <span class="flabel">whoami</span>
+          <h1 class="bioname">brian rohde <span class="d">·</span> full-stack engineer <span class="d">·</span> san francisco</h1>
+          <p class="bio">ships AI products end to end <span class="d">·</span> founder, eight angle</p>
+          <p class="bio"><span class="k">prev:</span> gong <span class="d">·</span> twilio <span class="d">·</span> beyond (projects for facebook + google)</p>
+        </div>
+      </div>
+
+      <div class="hrow">
+        <ul class="links" aria-label="Profiles and resume">
+          <li><a class="blink" href="https://www.linkedin.com/in/brian-rohde-4ba3558/" target="_blank" rel="noopener"><span class="br" aria-hidden="true">[</span><span class="lbl">linkedin</span><span class="br" aria-hidden="true">]</span></a></li>
+          <li><a class="blink" href="/resume.pdf"><span class="br" aria-hidden="true">[</span><span class="lbl">resume</span><span class="br" aria-hidden="true">]</span></a></li>
+          <li><a class="blink" id="xlink" href="#" title="handle TBD" aria-label="X, handle TBD"><span class="br" aria-hidden="true">[</span><span class="lbl">x</span><span class="br" aria-hidden="true">]</span></a></li>
+        </ul>
+        <div class="hswitch" role="group" aria-label="Header treatment switcher, prototype only">
+          <span class="hsl" aria-hidden="true"># header</span>
+          <button type="button" data-hset="1" aria-pressed="true" aria-label="Header treatment 1"><span class="n">1</span></button>
+          <button type="button" data-hset="2" aria-pressed="false" aria-label="Header treatment 2"><span class="n">2</span></button>
+          <button type="button" data-hset="3" aria-pressed="false" aria-label="Header treatment 3"><span class="n">3</span></button>
+        </div>
+      </div>
+    </header>
+
+    <nav class="menu" aria-label="Commands">
+      <button type="button" class="cbtn" data-cmd="work"><span class="br" aria-hidden="true">[</span>work<span class="br" aria-hidden="true">]</span></button>
+      <button type="button" class="cbtn" data-cmd="about"><span class="br" aria-hidden="true">[</span>about<span class="br" aria-hidden="true">]</span></button>
+      <button type="button" class="cbtn" data-cmd="resume"><span class="br" aria-hidden="true">[</span>resume<span class="br" aria-hidden="true">]</span></button>
+      <button type="button" class="cbtn" data-cmd="contact"><span class="br" aria-hidden="true">[</span>contact<span class="br" aria-hidden="true">]</span></button>
+    </nav>
+
+    <form class="prompt" id="f-home">
+      <label class="sr" for="in-home">Ask about my work, or type a command</label>
+      <span class="p" aria-hidden="true">$</span>
+      <span class="iwrap"><input id="in-home" name="q" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="240" placeholder="ask about my work&hellip;" enterkeyhint="send"><span class="ph" aria-hidden="true">ask about my work&hellip;<span class="caret"></span></span></span>
+    </form>
+    <p class="cmt"># questions open a chat screen <span aria-hidden="true">·</span> help lists commands</p>
+    <p class="cmt hint" id="hint-top" aria-live="polite"></p>
+
+    <section class="log" id="log" aria-label="Article log">
+      <a class="entry" href="#"><span class="ts">[2026-02-12]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Building the ML model behind Eight Angle</span></span></a>
+      <a class="entry" href="#"><span class="ts">[2026-05-28]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">How I run parallel Claude Code agents</span></span></a>
+      <a class="entry" href="#"><span class="ts">[2025-11-14]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">From idea to production in four hours</span></span></a>
+      <div class="cmt"># migrated a live WordPress site to Astro before lunch</div>
+      <a class="entry" href="#"><span class="ts">[2025-09-30]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Alternatives to Squarespace</span></span></a>
+      <a class="entry" href="#"><span class="ts">[2014-07-22]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Facebook&rsquo;s first WordPress site</span></span></a>
+    </section>
+    <p class="cmt hint" id="hint-log" aria-live="polite"></p>
+
+    <footer class="status">status: available for freelance <span aria-hidden="true">·</span> 3 guests online</footer>
+    <p class="cmt proto"># build.log v3 <span aria-hidden="true">·</span> interactive prototype <span aria-hidden="true">·</span> 2026-07-15</p>
+  </div>
+</section>
+
+<!-- ================= CHAT ================= -->
+<section class="screen" id="scr-chat" tabindex="-1" hidden>
+  <h1 class="sr">chat</h1>
+  <div class="topbar">
+    <div class="wrap tbrow">
+      <button type="button" class="backbtn" data-cmd="home" aria-label="Back to home"><span class="br" aria-hidden="true">[</span>esc<span class="br" aria-hidden="true">]</span>&nbsp;back</button>
+      <span class="tbl">chat <span aria-hidden="true">·</span> demo mode</span>
+    </div>
+  </div>
+  <div class="wrap chatwrap">
+    <div class="chatlog" id="chatlog">
+      <p class="cmt"># demo chat <span aria-hidden="true">·</span> type help for commands <span aria-hidden="true">·</span> esc returns home</p>
+    </div>
+    <div class="sr" aria-live="polite" id="announce"></div>
+    <div class="dock">
+      <div class="keybar">
+        <button type="button" class="cbtn" data-cmd="home"><span class="br" aria-hidden="true">[</span>home<span class="br" aria-hidden="true">]</span></button>
+        <button type="button" class="cbtn" data-cmd="help"><span class="br" aria-hidden="true">[</span>help<span class="br" aria-hidden="true">]</span></button>
+        <button type="button" class="cbtn" data-cmd="clear"><span class="br" aria-hidden="true">[</span>clear<span class="br" aria-hidden="true">]</span></button>
+      </div>
+      <form class="prompt" id="f-chat">
+        <label class="sr" for="in-chat">Ask a question or type a command</label>
+        <span class="p" aria-hidden="true">$</span>
+        <span class="iwrap"><input id="in-chat" name="q" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="240" placeholder="ask or type a command&hellip;" enterkeyhint="send"><span class="ph" aria-hidden="true">ask or type a command&hellip;<span class="caret"></span></span></span>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="screen" id="scr-about" tabindex="-1" hidden>
+  <h1 class="sr">about</h1>
+  <div class="topbar">
+    <div class="wrap tbrow">
+      <button type="button" class="backbtn" data-cmd="home" aria-label="Back to home"><span class="br" aria-hidden="true">[</span>esc<span class="br" aria-hidden="true">]</span>&nbsp;back</button>
+      <span class="tbl">about.txt</span>
+    </div>
+  </div>
+  <div class="wrap aboutpad">
+    <p class="pline"><span class="p">$</span> cat about.txt</p>
+    <article class="prose">
+      <p>I&rsquo;m a full-stack engineer in San Francisco. I ship AI products end to end: model, app, and the infrastructure underneath.</p>
+      <p>I founded Eight Angle, an iOS yoga tracker that detects poses automatically. I trained its 47-class pose classifier to 92.2% cross-validated accuracy, and it runs on-device at roughly 20fps.</p>
+      <p>Before that I was Staff Web Engineer at Gong, where I built an LLM translation workflow and replatformed the site. At Twilio I was Technical Web Lead and shipped the company&rsquo;s first localized site, twilio.com/ja. Earlier, at the agency Beyond, I built projects for Facebook (Newsroom, Facebook&rsquo;s first WordPress site) and Google (Android for Work).</p>
+      <p>I&rsquo;m available for freelance work. If you want an engineer who takes things from idea to production, start a conversation: <a href="mailto:brian@brohde.com">brian@brohde.com</a></p>
+    </article>
+    <div class="keybar">
+      <button type="button" class="cbtn" data-cmd="home"><span class="br" aria-hidden="true">[</span>home<span class="br" aria-hidden="true">]</span></button>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  'use strict';
+
+  var $ = function (s) { return document.querySelector(s); };
+  var RM = function () { return matchMedia('(prefers-reduced-motion: reduce)').matches; };
+
+  var screens = { home: $('#scr-home'), chat: $('#scr-chat'), about: $('#scr-about') };
+  var chatlog = $('#chatlog');
+  var announce = $('#announce');
+  var cur = 'home';
+  var pendingFocus = null;
+  var pendingAfter = null;
+  var booted = false;
+
+  var NOTE = '# demo mode: live model (claude haiku) ships with the real site';
+
+  var A_WORK = 'I ship AI products end to end. Right now that is Eight Angle, an iOS yoga tracker I founded: I trained its 47-class pose classifier to 92.2% accuracy, and it runs on-device at roughly 20fps.\n\nBefore that I was Staff Web Engineer at Gong (LLM translation workflow, site replatform) and Technical Web Lead at Twilio (first localized site, twilio.com/ja). Earlier I built projects for Facebook and Google at the agency Beyond.\n\nType work to browse the write-ups in the log.';
+
+  var A_EIGHT = 'Eight Angle is an iOS yoga tracker I founded and built solo. It detects poses automatically: a 47-class pose classifier I trained to 92.2% cross-validated accuracy, running on-device at roughly 20fps.\n\nThe full write-up is in the log: Building the ML model behind Eight Angle.';
+
+  var A_CONTACT = 'I’m available for freelance work. Email brian@brohde.com, or use the linkedin link in the header. Type contact for the short version.';
+
+  var A_DEFAULT = 'That one is past my script. This prototype answers a few canned questions; the real site wires this prompt to a live model grounded in a facts file about my work, and it will say “I don’t know, email brian@brohde.com” rather than guess.\n\nTry: tell me about your work, what is eight angle, or how do I contact you.';
+
+  var HELP_HTML = 'commands\n' +
+    '  work      browse the log\n' +
+    '  about     who I am\n' +
+    '  resume    resume.pdf\n' +
+    '  contact   email + linkedin\n' +
+    '  home      back to the log\n' +
+    '  clear     wipe this chat\n' +
+    '  help      this list\n' +
+    '  header N  try header 1, 2, 3\n' +
+    '<span class="c"># anything else goes to chat</span>';
+
+  var CONTACT_HTML = 'email     <a href="mailto:brian@brohde.com">brian@brohde.com</a>\n' +
+    'linkedin  <a href="https://www.linkedin.com/in/brian-rohde-4ba3558/" target="_blank" rel="noopener">/in/brian-rohde-4ba3558</a>\n' +
+    'x         handle TBD';
+
+  var RESUME_HTML = 'resume    <a href="/resume.pdf">resume.pdf</a>\n' +
+    '<span class="c"># placeholder link in this prototype</span>';
+
+  /* ---------- routing (hash = alternate screen buffers) ---------- */
+
+  function parseHash() {
+    if (location.hash === '#/chat') return 'chat';
+    if (location.hash === '#/about') return 'about';
+    return 'home';
+  }
+
+  function show(name) {
+    if (!screens[name]) name = 'home';
+    for (var k in screens) screens[k].hidden = (k !== name);
+    cur = name;
+    window.scrollTo(0, 0);
+    var target = screens[name];
+    if (name === 'chat' && pendingFocus === 'input') target = $('#in-chat');
+    pendingFocus = null;
+    if (booted && target && target.focus) target.focus({ preventScroll: true });
+    var after = pendingAfter;
+    pendingAfter = null;
+    if (after) after();
+  }
+
+  function wipeTo(name) {
+    if (RM()) { show(name); return; }
+    var w = $('#wipe');
+    w.hidden = false;
+    setTimeout(function () {
+      show(name);
+      setTimeout(function () { w.hidden = true; }, 50);
+    }, 140);
+  }
+
+  function nav(name, focus) {
+    if (focus) pendingFocus = focus;
+    if (parseHash() === name) {
+      if (cur !== name) { wipeTo(name); }
+      else { var a = pendingAfter; pendingAfter = null; if (a) a(); }
+      return;
+    }
+    location.hash = '#/' + name;
+  }
+
+  window.addEventListener('hashchange', function () {
+    var n = parseHash();
+    if (n !== cur) wipeTo(n);
+  });
+
+  /* ---------- chat log primitives ---------- */
+
+  function scrollBottom() {
+    if (cur === 'chat') window.scrollTo(0, document.documentElement.scrollHeight);
+  }
+
+  function line(cls, text) {
+    var d = document.createElement('div');
+    d.className = cls;
+    if (text !== undefined) d.textContent = text;
+    chatlog.appendChild(d);
+    scrollBottom();
+    return d;
+  }
+
+  function echo(t) {
+    var d = document.createElement('div');
+    d.className = 'uline';
+    var p = document.createElement('span');
+    p.className = 'p';
+    p.setAttribute('aria-hidden', 'true');
+    p.textContent = '$ ';
+    d.appendChild(p);
+    d.appendChild(document.createTextNode(t));
+    chatlog.appendChild(d);
+    scrollBottom();
+  }
+
+  function out(html) {
+    var d = document.createElement('div');
+    d.className = 'out';
+    d.innerHTML = html; /* static strings only, never user input */
+    chatlog.appendChild(d);
+    announce.textContent = d.textContent;
+    scrollBottom();
+  }
+
+  /* ---------- typed replies ---------- */
+
+  var typer = null;
+
+  function finishNote(withNote) {
+    if (withNote) line('cmt', NOTE);
+  }
+
+  function flushTyper() {
+    if (!typer) return;
+    clearInterval(typer.timer);
+    typer.node.textContent = typer.full;
+    finishNote(typer.note);
+    typer = null;
+    scrollBottom();
+  }
+
+  function reply(text, withNote) {
+    if (withNote === undefined) withNote = true;
+    announce.textContent = text;
+    var d = line('reply', '');
+    if (RM()) {
+      d.textContent = text;
+      finishNote(withNote);
+      return;
+    }
+    var CPS = 140; /* chars per second, time-based so timer throttling never slows it */
+    typer = { node: d, full: text, note: withNote, start: Date.now(), timer: 0 };
+    typer.timer = setInterval(function () {
+      if (!typer) return;
+      var n = Math.floor((Date.now() - typer.start) * CPS / 1000);
+      typer.node.textContent = typer.full.slice(0, n);
+      scrollBottom();
+      if (n >= typer.full.length) {
+        clearInterval(typer.timer);
+        var withN = typer.note;
+        typer = null;
+        finishNote(withN);
+        scrollBottom();
+      }
+    }, 24);
+  }
+
+  function ask(q) {
+    flushTyper();
+    echo(q);
+    var l = q.toLowerCase();
+    var a;
+    if (/eight\s*angle|yoga|pose|classifier|on.device|ios/.test(l)) a = A_EIGHT;
+    else if (/contact|email|hire|hiring|available|freelance|reach|rate/.test(l)) a = A_CONTACT;
+    else if (/work|project|experience|background|built|build|portfolio|gong|twilio|resume|career|about you|yourself|do you do/.test(l)) a = A_WORK;
+    else a = A_DEFAULT;
+    reply(a);
+  }
+
+  function toChatOut(cmd, html, viaKb) {
+    var run = function () { flushTyper(); echo(cmd); out(html); };
+    if (cur === 'chat') { run(); } else { pendingAfter = run; nav('chat', viaKb ? 'input' : null); }
+  }
+
+  /* ---------- transient hints ---------- */
+
+  var hintTimers = {};
+  function transient(id, msg) {
+    var el = $('#' + id);
+    if (!el) return;
+    el.textContent = msg;
+    el.style.opacity = '1';
+    clearTimeout(hintTimers[id]);
+    hintTimers[id] = setTimeout(function () {
+      el.style.opacity = '0';
+      hintTimers[id] = setTimeout(function () { el.textContent = ''; el.style.opacity = '1'; }, 350);
+    }, 2600);
+  }
+
+  /* ---------- header treatments ---------- */
+
+  function setHeader(n) {
+    var vs = document.querySelectorAll('.hv');
+    for (var i = 0; i < vs.length; i++) vs[i].hidden = (vs[i].getAttribute('data-h') !== String(n));
+    var bs = document.querySelectorAll('.hswitch button');
+    for (var j = 0; j < bs.length; j++) bs[j].setAttribute('aria-pressed', String(bs[j].getAttribute('data-hset') === String(n)));
+  }
+
+  /* ---------- command router (deterministic layer) ---------- */
+
+  function scrollLog() {
+    /* instant, terminal-style: a terminal jumps, it does not glide */
+    var log = $('#log');
+    if (log) log.scrollIntoView({ behavior: 'auto', block: 'start' });
+  }
+
+  function handleInput(raw, viaKb) {
+    var v = (raw || '').trim();
+    if (!v) return;
+    var low = v.toLowerCase();
+    var m = low.match(/^header\s+([123])$/);
+
+    if (m) {
+      setHeader(m[1]);
+      if (cur === 'home') { transient('hint-top', '# header treatment ' + m[1] + ' set'); }
+      else { flushTyper(); echo(v); out('header treatment ' + m[1] + ' set\n<span class="c"># type home to see it</span>'); }
+      return;
+    }
+    if (low === 'work') {
+      if (cur === 'home') { scrollLog(); }
+      else { pendingAfter = scrollLog; nav('home'); }
+      return;
+    }
+    if (low === 'home' || low === 'exit') {
+      if (cur === 'home') { transient('hint-top', '# you are home'); }
+      else { nav('home'); }
+      return;
+    }
+    if (low === 'about') {
+      if (cur === 'about') return;
+      nav('about');
+      return;
+    }
+    if (low === 'clear') {
+      if (cur === 'chat') {
+        flushTyper();
+        chatlog.innerHTML = '';
+        line('cmt', '# cleared');
+      } else { transient('hint-top', '# nothing to clear here'); }
+      return;
+    }
+    if (low === 'help') { toChatOut(v, HELP_HTML, viaKb); return; }
+    if (low === 'contact') { toChatOut(v, CONTACT_HTML, viaKb); return; }
+    if (low === 'resume') { toChatOut(v, RESUME_HTML, viaKb); return; }
+
+    /* free-form: goes to the model (canned here) */
+    if (cur === 'chat') { ask(v); }
+    else { pendingAfter = function () { ask(v); }; nav('chat', 'input'); }
+  }
+
+  /* ---------- wiring ---------- */
+
+  $('#f-home').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var i = $('#in-home');
+    handleInput(i.value, true);
+    i.value = '';
+  });
+
+  $('#f-chat').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var i = $('#in-chat');
+    handleInput(i.value, true);
+    i.value = '';
+  });
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-cmd]') : null;
+    if (b) { handleInput(b.getAttribute('data-cmd')); return; }
+    var h = e.target.closest ? e.target.closest('[data-hset]') : null;
+    if (h) { setHeader(h.getAttribute('data-hset')); return; }
+    var entry = e.target.closest ? e.target.closest('.entry') : null;
+    if (entry) { e.preventDefault(); transient('hint-log', '# article pages ship with the real site'); return; }
+    var x = e.target.closest ? e.target.closest('#xlink') : null;
+    if (x) { e.preventDefault(); transient('hint-top', '# x handle TBD'); return; }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && cur !== 'home') {
+      e.preventDefault();
+      nav('home');
+    }
+  });
+
+  /* ---------- boot ---------- */
+
+  var initial = parseHash();
+  if (initial !== 'home') show(initial);
+  booted = true;
+})();
+</script>
