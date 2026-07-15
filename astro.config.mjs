@@ -8,6 +8,14 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   site: "https://brohde.com",
   trailingSlash: "ignore",
+  build: {
+    // Inline the single ~5 KB (gzip) stylesheet into each document's <head>
+    // so first paint never waits on a second round-trip for render-blocking
+    // CSS. The whole site shares one sheet and internal moves are ClientRouter
+    // swaps (no full reload), so a full document load only happens on site
+    // entry: exactly when we want the fastest possible paint (#62).
+    inlineStylesheets: "always",
+  },
   // Terminal-style navigation feel (#24): prefetch everything so route swaps
   // land instantly. View Transitions handle the swap itself (ClientRouter).
   prefetch: {
