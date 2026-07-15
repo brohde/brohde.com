@@ -31,6 +31,7 @@ const COMMANDS: Cmd[] = [
   { name: "resume", desc: "resume.pdf" },
   { name: "contact", desc: "email + linkedin" },
   { name: "chat", desc: "ask me anything" },
+  { name: "hello", desc: "a quick tour" },
   { name: "help", desc: "list commands" },
   { name: "home", desc: "back to the log" },
   { name: "clear", desc: "wipe this chat" },
@@ -38,6 +39,7 @@ const COMMANDS: Cmd[] = [
 /* static console strings (innerHTML sinks below take only these) */
 const HELP_HTML =
   "commands\n" +
+  "  hello     a quick tour\n" +
   "  work      browse the log\n" +
   "  about     who I am\n" +
   "  resume    resume.pdf\n" +
@@ -47,6 +49,17 @@ const HELP_HTML =
   "  clear     wipe this chat\n" +
   "  help      this list\n" +
   '<span class="c"># anything else goes to chat</span>';
+
+/* hello: a short natural-language tour of the core pages (Brian's ask,
+   2026-07-15). Links are underlined, keyboard reachable, and join the roving
+   cursor order like any other chat output. */
+const HELLO_HTML =
+  "hello! here's what's on the site:\n" +
+  '<a href="/">work</a>: the build log, case studies of what I ship\n' +
+  '<a href="/about">about</a>: who I am in four paragraphs\n' +
+  '<a href="/resume.pdf">resume</a>: the PDF\n' +
+  '<a href="/chat">chat</a>: ask me anything\n' +
+  '<a href="mailto:brian@brohde.com">contact</a>: start a conversation';
 
 const CONTACT_HTML =
   'email     <a href="mailto:brian@brohde.com">brian@brohde.com</a>\n' +
@@ -303,6 +316,10 @@ function run(raw: string, viaKb: boolean) {
   if (cmd === "clear") {
     if (currentScreen() === "chat") clearChat();
     else hint("# nothing to clear here");
+    return;
+  }
+  if (cmd === "hello" || cmd === "hi" || cmd === "hey") {
+    toConsole(v, HELLO_HTML, viaKb);
     return;
   }
   if (cmd === "help") {

@@ -356,8 +356,12 @@ html.cfocus .wordmark .caret {
   color: var(--bright);
   line-height: 1.35;
 }
-/* external log entries: a dim, leaves-the-site marker after the title */
+/* external log entries: a dim, leaves-the-site marker after the title.
+   inline-block + no decoration keep it OUTSIDE any underline on the entry
+   or title (underlines never propagate into inline-block descendants). */
 .ext {
+  display: inline-block;
+  text-decoration: none;
   color: var(--dim);
   font-size: 12px;
   margin-left: 6px;
@@ -477,7 +481,11 @@ html.cfocus .wordmark .caret {
   color: var(--dim);
   font-size: 12px;
 }
-.out a {
+/* chat output links are clearly underlined (Tailwind preflight strips the
+   UA default, so this is explicit) */
+.out a,
+.reply a {
+  text-decoration: underline;
   text-underline-offset: 3px;
 }
 

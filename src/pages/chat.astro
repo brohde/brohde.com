@@ -42,11 +42,9 @@ const keys = ["home", "help", "clear"];
             ))
           }
         </nav>
-        <Prompt
-          id="chat"
-          placeholder="ask or type a command…"
-          label="Ask a question or type a command"
-        />
+        {/* no placeholder/label overrides: the chat prompt inherits the
+            "ask me anything" invitation copy (#65) */}
+        <Prompt id="chat" />
       </div>
     </main>
   </section>
