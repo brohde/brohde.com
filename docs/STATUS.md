@@ -15,9 +15,9 @@ _Last updated: 2026-07-15 (session 1, late). Brian may clear the session; this f
 
 ## ⚠️ In-flight background agents
 
-1. **Fresh design-director (opus): aurora lab #40 rework** — light ground becomes the first-class light theme (initial ground follows prefers-color-scheme, toggle overrides; light gets full design rigor incl. glyph-tide light ramp). Edits `docs/design/lab/aurora-terminal.html` in place; studio lead republishes the artifact (URL in table) when it reports back. If missing in a new session: re-brief per this paragraph + decision #40.
+1. **frontend-engineer (opus): PHASE 1 SCAFFOLD** — Astro + Tailwind v4 static site at repo root per `docs/reference/prior-project-conventions.md`: both themes (#40) from the two labs, homepage port with boot sequence, article collection seeded from the 5 drafts, deterministic commands + autocomplete (#48) + prompt history (#44), chat screen stubbed (no LLM wiring until Brian marks `poc/chat/transcript.md`). Agent does NOT commit; studio lead reviews the tree, runs `npx astro check && npm run build`, then commits. If missing in a new session: re-brief per COMMS batch 14 entry + decisions #36-49.
 
-Earlier three agents (boot sequence + header links, aurora dark rework, AfW research) all landed and were republished 2026-07-15.
+Aurora light-theme rework LANDED and republished (2026-07-15); its open questions are below.
 
 ## Where we are
 
@@ -47,7 +47,8 @@ See the ⚠️ in-flight agents section at the top: aurora dark-ground rework, A
 
 ## Next actions (Phase 1 greenlit territory; Brian's 2026-07-15 review: "I LOVE where this is going")
 0. **Phase 1 official build: Brian asked if we're ready → YES, nothing blocks the scaffold.** Studio recommendation pending his confirm: amend #14 to a model split — Opus for scaffold/plumbing (Astro config, collections, SEO/PostHog ports per prior-project-conventions), Fable stays on design-system components, terminal interactions, and all aesthetic/motion work
-1. Brian: paste API key into `poc/chat/.env`, then the studio runs the server and hands him http://localhost:8787 (see Chat POC section); eval via `npm run eval` — gates V2/V3
+1. Brian: mark pass/fail in `poc/chat/transcript.md` (all 26 answered by live Haiku, $0.06 total; studio pre-read: everything routed/deflected correctly, two style nits noted in COMMS). Credits: $20 loaded, server live at localhost:8787
+1b. Launch gates: pre-launch SECURITY AUDIT (#49: Turnstile, per-IP rate limits, AI Gateway spend cap verified live, headers/CSP, key handling) + existing seo-a11y audit
 2. Brian: pick a glyph-tide placement from the presented ideas; answer AfW 2015-vs-2016; draft reviews
 3. Studio: Phase 1 Astro scaffold (Astro + Tailwind v4 + Cloudflare Pages + PostHog per `docs/reference/prior-project-conventions.md`), build.log design system as components with light+dark themes (#40), boot sequence + header ported from the prototype
 4. Then: chat production Worker (AI Gateway, Turnstile, rate limits) after POC gates pass; aurora + glyph tide integration; presence (planes + your-plane marker) after v1

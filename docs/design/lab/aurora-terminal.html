@@ -1,6 +1,6 @@
 <title>brohde.com · aurora terminal · art direction lab</title>
 <style>
-  /* ---------- lab chrome (dark: the theme under test is aurora over the night terminal) ---------- */
+  /* ---------- lab chrome (stays dark; the stages under test carry their own two grounds) ---------- */
   :root {
     --page: #0A0F0C;
     --ink: #D6E5DC;
@@ -92,7 +92,8 @@
   }
   #intensity-out { font-size: 12px; color: var(--ink); min-width: 8ch; }
 
-  /* ---------- stage 1: aurora terminal, themable (night primary, lite = the rejected read) ---------- */
+  /* ---------- stage 1: aurora terminal, two first-class grounds (night + lite);
+     initial ground follows prefers-color-scheme, the toggle overrides ---------- */
   .stage {
     position: relative;
     border: 1px solid var(--hairline); border-radius: 14px;
@@ -131,7 +132,7 @@
     --chat3: rgba(255, 107, 66, 0.36);
     --chat4: rgba(255, 110, 150, 0.30);
   }
-  /* the rejected read, kept for comparison: same sky over a light ground */
+  /* the light theme: same sky geometry and drift, daylight ground and dark inks */
   #stage1.lite {
     --sg: #FBFBF8;
     --glass: rgba(252, 252, 250, 0.62);
@@ -351,8 +352,9 @@
   }
   .keybar { display: flex; flex-wrap: wrap; gap: 0 6px; margin-top: 10px; }
 
-  /* ---------- stage 2: glyph tide from an image (night ground) ---------- */
+  /* ---------- stage 2: glyph tide from an image (both grounds, follows the same toggle) ---------- */
   #stage2 { height: 62vh; min-height: 420px; max-height: 720px; background: #0E1512; }
+  #stage2.lite { background: #FBFBF8; }
   #stage2 canvas { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; display: block; }
   .stagetag {
     position: absolute; z-index: 2; left: 14px; bottom: 12px;
@@ -360,6 +362,7 @@
     background: rgba(8, 13, 10, 0.82); border-radius: 6px; padding: 3px 9px;
     max-width: calc(100% - 28px); overflow-wrap: anywhere;
   }
+  #stage2.lite .stagetag { color: #3F5348; background: rgba(252, 252, 250, 0.88); }
 
   footer.fin { border-top: 1px solid var(--hairline); margin-top: 40px; padding: 24px 0 60px; color: var(--dim); font-size: 13px; }
 
@@ -386,9 +389,9 @@
 <header class="top">
   <div class="wrap">
     <p class="eyebrow">brohde.com &middot; art direction lab &middot; build.log, aurora studies</p>
-    <h1>An aurora over the terminal at night, and a tide that carries a picture</h1>
-    <p class="standfirst">Three of Brian&rsquo;s ideas, built on the build.log dark ground. The aurora drifts over the terminal like northern lights behind glass. The sky changes color when you move from the log to the chat: a cold aurora for reading, a warm gold one for talking. The glyph tide learns to render an image so real photos can live inside the character field. And the little paper planes overhead are the visitors.</p>
-    <p class="rules">House rules, applied everywhere: devicePixelRatio capped at 2 &middot; canvas ticks throttled &middot; everything pauses offscreen and on hidden tabs &middot; prefers-reduced-motion gets composed stills and instant state swaps &middot; every text ink measured at the worst possible blob overlap, all AA or better on the glass.</p>
+    <h1>An aurora over the terminal, day and night, and a tide that carries a picture</h1>
+    <p class="standfirst">Three of Brian&rsquo;s ideas, built on the build.log ground. One aurora system, two grounds: a night terminal and a daylight one, and the stage opens on whichever your system prefers. The aurora drifts over the terminal like northern lights behind glass. The sky changes color when you move from the log to the chat: a cold aurora for reading, a warm gold one for talking. The glyph tide learns to render an image so real photos can live inside the character field. And the little paper planes overhead are the visitors.</p>
+    <p class="rules">House rules, applied everywhere: devicePixelRatio capped at 2 &middot; canvas ticks throttled &middot; everything pauses offscreen and on hidden tabs &middot; prefers-reduced-motion gets composed stills and instant state swaps &middot; every text ink measured at the worst possible blob overlap, all AA or better on the glass, on both grounds.</p>
   </div>
 </header>
 
@@ -400,8 +403,8 @@
       <header class="demo-head">
         <span class="dnum" aria-hidden="true">01</span>
         <div>
-          <h2 id="h-1">Aurora over the night terminal, two states</h2>
-          <p class="ddesc">The build.log terminal keeps its dark ground; the sky above it is the interface mood. Home reads under a cold aurora (violet, teal, indigo). Entering chat warms the same sky to gold (amber, warm yellow, coral) over 2.6 seconds. One rose blob never changes: the thread that keeps both states one family.</p>
+          <h2 id="h-1">Aurora over the terminal, two states, two grounds</h2>
+          <p class="ddesc">The sky above the terminal is the interface mood. Home reads under a cold aurora (violet, teal, indigo). Entering chat warms the same sky to gold (amber, warm yellow, coral) over 2.6 seconds. One rose blob never changes: the thread that keeps both states one family. The whole system runs on two grounds, night and light; the stage opens on your system&rsquo;s preference, and the ground toggle overrides it.</p>
         </div>
       </header>
 
@@ -511,10 +514,10 @@
         </div>
       </div>
 
-      <p class="demo-note"><span class="tech">pure css aurora</span><span class="tech">crossfade state morph</span><strong>Technique.</strong> Two stacked blob layers share one geometry and one set of drift keyframes; only the colors differ. Switching state crossfades the layers over 2.6s, so the sky appears to change hue while nothing repaints on the main thread. The terminal sits on dark glass: 70% near black plus backdrop blur, so the lights glow around the text, never under it.</p>
-      <p class="demo-note"><strong>Contrast, measured.</strong> The rule: text lives on the glass, only decoration touches bare sky. On the glass the worst possible spot (every blob stacked at peak alpha, which the layout never produces) measures body ink #D6E5DC at 10.2:1 under the cold aurora and 9.3:1 under gold, headline #F2F7F3 at 12.3:1 and 11.2:1, secondary #8FA79A at 5.2:1 and 4.7:1, mint accent #7EE787 at 8.7:1 and 7.9:1, and the amber chat tag #F5B968 at 6.9:1 in its own state. All AA or better, body ink comfortably AAA.</p>
-      <p class="demo-note"><strong>The rejected read, kept for honesty.</strong> Brian&rsquo;s phrase was aurora on white; the studio first built it literally: light ground, dark ink. The ground toggle above shows that version (its palette measured separately: ink 11.2:1, secondary 5.6:1 at the same impossible worst). It is a different site: daylight, editorial. The night version is build.log.</p>
-      <p class="demo-note"><strong>Production wiring.</strong> State follows the route: log and article pages get the cold aurora, the chat screen gets gold. Same class toggle as this demo. Reduced motion swaps instantly and holds the blobs still; the content switch itself is always instant, a terminal jumps.</p>
+      <p class="demo-note"><span class="tech">pure css aurora</span><span class="tech">crossfade state morph</span><strong>Technique.</strong> Two stacked blob layers share one geometry and one set of drift keyframes; only the colors differ. Switching state crossfades the layers over 2.6s, so the sky appears to change hue while nothing repaints on the main thread. The terminal sits on glass: 70% near black on the night ground, 62% near white on the light one, backdrop blur either way, so the lights glow around the text, never under it.</p>
+      <p class="demo-note"><strong>Contrast, measured on both grounds.</strong> The rule: text lives on the glass, only decoration touches bare sky. The worst possible spot is every blob stacked at peak alpha, which the layout never produces. On the night glass it measures body ink #D6E5DC at 10.2:1 under the cold aurora and 9.3:1 under gold, headline #F2F7F3 at 12.3:1 and 11.2:1, secondary #8FA79A at 5.2:1 and 4.7:1, mint accent #7EE787 at 8.7:1 and 7.9:1, and the amber chat tag #F5B968 at 6.9:1 in its own state. On the light glass the same impossible worst measures ink #14211A at 11.2:1 under the cold aurora and 12.2:1 under gold, secondary #3F5348 at 5.6:1 and 6.1:1, deep green accent #086148 at 5.0:1 and 5.5:1, the brown chat tag #8A4D0F at 4.9:1 in its own state, and the #086148 focus ring at 5.0:1 or better against the glass it draws on. All AA or better, body ink comfortably AAA, on both grounds.</p>
+      <p class="demo-note"><strong>Two grounds, one system.</strong> Brian&rsquo;s phrase was aurora on white, and the studio first built it literally: light ground, dark ink. The night read came later, and both survived review, so the site ships both: light and dark themes matching the visitor&rsquo;s system preference. The stage above opens on your system&rsquo;s ground; the toggle is a manual override, and until you touch it the stage follows live if your system scheme changes. Same sky geometry, same drift, same glass: only the ground and the inks swap.</p>
+      <p class="demo-note"><strong>Production wiring.</strong> State follows the route: log and article pages get the cold aurora, the chat screen gets gold. Same class toggle as this demo. Ground follows prefers-color-scheme exactly as this stage does: two custom property sheets, one class swap on the root, a live media query listener, no flash. Reduced motion swaps instantly and holds the blobs still; the content switch itself is always instant, a terminal jumps.</p>
     </div>
   </section>
 
@@ -525,7 +528,7 @@
         <span class="dnum" aria-hidden="true">02</span>
         <div>
           <h2 id="h-2">Glyph tide from an image</h2>
-          <p class="ddesc">Brian asked: can the glyph matrix come from images I provide, so they stay somewhat visible? Yes. Luminance drives glyph density and weight; the tide keeps rolling through it, and the densest cells go phosphor mint. Both sources here are drawn procedurally (no assets allowed in the lab), and real photos drop into the exact same pipeline.</p>
+          <p class="ddesc">Brian asked: can the glyph matrix come from images I provide, so they stay somewhat visible? Yes. Luminance drives glyph density and weight; the tide keeps rolling through it, and the densest cells peak in phosphor mint on the night ground, deep green on the light one. Both sources here are drawn procedurally (no assets allowed in the lab), and real photos drop into the exact same pipeline.</p>
         </div>
       </header>
 
@@ -541,6 +544,8 @@
         </span>
         <span class="sep" aria-hidden="true">&middot;</span>
         <button type="button" class="tbtn" id="btn-tide" aria-pressed="false">tide: rolling</button>
+        <span class="sep" aria-hidden="true">&middot;</span>
+        <button type="button" class="tbtn" id="btn-ground2" aria-pressed="false">ground: night</button>
       </div>
 
       <div class="stage" id="stage2">
@@ -551,6 +556,7 @@
       <p class="demo-note"><span class="tech">canvas 2d text raster</span><span class="tech">offscreen sampling</span><strong>Pipeline.</strong> A 480&times;300 offscreen canvas holds the source. On resize it downsamples to one pixel per glyph cell (about 1,800 cells), one getImageData call, luminance cached. Each tick, every cell mixes its image value with the rolling wave and picks a character from the ramp: the figure draws in dense bright glyphs, the empty sky stays near black. 9fps on purpose; roughly 2ms a tick.</p>
       <p class="demo-note"><strong>Real images.</strong> Swap the procedural drawing for <code>drawImage(photo)</code>, done: same sampling, same cache. Best sources are bold and high contrast: a backlit yoga silhouette, a figure against sky, big shapes over fine detail. <strong>Video</strong> is the same call per tick, <code>drawImage(video)</code> plus one getImageData every frame: roughly 1 to 2ms extra at this grid, fine at 9fps, and worth a muted 10 to 15s loop rather than a full clip.</p>
       <p class="demo-note"><strong>The control.</strong> Image presence blends the two fields: subtle keeps the tide dominant with the picture ghosting through; strong quiets the background so the figure carries. Reduced motion renders one settled frame at the chosen strength.</p>
+      <p class="demo-note"><strong>Two grounds.</strong> The night raster runs faint light ink up to phosphor mint #7EE787 at the densest cells: light burned into glass. The light ground mirrors it with a dark ink ramp (#14211A at rising alpha) peaking in the deep green accent #086148, 7.2:1 against the light ground, so the figure reads as ink drawn onto paper. Same buckets, same tide, only the ramp swaps; the ground follows your system preference, and either ground toggle switches both stages together.</p>
     </div>
   </section>
 
@@ -565,7 +571,7 @@
         </div>
       </header>
 
-      <p class="demo-note"><span class="tech">3 dom nodes + transforms</span><strong>The mock, live in demo 01.</strong> Three planes wander bounded curves in the gutter to the right of the glass panel, 20fps transform updates, headings follow their velocity. Labels are light ink at roughly half opacity, dim enough to sit inside the aurora&rsquo;s glow. The layer is decorative (aria-hidden, pointer-events none); the accessible equivalent is the status line: 3 guests overhead. The planes button pauses them, reduced motion parks them, and below about 760px the gutter disappears so they dock into the status line instead of crowding the column.</p>
+      <p class="demo-note"><span class="tech">3 dom nodes + transforms</span><strong>The mock, live in demo 01.</strong> Three planes wander bounded curves in the gutter to the right of the glass panel, 20fps transform updates, headings follow their velocity. Labels are the ground&rsquo;s own ink at roughly half opacity (light ink on night, dark ink on light), dim enough to sit inside the aurora&rsquo;s glow on either ground. The layer is decorative (aria-hidden, pointer-events none); the accessible equivalent is the status line: 3 guests overhead. The planes button pauses them, reduced motion parks them, and below about 760px the gutter disappears so they dock into the status line instead of crowding the column.</p>
       <p class="demo-note"><strong>Real data.</strong> A Cloudflare Durable Object keeps the visitor roster; each client holds a WebSocket (or falls back to a 20s poll). Payload per guest: anonymous id, current page slug mapped to a verb (reading eight-angle, at the prompt), and an optional custom status set via a /status command in chat: length capped, links stripped, profanity filtered, and shown in quotes so it reads as the guest speaking. Cap the sky at 3 planes; beyond that the status line says n guests overhead. No accounts, no cookies, ids rotate per session.</p>
       <p class="demo-note"><strong>Taste guardrails.</strong> Labels stay at 10.5px and roughly half opacity, planes never exceed walking pace, and the whole layer sits under the grain so it feels painted into the sky rather than stuck on top. If it ever competes with reading, it loses: one setting turns it off site-wide.</p>
     </div>
@@ -574,7 +580,7 @@
 </main>
 
 <footer class="fin">
-  <div class="wrap">aurora terminal lab for brohde.com &middot; 2026-07-15 &middot; palettes measured, pipelines real: photos and presence data wire into the same seams shown here.</div>
+  <div class="wrap">aurora terminal lab for brohde.com &middot; 2026-07-15 &middot; palettes measured on both grounds, pipelines real: photos and presence data wire into the same seams shown here.</div>
 </footer>
 
 <script>
@@ -673,7 +679,7 @@
     btnChat.setAttribute('aria-pressed', String(next === 'chat'));
     live.textContent = next === 'chat'
       ? 'chat view, the aurora warms to gold'
-      : 'home view, the aurora cools back to night';
+      : 'home view, the aurora cools back down';
     if (focusInto) {
       var target = next === 'chat' ? $('#in-chat1') : panels.home;
       if (target) target.focus({ preventScroll: true });
@@ -682,17 +688,6 @@
 
   btnHome.addEventListener('click', function () { setState('home', false); });
   btnChat.addEventListener('click', function () { setState('chat', false); });
-
-  /* ground toggle: night is the direction; light is the rejected read, kept for comparison */
-  var btnGround = $('#btn-ground');
-  btnGround.addEventListener('click', function () {
-    var lite = stage1.classList.toggle('lite');
-    btnGround.textContent = lite ? 'ground: light' : 'ground: night';
-    btnGround.setAttribute('aria-pressed', String(lite));
-    live.textContent = lite
-      ? 'light ground, the rejected read of the idea'
-      : 'night ground, the build.log direction';
-  });
 
   /* transient hints on the home panel */
   var hintTimer = 0;
@@ -929,8 +924,11 @@
     var ctx, w, h, cols, rows;
     var CW = 15, CH = 18;
     var RAMP = [' ', '.', '·', ':', '~', '+', 'x', '8', '#'];
-    /* night raster: faint ink up to phosphor mint at the densest cells */
-    var COLORS = ['rgba(143,167,154,0.4)', 'rgba(214,229,220,0.55)', 'rgba(214,229,220,0.8)', '#7EE787'];
+    /* night raster: faint light ink up to phosphor mint at the densest cells;
+       light raster mirrors it: dark ink ramp peaking in the deep green accent */
+    var COLORS_NIGHT = ['rgba(143,167,154,0.4)', 'rgba(214,229,220,0.55)', 'rgba(214,229,220,0.8)', '#7EE787'];
+    var COLORS_LITE = ['rgba(63,83,72,0.4)', 'rgba(20,33,26,0.55)', 'rgba(20,33,26,0.8)', '#086148'];
+    var lite = false;
     var lum = null;
     var source = 'eight';
     var intensity = 0.65;
@@ -1018,6 +1016,7 @@
       ctx.textBaseline = 'top';
       var imgW = 0.35 + 0.55 * intensity;
       var tideW = 1.08 - imgW;
+      var pal = lite ? COLORS_LITE : COLORS_NIGHT;
       var lastBucket = -1;
       for (var cy = 0; cy < rows; cy++) {
         for (var cx = 0; cx < cols; cx++) {
@@ -1028,7 +1027,7 @@
           var idx = Math.floor(clamp(v, 0, 0.999) * RAMP.length);
           if (idx < 1) continue;
           var bucket = idx < 3 ? 0 : (idx < 5 ? 1 : (idx < 7 ? 2 : 3));
-          if (bucket !== lastBucket) { ctx.fillStyle = COLORS[bucket]; lastBucket = bucket; }
+          if (bucket !== lastBucket) { ctx.fillStyle = pal[bucket]; lastBucket = bucket; }
           ctx.fillText(RAMP[idx], cx * CW + 2, cy * CH + 3);
         }
       }
@@ -1040,7 +1039,8 @@
       step: step,
       staticFrame: function () { step(0, 52000); },
       setSource: function (s) { source = s; sample(); },
-      setIntensity: function (k) { intensity = k; }
+      setIntensity: function (k) { intensity = k; },
+      setGround: function (v) { lite = v; }
     };
   })();
 
@@ -1080,6 +1080,44 @@
     glyphDemo.update();
   });
   syncTide();
+
+  /* ================= ground: one aurora system, two grounds =================
+     the initial ground follows the visitor's system scheme and tracks live
+     changes; either toggle is a manual override for both stages together */
+
+  var stage2El = $('#stage2');
+  var btnGround = $('#btn-ground');
+  var btnGround2 = $('#btn-ground2');
+  var mqScheme = window.matchMedia('(prefers-color-scheme: light)');
+  var groundLite = false;
+  var groundOverridden = false;
+
+  function applyGround(isLite, announce) {
+    groundLite = isLite;
+    stage1.classList.toggle('lite', isLite);
+    stage2El.classList.toggle('lite', isLite);
+    glyph.setGround(isLite);
+    if (!glyphDemo.running) glyph.staticFrame();
+    var label = isLite ? 'ground: light' : 'ground: night';
+    btnGround.textContent = label;
+    btnGround2.textContent = label;
+    btnGround.setAttribute('aria-pressed', String(isLite));
+    btnGround2.setAttribute('aria-pressed', String(isLite));
+    if (announce) {
+      live.textContent = isLite
+        ? 'light ground, the daylight theme'
+        : 'night ground, the dark theme';
+    }
+  }
+  function toggleGround() { groundOverridden = true; applyGround(!groundLite, true); }
+  btnGround.addEventListener('click', toggleGround);
+  btnGround2.addEventListener('click', toggleGround);
+  applyGround(mqScheme.matches, false);
+  if (mqScheme.addEventListener) {
+    mqScheme.addEventListener('change', function (e) {
+      if (!groundOverridden) applyGround(e.matches, false);
+    });
+  }
 
   /* ================= global plumbing ================= */
 
