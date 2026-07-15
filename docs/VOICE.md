@@ -37,3 +37,14 @@ Read it aloud: does it sound like a busy senior engineer explaining to a peer? W
 ## Audience and positioning (Brian, 2026-07-15, binding)
 
 Brian is going for FULL TIME ROLES as well as showcasing work for freelance clients. All copy, chat replies, and UI text speak to both audiences: hiring managers and potential clients. Never frame him as freelance-only. Prefer openings over obligations ("an unfamiliar tool is an opportunity to learn something new", not "a project detail").
+
+## Capitalization: sentence case, not console-lowercase (decision #76, binding, supersedes prior lowercase guidance)
+
+The site moved off an all-lowercase "console" aesthetic. **Human-language copy uses normal English capitalization** (sentence case; proper nouns capitalized): the wordmark, bio lines, profile link labels, the hello tour, hint/comment lines, placeholders, the status footer, chat screen copy, 404 copy, HELP command *descriptions*, and every page `<title>`.
+
+Lowercase is preserved ONLY for literal terminal tokens, i.e. things the visitor would actually type or that are literally rendered as a filename/address:
+- Typed commands and their bracket-menu labels: `work`, `about`, `chat`, `clear`, `help`, `contact`, `resume`, `hello` (and the HELP list's command column)
+- File-ish names: `build.log`, `resume.pdf`
+- URLs, email addresses, domains (e.g. `brohde.com`, `brian@brohde.com`)
+
+When a sentence needs to reference one of those tokens inline, the token itself still stays lowercase even though the sentence around it is capitalized (e.g. "Type `help` for commands").

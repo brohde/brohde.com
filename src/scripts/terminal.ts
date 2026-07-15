@@ -30,53 +30,53 @@ interface Cmd {
 }
 
 const COMMANDS: Cmd[] = [
-  { name: "work", desc: "browse the log" },
-  { name: "about", desc: "who I am" },
+  { name: "work", desc: "Browse the log" },
+  { name: "about", desc: "Who I am" },
   { name: "resume", desc: "resume.pdf" },
-  { name: "contact", desc: "email + linkedin" },
-  { name: "chat", desc: "ask me anything" },
-  { name: "hello", desc: "a quick tour" },
-  { name: "help", desc: "list commands" },
-  { name: "home", desc: "back to the log" },
-  { name: "clear", desc: "wipe this chat" },
+  { name: "contact", desc: "Email + LinkedIn" },
+  { name: "chat", desc: "Ask me anything" },
+  { name: "hello", desc: "A quick tour" },
+  { name: "help", desc: "List commands" },
+  { name: "home", desc: "Back to the log" },
+  { name: "clear", desc: "Wipe this chat" },
 ];
 /* static console strings (innerHTML sinks below take only these) */
 const HELP_HTML =
-  "commands\n" +
-  "  hello     a quick tour\n" +
-  "  work      browse the log\n" +
-  "  about     who I am\n" +
+  "Commands\n" +
+  "  hello     A quick tour\n" +
+  "  work      Browse the log\n" +
+  "  about     Who I am\n" +
   "  resume    resume.pdf\n" +
-  "  contact   email + linkedin\n" +
-  "  chat      ask me anything\n" +
-  "  home      back to the log\n" +
-  "  clear     wipe this chat\n" +
-  "  help      this list\n" +
-  '<span class="c"># anything else goes to chat</span>';
+  "  contact   Email + LinkedIn\n" +
+  "  chat      Ask me anything\n" +
+  "  home      Back to the log\n" +
+  "  clear     Wipe this chat\n" +
+  "  help      This list\n" +
+  '<span class="c"># Anything else goes to chat</span>';
 
 /* hello: a short natural-language tour of the core pages (Brian's ask,
    2026-07-15). Links are underlined, keyboard reachable, and join the roving
    cursor order like any other chat output. */
 const HELLO_HTML =
-  "hello! here's what's on the site:\n" +
-  '<a href="/">work</a>: the build log, case studies of what I ship\n' +
-  '<a href="/about">about</a>: who I am in four paragraphs\n' +
-  '<a href="/resume.pdf">resume</a>: the PDF\n' +
-  '<a href="/chat">chat</a>: ask me anything\n' +
-  '<a href="mailto:brian@brohde.com">contact</a>: start a conversation';
+  "Hello! Here's what's on the site:\n" +
+  '<a href="/">Work</a>: the build log, case studies of what I ship\n' +
+  '<a href="/about">About</a>: who I am in four paragraphs\n' +
+  '<a href="/resume.pdf">Resume</a>: the PDF\n' +
+  '<a href="/chat">Chat</a>: ask me anything\n' +
+  '<a href="mailto:brian@brohde.com">Contact</a>: start a conversation';
 
 const CONTACT_HTML =
-  'email     <a href="mailto:brian@brohde.com">brian@brohde.com</a>\n' +
-  'linkedin  <a href="https://www.linkedin.com/in/brian-rohde-4ba3558/" target="_blank" rel="noopener">/in/brian-rohde-4ba3558</a>\n' +
-  'x         <a href="https://x.com/brianxbuilds" target="_blank" rel="noopener">@brianxbuilds</a>';
+  'Email     <a href="mailto:brian@brohde.com">brian@brohde.com</a>\n' +
+  'LinkedIn  <a href="https://www.linkedin.com/in/brian-rohde-4ba3558/" target="_blank" rel="noopener">/in/brian-rohde-4ba3558</a>\n' +
+  'X         <a href="https://x.com/brianxbuilds" target="_blank" rel="noopener">@brianxbuilds</a>';
 
 const RESUME_HTML =
-  'resume    <a href="/resume.pdf">resume.pdf</a>\n' +
-  '<span class="c"># opens the PDF in a new tab on the live site</span>';
+  'Resume    <a href="/resume.pdf">resume.pdf</a>\n' +
+  '<span class="c"># Opens the PDF in a new tab on the live site</span>';
 
 const STUB_HTML =
-  "the live model is coming soon.\n" +
-  '<span class="c"># chat will run on claude haiku when the site ships. for now, type help, or email brian@brohde.com.</span>';
+  "The live model is coming soon.\n" +
+  '<span class="c"># Chat will run on Claude Haiku when the site ships. For now, type help, or email brian@brohde.com.</span>';
 
 /* ---------------------------------------------------------------- state ---- */
 
@@ -307,7 +307,7 @@ function clearChat() {
   if (!log) return;
   log.innerHTML = "";
   llmHistory.length = 0; // clear wipes the model's context too
-  line("cmt", "# cleared");
+  line("cmt", "# Cleared");
 }
 
 /* ------------------------------------------------------------ navigation -- */
@@ -449,14 +449,14 @@ async function askLive(q: string) {
       );
     }
     if (d.open_page) {
-      line("cmt", `# opening ${d.open_page}…`);
+      line("cmt", `# Opening ${d.open_page}…`);
       const slug = d.open_page;
       window.setTimeout(() => openSlug(slug), 700);
     }
   } catch {
     wait.remove();
     out(STUB_HTML);
-    line("cmt", "# local model unreachable · stub reply");
+    line("cmt", "# Local model unreachable · stub reply");
   }
 }
 
@@ -491,7 +491,7 @@ function run(raw: string, viaKb: boolean) {
     return;
   }
   if (cmd === "home" || cmd === "exit") {
-    if (currentScreen() === "home") hint("# you are home");
+    if (currentScreen() === "home") hint("# You are home");
     else navigate("/");
     return;
   }
@@ -501,7 +501,7 @@ function run(raw: string, viaKb: boolean) {
   }
   if (cmd === "clear") {
     if (currentScreen() === "chat") clearChat();
-    else hint("# nothing to clear here");
+    else hint("# Nothing to clear here");
     return;
   }
   if (cmd === "hello" || cmd === "hi" || cmd === "hey") {
@@ -757,7 +757,7 @@ function initPage() {
   // localhost only: the chat preview note reflects the live POC bridge
   if (IS_LOCAL && currentScreen() === "chat") {
     const note = byId("chat-note");
-    if (note) note.textContent = "# live model via local POC";
+    if (note) note.textContent = "# Live model via local POC";
   }
 
   if (after) after();
@@ -837,7 +837,7 @@ function setupOnce() {
       setRoveStop(t);
       if (!roveHinted && t.matches(":focus-visible")) {
         roveHinted = true;
-        hint("# arrows move the cursor · enter opens");
+        hint("# Arrows move the cursor · Enter opens");
       }
     }
   });

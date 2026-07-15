@@ -5,7 +5,7 @@ import CommandMenu from "@/components/CommandMenu.astro";
 import { SITE, LINKS, COMPANIES } from "@/lib/site";
 
 const description =
-  "Brian Rohde is a full-stack engineer in San Francisco who ships AI products end to end: model, app, and the infrastructure underneath.";
+  "Brian Rohde is an AI Product Engineer in San Francisco who ships full-stack AI products end to end: model, app, and the infrastructure underneath.";
 
 const profilePage = {
   "@context": "https://schema.org",
@@ -13,7 +13,7 @@ const profilePage = {
   mainEntity: {
     "@type": "Person",
     name: SITE.author,
-    jobTitle: "Full-stack engineer",
+    jobTitle: "AI Product Engineer",
     url: SITE.url,
     email: `mailto:${SITE.email}`,
     sameAs: [LINKS.linkedin, LINKS.x, COMPANIES.eightAngle],
@@ -21,7 +21,7 @@ const profilePage = {
 };
 ---
 
-<BaseLayout title="about" description={description} jsonLd={profilePage}>
+<BaseLayout title="About" description={description} jsonLd={profilePage}>
   <section class="screen" id="scr-about" data-screen="about" tabindex="-1">
     <Topbar label="about.txt" />
     <main id="main" class="wrap aboutpad">
@@ -29,8 +29,8 @@ const profilePage = {
       <p class="pline"><span class="p">$</span> cat about.txt</p>
       <article class="prose">
         <p>
-          I'm a full-stack engineer in San Francisco. I ship AI products end to
-          end: model, app, and the infrastructure underneath.
+          I'm an AI Product Engineer in San Francisco. I ship AI products end
+          to end: model, app, and the infrastructure underneath.
         </p>
         <p>
           I founded <a
