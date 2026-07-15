@@ -13,18 +13,16 @@ _Last updated: 2026-07-15 (session 1, late). Brian may clear the session; this f
 | Round 2 (historical, all 4 directions) | https://claude.ai/code/artifact/c0782148-e1c2-4727-9743-f75fb94ab3ff | `lab/round-2.html` |
 | Round 1: 10 concepts (historical) | https://claude.ai/code/artifact/8634c805-be41-4357-b23b-02b22ec5d6e1 | `design-concepts.html` |
 
-## ⚠️ In-flight background agents (die if session clears; contingency inline)
+## In-flight background agents
 
-1. **Aurora lab REWORK** (Brian's correction: aurora over DARK ground with light text, not a light page; decision #26 amended). Updates `lab/aurora-terminal.html` in place; republish artifact at its existing URL when done. If missing: re-brief per COMMS-LOG batch 6.
-2. **Android for Work lifespan research** (RE-DISPATCHED after the first run died on the monthly spend limit; Brian upgraded the plan 2026-07-15) → updates `docs/drafts/google-android-for-work.md` (decommission window, evidence, likely tied to the Android Enterprise rebrand ~2017-2018). If missing: re-run via Wayback in-browser + CDX (web.archive.org is WebFetch-blocked; use claude-in-chrome).
-3. **Boot sequence + header links for build.log v3** (decisions #36, #38, #39) → modifies `docs/design/lab/build-log-v3.html` in place: (a) first load starts blank with just the chatbox, "hello" auto-types, then the homepage reveals as the terminal's answer (once per session, any input skips, reduced-motion disabled, content stays in DOM for SEO, deep links skip it); (b) header treatment 1 becomes the sole default, switcher removed; (c) bio-line company links added: eight angle → eightangle.com, gong → gong.io, twilio → twilio.com, beyond → bynd.com (external/new-tab, quiet styling, keyboard accessible). If the file lacks these in a new session: re-brief a design-director with this paragraph. After it lands, republish the artifact from the same file path (URL in table above).
+None. All three from this session landed and both artifacts were republished at their existing URLs (2026-07-15): boot sequence + header 1 + company links in the v3 prototype, aurora dark-ground rework, Android for Work lifespan research (folded into the draft).
 
 ## Where we are
 
 **Phase: 0.5 — build.log is THE direction (decision #22). Chat greenlit as a real LLM (#23). Content production started (#29).**
 
 ### Delivered
-- Artifacts: 10 Concepts (round 1) · Animation Lab · Design Round 2 · **build.log v3 interactive prototype** (3 header treatments, alternate-screen nav, command layer, mobile-verified)
+- Artifacts: 10 Concepts (round 1) · Animation Lab · Design Round 2 · **build.log v3 interactive prototype** (boot sequence per #36, header 1 phosphor wordmark default per #38, company links per #39, alternate-screen nav, command layer, mobile/keyboard-verified) · **Aurora Terminal Lab** (dark build.log ground, cold/gold two-state sky, glyph tide with mint peaks, presence planes; light ground kept behind a comparison toggle)
 - `docs/reference/chat-feasibility.md` (costs/options/presence research) + `docs/reference/llm-terminal-plan.md` (**the build plan**: clicks-are-commands, deterministic layer, Haiku tool-use router page-vs-prose, Brian-owned deny-list incl. no age/YOE leakage, validation gates V1-V5, abuse controls, keyboard a11y, phases P1-P4)
 - LL Circular staged (`assets/fonts/circular/`, web license needed; note: Circular was for the parked Blackletter direction)
 
@@ -51,6 +49,9 @@ See the ⚠️ in-flight agents section at the top: aurora dark-ground rework, A
 
 ## Open questions for Brian
 - Header company link targets: official sites picked (gong.io, twilio.com, bynd.com, eightangle.com); veto or retarget any to internal case-study pages?
+- Boot sequence: greeting word ("hello" vs "whoami" vs "hi")? once per session (current) vs per visit vs once ever? fake caret during the auto-type?
+- Aurora: night glow strength (.4 faint / .55 current / .65 theatrical)? amber chat tag vs all-mint? keep or drop the light-ground comparison toggle?
+- Android for Work: Wayback shows the redesign live by Sept 2015, but the old case study says "Released 2016". Shipped mid 2015, or was your work a 2016 iteration? Draft holds "shipped in 2016" until answered.
 - Resume command behavior (print link vs open PDF)
 - ATG draft: repo evidence says ~11-hour build vs PLAN.md's "under 4 hours"; which framing?
 - Supply images (folder path) for the glyph-tide-from-images pipeline whenever ready

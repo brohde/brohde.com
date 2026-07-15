@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>brohde.com · build.log v3 · interactive prototype</title>
 <style>
   :root {
@@ -76,6 +77,18 @@
   .wordmark .caret { width: 0.42em; height: 0.82em; vertical-align: -0.06em; }
   .bio { margin: 3px 0; overflow-wrap: anywhere; }
   .bioname { font-size: inherit; font-weight: inherit; font-family: inherit; margin: 3px 0; overflow-wrap: anywhere; }
+  /* quiet company links inside bio lines: terminal output first, link second;
+     they must not compete with the wordmark or the bright nav row */
+  .clink {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--line2);
+    text-underline-offset: 3px;
+  }
+  .clink:hover, .clink:focus-visible {
+    color: var(--mint);
+    text-decoration-color: var(--mint);
+  }
 
   .tmux {
     display: flex; justify-content: space-between; align-items: center;
@@ -289,8 +302,8 @@
         <p class="pline bseq"><span class="p">$</span> whoami</p>
         <h1 class="wordmark bseq">brian rohde<span class="caret" aria-hidden="true"></span></h1>
         <p class="bio bseq">full-stack engineer <span class="d">·</span> san francisco</p>
-        <p class="bio bseq">ships AI products end to end <span class="d">·</span> founder, eight angle</p>
-        <p class="bio bseq"><span class="k">prev:</span> gong <span class="d">·</span> twilio <span class="d">·</span> beyond (projects for facebook + google)</p>
+        <p class="bio bseq">ships AI products end to end <span class="d">·</span> founder, <a class="clink" href="https://eightangle.com" target="_blank" rel="noopener">eight angle</a></p>
+        <p class="bio bseq"><span class="k">prev:</span> <a class="clink" href="https://www.gong.io" target="_blank" rel="noopener">gong</a> <span class="d">·</span> <a class="clink" href="https://www.twilio.com" target="_blank" rel="noopener">twilio</a> <span class="d">·</span> <a class="clink" href="https://bynd.com" target="_blank" rel="noopener">beyond</a> (projects for facebook + google)</p>
       </div>
 
       <!-- header treatments 2 and 3 kept for comparison via the quiet
@@ -701,5 +714,69 @@
   var initial = parseHash();
   if (initial !== 'home') show(initial);
   booted = true;
+
+  /* ---------- boot sequence (first home load per session) ---------- */
+  /* The gate script near the top adds html.boot before first paint.
+     Presentation only: all content is in the DOM from the first byte and
+     the reveal just toggles visibility, so production keeps the full page
+     crawlable for SEO and LLMs. The screen starts blank except the prompt,
+     "hello" auto types into it, a beat, then the page answers: header glow,
+     wordmark, bios, links, menu, log, footer flush in top to bottom. */
+
+  (function () {
+    var root = document.documentElement;
+    if (!root.classList.contains('boot')) return;
+    if (cur !== 'home' || RM()) { root.classList.remove('boot'); return; }
+
+    var els = [].slice.call(document.querySelectorAll('#scr-home .bseq'));
+    var input = $('#in-home');
+    var HELLO = 'hello';
+    var T_HOLD = 500; /* blank screen with bare prompt before typing starts */
+    var T_CHAR = 85;  /* per auto typed character, reads as a human hand */
+    var T_BEAT = 460; /* full word rests before the page answers */
+    var T_STEP = 50;  /* per revealed block, 17 blocks, about 800ms flush */
+    var tReveal = T_HOLD + (HELLO.length - 1) * T_CHAR + T_BEAT;
+    var start = Date.now();
+    var shown = 0;
+    var cleared = false;
+    var timer;
+
+    function endBoot(clearInput) {
+      if (!root.classList.contains('boot')) return;
+      clearInterval(timer);
+      root.classList.remove('boot');
+      /* wipe only our own auto typed text, never a visitor's input */
+      if (clearInput && HELLO.slice(0, input.value.length) === input.value) input.value = '';
+      document.removeEventListener('keydown', skip, true);
+      document.removeEventListener('pointerdown', skip, true);
+      input.removeEventListener('input', keep);
+    }
+
+    /* any keypress, tap, or click skips straight to the full page; focus is
+       never moved or trapped, and no default is prevented, so a Tab press
+       both skips the sequence and moves focus exactly as it normally would */
+    function skip() { endBoot(true); }
+    function keep() { endBoot(false); } /* user text reached the input (paste, IME): keep it */
+
+    document.addEventListener('keydown', skip, true);
+    document.addEventListener('pointerdown', skip, true);
+    input.addEventListener('input', keep);
+
+    /* time based like the chat typer, so tab throttling can only make it
+       jump ahead to the finished page, never stall half drawn */
+    timer = setInterval(function () {
+      var t = Date.now() - start;
+      if (t < T_HOLD) return;
+      if (t < tReveal) {
+        var n = Math.min(HELLO.length, 1 + Math.floor((t - T_HOLD) / T_CHAR));
+        if (input.value !== HELLO.slice(0, n)) input.value = HELLO.slice(0, n);
+        return;
+      }
+      if (!cleared) { cleared = true; input.value = ''; } /* the implied enter press */
+      var k = Math.min(els.length, 1 + Math.floor((t - tReveal) / T_STEP));
+      while (shown < k) { els[shown++].classList.add('bon'); }
+      if (shown >= els.length) endBoot(false);
+    }, 24);
+  })();
 })();
 </script>
