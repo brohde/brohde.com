@@ -22,8 +22,7 @@ const {
   id,
   placeholder = "ask me anything…",
   label = "Ask me anything, or type a command",
-  boot = false,
-} = Astro.props;
+} = Astro.props; // boot accepted (see Props) but unused: prompt never hides
 
 const inputId = `in-${id}`;
 const listId = `ac-list-${id}`;

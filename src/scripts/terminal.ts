@@ -306,6 +306,7 @@ function clearChat() {
   const log = chatlog();
   if (!log) return;
   log.innerHTML = "";
+  llmHistory.length = 0; // clear wipes the model's context too
   line("cmt", "# cleared");
 }
 
@@ -343,11 +344,132 @@ function askStub(q: string) {
   out(STUB_HTML);
 }
 
+/* ----------------------------------------------- dev chat bridge (POC) ---- */
+/* On localhost, free-form questions go to the real model through the local
+ * POC server (poc/chat, http://localhost:8787) instead of the stub:
+ * POST /chat {message, history} -> {text, open_page, usage, cost}.
+ * Markdown links restricted to the five allowlisted slugs render as real
+ * internal links (#54); everything else stays plain text. open_page triggers
+ * real navigation through the deterministic layer. A dim comment line shows
+ * usage and cost per reply. Any failure (POC down, timeout, non-localhost)
+ * falls back to the stub. Production wiring (Worker + AI Gateway +
+ * Turnstile) comes later, behind the #49 security gate.
+ */
+const POC_URL = "http://localhost:8787/chat";
+const IS_LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
+
+/** rolling model conversation (distinct from the prompt's command history) */
+const llmHistory: { role: "user" | "assistant"; content: string }[] = [];
+
+/* #54 slug allowlist -> real routes. eight-angle maps to its /log/ route;
+   work is the homepage log; contact and resume have no pages of their own,
+   so they run their deterministic commands instead (see below). */
+const SLUG_HREF: Record<string, string> = {
+  about: "/about",
+  work: "/#log",
+  "eight-angle": "/log/eight-angle-ml",
+  resume: "/resume.pdf",
+};
+
+const MD_LINK =
+  /\[([^\]\n]{1,80})\]\(\/(about|work|eight-angle|contact|resume)\)/g;
+
+/** Model prose -> DOM. Text nodes only, plus allowlisted links; never HTML. */
+function renderReply(text: string) {
+  const log = chatlog();
+  if (!log) return;
+  const d = document.createElement("div");
+  d.className = "reply";
+  let last = 0;
+  for (const m of text.matchAll(MD_LINK)) {
+    d.appendChild(document.createTextNode(text.slice(last, m.index)));
+    const [, label, slug] = m;
+    if (slug === "contact") {
+      // no contact page: a link-styled button runs the command in place
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "cmdlink";
+      b.dataset.cmd = "contact";
+      b.textContent = label;
+      d.appendChild(b);
+    } else {
+      const a = document.createElement("a");
+      a.href = SLUG_HREF[slug];
+      a.textContent = label;
+      d.appendChild(a);
+    }
+    last = m.index + m[0].length;
+  }
+  d.appendChild(document.createTextNode(text.slice(last)));
+  log.appendChild(d);
+  announce(text);
+  scrollChatBottom();
+}
+
+function openSlug(slug: string) {
+  if (slug === "work") goHomeThen(scrollToLog);
+  else if (slug === "contact") out(CONTACT_HTML);
+  else if (slug === "resume") out(RESUME_HTML);
+  else if (slug in SLUG_HREF) navigate(SLUG_HREF[slug]);
+}
+
+async function askLive(q: string) {
+  echo(q);
+  const log = chatlog();
+  const wait = document.createElement("div");
+  wait.className = "cmt";
+  wait.textContent = "…";
+  log?.appendChild(wait);
+  scrollChatBottom();
+  try {
+    const res = await fetch(POC_URL, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ message: q, history: llmHistory.slice(-8) }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    const d = (await res.json()) as {
+      text?: string;
+      open_page?: string | null;
+      usage?: { input: number; output: number };
+      cost?: number;
+      error?: string;
+    };
+    if (!res.ok || d.error) throw new Error(d.error || String(res.status));
+    wait.remove();
+    if (d.text) renderReply(d.text);
+    llmHistory.push(
+      { role: "user", content: q },
+      { role: "assistant", content: d.text || `(opened ${d.open_page})` }
+    );
+    if (d.usage) {
+      line(
+        "cmt",
+        `# ${d.usage.input} in · ${d.usage.output} out · $${(d.cost ?? 0).toFixed(4)}`
+      );
+    }
+    if (d.open_page) {
+      line("cmt", `# opening ${d.open_page}…`);
+      const slug = d.open_page;
+      window.setTimeout(() => openSlug(slug), 700);
+    }
+  } catch {
+    wait.remove();
+    out(STUB_HTML);
+    line("cmt", "# local model unreachable · stub reply");
+  }
+}
+
+function ask(q: string) {
+  if (IS_LOCAL) void askLive(q);
+  else askStub(q);
+}
+
 function toChat(q: string, viaKb: boolean) {
   if (currentScreen() === "chat") {
-    askStub(q);
+    ask(q);
   } else {
-    pendingAfter = () => askStub(q);
+    pendingAfter = () => ask(q);
     if (viaKb) pendingFocus = "in-chat";
     navigate("/chat");
   }
@@ -630,6 +752,12 @@ function initPage() {
     runBoot();
   } else {
     root.classList.remove("boot");
+  }
+
+  // localhost only: the chat preview note reflects the live POC bridge
+  if (IS_LOCAL && currentScreen() === "chat") {
+    const note = byId("chat-note");
+    if (note) note.textContent = "# live model via local POC";
   }
 
   if (after) after();
