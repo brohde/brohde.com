@@ -16,8 +16,8 @@ _Last updated: 2026-07-15 (session 1, late). Brian may clear the session; this f
 ## ⚠️ In-flight background agents (die if session clears; contingency inline)
 
 1. **Aurora lab REWORK** (Brian's correction: aurora over DARK ground with light text, not a light page; decision #26 amended). Updates `lab/aurora-terminal.html` in place; republish artifact at its existing URL when done. If missing: re-brief per COMMS-LOG batch 6.
-2. **Android for Work lifespan research** → updates `docs/drafts/google-android-for-work.md` (decommission window, evidence, likely tied to the Android Enterprise rebrand ~2017-2018). If missing: re-run via Wayback in-browser + CDX.
-3. **Boot sequence for build.log v3** (decision #36) → should modify `docs/design/lab/build-log-v3.html` in place: first load starts blank with just the chatbox, "hello" auto-types, then the homepage reveals as the terminal's answer (once per session, any input skips, reduced-motion disabled, content stays in DOM for SEO, deep links skip it). If the file lacks it in a new session: re-brief a design-director with this paragraph. After it lands, republish the artifact from the same file path (URL in table above).
+2. **Android for Work lifespan research** (RE-DISPATCHED after the first run died on the monthly spend limit; Brian upgraded the plan 2026-07-15) → updates `docs/drafts/google-android-for-work.md` (decommission window, evidence, likely tied to the Android Enterprise rebrand ~2017-2018). If missing: re-run via Wayback in-browser + CDX (web.archive.org is WebFetch-blocked; use claude-in-chrome).
+3. **Boot sequence + header links for build.log v3** (decisions #36, #38, #39) → modifies `docs/design/lab/build-log-v3.html` in place: (a) first load starts blank with just the chatbox, "hello" auto-types, then the homepage reveals as the terminal's answer (once per session, any input skips, reduced-motion disabled, content stays in DOM for SEO, deep links skip it); (b) header treatment 1 becomes the sole default, switcher removed; (c) bio-line company links added: eight angle → eightangle.com, gong → gong.io, twilio → twilio.com, beyond → bynd.com (external/new-tab, quiet styling, keyboard accessible). If the file lacks these in a new session: re-brief a design-director with this paragraph. After it lands, republish the artifact from the same file path (URL in table above).
 
 ## Where we are
 
@@ -39,8 +39,7 @@ _Last updated: 2026-07-15 (session 1, late). Brian may clear the session; this f
 Real Haiku 4.5 (confirmed, #30) via official SDK; facts pack (`facts.md`, age-safe per #31); deny-list + injection-resistant system prompt; open_page vs prose tool router; per-reply cost readout; 26-question eval harness → `transcript.md` with pass/fail rows (gates V2-V3). Run: `cd poc/chat && npm i && ANTHROPIC_API_KEY=... npm start`
 
 ### Still in flight (background)
-- `docs/design/lab/aurora-terminal.html` — aurora-on-white two-state lab + glyph-from-image + presence planes
-- Newsroom follow-up research: predecessor site, decommission date/lifespan, archive-verified language list (updates the draft when done)
+See the ⚠️ in-flight agents section at the top: aurora dark-ground rework, Android for Work lifespan research (re-run), boot sequence + header links for v3. Newsroom follow-up research is DONE and folded into the draft.
 
 ### Standing rules (recent additions)
 - Full keyboard accessibility for the terminal (#28) · no dashes anywhere (#18) · no aggregate years-of-experience/age phrasing in any copy or LLM output (#27/#29) · FB/Google = agency work via Beyond (#21)
@@ -51,9 +50,9 @@ Real Haiku 4.5 (confirmed, #30) via official SDK; facts pack (`facts.md`, age-sa
 3. Then: converge build.log v3 + aurora direction into v4; start Phase 1 scaffold (Astro + Cloudflare + PostHog per prior-project conventions)
 
 ## Open questions for Brian
-- Clarify the "don't actively reveal my name" constraint (we read it as the age/YOE class of redaction; confirm exactly what's off-limits)
-- X handle · header treatment pick · resume command behavior (print link vs open PDF)
-- Ephemeral visitor chat parked for v1, OK?
+- Header company link targets: official sites picked (gong.io, twilio.com, bynd.com, eightangle.com); veto or retarget any to internal case-study pages?
+- Resume command behavior (print link vs open PDF)
+- ATG draft: repo evidence says ~11-hour build vs PLAN.md's "under 4 hours"; which framing?
 - Supply images (folder path) for the glyph-tide-from-images pipeline whenever ready
 - LL Circular web license purchase (only matters if any Circular use survives into build.log)
 - Earlier open items: writing samples for VOICE, Substack canonical, travel placement, pre-dates, resume format
