@@ -27,7 +27,12 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 ## Agent board (this session)
 
-Also in flight: **production chat build (opus, worktree)** per #73 — `functions/api/chat.ts` porting the frozen POC, Turnstile + rate limiting, eval-over-HTTP acceptance; server-side only (client bridge landed with the interaction merge). And: **aurora theme changes (fable design-director, fresh context)** per #74 — theme travels the source, dramatic ground recolor (Facebook blue), full-sky glass lightened; handoff doc `docs/design/lab/aurora-handoff.md` is the saved context from the retired designer.
+Also in flight:
+- **OPTION C BUILD (fable frontend-engineer, worktree)** — the main event, phased C1-C4 (slab+editorial homepage → chat-expands-slab morph #69 → article pages → polish/audits); agent messages the lead after each phase; Circular ships as a disabled flip pending license; aurora excluded (later phase).
+- **Production chat build (opus, worktree)** per #73 — `functions/api/chat.ts` porting the frozen POC, Turnstile + rate limiting, eval-over-HTTP acceptance.
+- **Aurora theme changes (fable design-director, fresh context)** per #74 — theme travels the source, dramatic ground recolor (Facebook blue), full-sky glass lightened; `docs/design/lab/aurora-handoff.md` is the saved context from the retired designer.
+- **Sentence-case sweep (sonnet copywriter, worktree)** per #76 — current-site recase; C's rebuilt surfaces win any overlap at merge.
+- **ENGINEERING.md reconciliation + styleguide .lbl wrap (sonnet, main tree)** — post-interaction-merge doc truth-up.
 
 1. **Interaction cluster — DONE, merged 343663d, pushed (deploying to pages.dev)**: cursor #63 (tradeoffs logged #75), boot entry-only + no-blank-first-frame #64/#62, 140ms wipe (named transition kinds, slab morph #69 slots in later), hover unification, hello tour #68, dev chat bridge #54 (live replies on localhost:4321 against the POC; stub elsewhere). Follow-ups: styleguide `.cbtn` specimens need the `.lbl` wrap; ENGINEERING.md §3 reconciliation (agent dispatched).
 2. **Perf (opus) — DONE, merged bab2a76**: inline critical CSS + cache headers + binding facade contract (#70); Lighthouse mobile Perf 100/TBT 0/CLS 0, validated on built dist. Its HIGH finding (boot = ~1.3s blank screen; prompt is `.bseq`-hidden so hello types invisibly) routed to the interaction agent as part of its #64 boot work.
