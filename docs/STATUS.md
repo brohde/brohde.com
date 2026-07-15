@@ -48,7 +48,7 @@ See the ⚠️ in-flight agents section at the top: aurora dark-ground rework, A
 
 ## Next actions (Phase 1 greenlit territory; Brian's 2026-07-15 review: "I LOVE where this is going")
 0. **Phase 1 official build: Brian asked if we're ready → YES, nothing blocks the scaffold.** Studio recommendation pending his confirm: amend #14 to a model split — Opus for scaffold/plumbing (Astro config, collections, SEO/PostHog ports per prior-project-conventions), Fable stays on design-system components, terminal interactions, and all aesthetic/motion work
-1. Brian: mark pass/fail in `poc/chat/transcript.md` (all 26 answered by live Haiku, $0.06 total; studio pre-read: everything routed/deflected correctly, two style nits noted in COMMS). Credits: $20 loaded, server live at localhost:8787
+1. ~~Eval sign-off~~ DONE 2026-07-15: **gates V2/V3 PASSED** (24/26 pass; 2 facts gaps filled per Brian's notes: DePaul, favorite frameworks, post-Newsroom Facebook repeat work; verdicts archived at `poc/chat/verdicts-2026-07-15.md`). Chat formally validated; production wiring (Worker + AI Gateway + Turnstile) unblocked once the scaffold lands
 1b. Launch gates: pre-launch SECURITY AUDIT (#49: Turnstile, per-IP rate limits, AI Gateway spend cap verified live, headers/CSP, key handling) + existing seo-a11y audit
 2. Brian: pick a glyph-tide placement from the presented ideas; answer AfW 2015-vs-2016; draft reviews
 3. Studio: Phase 1 Astro scaffold (Astro + Tailwind v4 + Cloudflare Pages + PostHog per `docs/reference/prior-project-conventions.md`), build.log design system as components with light+dark themes (#40), boot sequence + header ported from the prototype
