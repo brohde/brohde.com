@@ -10,21 +10,26 @@ interface Props {
   id: string;
   placeholder?: string;
   label?: string;
+  /**
+   * Accepted for compatibility (index.astro passes it) but intentionally a
+   * no-op: the prompt is EXEMPT from the boot hide. Decision #36's first
+   * frame is "blank with just the chatbox", and #62 wants paint immediately,
+   * so the boot's hello must type into a visible input, never a hidden one.
+   */
   boot?: boolean;
 }
 const {
   id,
   placeholder = "ask me anything…",
   label = "Ask me anything, or type a command",
-  boot = false,
-} = Astro.props;
+} = Astro.props; // boot accepted (see Props) but unused: prompt never hides
 
 const inputId = `in-${id}`;
 const listId = `ac-list-${id}`;
 const acId = `ac-${id}`;
 ---
 
-<div class:list={["promptzone", { bseq: boot }]} data-prompt={id}>
+<div class="promptzone" data-prompt={id}>
   <div class="ac" id={acId} hidden>
     <p class="ac-head">commands · Tab to accept · ↑↓ to cycle</p>
     <ul
@@ -56,9 +61,9 @@ const acId = `ac-${id}`;
         placeholder={placeholder}
         enterkeyhint="send"
       />
-      <span class="ph" aria-hidden="true"
-        >{placeholder}<span class="caret"></span></span
-      >
+      {/* ghost placeholder, no caret: the page cursor (#63) rests on the
+          wordmark; a caret appears here only while the input is focused */}
+      <span class="ph" aria-hidden="true">{placeholder}</span>
     </span>
   </form>
 </div>

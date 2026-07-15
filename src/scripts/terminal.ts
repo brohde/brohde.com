@@ -6,7 +6,8 @@
  *     + /slash aliases + free-form -> chat stub), ported from build-log-v3.html
  *   - command autocomplete at the prompt (#48)
  *   - shell-style prompt history (#44)
- *   - the boot sequence (#36, #41)
+ *   - the boot sequence (#36; #64: site entry only, never on internal navs)
+ *   - the roving page cursor (#63) and the terminal wipe transition (#64)
  *
  * View-Transitions safety (E5): all listeners are delegated on `document` and
  * attached exactly once; nothing is bound to a specific node at module scope.
@@ -18,7 +19,10 @@
  * listbox with aria-activedescendant; focus is never trapped; arrow keys act
  * only while a prompt input is focused, so page scrolling is never hijacked.
  */
-import { navigate } from "astro:transitions/client";
+import {
+  navigate,
+  TransitionBeforePreparationEvent,
+} from "astro:transitions/client";
 
 interface Cmd {
   name: string;
@@ -31,6 +35,7 @@ const COMMANDS: Cmd[] = [
   { name: "resume", desc: "resume.pdf" },
   { name: "contact", desc: "email + linkedin" },
   { name: "chat", desc: "ask me anything" },
+  { name: "hello", desc: "a quick tour" },
   { name: "help", desc: "list commands" },
   { name: "home", desc: "back to the log" },
   { name: "clear", desc: "wipe this chat" },
@@ -38,6 +43,7 @@ const COMMANDS: Cmd[] = [
 /* static console strings (innerHTML sinks below take only these) */
 const HELP_HTML =
   "commands\n" +
+  "  hello     a quick tour\n" +
   "  work      browse the log\n" +
   "  about     who I am\n" +
   "  resume    resume.pdf\n" +
@@ -47,6 +53,17 @@ const HELP_HTML =
   "  clear     wipe this chat\n" +
   "  help      this list\n" +
   '<span class="c"># anything else goes to chat</span>';
+
+/* hello: a short natural-language tour of the core pages (Brian's ask,
+   2026-07-15). Links are underlined, keyboard reachable, and join the roving
+   cursor order like any other chat output. */
+const HELLO_HTML =
+  "hello! here's what's on the site:\n" +
+  '<a href="/">work</a>: the build log, case studies of what I ship\n' +
+  '<a href="/about">about</a>: who I am in four paragraphs\n' +
+  '<a href="/resume.pdf">resume</a>: the PDF\n' +
+  '<a href="/chat">chat</a>: ask me anything\n' +
+  '<a href="mailto:brian@brohde.com">contact</a>: start a conversation';
 
 const CONTACT_HTML =
   'email     <a href="mailto:brian@brohde.com">brian@brohde.com</a>\n' +
@@ -118,6 +135,116 @@ function hint(msg: string) {
   }, 2600);
 }
 
+/* ---------------------------------------------- route transitions (#64) --- */
+/* Every internal navigation shares one transition, both directions: the
+ * ~140ms terminal wipe from build-log-v3.html. A ground-colored cover with a
+ * resting block caret drops before the old page changes, the swap happens
+ * underneath (the underlying view transition is set to animation:none in
+ * global.css), and the cover lifts ~50ms after the new page has rendered, so
+ * the destination is always visually complete when it appears.
+ *
+ * Structured as named kinds so the next phase (option C: the slab
+ * expand/collapse morph into chat) can slot in as another kind here instead
+ * of reworking this layer: resolveTransition() picks per navigation, each
+ * kind covers/uncovers around the ClientRouter lifecycle. Under reduced
+ * motion navigation is instant: no cover, no held loader.
+ */
+type TransitionKind = "wipe" | "instant";
+
+const WIPE_HOLD_MS = 140; // cover time before the swap may land
+const WIPE_LIFT_MS = 50; // settle time after the new page renders
+
+let wipeEl: HTMLElement | null = null;
+let wipeTimer = 0; // one handle for pending lift AND failsafe: a new drop cancels both
+
+function resolveTransition(): TransitionKind {
+  return RM() ? "instant" : "wipe";
+}
+
+function wipe(): HTMLElement {
+  if (!wipeEl) {
+    wipeEl = document.createElement("div");
+    wipeEl.id = "wipe";
+    wipeEl.hidden = true;
+    wipeEl.setAttribute("aria-hidden", "true");
+    wipeEl.appendChild(document.createElement("span"));
+    // Attached to <html>, not <body>: the router swaps the body wholesale,
+    // and the cover must survive the swap to bridge old and new page.
+    document.documentElement.appendChild(wipeEl);
+  }
+  return wipeEl;
+}
+
+function dropWipe() {
+  const w = wipe();
+  w.hidden = false;
+  clearTimeout(wipeTimer);
+  // never leave the page covered if a navigation dies midway
+  wipeTimer = window.setTimeout(() => {
+    w.hidden = true;
+  }, 4000);
+}
+
+function liftWipe() {
+  if (!wipeEl || wipeEl.hidden) return;
+  clearTimeout(wipeTimer);
+  // plain timeout, deliberately no rAF: rAF never fires in a hidden or
+  // throttled tab and would leave the cover stuck over the page
+  wipeTimer = window.setTimeout(() => {
+    if (wipeEl) wipeEl.hidden = true;
+  }, WIPE_LIFT_MS);
+}
+
+/* ------------------------------------------------- roving cursor (#63) ---- */
+/* One page cursor: the block caret rests on the wordmark; Tab reaches the
+ * cursor group (a single tab stop) and the prompt; arrow keys walk every
+ * interactive element (links, commands, log entries) terminal-style. The
+ * highlight is the element's :focus-visible treatment, so it is always
+ * visible and screen-reader semantics stay native (roles untouched;
+ * tabindex=-1 keeps elements in the accessibility tree). Arrows are handled
+ * only while focus is already ON a cursor element, so page scrolling is
+ * never hijacked while the cursor is inactive or focus sits in an input.
+ */
+const ROVE_SELECTOR = "a[href], button[data-cmd]";
+let roveHinted = false;
+
+function roveEls(): HTMLElement[] {
+  const screen = document.querySelector("[data-screen]");
+  if (!screen) return [];
+  return Array.from(screen.querySelectorAll<HTMLElement>(ROVE_SELECTOR));
+}
+
+function isRove(el: HTMLElement | null): el is HTMLElement {
+  return (
+    !!el && !!el.matches?.(ROVE_SELECTOR) && !!el.closest?.("[data-screen]")
+  );
+}
+
+/** roving tabindex: exactly one element in the group is the tab stop */
+function setRoveStop(target: HTMLElement, els?: HTMLElement[]) {
+  for (const el of els ?? roveEls()) {
+    el.tabIndex = el === target ? 0 : -1;
+  }
+}
+
+function moveRove(from: HTMLElement, dir: 1 | -1) {
+  const els = roveEls();
+  if (!els.length) return;
+  const i = els.indexOf(from);
+  const next =
+    i === -1 ? els[0] : els[(i + dir + els.length) % els.length];
+  setRoveStop(next, els);
+  next.focus();
+}
+
+function moveRoveEnd(last: boolean) {
+  const els = roveEls();
+  if (!els.length) return;
+  const next = els[last ? els.length - 1 : 0];
+  setRoveStop(next, els);
+  next.focus();
+}
+
 function setCaretEnd(input: HTMLInputElement) {
   const n = input.value.length;
   try {
@@ -179,6 +306,7 @@ function clearChat() {
   const log = chatlog();
   if (!log) return;
   log.innerHTML = "";
+  llmHistory.length = 0; // clear wipes the model's context too
   line("cmt", "# cleared");
 }
 
@@ -216,11 +344,132 @@ function askStub(q: string) {
   out(STUB_HTML);
 }
 
+/* ----------------------------------------------- dev chat bridge (POC) ---- */
+/* On localhost, free-form questions go to the real model through the local
+ * POC server (poc/chat, http://localhost:8787) instead of the stub:
+ * POST /chat {message, history} -> {text, open_page, usage, cost}.
+ * Markdown links restricted to the five allowlisted slugs render as real
+ * internal links (#54); everything else stays plain text. open_page triggers
+ * real navigation through the deterministic layer. A dim comment line shows
+ * usage and cost per reply. Any failure (POC down, timeout, non-localhost)
+ * falls back to the stub. Production wiring (Worker + AI Gateway +
+ * Turnstile) comes later, behind the #49 security gate.
+ */
+const POC_URL = "http://localhost:8787/chat";
+const IS_LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
+
+/** rolling model conversation (distinct from the prompt's command history) */
+const llmHistory: { role: "user" | "assistant"; content: string }[] = [];
+
+/* #54 slug allowlist -> real routes. eight-angle maps to its /log/ route;
+   work is the homepage log; contact and resume have no pages of their own,
+   so they run their deterministic commands instead (see below). */
+const SLUG_HREF: Record<string, string> = {
+  about: "/about",
+  work: "/#log",
+  "eight-angle": "/log/eight-angle-ml",
+  resume: "/resume.pdf",
+};
+
+const MD_LINK =
+  /\[([^\]\n]{1,80})\]\(\/(about|work|eight-angle|contact|resume)\)/g;
+
+/** Model prose -> DOM. Text nodes only, plus allowlisted links; never HTML. */
+function renderReply(text: string) {
+  const log = chatlog();
+  if (!log) return;
+  const d = document.createElement("div");
+  d.className = "reply";
+  let last = 0;
+  for (const m of text.matchAll(MD_LINK)) {
+    d.appendChild(document.createTextNode(text.slice(last, m.index)));
+    const [, label, slug] = m;
+    if (slug === "contact") {
+      // no contact page: a link-styled button runs the command in place
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "cmdlink";
+      b.dataset.cmd = "contact";
+      b.textContent = label;
+      d.appendChild(b);
+    } else {
+      const a = document.createElement("a");
+      a.href = SLUG_HREF[slug];
+      a.textContent = label;
+      d.appendChild(a);
+    }
+    last = m.index + m[0].length;
+  }
+  d.appendChild(document.createTextNode(text.slice(last)));
+  log.appendChild(d);
+  announce(text);
+  scrollChatBottom();
+}
+
+function openSlug(slug: string) {
+  if (slug === "work") goHomeThen(scrollToLog);
+  else if (slug === "contact") out(CONTACT_HTML);
+  else if (slug === "resume") out(RESUME_HTML);
+  else if (slug in SLUG_HREF) navigate(SLUG_HREF[slug]);
+}
+
+async function askLive(q: string) {
+  echo(q);
+  const log = chatlog();
+  const wait = document.createElement("div");
+  wait.className = "cmt";
+  wait.textContent = "…";
+  log?.appendChild(wait);
+  scrollChatBottom();
+  try {
+    const res = await fetch(POC_URL, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ message: q, history: llmHistory.slice(-8) }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    const d = (await res.json()) as {
+      text?: string;
+      open_page?: string | null;
+      usage?: { input: number; output: number };
+      cost?: number;
+      error?: string;
+    };
+    if (!res.ok || d.error) throw new Error(d.error || String(res.status));
+    wait.remove();
+    if (d.text) renderReply(d.text);
+    llmHistory.push(
+      { role: "user", content: q },
+      { role: "assistant", content: d.text || `(opened ${d.open_page})` }
+    );
+    if (d.usage) {
+      line(
+        "cmt",
+        `# ${d.usage.input} in · ${d.usage.output} out · $${(d.cost ?? 0).toFixed(4)}`
+      );
+    }
+    if (d.open_page) {
+      line("cmt", `# opening ${d.open_page}…`);
+      const slug = d.open_page;
+      window.setTimeout(() => openSlug(slug), 700);
+    }
+  } catch {
+    wait.remove();
+    out(STUB_HTML);
+    line("cmt", "# local model unreachable · stub reply");
+  }
+}
+
+function ask(q: string) {
+  if (IS_LOCAL) void askLive(q);
+  else askStub(q);
+}
+
 function toChat(q: string, viaKb: boolean) {
   if (currentScreen() === "chat") {
-    askStub(q);
+    ask(q);
   } else {
-    pendingAfter = () => askStub(q);
+    pendingAfter = () => ask(q);
     if (viaKb) pendingFocus = "in-chat";
     navigate("/chat");
   }
@@ -253,6 +502,10 @@ function run(raw: string, viaKb: boolean) {
   if (cmd === "clear") {
     if (currentScreen() === "chat") clearChat();
     else hint("# nothing to clear here");
+    return;
+  }
+  if (cmd === "hello" || cmd === "hi" || cmd === "hey") {
+    toConsole(v, HELLO_HTML, viaKb);
     return;
   }
   if (cmd === "help") {
@@ -482,6 +735,13 @@ function initPage() {
   closeAC();
   histIndex = history.length;
 
+  // roving cursor (#63): the group's tab stop starts at its first element;
+  // focus resets to body on swaps, so the resting cursor returns to the
+  // wordmark (cfocus off) until focus lands somewhere live again.
+  document.documentElement.classList.remove("cfocus");
+  const rove = roveEls();
+  if (rove.length) setRoveStop(rove[0], rove);
+
   const after = pendingAfter;
   pendingAfter = null;
   const focusId = pendingFocus;
@@ -492,6 +752,12 @@ function initPage() {
     runBoot();
   } else {
     root.classList.remove("boot");
+  }
+
+  // localhost only: the chat preview note reflects the live POC bridge
+  if (IS_LOCAL && currentScreen() === "chat") {
+    const note = byId("chat-note");
+    if (note) note.textContent = "# live model via local POC";
   }
 
   if (after) after();
@@ -560,6 +826,27 @@ function setupOnce() {
     }
   });
 
+  // single-cursor bookkeeping (#63): html.cfocus hides the wordmark caret
+  // while the cursor group or a prompt input owns focus; the roving tab stop
+  // follows focus (clicks included) so Tab re-enters where the cursor left.
+  document.addEventListener("focusin", (e) => {
+    const t = e.target as HTMLElement;
+    const live = !!t.matches?.(".prompt input") || isRove(t);
+    document.documentElement.classList.toggle("cfocus", live);
+    if (isRove(t)) {
+      setRoveStop(t);
+      if (!roveHinted && t.matches(":focus-visible")) {
+        roveHinted = true;
+        hint("# arrows move the cursor · enter opens");
+      }
+    }
+  });
+  document.addEventListener("focusout", (e) => {
+    if (!e.relatedTarget) {
+      document.documentElement.classList.remove("cfocus");
+    }
+  });
+
   // input: refresh autocomplete for the active prompt
   document.addEventListener("input", (e) => {
     const input = e.target as HTMLElement;
@@ -573,10 +860,19 @@ function setupOnce() {
   // Arrow/Tab logic only runs while a prompt input is focused, so page
   // scrolling is never hijacked (#44).
   document.addEventListener("keydown", (e) => {
+    const t = e.target as HTMLElement;
+
     if (e.key === "Escape") {
       if (ac.open) {
         e.preventDefault();
         closeAC();
+        return;
+      }
+      // single-cursor model (#63): the first Escape parks the cursor back on
+      // the wordmark (blur); from rest, Escape leaves non-home screens.
+      if (t && (t.matches?.(".prompt input") || isRove(t))) {
+        e.preventDefault();
+        t.blur();
         return;
       }
       if (currentScreen() !== "home") {
@@ -586,8 +882,26 @@ function setupOnce() {
       return;
     }
 
-    const t = e.target as HTMLElement;
-    if (!t.matches?.(".prompt input")) return;
+    // roving cursor (#63): arrows walk the page's interactive elements, but
+    // only while one of them already holds focus; otherwise arrows scroll.
+    if (isRove(t) && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+        e.preventDefault();
+        moveRove(t, 1);
+      } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        moveRove(t, -1);
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        moveRoveEnd(false);
+      } else if (e.key === "End") {
+        e.preventDefault();
+        moveRoveEnd(true);
+      }
+      return;
+    }
+
+    if (!t?.matches?.(".prompt input")) return;
     const input = t as HTMLInputElement;
 
     // Enter runs the highlighted suggestion, or the typed text. preventDefault
@@ -639,13 +953,35 @@ function setupOnce() {
     }
   });
 
-  // Set the boot class before paint on client-side navigations, so the home
-  // screen never flashes its full content before the reveal. (The initial
-  // hard load is handled by the pre-paint gate in BaseLayout.)
+  // Route transitions (#64): drop the wipe as soon as an internal navigation
+  // starts, and hold the router's loader so the cover stays down for at
+  // least WIPE_HOLD_MS before the swap can land. Applies to every direction
+  // (links, commands, Escape, back/forward all flow through the router).
+  document.addEventListener("astro:before-preparation", (e) => {
+    if (resolveTransition() !== "wipe") return;
+    dropWipe();
+    if (e instanceof TransitionBeforePreparationEvent) {
+      const started = Date.now();
+      const load = e.loader;
+      e.loader = async () => {
+        await load();
+        const left = WIPE_HOLD_MS - (Date.now() - started);
+        if (left > 0) await new Promise((r) => setTimeout(r, left));
+      };
+    }
+  });
+
+  // Lift the wipe only after the new page is rendered and initialized, so
+  // the destination is visually complete the moment it appears.
+  document.addEventListener("astro:page-load", liftWipe);
+
+  // Boot plays on SITE ENTRY ONLY (#64): the pre-paint gate in BaseLayout
+  // sets html.boot on genuine full loads of the homepage, and Astro never
+  // re-runs that unchanged inline script on client-side navigations. Here we
+  // only ever CLEAR the class after a swap, so internal navigation back to
+  // home renders instantly complete and the sequence never replays.
   document.addEventListener("astro:after-swap", () => {
-    const root = document.documentElement;
-    if (location.pathname === "/" && !RM()) root.classList.add("boot");
-    else root.classList.remove("boot");
+    document.documentElement.classList.remove("boot");
   });
 
   // stop a running boot if we navigate away mid-sequence

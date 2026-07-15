@@ -16,7 +16,8 @@ const keys = ["home", "help", "clear"];
     <main id="main" class="wrap chatwrap">
       <h1 class="sr">Chat</h1>
       <div class="chatlog" id="chatlog">
-        <p class="cmt">
+        {/* on localhost terminal.ts swaps this line for the live-POC note */}
+        <p class="cmt" id="chat-note">
           # the live model (claude haiku) ships with the site. this is a
           preview.
         </p>
@@ -34,7 +35,7 @@ const keys = ["home", "help", "clear"];
                 <span class="br" aria-hidden="true">
                   [
                 </span>
-                {cmd}
+                <span class="lbl">{cmd}</span>
                 <span class="br" aria-hidden="true">
                   ]
                 </span>
@@ -42,11 +43,9 @@ const keys = ["home", "help", "clear"];
             ))
           }
         </nav>
-        <Prompt
-          id="chat"
-          placeholder="ask or type a command…"
-          label="Ask a question or type a command"
-        />
+        {/* no placeholder/label overrides: the chat prompt inherits the
+            "ask me anything" invitation copy (#65) */}
+        <Prompt id="chat" />
       </div>
     </main>
   </section>

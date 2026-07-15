@@ -107,6 +107,12 @@
   height: 0.82em;
   vertical-align: -0.06em;
 }
+/* Single-cursor model (#63): the wordmark caret is the page's resting cursor.
+   While the roving cursor or the prompt owns focus (html.cfocus, set by
+   terminal.ts), the wordmark caret yields so exactly one cursor is visible. */
+html.cfocus .wordmark .caret {
+  visibility: hidden;
+}
 .bio {
   margin: 3px 0;
   overflow-wrap: anywhere;
@@ -153,8 +159,18 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* Unified fill treatment for EVERY bracket-style interactive element:
+   profile links (.blink), command menu + keybar (.cbtn), back button
+   (.backbtn). On hover and focus-visible the label fills with the accent
+   and flips to ground-colored text; the brackets stay accent (prototype
+   treatment from build-log-v3.html). One rule so they can never drift. */
 .blink:hover .lbl,
-.blink:focus-visible .lbl {
+.blink:focus-visible .lbl,
+.cbtn:hover .lbl,
+.cbtn:focus-visible .lbl,
+.backbtn:hover .lbl,
+.backbtn:focus-visible .lbl {
   background: var(--accent);
   color: var(--on-accent);
   text-decoration: none;
@@ -178,15 +194,7 @@
   color: var(--accent);
   font: inherit;
 }
-.cbtn:hover,
-.cbtn:focus-visible {
-  background: var(--accent);
-  color: var(--on-accent);
-}
-.cbtn:hover .br,
-.cbtn:focus-visible .br {
-  color: var(--on-accent);
-}
+/* hover/focus fill lives in the unified bracket rule above */
 
 /* the prompt + its autocomplete popover share a positioning context */
 .promptzone {
@@ -249,9 +257,6 @@
   color: var(--dim);
   font-size: 16px;
   white-space: nowrap;
-}
-.ph .caret {
-  margin-left: 2px;
 }
 .prompt input:placeholder-shown:not(:focus) + .ph {
   display: flex;
@@ -353,8 +358,12 @@
   color: var(--bright);
   line-height: 1.35;
 }
-/* external log entries: a dim, leaves-the-site marker after the title */
+/* external log entries: a dim, leaves-the-site marker after the title.
+   inline-block + no decoration keep it OUTSIDE any underline on the entry
+   or title (underlines never propagate into inline-block descendants). */
 .ext {
+  display: inline-block;
+  text-decoration: none;
   color: var(--dim);
   font-size: 12px;
   margin-left: 6px;
@@ -426,15 +435,7 @@
   font: inherit;
   text-decoration: none;
 }
-.backbtn:hover,
-.backbtn:focus-visible {
-  background: var(--accent);
-  color: var(--on-accent);
-}
-.backbtn:hover .br,
-.backbtn:focus-visible .br {
-  color: var(--on-accent);
-}
+/* hover/focus fill lives in the unified bracket rule above */
 .tbl {
   color: var(--dim);
   font-size: 12px;
@@ -474,8 +475,24 @@
   color: var(--dim);
   font-size: 12px;
 }
-.out a {
+/* chat output links are clearly underlined (Tailwind preflight strips the
+   UA default, so this is explicit) */
+.out a,
+.reply a {
+  text-decoration: underline;
   text-underline-offset: 3px;
+}
+/* a command styled as a link inside chat replies (e.g. contact, which has
+   no page: activating it runs the deterministic command in place) */
+.cmdlink {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
 }
 
 .dock {
@@ -578,11 +595,39 @@ html.boot .bseq {
 html.boot .bseq.bon {
   visibility: visible;
 }
+/* Exempt from the boot hide (#36/#62): the "$ hello" line stays visible from
+   first paint even inside a hidden .bseq ancestor (visibility, unlike
+   display, lets a descendant override). The prompt itself simply never
+   carries .bseq. No blank first frame, CLS stays 0. */
+html.boot .bseq-keep {
+  visibility: visible;
+}
 @media (prefers-reduced-motion: reduce) {
   /* safety net: never leave content hidden under reduced motion */
   html.boot .bseq {
     visibility: visible;
   }
+}
+
+/* --------------------------- screen-clear wipe (#64) --------------------- */
+/* The uniform internal-navigation transition, ported from build-log-v3.html:
+   a ground-colored cover with a resting block caret. Timing + lifecycle live
+   in terminal.ts; tokens keep it correct on both grounds. The element sits
+   outside <body> (terminal.ts appends it to <html>) so router swaps never
+   remove it; the global [hidden] rule keeps it display:none at rest. */
+#wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: var(--ground);
+}
+#wipe span {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  width: 9px;
+  height: 18px;
+  background: var(--accent);
 }
 
 /* ------------------------------ small screens ---------------------------- */
@@ -604,6 +649,9 @@ html.boot .bseq.bon {
   }
   .wrap {
     padding: 0 16px;
+  }
+  #wipe span {
+    left: 16px;
   }
 }
 @media (max-width: 360px) {
