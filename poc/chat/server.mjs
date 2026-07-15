@@ -71,6 +71,7 @@ export async function chat(message, history = []) {
 
   let text = "";
   let open_page = null;
+  // (CORS for the dev site bridge is handled in the http server below)
   for (const block of response.content) {
     if (block.type === "text") text += block.text;
     if (block.type === "tool_use" && block.name === "open_page")
@@ -103,8 +104,18 @@ export async function chat(message, history = []) {
 // Serve the POC UI + endpoint only when run directly (eval.mjs imports chat()).
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const INDEX = readFileSync(path.join(here, "index.html"));
+  // dev-only CORS so the Astro dev site (localhost:4321) can use the live POC
+  const CORS = {
+    "access-control-allow-origin": "http://localhost:4321",
+    "access-control-allow-methods": "POST, OPTIONS",
+    "access-control-allow-headers": "content-type",
+  };
   http
     .createServer(async (req, res) => {
+      if (req.method === "OPTIONS") {
+        res.writeHead(204, CORS);
+        return res.end();
+      }
       if (req.method === "GET") {
         res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
         return res.end(INDEX);
@@ -120,7 +131,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
               typeof message !== "string" ||
               message.length > 500
             ) {
-              res.writeHead(400, { "content-type": "application/json" });
+              res.writeHead(400, { "content-type": "application/json", ...CORS });
               return res.end(
                 JSON.stringify({ error: "message required (max 500 chars)" })
               );
@@ -129,10 +140,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
               message,
               Array.isArray(history) ? history : []
             );
-            res.writeHead(200, { "content-type": "application/json" });
+            res.writeHead(200, { "content-type": "application/json", ...CORS });
             res.end(JSON.stringify(out));
           } catch (err) {
-            res.writeHead(500, { "content-type": "application/json" });
+            res.writeHead(500, { "content-type": "application/json", ...CORS });
             res.end(JSON.stringify({ error: String(err.message || err) }));
           }
         });

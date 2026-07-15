@@ -30,7 +30,7 @@ const COMMANDS: Cmd[] = [
   { name: "about", desc: "who I am" },
   { name: "resume", desc: "resume.pdf" },
   { name: "contact", desc: "email + linkedin" },
-  { name: "chat", desc: "ask about my work" },
+  { name: "chat", desc: "ask me anything" },
   { name: "help", desc: "list commands" },
   { name: "home", desc: "back to the log" },
   { name: "clear", desc: "wipe this chat" },
@@ -42,7 +42,7 @@ const HELP_HTML =
   "  about     who I am\n" +
   "  resume    resume.pdf\n" +
   "  contact   email + linkedin\n" +
-  "  chat      ask about my work\n" +
+  "  chat      ask me anything\n" +
   "  home      back to the log\n" +
   "  clear     wipe this chat\n" +
   "  help      this list\n" +
