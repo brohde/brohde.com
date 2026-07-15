@@ -10,6 +10,12 @@ interface Props {
   id: string;
   placeholder?: string;
   label?: string;
+  /**
+   * Accepted for compatibility (index.astro passes it) but intentionally a
+   * no-op: the prompt is EXEMPT from the boot hide. Decision #36's first
+   * frame is "blank with just the chatbox", and #62 wants paint immediately,
+   * so the boot's hello must type into a visible input, never a hidden one.
+   */
   boot?: boolean;
 }
 const {
@@ -24,7 +30,7 @@ const listId = `ac-list-${id}`;
 const acId = `ac-${id}`;
 ---
 
-<div class:list={["promptzone", { bseq: boot }]} data-prompt={id}>
+<div class="promptzone" data-prompt={id}>
   <div class="ac" id={acId} hidden>
     <p class="ac-head">commands · Tab to accept · ↑↓ to cycle</p>
     <ul

@@ -589,6 +589,13 @@ html.boot .bseq {
 html.boot .bseq.bon {
   visibility: visible;
 }
+/* Exempt from the boot hide (#36/#62): the "$ hello" line stays visible from
+   first paint even inside a hidden .bseq ancestor (visibility, unlike
+   display, lets a descendant override). The prompt itself simply never
+   carries .bseq. No blank first frame, CLS stays 0. */
+html.boot .bseq-keep {
+  visibility: visible;
+}
 @media (prefers-reduced-motion: reduce) {
   /* safety net: never leave content hidden under reduced motion */
   html.boot .bseq {

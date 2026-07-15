@@ -12,7 +12,9 @@ import { LINKS, COMPANIES } from "@/lib/site";
 
 <header class="hd">
   <div class="hv1 bseq">
-    <p class="pline bseq"><span class="p">$</span> hello</p>
+    {/* bseq-keep: visible from first paint (#36/#62), anchoring the frame
+        while the boot types hello into the visible prompt below */}
+    <p class="pline bseq-keep"><span class="p">$</span> hello</p>
     <h1 class="wordmark bseq">
       brian rohde<span class="caret" aria-hidden="true"></span>
     </h1>
