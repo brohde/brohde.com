@@ -13,9 +13,11 @@ _Last updated: 2026-07-15 (session 1, late). Brian may clear the session; this f
 | Round 2 (historical, all 4 directions) | https://claude.ai/code/artifact/c0782148-e1c2-4727-9743-f75fb94ab3ff | `lab/round-2.html` |
 | Round 1: 10 concepts (historical) | https://claude.ai/code/artifact/8634c805-be41-4357-b23b-02b22ec5d6e1 | `design-concepts.html` |
 
-## In-flight background agents
+## ⚠️ In-flight background agents
 
-None. All three from this session landed and both artifacts were republished at their existing URLs (2026-07-15): boot sequence + header 1 + company links in the v3 prototype, aurora dark-ground rework, Android for Work lifespan research (folded into the draft).
+1. **Fresh design-director (opus): aurora lab #40 rework** — light ground becomes the first-class light theme (initial ground follows prefers-color-scheme, toggle overrides; light gets full design rigor incl. glyph-tide light ramp). Edits `docs/design/lab/aurora-terminal.html` in place; studio lead republishes the artifact (URL in table) when it reports back. If missing in a new session: re-brief per this paragraph + decision #40.
+
+Earlier three agents (boot sequence + header links, aurora dark rework, AfW research) all landed and were republished 2026-07-15.
 
 ## Where we are
 
@@ -35,7 +37,7 @@ None. All three from this session landed and both artifacts were republished at 
 
 ### Chat POC: BUILT at `poc/chat/` (decision #34) — SETUP DONE, WAITING ON BRIAN'S KEY
 Real Haiku 4.5 (confirmed, #30) via official SDK; facts pack (`facts.md`, age-safe per #31); deny-list + injection-resistant system prompt; open_page vs prose tool router; per-reply cost readout; 26-question eval harness (`npm run eval` → `transcript.md` pass/fail rows, gates V2-V3).
-**Current state (2026-07-15 late):** deps installed; server reads the key from `poc/chat/.env` (gitignored; Brian pastes `ANTHROPIC_API_KEY=sk-ant-...` there, key never goes through chat); server fails fast with a clear message if the key is missing/placeholder; index.html shows run instructions if opened via file://. **Claude manages the server**: once the key is in `.env`, run `npm start` in `poc/chat` as a background task, verify with `curl -s localhost:8787 | head`, then give Brian http://localhost:8787. Brian was getting his key from console.anthropic.com when the session ended.
+**Current state (2026-07-15 late):** deps installed; API key "brohde-chat-poc" CREATED (30-day expiry, 2026-08-14) and stored in gitignored `poc/chat/.env`; server verified running at http://localhost:8787 (key authenticates). **BLOCKED on Console credit balance ($0.00)**: Brian must add funds at platform.claude.com/settings/billing, then chat replies work immediately, no restart needed. To (re)start the server in any session: `cd poc/chat && npm start` (background), verify `curl -s localhost:8787`. Then Brian validates per the README + `npm run eval` (gates V2/V3).
 
 ### Still in flight (background)
 See the ⚠️ in-flight agents section at the top: aurora dark-ground rework, Android for Work lifespan research (re-run), boot sequence + header links for v3. Newsroom follow-up research is DONE and folded into the draft.
