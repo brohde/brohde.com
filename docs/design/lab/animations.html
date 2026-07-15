@@ -2,196 +2,415 @@
 <style>
   /* ---------- gallery chrome (committed dark: this is a lab, the demos are the design) ---------- */
   :root {
-    --bg: #0E0E12;
-    --text: #EBEAF0;
-    --soft: #D9D8E2;
-    --muted: #9B99A6;
-    --hairline: #1E1E24;
-    --chip-bg: #1C1C22;
-    --chip-edge: #2C2C34;
-    --chip-text: #CFCEDA;
+    --bg: #0e0e12;
+    --text: #ebeaf0;
+    --soft: #d9d8e2;
+    --muted: #9b99a6;
+    --hairline: #1e1e24;
+    --chip-bg: #1c1c22;
+    --chip-edge: #2c2c34;
+    --chip-text: #cfceda;
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   }
   body {
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family:
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      sans-serif;
     line-height: 1.55;
     overflow-x: clip;
     -webkit-text-size-adjust: 100%;
   }
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 clamp(14px, 3vw, 32px); }
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 clamp(14px, 3vw, 32px);
+  }
 
-  header.top { padding: 52px 0 34px; }
+  header.top {
+    padding: 52px 0 34px;
+  }
   .eyebrow {
     font-family: var(--mono);
-    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--muted); margin: 0 0 14px;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 14px;
   }
   h1 {
-    font-size: clamp(30px, 5vw, 46px); line-height: 1.06;
-    letter-spacing: -0.015em; margin: 0 0 14px; text-wrap: balance;
+    font-size: clamp(30px, 5vw, 46px);
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+    margin: 0 0 14px;
+    text-wrap: balance;
   }
-  .standfirst { font-size: 16.5px; color: var(--soft); max-width: 68ch; margin: 0 0 16px; }
+  .standfirst {
+    font-size: 16.5px;
+    color: var(--soft);
+    max-width: 68ch;
+    margin: 0 0 16px;
+  }
   .rules {
     font-family: var(--mono);
-    font-size: 12.5px; line-height: 1.7; color: var(--muted);
-    max-width: 90ch; margin: 0;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 90ch;
+    margin: 0;
   }
 
   /* ---------- demo tiles ---------- */
-  section.demo { border-top: 1px solid var(--hairline); padding: 40px 0 10px; }
-  .demo-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 16px; }
+  section.demo {
+    border-top: 1px solid var(--hairline);
+    padding: 40px 0 10px;
+  }
+  .demo-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
   .dnum {
     font-family: var(--mono);
-    font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
   }
-  .demo-head h2 { font-size: clamp(20px, 2.6vw, 25px); letter-spacing: -0.01em; margin: 0; }
-  .ddesc { font-size: 14.5px; color: var(--muted); margin: 4px 0 0; max-width: 72ch; }
+  .demo-head h2 {
+    font-size: clamp(20px, 2.6vw, 25px);
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .ddesc {
+    font-size: 14.5px;
+    color: var(--muted);
+    margin: 4px 0 0;
+    max-width: 72ch;
+  }
 
   .stage {
     position: relative;
-    height: 64vh; min-height: 420px; max-height: 760px;
-    border-radius: 14px; overflow: hidden;
+    height: 64vh;
+    min-height: 420px;
+    max-height: 760px;
+    border-radius: 14px;
+    overflow: hidden;
     border: 1px solid var(--hairline);
   }
-  .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .stage canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
 
   /* sample copy overlay: proves text wins over every animation */
   .sample {
-    position: absolute; z-index: 3;
-    left: clamp(18px, 4vw, 44px); bottom: clamp(18px, 5vh, 44px);
+    position: absolute;
+    z-index: 3;
+    left: clamp(18px, 4vw, 44px);
+    bottom: clamp(18px, 5vh, 44px);
     pointer-events: none;
   }
   .sample .nm {
     display: block;
-    font-weight: 700; font-size: clamp(30px, 5vw, 50px);
-    line-height: 1.02; letter-spacing: -0.02em;
+    font-weight: 700;
+    font-size: clamp(30px, 5vw, 50px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
   }
   .sample .tg {
-    display: block; margin-top: 10px;
-    font-size: clamp(14px, 1.8vw, 17px); line-height: 1.45; max-width: 36ch;
+    display: block;
+    margin-top: 10px;
+    font-size: clamp(14px, 1.8vw, 17px);
+    line-height: 1.45;
+    max-width: 36ch;
   }
 
   /* pause/play: solid dark pill so it reads on light and dark stages alike */
   .ctrl {
-    position: absolute; z-index: 4; top: 14px; right: 14px;
-    min-width: 88px; min-height: 40px; padding: 8px 18px;
-    font: 600 13px system-ui, sans-serif;
-    color: #FFFFFF; background: rgba(10, 10, 14, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.38); border-radius: 999px;
+    position: absolute;
+    z-index: 4;
+    top: 14px;
+    right: 14px;
+    min-width: 88px;
+    min-height: 40px;
+    padding: 8px 18px;
+    font:
+      600 13px system-ui,
+      sans-serif;
+    color: #ffffff;
+    background: rgba(10, 10, 14, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    border-radius: 999px;
     cursor: pointer;
   }
-  .ctrl:hover { background: rgba(10, 10, 14, 0.95); }
+  .ctrl:hover {
+    background: rgba(10, 10, 14, 0.95);
+  }
   .ctrl:focus-visible {
     outline: 3px solid transparent;
-    box-shadow: 0 0 0 3px #0E0E12, 0 0 0 6px #FFFFFF;
+    box-shadow:
+      0 0 0 3px #0e0e12,
+      0 0 0 6px #ffffff;
   }
 
-  .demo-note { font-size: 13.5px; color: var(--muted); margin: 12px 0 0; max-width: 100ch; }
+  .demo-note {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin: 12px 0 0;
+    max-width: 100ch;
+  }
   .tech {
-    display: inline-block; margin-right: 8px; padding: 2px 8px;
-    font-family: var(--mono); font-size: 10.5px; font-weight: 600;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--chip-text); background: var(--chip-bg);
-    border: 1px solid var(--chip-edge); border-radius: 4px;
+    display: inline-block;
+    margin-right: 8px;
+    padding: 2px 8px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--chip-text);
+    background: var(--chip-bg);
+    border: 1px solid var(--chip-edge);
+    border-radius: 4px;
   }
 
-  footer.fin { border-top: 1px solid var(--hairline); margin-top: 42px; padding: 26px 0 64px; color: var(--muted); font-size: 13.5px; }
+  footer.fin {
+    border-top: 1px solid var(--hairline);
+    margin-top: 42px;
+    padding: 26px 0 64px;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
 
   /* ---------- 01 Constellation ---------- */
-  .stage-mesh { background: #EEF1F5; }
-  .stage-mesh .sample { color: #11141B; }
+  .stage-mesh {
+    background: #eef1f5;
+  }
+  .stage-mesh .sample {
+    color: #11141b;
+  }
 
   /* ---------- 02 Aurora (pure CSS) ---------- */
-  .stage-aurora { background: #0B0E1A; }
-  .stage-aurora .sample { color: #FFFFFF; text-shadow: 0 1px 14px rgba(4, 6, 14, 0.55); }
+  .stage-aurora {
+    background: #0b0e1a;
+  }
+  .stage-aurora .sample {
+    color: #ffffff;
+    text-shadow: 0 1px 14px rgba(4, 6, 14, 0.55);
+  }
   .blob {
-    position: absolute; z-index: 0;
+    position: absolute;
+    z-index: 0;
     border-radius: 50%;
     filter: blur(64px);
     mix-blend-mode: screen;
     will-change: transform, opacity;
   }
-  .b1 { left: -10%; top: -24%; width: 74vmin; height: 74vmin;
-        background: radial-gradient(circle, rgba(99, 84, 255, 0.6) 0%, rgba(99, 84, 255, 0) 65%);
-        animation: drift-a 56s ease-in-out infinite alternate; }
-  .b2 { right: -14%; top: 2%; width: 66vmin; height: 66vmin;
-        background: radial-gradient(circle, rgba(24, 160, 172, 0.55) 0%, rgba(24, 160, 172, 0) 65%);
-        animation: drift-b 68s ease-in-out infinite alternate; }
-  .b3 { left: 24%; bottom: -34%; width: 78vmin; height: 78vmin;
-        background: radial-gradient(circle, rgba(226, 84, 26, 0.4) 0%, rgba(226, 84, 26, 0) 65%);
-        animation: drift-c 82s ease-in-out infinite alternate; }
-  .b4 { left: 36%; top: 12%; width: 48vmin; height: 48vmin;
-        background: radial-gradient(circle, rgba(168, 64, 196, 0.45) 0%, rgba(168, 64, 196, 0) 65%);
-        animation: drift-d 47s ease-in-out infinite alternate; }
+  .b1 {
+    left: -10%;
+    top: -24%;
+    width: 74vmin;
+    height: 74vmin;
+    background: radial-gradient(
+      circle,
+      rgba(99, 84, 255, 0.6) 0%,
+      rgba(99, 84, 255, 0) 65%
+    );
+    animation: drift-a 56s ease-in-out infinite alternate;
+  }
+  .b2 {
+    right: -14%;
+    top: 2%;
+    width: 66vmin;
+    height: 66vmin;
+    background: radial-gradient(
+      circle,
+      rgba(24, 160, 172, 0.55) 0%,
+      rgba(24, 160, 172, 0) 65%
+    );
+    animation: drift-b 68s ease-in-out infinite alternate;
+  }
+  .b3 {
+    left: 24%;
+    bottom: -34%;
+    width: 78vmin;
+    height: 78vmin;
+    background: radial-gradient(
+      circle,
+      rgba(226, 84, 26, 0.4) 0%,
+      rgba(226, 84, 26, 0) 65%
+    );
+    animation: drift-c 82s ease-in-out infinite alternate;
+  }
+  .b4 {
+    left: 36%;
+    top: 12%;
+    width: 48vmin;
+    height: 48vmin;
+    background: radial-gradient(
+      circle,
+      rgba(168, 64, 196, 0.45) 0%,
+      rgba(168, 64, 196, 0) 65%
+    );
+    animation: drift-d 47s ease-in-out infinite alternate;
+  }
   @keyframes drift-a {
-    0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0.8; }
-    55%  { transform: translate3d(26vw, 10vh, 0) scale(1.24); opacity: 0.4; }
-    100% { transform: translate3d(8vw, 24vh, 0) scale(0.9); opacity: 0.7; }
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0.8;
+    }
+    55% {
+      transform: translate3d(26vw, 10vh, 0) scale(1.24);
+      opacity: 0.4;
+    }
+    100% {
+      transform: translate3d(8vw, 24vh, 0) scale(0.9);
+      opacity: 0.7;
+    }
   }
   @keyframes drift-b {
-    0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0.65; }
-    50%  { transform: translate3d(-20vw, 16vh, 0) scale(1.18); opacity: 0.28; }
-    100% { transform: translate3d(-6vw, -4vh, 0) scale(0.86); opacity: 0.6; }
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0.65;
+    }
+    50% {
+      transform: translate3d(-20vw, 16vh, 0) scale(1.18);
+      opacity: 0.28;
+    }
+    100% {
+      transform: translate3d(-6vw, -4vh, 0) scale(0.86);
+      opacity: 0.6;
+    }
   }
   @keyframes drift-c {
-    0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0.5; }
-    45%  { transform: translate3d(-12vw, -10vh, 0) scale(1.3); opacity: 0.22; }
-    100% { transform: translate3d(10vw, -3vh, 0) scale(1.05); opacity: 0.45; }
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0.5;
+    }
+    45% {
+      transform: translate3d(-12vw, -10vh, 0) scale(1.3);
+      opacity: 0.22;
+    }
+    100% {
+      transform: translate3d(10vw, -3vh, 0) scale(1.05);
+      opacity: 0.45;
+    }
   }
   @keyframes drift-d {
-    0%   { transform: translate3d(0, 0, 0) scale(0.8); opacity: 0; }
-    35%  { transform: translate3d(-3vw, 4vh, 0) scale(0.95); opacity: 0.55; }
-    65%  { transform: translate3d(-8vw, 10vh, 0) scale(1.1); opacity: 0.18; }
-    100% { transform: translate3d(6vw, -6vh, 0) scale(1.2); opacity: 0.5; }
+    0% {
+      transform: translate3d(0, 0, 0) scale(0.8);
+      opacity: 0;
+    }
+    35% {
+      transform: translate3d(-3vw, 4vh, 0) scale(0.95);
+      opacity: 0.55;
+    }
+    65% {
+      transform: translate3d(-8vw, 10vh, 0) scale(1.1);
+      opacity: 0.18;
+    }
+    100% {
+      transform: translate3d(6vw, -6vh, 0) scale(1.2);
+      opacity: 0.5;
+    }
   }
   /* grain kills gradient banding on the blurred fields */
   .stage-aurora::after {
-    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
     opacity: 0.07;
   }
   /* pause plumbing: JS toggles anim-on/anim-off; the media rule is the no-JS fallback */
-  .stage.anim-off .blob { animation-play-state: paused; }
-  .stage.anim-on .blob { animation-play-state: running; }
+  .stage.anim-off .blob {
+    animation-play-state: paused;
+  }
+  .stage.anim-on .blob {
+    animation-play-state: running;
+  }
   @media (prefers-reduced-motion: reduce) {
-    .blob { animation-play-state: paused; }
+    .blob {
+      animation-play-state: paused;
+    }
   }
 
   /* ---------- 03 Ink Drift ---------- */
-  .stage-ink { background: #F6F1E7; }
-  .stage-ink .sample { color: #2B2118; }
+  .stage-ink {
+    background: #f6f1e7;
+  }
+  .stage-ink .sample {
+    color: #2b2118;
+  }
 
   /* ---------- 04 Isolines ---------- */
-  .stage-topo { background: #0F1412; }
-  .stage-topo .sample { color: #E9F5EC; }
+  .stage-topo {
+    background: #0f1412;
+  }
+  .stage-topo .sample {
+    color: #e9f5ec;
+  }
 
   /* ---------- 05 Detection Pass ---------- */
   .stage-sweep {
-    background-color: #FBFBF9;
-    background-image: radial-gradient(rgba(26, 26, 26, 0.13) 1px, transparent 1px);
+    background-color: #fbfbf9;
+    background-image: radial-gradient(
+      rgba(26, 26, 26, 0.13) 1px,
+      transparent 1px
+    );
     background-size: 22px 22px;
   }
-  .stage-sweep .sample { color: #1A1A1A; }
+  .stage-sweep .sample {
+    color: #1a1a1a;
+  }
 
   /* ---------- 06 Glyph Tide ---------- */
-  .stage-glyphs { background: #101014; }
-  .stage-glyphs .sample { color: #F2F1F7; text-shadow: 0 0 8px #101014, 0 0 18px #101014; }
+  .stage-glyphs {
+    background: #101014;
+  }
+  .stage-glyphs .sample {
+    color: #f2f1f7;
+    text-shadow:
+      0 0 8px #101014,
+      0 0 18px #101014;
+  }
 </style>
 
 <header class="top">
   <div class="wrap">
-    <p class="eyebrow">brohde.com &middot; animation lab &middot; follow-up to concept 09</p>
+    <p class="eyebrow">
+      brohde.com &middot; animation lab &middot; follow-up to concept 09
+    </p>
     <h1>Six ways a homepage can breathe</h1>
-    <p class="standfirst">You liked the constellation. Here it is again as the reference point, plus five wildly different ambient techniques. Page design is ignored on purpose: each tile is just the animation, with sample copy on top to prove the text always wins.</p>
-    <p class="rules">House rules, applied to all six: devicePixelRatio capped at 2 &middot; frame rates throttled to 30fps or lower &middot; every animation pauses offscreen and on hidden tabs &middot; prefers-reduced-motion gets a composed still, with a play button to opt back in &middot; palettes here are per-demo placeholders, any of these recolors to the chosen design system.</p>
+    <p class="standfirst">
+      You liked the constellation. Here it is again as the reference point, plus
+      five wildly different ambient techniques. Page design is ignored on
+      purpose: each tile is just the animation, with sample copy on top to prove
+      the text always wins.
+    </p>
+    <p class="rules">
+      House rules, applied to all six: devicePixelRatio capped at 2 &middot;
+      frame rates throttled to 30fps or lower &middot; every animation pauses
+      offscreen and on hidden tabs &middot; prefers-reduced-motion gets a
+      composed still, with a play button to opt back in &middot; palettes here
+      are per-demo placeholders, any of these recolors to the chosen design
+      system.
+    </p>
   </div>
 </header>
 
 <main>
-
   <!-- ============ 01 CONSTELLATION ============ -->
   <section class="demo" id="demo-1" aria-labelledby="h-1">
     <div class="wrap">
@@ -199,18 +418,34 @@
         <span class="dnum" aria-hidden="true">01</span>
         <div>
           <h2 id="h-1">Constellation</h2>
-          <p class="ddesc">The reference point: a drifting proximity mesh, every article a node in the network.</p>
+          <p class="ddesc">
+            The reference point: a drifting proximity mesh, every article a node
+            in the network.
+          </p>
         </div>
       </header>
       <div class="stage stage-mesh">
         <canvas id="canvas-1" aria-hidden="true"></canvas>
         <div class="sample">
           <span class="nm">Brian Rohde</span>
-          <span class="tg">Full-stack engineer shipping AI products end to end</span>
+          <span class="tg"
+            >Full-stack engineer shipping AI products end to end</span
+          >
         </div>
-        <button class="ctrl" type="button" aria-label="Pause animation: Constellation">Pause</button>
+        <button
+          class="ctrl"
+          type="button"
+          aria-label="Pause animation: Constellation"
+        >
+          Pause
+        </button>
       </div>
-      <p class="demo-note"><span class="tech">canvas 2d</span>About 40 seeded nodes, an n&#178; proximity pass, links fade with distance. Well under 1ms a frame at the 30fps cap. Reduced motion: the seeded layout draws once as a still constellation.</p>
+      <p class="demo-note">
+        <span class="tech">canvas 2d</span>About 40 seeded nodes, an n&#178;
+        proximity pass, links fade with distance. Well under 1ms a frame at the
+        30fps cap. Reduced motion: the seeded layout draws once as a still
+        constellation.
+      </p>
     </div>
   </section>
 
@@ -221,7 +456,10 @@
         <span class="dnum" aria-hidden="true">02</span>
         <div>
           <h2 id="h-2">Aurora</h2>
-          <p class="ddesc">Your seed idea: blurred color fields drift and fade over ink. Pure CSS, zero JavaScript per frame.</p>
+          <p class="ddesc">
+            Your seed idea: blurred color fields drift and fade over ink. Pure
+            CSS, zero JavaScript per frame.
+          </p>
         </div>
       </header>
       <div class="stage stage-aurora">
@@ -231,11 +469,20 @@
         <div class="blob b4"></div>
         <div class="sample">
           <span class="nm">Brian Rohde</span>
-          <span class="tg">Full-stack engineer shipping AI products end to end</span>
+          <span class="tg"
+            >Full-stack engineer shipping AI products end to end</span
+          >
         </div>
-        <button class="ctrl" type="button" aria-label="Pause animation: Aurora">Pause</button>
+        <button class="ctrl" type="button" aria-label="Pause animation: Aurora">
+          Pause
+        </button>
       </div>
-      <p class="demo-note"><span class="tech">pure css</span>Four blurred radial gradients on compositor-only transform and opacity keyframes, 47s to 82s loops, SVG grain to kill banding. No main-thread work at all. Reduced motion: the keyframes hold on their opening composition.</p>
+      <p class="demo-note">
+        <span class="tech">pure css</span>Four blurred radial gradients on
+        compositor-only transform and opacity keyframes, 47s to 82s loops, SVG
+        grain to kill banding. No main-thread work at all. Reduced motion: the
+        keyframes hold on their opening composition.
+      </p>
     </div>
   </section>
 
@@ -246,18 +493,34 @@
         <span class="dnum" aria-hidden="true">03</span>
         <div>
           <h2 id="h-3">Ink Drift</h2>
-          <p class="ddesc">A few hundred particles ride an invisible flow field, leaving slow ink-wash trails on paper.</p>
+          <p class="ddesc">
+            A few hundred particles ride an invisible flow field, leaving slow
+            ink-wash trails on paper.
+          </p>
         </div>
       </header>
       <div class="stage stage-ink">
         <canvas id="canvas-3" aria-hidden="true"></canvas>
         <div class="sample">
           <span class="nm">Brian Rohde</span>
-          <span class="tg">Full-stack engineer shipping AI products end to end</span>
+          <span class="tg"
+            >Full-stack engineer shipping AI products end to end</span
+          >
         </div>
-        <button class="ctrl" type="button" aria-label="Pause animation: Ink Drift">Pause</button>
+        <button
+          class="ctrl"
+          type="button"
+          aria-label="Pause animation: Ink Drift"
+        >
+          Pause
+        </button>
       </div>
-      <p class="demo-note"><span class="tech">canvas 2d</span>Roughly 250 particles advected through a layered-sine flow field; trails come from a 4.5% alpha wash and two batched strokes per frame, about 1ms at 30fps. Reduced motion: the field is pre-rolled 240 steps into a finished ink wash.</p>
+      <p class="demo-note">
+        <span class="tech">canvas 2d</span>Roughly 250 particles advected
+        through a layered-sine flow field; trails come from a 4.5% alpha wash
+        and two batched strokes per frame, about 1ms at 30fps. Reduced motion:
+        the field is pre-rolled 240 steps into a finished ink wash.
+      </p>
     </div>
   </section>
 
@@ -268,18 +531,35 @@
         <span class="dnum" aria-hidden="true">04</span>
         <div>
           <h2 id="h-4">Isolines</h2>
-          <p class="ddesc">A live topographic map: contour lines of a slowly shifting field, like weather moving over terrain.</p>
+          <p class="ddesc">
+            A live topographic map: contour lines of a slowly shifting field,
+            like weather moving over terrain.
+          </p>
         </div>
       </header>
       <div class="stage stage-topo">
         <canvas id="canvas-4" aria-hidden="true"></canvas>
         <div class="sample">
           <span class="nm">Brian Rohde</span>
-          <span class="tg">Full-stack engineer shipping AI products end to end</span>
+          <span class="tg"
+            >Full-stack engineer shipping AI products end to end</span
+          >
         </div>
-        <button class="ctrl" type="button" aria-label="Pause animation: Isolines">Pause</button>
+        <button
+          class="ctrl"
+          type="button"
+          aria-label="Pause animation: Isolines"
+        >
+          Pause
+        </button>
       </div>
-      <p class="demo-note"><span class="tech">canvas 2d</span>Marching squares over a roughly 90x45 scalar field, 15 contour levels, throttled to 25fps, about 2ms per frame. Every fourth line is a brighter index contour, the cartography convention. Reduced motion: one evolved frame, a still topographic plate.</p>
+      <p class="demo-note">
+        <span class="tech">canvas 2d</span>Marching squares over a roughly 90x45
+        scalar field, 15 contour levels, throttled to 25fps, about 2ms per
+        frame. Every fourth line is a brighter index contour, the cartography
+        convention. Reduced motion: one evolved frame, a still topographic
+        plate.
+      </p>
     </div>
   </section>
 
@@ -290,18 +570,34 @@
         <span class="dnum" aria-hidden="true">05</span>
         <div>
           <h2 id="h-5">Detection Pass</h2>
-          <p class="ddesc">A survey line sweeps the page, brackets what it finds, scores it, lets it go. A nod to the Eight Angle pose model.</p>
+          <p class="ddesc">
+            A survey line sweeps the page, brackets what it finds, scores it,
+            lets it go. A nod to the Eight Angle pose model.
+          </p>
         </div>
       </header>
       <div class="stage stage-sweep">
         <canvas id="canvas-5" aria-hidden="true"></canvas>
         <div class="sample">
           <span class="nm">Brian Rohde</span>
-          <span class="tg">Full-stack engineer shipping AI products end to end</span>
+          <span class="tg"
+            >Full-stack engineer shipping AI products end to end</span
+          >
         </div>
-        <button class="ctrl" type="button" aria-label="Pause animation: Detection Pass">Pause</button>
+        <button
+          class="ctrl"
+          type="button"
+          aria-label="Pause animation: Detection Pass"
+        >
+          Pause
+        </button>
       </div>
-      <p class="demo-note"><span class="tech">canvas 2d + css dot grid</span>One sweep every 10.7s; targets are seeded away from the copy zone, ignite as the line crosses them, then decay to ghost outlines. Near-zero cost between ignitions. Reduced motion: frozen mid-pass with two detections lit.</p>
+      <p class="demo-note">
+        <span class="tech">canvas 2d + css dot grid</span>One sweep every 10.7s;
+        targets are seeded away from the copy zone, ignite as the line crosses
+        them, then decay to ghost outlines. Near-zero cost between ignitions.
+        Reduced motion: frozen mid-pass with two detections lit.
+      </p>
     </div>
   </section>
 
@@ -312,513 +608,697 @@
         <span class="dnum" aria-hidden="true">06</span>
         <div>
           <h2 id="h-6">Glyph Tide</h2>
-          <p class="ddesc">A terminal raster: waves roll through a grid of characters, density rendered as type. The 8 is not an accident.</p>
+          <p class="ddesc">
+            A terminal raster: waves roll through a grid of characters, density
+            rendered as type. The 8 is not an accident.
+          </p>
         </div>
       </header>
       <div class="stage stage-glyphs">
         <canvas id="canvas-6" aria-hidden="true"></canvas>
         <div class="sample">
           <span class="nm">Brian Rohde</span>
-          <span class="tg">Full-stack engineer shipping AI products end to end</span>
+          <span class="tg"
+            >Full-stack engineer shipping AI products end to end</span
+          >
         </div>
-        <button class="ctrl" type="button" aria-label="Pause animation: Glyph Tide">Pause</button>
+        <button
+          class="ctrl"
+          type="button"
+          aria-label="Pause animation: Glyph Tide"
+        >
+          Pause
+        </button>
       </div>
-      <p class="demo-note"><span class="tech">canvas 2d text raster</span>About 1,700 cells redrawn at 9fps; the slow tick is the aesthetic, so the throttle costs nothing. Roughly 2ms per tick. Reduced motion: a single settled frame.</p>
+      <p class="demo-note">
+        <span class="tech">canvas 2d text raster</span>About 1,700 cells redrawn
+        at 9fps; the slow tick is the aesthetic, so the throttle costs nothing.
+        Roughly 2ms per tick. Reduced motion: a single settled frame.
+      </p>
     </div>
   </section>
-
 </main>
 
 <footer class="fin">
-  <div class="wrap">Animation lab for brohde.com &middot; techniques over palettes: every demo recolors to whatever design system wins &middot; name a favorite, or two to combine, and the studio folds it into the homepage concept.</div>
+  <div class="wrap">
+    Animation lab for brohde.com &middot; techniques over palettes: every demo
+    recolors to whatever design system wins &middot; name a favorite, or two to
+    combine, and the studio folds it into the homepage concept.
+  </div>
 </footer>
 
 <script>
-(function () {
-  'use strict';
+  (function () {
+    "use strict";
 
-  var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var demos = [];
+    var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var demos = [];
 
-  function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+    function clamp(v, lo, hi) {
+      return v < lo ? lo : v > hi ? hi : v;
+    }
 
-  function makeRng(seed) {
-    var s = seed % 2147483647;
-    if (s <= 0) s += 2147483646;
-    return function () { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
-  }
+    function makeRng(seed) {
+      var s = seed % 2147483647;
+      if (s <= 0) s += 2147483646;
+      return function () {
+        s = (s * 16807) % 2147483647;
+        return (s - 1) / 2147483646;
+      };
+    }
 
-  function fitCanvas(canvas) {
-    var r = canvas.getBoundingClientRect();
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.max(1, Math.round(r.width * dpr));
-    canvas.height = Math.max(1, Math.round(r.height * dpr));
-    var ctx = canvas.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { w: r.width, h: r.height, ctx: ctx };
-  }
+    function fitCanvas(canvas) {
+      var r = canvas.getBoundingClientRect();
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(r.width * dpr));
+      canvas.height = Math.max(1, Math.round(r.height * dpr));
+      var ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { w: r.width, h: r.height, ctx: ctx };
+    }
 
-  /* ------- engine: per-demo run state = !userPaused && visible && !document.hidden ------- */
+    /* ------- engine: per-demo run state = !userPaused && visible && !document.hidden ------- */
 
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      for (var i = 0; i < demos.length; i++) {
-        if (demos[i].stage === e.target) {
-          demos[i].visible = e.isIntersecting;
-          demos[i].update();
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (e) {
+          for (var i = 0; i < demos.length; i++) {
+            if (demos[i].stage === e.target) {
+              demos[i].visible = e.isIntersecting;
+              demos[i].update();
+            }
+          }
+        });
+      },
+      { threshold: 0.05 }
+    );
+
+    function syncBtn(demo) {
+      demo.btn.textContent = demo.userPaused ? "Play" : "Pause";
+      demo.btn.setAttribute(
+        "aria-label",
+        (demo.userPaused ? "Play animation: " : "Pause animation: ") + demo.name
+      );
+    }
+
+    function wire(sectionId, impl) {
+      var section = document.getElementById(sectionId);
+      var demo = {
+        stage: section.querySelector(".stage"),
+        btn: section.querySelector(".ctrl"),
+        name: section.querySelector("h2").textContent,
+        impl: impl,
+        userPaused: REDUCED,
+        visible: false,
+        running: false,
+        raf: null,
+        last: 0,
+        t: 0,
+      };
+      function loop(now) {
+        demo.raf = null;
+        if (!demo.running) return;
+        if (now - demo.last >= impl.interval) {
+          var dt =
+            demo.last === 0 ? impl.interval : Math.min(now - demo.last, 100);
+          demo.last = now;
+          demo.t += dt;
+          impl.step(dt, demo.t);
+        }
+        demo.raf = requestAnimationFrame(loop);
+      }
+      demo.update = function () {
+        var run = !demo.userPaused && demo.visible && !document.hidden;
+        if (impl.css) {
+          demo.stage.classList.toggle("anim-on", run);
+          demo.stage.classList.toggle("anim-off", !run);
+          return;
+        }
+        if (run && !demo.running) {
+          demo.running = true;
+          demo.last = 0;
+          if (!demo.raf) demo.raf = requestAnimationFrame(loop);
+        } else if (!run) {
+          demo.running = false;
+        }
+      };
+      demo.btn.addEventListener("click", function () {
+        demo.userPaused = !demo.userPaused;
+        syncBtn(demo);
+        demo.update();
+      });
+      demos.push(demo);
+      if (impl.resize) impl.resize();
+      if (impl.staticFrame) impl.staticFrame();
+      syncBtn(demo);
+      io.observe(demo.stage);
+      return demo;
+    }
+
+    /* ------- 01 Constellation: proximity mesh ------- */
+
+    var d1 = (function () {
+      var canvas = document.getElementById("canvas-1");
+      var ctx,
+        w,
+        h,
+        pts = [];
+      var LINK = 140;
+      function resize() {
+        var f = fitCanvas(canvas);
+        ctx = f.ctx;
+        w = f.w;
+        h = f.h;
+        var rng = makeRng(8);
+        var n = clamp(Math.round((w * h) / 15000), 24, 60);
+        pts = [];
+        for (var i = 0; i < n; i++) {
+          pts.push({
+            x: rng() * w,
+            y: rng() * h,
+            vx: (rng() - 0.5) * 0.03,
+            vy: (rng() - 0.5) * 0.03,
+            r: 1.4 + rng() * 1.2,
+          });
         }
       }
-    });
-  }, { threshold: 0.05 });
-
-  function syncBtn(demo) {
-    demo.btn.textContent = demo.userPaused ? 'Play' : 'Pause';
-    demo.btn.setAttribute('aria-label',
-      (demo.userPaused ? 'Play animation: ' : 'Pause animation: ') + demo.name);
-  }
-
-  function wire(sectionId, impl) {
-    var section = document.getElementById(sectionId);
-    var demo = {
-      stage: section.querySelector('.stage'),
-      btn: section.querySelector('.ctrl'),
-      name: section.querySelector('h2').textContent,
-      impl: impl,
-      userPaused: REDUCED,
-      visible: false,
-      running: false,
-      raf: null,
-      last: 0,
-      t: 0
-    };
-    function loop(now) {
-      demo.raf = null;
-      if (!demo.running) return;
-      if (now - demo.last >= impl.interval) {
-        var dt = demo.last === 0 ? impl.interval : Math.min(now - demo.last, 100);
-        demo.last = now;
-        demo.t += dt;
-        impl.step(dt, demo.t);
-      }
-      demo.raf = requestAnimationFrame(loop);
-    }
-    demo.update = function () {
-      var run = !demo.userPaused && demo.visible && !document.hidden;
-      if (impl.css) {
-        demo.stage.classList.toggle('anim-on', run);
-        demo.stage.classList.toggle('anim-off', !run);
-        return;
-      }
-      if (run && !demo.running) {
-        demo.running = true;
-        demo.last = 0;
-        if (!demo.raf) demo.raf = requestAnimationFrame(loop);
-      } else if (!run) {
-        demo.running = false;
-      }
-    };
-    demo.btn.addEventListener('click', function () {
-      demo.userPaused = !demo.userPaused;
-      syncBtn(demo);
-      demo.update();
-    });
-    demos.push(demo);
-    if (impl.resize) impl.resize();
-    if (impl.staticFrame) impl.staticFrame();
-    syncBtn(demo);
-    io.observe(demo.stage);
-    return demo;
-  }
-
-  /* ------- 01 Constellation: proximity mesh ------- */
-
-  var d1 = (function () {
-    var canvas = document.getElementById('canvas-1');
-    var ctx, w, h, pts = [];
-    var LINK = 140;
-    function resize() {
-      var f = fitCanvas(canvas); ctx = f.ctx; w = f.w; h = f.h;
-      var rng = makeRng(8);
-      var n = clamp(Math.round(w * h / 15000), 24, 60);
-      pts = [];
-      for (var i = 0; i < n; i++) {
-        pts.push({
-          x: rng() * w, y: rng() * h,
-          vx: (rng() - 0.5) * 0.03, vy: (rng() - 0.5) * 0.03,
-          r: 1.4 + rng() * 1.2
-        });
-      }
-    }
-    function step(dt) {
-      var i, j, p;
-      for (i = 0; i < pts.length; i++) {
-        p = pts[i];
-        p.x += p.vx * dt; p.y += p.vy * dt;
-        if (p.x < 0) { p.x = 0; p.vx = -p.vx; } else if (p.x > w) { p.x = w; p.vx = -p.vx; }
-        if (p.y < 0) { p.y = 0; p.vy = -p.vy; } else if (p.y > h) { p.y = h; p.vy = -p.vy; }
-      }
-      ctx.clearRect(0, 0, w, h);
-      ctx.lineWidth = 1;
-      for (i = 0; i < pts.length; i++) {
-        for (j = i + 1; j < pts.length; j++) {
-          var dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
-          var d2 = dx * dx + dy * dy;
-          if (d2 < LINK * LINK) {
-            var a = 0.3 * (1 - Math.sqrt(d2) / LINK);
-            ctx.strokeStyle = 'rgba(69,52,230,' + a.toFixed(3) + ')';
-            ctx.beginPath();
-            ctx.moveTo(pts[i].x, pts[i].y);
-            ctx.lineTo(pts[j].x, pts[j].y);
-            ctx.stroke();
+      function step(dt) {
+        var i, j, p;
+        for (i = 0; i < pts.length; i++) {
+          p = pts[i];
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          if (p.x < 0) {
+            p.x = 0;
+            p.vx = -p.vx;
+          } else if (p.x > w) {
+            p.x = w;
+            p.vx = -p.vx;
+          }
+          if (p.y < 0) {
+            p.y = 0;
+            p.vy = -p.vy;
+          } else if (p.y > h) {
+            p.y = h;
+            p.vy = -p.vy;
           }
         }
-      }
-      ctx.fillStyle = 'rgba(69,52,230,0.55)';
-      for (i = 0; i < pts.length; i++) {
-        ctx.beginPath();
-        ctx.arc(pts[i].x, pts[i].y, pts[i].r, 0, 6.2832);
-        ctx.fill();
-      }
-    }
-    return { interval: 33, resize: resize, step: step, staticFrame: function () { step(0); } };
-  })();
-  wire('demo-1', d1);
-
-  /* ------- 02 Aurora: pure CSS, engine only toggles play state ------- */
-
-  wire('demo-2', { css: true, interval: 0 });
-
-  /* ------- 03 Ink Drift: flow-field particles with fading trails ------- */
-
-  var d3 = (function () {
-    var canvas = document.getElementById('canvas-3');
-    var ctx, w, h, parts = [];
-    var rng = makeRng(23);
-    function spawn(p) {
-      p.x = rng() * w; p.y = rng() * h;
-      p.px = p.x; p.py = p.y;
-      p.life = 3000 + rng() * 6000;
-    }
-    function resize() {
-      var f = fitCanvas(canvas); ctx = f.ctx; w = f.w; h = f.h;
-      parts = [];
-      var n = clamp(Math.round(w * h / 2600), 140, 320);
-      for (var i = 0; i < n; i++) {
-        var p = { accent: (i % 12 === 0) };
-        spawn(p);
-        p.life = rng() * 9000;
-        parts.push(p);
-      }
-      ctx.fillStyle = '#F6F1E7';
-      ctx.fillRect(0, 0, w, h);
-    }
-    function angle(x, y, t) {
-      return Math.sin(x * 0.0042 + t * 0.00023) * 1.9
-           + Math.cos(y * 0.0051 - t * 0.00017) * 1.6
-           + Math.sin((x + y) * 0.0021 + t * 0.00011) * 0.9;
-    }
-    function step(dt, t) {
-      ctx.fillStyle = 'rgba(246,241,231,0.045)';
-      ctx.fillRect(0, 0, w, h);
-      var sp = 0.032, i, p;
-      for (i = 0; i < parts.length; i++) {
-        p = parts[i];
-        p.px = p.x; p.py = p.y;
-        var a = angle(p.x, p.y, t);
-        p.x += Math.cos(a) * sp * dt;
-        p.y += Math.sin(a) * sp * dt;
-        p.life -= dt;
-        if (p.life <= 0 || p.x < -4 || p.x > w + 4 || p.y < -4 || p.y > h + 4) {
-          spawn(p);
-        }
-      }
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(43,33,24,0.17)';
-      ctx.beginPath();
-      for (i = 0; i < parts.length; i++) {
-        p = parts[i];
-        if (p.accent) continue;
-        ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y);
-      }
-      ctx.stroke();
-      ctx.strokeStyle = 'rgba(158,59,26,0.3)';
-      ctx.beginPath();
-      for (i = 0; i < parts.length; i++) {
-        p = parts[i];
-        if (!p.accent) continue;
-        ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y);
-      }
-      ctx.stroke();
-    }
-    function staticFrame() {
-      ctx.fillStyle = '#F6F1E7';
-      ctx.fillRect(0, 0, w, h);
-      for (var k = 0; k < 240; k++) step(33, 4000 + k * 33);
-    }
-    return { interval: 33, resize: resize, step: step, staticFrame: staticFrame };
-  })();
-  wire('demo-3', d3);
-
-  /* ------- 04 Isolines: marching squares over a drifting scalar field ------- */
-
-  var d4 = (function () {
-    var canvas = document.getElementById('canvas-4');
-    var ctx, w, h, gw, gh, vals;
-    var CELL = 12;
-    function resize() {
-      var f = fitCanvas(canvas); ctx = f.ctx; w = f.w; h = f.h;
-      gw = Math.ceil(w / CELL) + 1;
-      gh = Math.ceil(h / CELL) + 1;
-      vals = new Float32Array(gw * gh);
-    }
-    function field(x, y, t) {
-      var dx = x - w * 0.62, dy = y - h * 0.38;
-      return Math.sin(x * 0.010 + t * 0.00013)
-           + Math.sin(y * 0.012 - t * 0.00010)
-           + Math.sin((x * 0.7 + y * 0.5) * 0.011 + t * 0.00007)
-           + Math.sin(Math.sqrt(dx * dx + dy * dy) * 0.014 - t * 0.00015) * 0.9;
-    }
-    function seg(ax, ay, bx2, by2) {
-      ctx.moveTo(ax, ay); ctx.lineTo(bx2, by2);
-    }
-    function step(dt, t) {
-      var i, j;
-      for (j = 0; j < gh; j++) {
-        for (i = 0; i < gw; i++) {
-          vals[j * gw + i] = field(i * CELL, j * CELL, t);
-        }
-      }
-      ctx.clearRect(0, 0, w, h);
-      ctx.lineWidth = 1;
-      for (var k = 0; k < 15; k++) {
-        var L = -3.15 + k * 0.45;
-        ctx.strokeStyle = (k % 4 === 0) ? 'rgba(126,231,135,0.55)' : 'rgba(126,231,135,0.22)';
-        ctx.beginPath();
-        for (j = 0; j < gh - 1; j++) {
-          var y0 = j * CELL;
-          for (i = 0; i < gw - 1; i++) {
-            var x0 = i * CELL;
-            var tl = vals[j * gw + i], tr = vals[j * gw + i + 1];
-            var bl = vals[(j + 1) * gw + i], br = vals[(j + 1) * gw + i + 1];
-            var c = (tl > L ? 8 : 0) | (tr > L ? 4 : 0) | (br > L ? 2 : 0) | (bl > L ? 1 : 0);
-            if (c === 0 || c === 15) continue;
-            var txp = x0 + CELL * clamp((L - tl) / (tr - tl), 0, 1);
-            var ryp = y0 + CELL * clamp((L - tr) / (br - tr), 0, 1);
-            var bxp = x0 + CELL * clamp((L - bl) / (br - bl), 0, 1);
-            var lyp = y0 + CELL * clamp((L - tl) / (bl - tl), 0, 1);
-            switch (c) {
-              case 1: case 14: seg(x0, lyp, bxp, y0 + CELL); break;
-              case 2: case 13: seg(bxp, y0 + CELL, x0 + CELL, ryp); break;
-              case 3: case 12: seg(x0, lyp, x0 + CELL, ryp); break;
-              case 4: case 11: seg(txp, y0, x0 + CELL, ryp); break;
-              case 6: case 9: seg(txp, y0, bxp, y0 + CELL); break;
-              case 7: case 8: seg(txp, y0, x0, lyp); break;
-              case 5:
-                seg(txp, y0, x0, lyp);
-                seg(bxp, y0 + CELL, x0 + CELL, ryp);
-                break;
-              case 10:
-                seg(txp, y0, x0 + CELL, ryp);
-                seg(bxp, y0 + CELL, x0, lyp);
-                break;
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineWidth = 1;
+        for (i = 0; i < pts.length; i++) {
+          for (j = i + 1; j < pts.length; j++) {
+            var dx = pts[i].x - pts[j].x,
+              dy = pts[i].y - pts[j].y;
+            var d2 = dx * dx + dy * dy;
+            if (d2 < LINK * LINK) {
+              var a = 0.3 * (1 - Math.sqrt(d2) / LINK);
+              ctx.strokeStyle = "rgba(69,52,230," + a.toFixed(3) + ")";
+              ctx.beginPath();
+              ctx.moveTo(pts[i].x, pts[i].y);
+              ctx.lineTo(pts[j].x, pts[j].y);
+              ctx.stroke();
             }
           }
         }
+        ctx.fillStyle = "rgba(69,52,230,0.55)";
+        for (i = 0; i < pts.length; i++) {
+          ctx.beginPath();
+          ctx.arc(pts[i].x, pts[i].y, pts[i].r, 0, 6.2832);
+          ctx.fill();
+        }
+      }
+      return {
+        interval: 33,
+        resize: resize,
+        step: step,
+        staticFrame: function () {
+          step(0);
+        },
+      };
+    })();
+    wire("demo-1", d1);
+
+    /* ------- 02 Aurora: pure CSS, engine only toggles play state ------- */
+
+    wire("demo-2", { css: true, interval: 0 });
+
+    /* ------- 03 Ink Drift: flow-field particles with fading trails ------- */
+
+    var d3 = (function () {
+      var canvas = document.getElementById("canvas-3");
+      var ctx,
+        w,
+        h,
+        parts = [];
+      var rng = makeRng(23);
+      function spawn(p) {
+        p.x = rng() * w;
+        p.y = rng() * h;
+        p.px = p.x;
+        p.py = p.y;
+        p.life = 3000 + rng() * 6000;
+      }
+      function resize() {
+        var f = fitCanvas(canvas);
+        ctx = f.ctx;
+        w = f.w;
+        h = f.h;
+        parts = [];
+        var n = clamp(Math.round((w * h) / 2600), 140, 320);
+        for (var i = 0; i < n; i++) {
+          var p = { accent: i % 12 === 0 };
+          spawn(p);
+          p.life = rng() * 9000;
+          parts.push(p);
+        }
+        ctx.fillStyle = "#F6F1E7";
+        ctx.fillRect(0, 0, w, h);
+      }
+      function angle(x, y, t) {
+        return (
+          Math.sin(x * 0.0042 + t * 0.00023) * 1.9 +
+          Math.cos(y * 0.0051 - t * 0.00017) * 1.6 +
+          Math.sin((x + y) * 0.0021 + t * 0.00011) * 0.9
+        );
+      }
+      function step(dt, t) {
+        ctx.fillStyle = "rgba(246,241,231,0.045)";
+        ctx.fillRect(0, 0, w, h);
+        var sp = 0.032,
+          i,
+          p;
+        for (i = 0; i < parts.length; i++) {
+          p = parts[i];
+          p.px = p.x;
+          p.py = p.y;
+          var a = angle(p.x, p.y, t);
+          p.x += Math.cos(a) * sp * dt;
+          p.y += Math.sin(a) * sp * dt;
+          p.life -= dt;
+          if (
+            p.life <= 0 ||
+            p.x < -4 ||
+            p.x > w + 4 ||
+            p.y < -4 ||
+            p.y > h + 4
+          ) {
+            spawn(p);
+          }
+        }
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(43,33,24,0.17)";
+        ctx.beginPath();
+        for (i = 0; i < parts.length; i++) {
+          p = parts[i];
+          if (p.accent) continue;
+          ctx.moveTo(p.px, p.py);
+          ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+        ctx.strokeStyle = "rgba(158,59,26,0.3)";
+        ctx.beginPath();
+        for (i = 0; i < parts.length; i++) {
+          p = parts[i];
+          if (!p.accent) continue;
+          ctx.moveTo(p.px, p.py);
+          ctx.lineTo(p.x, p.y);
+        }
         ctx.stroke();
       }
-    }
-    return { interval: 40, resize: resize, step: step, staticFrame: function () { step(0, 26000); } };
-  })();
-  wire('demo-4', d4);
+      function staticFrame() {
+        ctx.fillStyle = "#F6F1E7";
+        ctx.fillRect(0, 0, w, h);
+        for (var k = 0; k < 240; k++) step(33, 4000 + k * 33);
+      }
+      return {
+        interval: 33,
+        resize: resize,
+        step: step,
+        staticFrame: staticFrame,
+      };
+    })();
+    wire("demo-3", d3);
 
-  /* ------- 05 Detection Pass: sweep line ignites seeded targets ------- */
+    /* ------- 04 Isolines: marching squares over a drifting scalar field ------- */
 
-  var d5 = (function () {
-    var canvas = document.getElementById('canvas-5');
-    var ctx, w, h, targets = [];
-    var rng = makeRng(17);
-    var prevCt = 0;
-    var PASS = 9000, GAP = 1700;
-    var MONO = '600 10px ui-monospace, "SF Mono", Menlo, Consolas, monospace';
-    function seedTargets() {
-      targets = [];
-      var tries = 0;
-      while (targets.length < 7 && tries < 200) {
-        tries++;
-        var tw = 70 + rng() * 90, th = 44 + rng() * 62;
-        var x = 20 + rng() * (w - tw - 40), y = 22 + rng() * (h - th - 44);
-        if (x < w * 0.56 && (y + th) > h * 0.5) continue;   /* keep clear of the copy zone */
-        if ((x + tw) > w - 130 && y < 70) continue;         /* keep clear of the pause button */
-        targets.push({
-          x: x, y: y, w: tw, h: th, cx: x + tw / 2,
-          id: 1 + Math.floor(rng() * 46),
-          conf: 86 + Math.floor(rng() * 13),
-          igAt: -1
+    var d4 = (function () {
+      var canvas = document.getElementById("canvas-4");
+      var ctx, w, h, gw, gh, vals;
+      var CELL = 12;
+      function resize() {
+        var f = fitCanvas(canvas);
+        ctx = f.ctx;
+        w = f.w;
+        h = f.h;
+        gw = Math.ceil(w / CELL) + 1;
+        gh = Math.ceil(h / CELL) + 1;
+        vals = new Float32Array(gw * gh);
+      }
+      function field(x, y, t) {
+        var dx = x - w * 0.62,
+          dy = y - h * 0.38;
+        return (
+          Math.sin(x * 0.01 + t * 0.00013) +
+          Math.sin(y * 0.012 - t * 0.0001) +
+          Math.sin((x * 0.7 + y * 0.5) * 0.011 + t * 0.00007) +
+          Math.sin(Math.sqrt(dx * dx + dy * dy) * 0.014 - t * 0.00015) * 0.9
+        );
+      }
+      function seg(ax, ay, bx2, by2) {
+        ctx.moveTo(ax, ay);
+        ctx.lineTo(bx2, by2);
+      }
+      function step(dt, t) {
+        var i, j;
+        for (j = 0; j < gh; j++) {
+          for (i = 0; i < gw; i++) {
+            vals[j * gw + i] = field(i * CELL, j * CELL, t);
+          }
+        }
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineWidth = 1;
+        for (var k = 0; k < 15; k++) {
+          var L = -3.15 + k * 0.45;
+          ctx.strokeStyle =
+            k % 4 === 0 ? "rgba(126,231,135,0.55)" : "rgba(126,231,135,0.22)";
+          ctx.beginPath();
+          for (j = 0; j < gh - 1; j++) {
+            var y0 = j * CELL;
+            for (i = 0; i < gw - 1; i++) {
+              var x0 = i * CELL;
+              var tl = vals[j * gw + i],
+                tr = vals[j * gw + i + 1];
+              var bl = vals[(j + 1) * gw + i],
+                br = vals[(j + 1) * gw + i + 1];
+              var c =
+                (tl > L ? 8 : 0) |
+                (tr > L ? 4 : 0) |
+                (br > L ? 2 : 0) |
+                (bl > L ? 1 : 0);
+              if (c === 0 || c === 15) continue;
+              var txp = x0 + CELL * clamp((L - tl) / (tr - tl), 0, 1);
+              var ryp = y0 + CELL * clamp((L - tr) / (br - tr), 0, 1);
+              var bxp = x0 + CELL * clamp((L - bl) / (br - bl), 0, 1);
+              var lyp = y0 + CELL * clamp((L - tl) / (bl - tl), 0, 1);
+              switch (c) {
+                case 1:
+                case 14:
+                  seg(x0, lyp, bxp, y0 + CELL);
+                  break;
+                case 2:
+                case 13:
+                  seg(bxp, y0 + CELL, x0 + CELL, ryp);
+                  break;
+                case 3:
+                case 12:
+                  seg(x0, lyp, x0 + CELL, ryp);
+                  break;
+                case 4:
+                case 11:
+                  seg(txp, y0, x0 + CELL, ryp);
+                  break;
+                case 6:
+                case 9:
+                  seg(txp, y0, bxp, y0 + CELL);
+                  break;
+                case 7:
+                case 8:
+                  seg(txp, y0, x0, lyp);
+                  break;
+                case 5:
+                  seg(txp, y0, x0, lyp);
+                  seg(bxp, y0 + CELL, x0 + CELL, ryp);
+                  break;
+                case 10:
+                  seg(txp, y0, x0 + CELL, ryp);
+                  seg(bxp, y0 + CELL, x0, lyp);
+                  break;
+              }
+            }
+          }
+          ctx.stroke();
+        }
+      }
+      return {
+        interval: 40,
+        resize: resize,
+        step: step,
+        staticFrame: function () {
+          step(0, 26000);
+        },
+      };
+    })();
+    wire("demo-4", d4);
+
+    /* ------- 05 Detection Pass: sweep line ignites seeded targets ------- */
+
+    var d5 = (function () {
+      var canvas = document.getElementById("canvas-5");
+      var ctx,
+        w,
+        h,
+        targets = [];
+      var rng = makeRng(17);
+      var prevCt = 0;
+      var PASS = 9000,
+        GAP = 1700;
+      var MONO = '600 10px ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+      function seedTargets() {
+        targets = [];
+        var tries = 0;
+        while (targets.length < 7 && tries < 200) {
+          tries++;
+          var tw = 70 + rng() * 90,
+            th = 44 + rng() * 62;
+          var x = 20 + rng() * (w - tw - 40),
+            y = 22 + rng() * (h - th - 44);
+          if (x < w * 0.56 && y + th > h * 0.5)
+            continue; /* keep clear of the copy zone */
+          if (x + tw > w - 130 && y < 70)
+            continue; /* keep clear of the pause button */
+          targets.push({
+            x: x,
+            y: y,
+            w: tw,
+            h: th,
+            cx: x + tw / 2,
+            id: 1 + Math.floor(rng() * 46),
+            conf: 86 + Math.floor(rng() * 13),
+            igAt: -1,
+          });
+        }
+      }
+      function resize() {
+        var f = fitCanvas(canvas);
+        ctx = f.ctx;
+        w = f.w;
+        h = f.h;
+        seedTargets();
+      }
+      function bracket(tg, arm, alpha) {
+        var a = Math.min(tg.w, tg.h) * 0.3 * arm;
+        if (a <= 0.5) return;
+        var x = tg.x,
+          y = tg.y,
+          x2 = tg.x + tg.w,
+          y2 = tg.y + tg.h;
+        ctx.strokeStyle = "rgba(232,70,14," + alpha.toFixed(3) + ")";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(x, y + a);
+        ctx.lineTo(x, y);
+        ctx.lineTo(x + a, y);
+        ctx.moveTo(x2 - a, y);
+        ctx.lineTo(x2, y);
+        ctx.lineTo(x2, y + a);
+        ctx.moveTo(x2, y2 - a);
+        ctx.lineTo(x2, y2);
+        ctx.lineTo(x2 - a, y2);
+        ctx.moveTo(x + a, y2);
+        ctx.lineTo(x, y2);
+        ctx.lineTo(x, y2 - a);
+        ctx.stroke();
+        ctx.strokeStyle = "rgba(232,70,14," + (alpha * 0.18).toFixed(3) + ")";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, tg.w, tg.h);
+      }
+      function label(tg, alpha) {
+        ctx.font = MONO;
+        var s =
+          "pose " + (tg.id < 10 ? "0" : "") + tg.id + " \u00B7 0." + tg.conf;
+        var tw2 = ctx.measureText(s).width;
+        var lx = tg.x,
+          ly = tg.y - 9;
+        if (ly < 14) ly = tg.y + tg.h + 15;
+        ctx.fillStyle = "rgba(251,251,249," + (alpha * 0.9).toFixed(3) + ")";
+        ctx.fillRect(lx - 3, ly - 10, tw2 + 6, 14);
+        ctx.fillStyle = "rgba(11,95,103," + alpha.toFixed(3) + ")";
+        ctx.fillText(s, lx, ly);
+      }
+      function ghost(tg) {
+        ctx.strokeStyle = "rgba(26,26,26,0.08)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tg.x, tg.y, tg.w, tg.h);
+      }
+      function drawSweep(sx) {
+        var grad = ctx.createLinearGradient(sx - 110, 0, sx, 0);
+        grad.addColorStop(0, "rgba(232,70,14,0)");
+        grad.addColorStop(1, "rgba(232,70,14,0.09)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(sx - 110, 0, 110, h);
+        ctx.strokeStyle = "rgba(232,70,14,0.75)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(sx, 0);
+        ctx.lineTo(sx, h);
+        ctx.stroke();
+      }
+      function step(dt, t) {
+        var cycle = PASS + GAP;
+        var ct = t % cycle;
+        if (ct < prevCt) seedTargets();
+        prevCt = ct;
+        ctx.clearRect(0, 0, w, h);
+        var sx = -60 + (w + 120) * Math.min(ct / PASS, 1);
+        if (ct <= PASS) drawSweep(sx);
+        for (var i = 0; i < targets.length; i++) {
+          var tg = targets[i];
+          if (tg.igAt < 0 && ct <= PASS && sx >= tg.cx) tg.igAt = t;
+          if (tg.igAt < 0) continue;
+          var e = t - tg.igAt;
+          if (e < 380) {
+            var k = 1 - Math.pow(1 - e / 380, 3);
+            bracket(tg, k, k);
+            if (k > 0.85) label(tg, (k - 0.85) / 0.15);
+          } else if (e < 2000) {
+            bracket(tg, 1, 1);
+            label(tg, 1);
+          } else if (e < 2700) {
+            var f2 = 1 - (e - 2000) / 700;
+            bracket(tg, 1, f2);
+            label(tg, f2);
+          } else {
+            ghost(tg);
+          }
+        }
+      }
+      function staticFrame() {
+        ctx.clearRect(0, 0, w, h);
+        var sx = w * 0.62;
+        drawSweep(sx);
+        var lit = 0;
+        var byCx = targets.slice().sort(function (a, b) {
+          return b.cx - a.cx;
         });
-      }
-    }
-    function resize() {
-      var f = fitCanvas(canvas); ctx = f.ctx; w = f.w; h = f.h;
-      seedTargets();
-    }
-    function bracket(tg, arm, alpha) {
-      var a = Math.min(tg.w, tg.h) * 0.3 * arm;
-      if (a <= 0.5) return;
-      var x = tg.x, y = tg.y, x2 = tg.x + tg.w, y2 = tg.y + tg.h;
-      ctx.strokeStyle = 'rgba(232,70,14,' + alpha.toFixed(3) + ')';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(x, y + a); ctx.lineTo(x, y); ctx.lineTo(x + a, y);
-      ctx.moveTo(x2 - a, y); ctx.lineTo(x2, y); ctx.lineTo(x2, y + a);
-      ctx.moveTo(x2, y2 - a); ctx.lineTo(x2, y2); ctx.lineTo(x2 - a, y2);
-      ctx.moveTo(x + a, y2); ctx.lineTo(x, y2); ctx.lineTo(x, y2 - a);
-      ctx.stroke();
-      ctx.strokeStyle = 'rgba(232,70,14,' + (alpha * 0.18).toFixed(3) + ')';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(x, y, tg.w, tg.h);
-    }
-    function label(tg, alpha) {
-      ctx.font = MONO;
-      var s = 'pose ' + (tg.id < 10 ? '0' : '') + tg.id + ' \u00B7 0.' + tg.conf;
-      var tw2 = ctx.measureText(s).width;
-      var lx = tg.x, ly = tg.y - 9;
-      if (ly < 14) ly = tg.y + tg.h + 15;
-      ctx.fillStyle = 'rgba(251,251,249,' + (alpha * 0.9).toFixed(3) + ')';
-      ctx.fillRect(lx - 3, ly - 10, tw2 + 6, 14);
-      ctx.fillStyle = 'rgba(11,95,103,' + alpha.toFixed(3) + ')';
-      ctx.fillText(s, lx, ly);
-    }
-    function ghost(tg) {
-      ctx.strokeStyle = 'rgba(26,26,26,0.08)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(tg.x, tg.y, tg.w, tg.h);
-    }
-    function drawSweep(sx) {
-      var grad = ctx.createLinearGradient(sx - 110, 0, sx, 0);
-      grad.addColorStop(0, 'rgba(232,70,14,0)');
-      grad.addColorStop(1, 'rgba(232,70,14,0.09)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(sx - 110, 0, 110, h);
-      ctx.strokeStyle = 'rgba(232,70,14,0.75)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(sx, 0); ctx.lineTo(sx, h);
-      ctx.stroke();
-    }
-    function step(dt, t) {
-      var cycle = PASS + GAP;
-      var ct = t % cycle;
-      if (ct < prevCt) seedTargets();
-      prevCt = ct;
-      ctx.clearRect(0, 0, w, h);
-      var sx = -60 + (w + 120) * Math.min(ct / PASS, 1);
-      if (ct <= PASS) drawSweep(sx);
-      for (var i = 0; i < targets.length; i++) {
-        var tg = targets[i];
-        if (tg.igAt < 0 && ct <= PASS && sx >= tg.cx) tg.igAt = t;
-        if (tg.igAt < 0) continue;
-        var e = t - tg.igAt;
-        if (e < 380) {
-          var k = 1 - Math.pow(1 - e / 380, 3);
-          bracket(tg, k, k);
-          if (k > 0.85) label(tg, (k - 0.85) / 0.15);
-        } else if (e < 2000) {
-          bracket(tg, 1, 1);
-          label(tg, 1);
-        } else if (e < 2700) {
-          var f2 = 1 - (e - 2000) / 700;
-          bracket(tg, 1, f2);
-          label(tg, f2);
-        } else {
-          ghost(tg);
+        for (var i = 0; i < byCx.length; i++) {
+          var tg = byCx[i];
+          if (tg.cx >= sx) continue;
+          if (lit < 2) {
+            bracket(tg, 1, 1);
+            label(tg, 1);
+          } else if (lit === 2) {
+            bracket(tg, 1, 0.35);
+          } else {
+            ghost(tg);
+          }
+          lit++;
         }
       }
-    }
-    function staticFrame() {
-      ctx.clearRect(0, 0, w, h);
-      var sx = w * 0.62;
-      drawSweep(sx);
-      var lit = 0;
-      var byCx = targets.slice().sort(function (a, b) { return b.cx - a.cx; });
-      for (var i = 0; i < byCx.length; i++) {
-        var tg = byCx[i];
-        if (tg.cx >= sx) continue;
-        if (lit < 2) { bracket(tg, 1, 1); label(tg, 1); }
-        else if (lit === 2) { bracket(tg, 1, 0.35); }
-        else { ghost(tg); }
-        lit++;
+      return {
+        interval: 33,
+        resize: resize,
+        step: step,
+        staticFrame: staticFrame,
+      };
+    })();
+    wire("demo-5", d5);
+
+    /* ------- 06 Glyph Tide: character raster, low tick rate on purpose ------- */
+
+    var d6 = (function () {
+      var canvas = document.getElementById("canvas-6");
+      var ctx, w, h, cols, rows;
+      var CELL = 18;
+      var RAMP = [" ", " ", ".", "\u00B7", ":", "+", "x", "8", "#"];
+      var COLORS = [
+        "rgba(86,83,104,0.85)",
+        "rgba(143,138,176,0.9)",
+        "rgba(183,178,216,0.95)",
+      ];
+      function resize() {
+        var f = fitCanvas(canvas);
+        ctx = f.ctx;
+        w = f.w;
+        h = f.h;
+        cols = Math.ceil(w / CELL);
+        rows = Math.ceil(h / CELL);
       }
-    }
-    return { interval: 33, resize: resize, step: step, staticFrame: staticFrame };
-  })();
-  wire('demo-5', d5);
-
-  /* ------- 06 Glyph Tide: character raster, low tick rate on purpose ------- */
-
-  var d6 = (function () {
-    var canvas = document.getElementById('canvas-6');
-    var ctx, w, h, cols, rows;
-    var CELL = 18;
-    var RAMP = [' ', ' ', '.', '\u00B7', ':', '+', 'x', '8', '#'];
-    var COLORS = ['rgba(86,83,104,0.85)', 'rgba(143,138,176,0.9)', 'rgba(183,178,216,0.95)'];
-    function resize() {
-      var f = fitCanvas(canvas); ctx = f.ctx; w = f.w; h = f.h;
-      cols = Math.ceil(w / CELL);
-      rows = Math.ceil(h / CELL);
-    }
-    function step(dt, t) {
-      ctx.clearRect(0, 0, w, h);
-      ctx.font = '13px ui-monospace, "SF Mono", Menlo, Consolas, monospace';
-      ctx.textBaseline = 'top';
-      var lastBucket = -1;
-      for (var cy = 0; cy < rows; cy++) {
-        for (var cx = 0; cx < cols; cx++) {
-          var v = Math.sin(cx * 0.55 + t * 0.00042)
-                + Math.sin(cy * 0.83 - t * 0.00031)
-                + Math.sin((cx + cy) * 0.35 + t * 0.00021)
-                + Math.sin((cx * 0.5 - cy * 0.7) + t * 0.00055) * 1.2;
-          var u = clamp((v + 4.2) / 8.4, 0, 0.999);
-          var idx = Math.floor(u * RAMP.length);
-          if (idx < 2) continue;
-          var bucket = idx < 5 ? 0 : (idx < 7 ? 1 : 2);
-          if (bucket !== lastBucket) { ctx.fillStyle = COLORS[bucket]; lastBucket = bucket; }
-          ctx.fillText(RAMP[idx], cx * CELL + 3, cy * CELL + 2);
+      function step(dt, t) {
+        ctx.clearRect(0, 0, w, h);
+        ctx.font = '13px ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+        ctx.textBaseline = "top";
+        var lastBucket = -1;
+        for (var cy = 0; cy < rows; cy++) {
+          for (var cx = 0; cx < cols; cx++) {
+            var v =
+              Math.sin(cx * 0.55 + t * 0.00042) +
+              Math.sin(cy * 0.83 - t * 0.00031) +
+              Math.sin((cx + cy) * 0.35 + t * 0.00021) +
+              Math.sin(cx * 0.5 - cy * 0.7 + t * 0.00055) * 1.2;
+            var u = clamp((v + 4.2) / 8.4, 0, 0.999);
+            var idx = Math.floor(u * RAMP.length);
+            if (idx < 2) continue;
+            var bucket = idx < 5 ? 0 : idx < 7 ? 1 : 2;
+            if (bucket !== lastBucket) {
+              ctx.fillStyle = COLORS[bucket];
+              lastBucket = bucket;
+            }
+            ctx.fillText(RAMP[idx], cx * CELL + 3, cy * CELL + 2);
+          }
         }
       }
-    }
-    return { interval: 110, resize: resize, step: step, staticFrame: function () { step(0, 52000); } };
-  })();
-  wire('demo-6', d6);
+      return {
+        interval: 110,
+        resize: resize,
+        step: step,
+        staticFrame: function () {
+          step(0, 52000);
+        },
+      };
+    })();
+    wire("demo-6", d6);
 
-  /* ------- global: hidden tab, resize, live reduced-motion change ------- */
+    /* ------- global: hidden tab, resize, live reduced-motion change ------- */
 
-  document.addEventListener('visibilitychange', function () {
-    demos.forEach(function (d) { d.update(); });
-  });
-
-  var rto = null;
-  window.addEventListener('resize', function () {
-    if (rto) clearTimeout(rto);
-    rto = setTimeout(function () {
+    document.addEventListener("visibilitychange", function () {
       demos.forEach(function (d) {
-        if (d.impl.resize) {
-          d.impl.resize();
-          if (!d.running && d.impl.staticFrame) d.impl.staticFrame();
-        }
+        d.update();
       });
-    }, 180);
-  });
-
-  var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-  function onMq(e) {
-    REDUCED = e.matches;
-    demos.forEach(function (d) {
-      d.userPaused = e.matches;
-      syncBtn(d);
-      d.update();
-      if (e.matches && d.impl.staticFrame) d.impl.staticFrame();
     });
-  }
-  if (mq.addEventListener) mq.addEventListener('change', onMq);
-})();
+
+    var rto = null;
+    window.addEventListener("resize", function () {
+      if (rto) clearTimeout(rto);
+      rto = setTimeout(function () {
+        demos.forEach(function (d) {
+          if (d.impl.resize) {
+            d.impl.resize();
+            if (!d.running && d.impl.staticFrame) d.impl.staticFrame();
+          }
+        });
+      }, 180);
+    });
+
+    var mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    function onMq(e) {
+      REDUCED = e.matches;
+      demos.forEach(function (d) {
+        d.userPaused = e.matches;
+        syncBtn(d);
+        d.update();
+        if (e.matches && d.impl.staticFrame) d.impl.staticFrame();
+      });
+    }
+    if (mq.addEventListener) mq.addEventListener("change", onMq);
+  })();
 </script>

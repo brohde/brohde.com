@@ -54,6 +54,7 @@ The pitch for "alternatives to Squarespace" isn't that a page builder can't get 
 All paths are in `/Users/brian/Projects/dragan` (read-only source repo, not brohde.com).
 
 **Client's original ChatGPT designs** (`docs/from_client/`):
+
 - `Home Page.png`
 - `1. Tab - Who We Serve.png`
 - `2. Tab - Services.png`
@@ -64,6 +65,7 @@ All paths are in `/Users/brian/Projects/dragan` (read-only source repo, not broh
 - `7. Tab - Contact.png`
 
 **Cropped design reference details** (`.design-crops/`, likely used for a recon/handoff pass):
+
 - `01-header-hero.png`, `02-stats.png`, `03-schwab.png`, `04-compare.png`, `05-threecol.png`, `06-advisor.png`, `07-footer-cta.png`, `logo.png`, `logo-mark.png`
 
 **Live design system reference:** `src/pages/styleguide.astro` (renders at `/styleguide` on a running dev server; internal-only, `noindex`). A fresh screenshot would need to be captured, none exists in the repo yet.

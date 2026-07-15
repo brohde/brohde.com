@@ -2,14 +2,14 @@
 
 Source: Brian's legacy WordPress site codebase at `/Users/brian/Projects/brohde-com-wordpress` (wp-content/uploads + theme assets + full SQL dump). All content is Brian's own; usage rights are his.
 
-| File | What it shows | Case study |
-|---|---|---|
-| `Timeline-Mobile.png` | Interactive "Our History" timeline on mobile, the touch component called out in the draft | Facebook Newsroom |
-| `Homepage-Localized.png` | Japanese Newsroom edition (ja.newsroom.fb.com), July 2017 | Facebook Newsroom (i18n beat) |
-| `Homepage-Mobile.png` | Responsive mobile homepage, June 2017 | Facebook Newsroom |
-| `Homepage.png` | Foundation for Peripheral Neuropathy homepage | FPN (no draft yet) |
-| `Membership-Form.png` | FPN premium membership form (Gravity Forms) | FPN (no draft yet) |
-| `me.jpg` | Photo of Brian (1200x1566), from the old about page | About page and/or glyph-tide source |
+| File                     | What it shows                                                                             | Case study                          |
+| ------------------------ | ----------------------------------------------------------------------------------------- | ----------------------------------- |
+| `Timeline-Mobile.png`    | Interactive "Our History" timeline on mobile, the touch component called out in the draft | Facebook Newsroom                   |
+| `Homepage-Localized.png` | Japanese Newsroom edition (ja.newsroom.fb.com), July 2017                                 | Facebook Newsroom (i18n beat)       |
+| `Homepage-Mobile.png`    | Responsive mobile homepage, June 2017                                                     | Facebook Newsroom                   |
+| `Homepage.png`           | Foundation for Peripheral Neuropathy homepage                                             | FPN (no draft yet)                  |
+| `Membership-Form.png`    | FPN premium membership form (Gravity Forms)                                               | FPN (no draft yet)                  |
+| `me.jpg`                 | Photo of Brian (1200x1566), from the old about page                                       | About page and/or glyph-tide source |
 
 ## Not copied here (too large for the repo), still in the legacy codebase
 

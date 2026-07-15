@@ -15,13 +15,20 @@ const SYSTEM =
 // load poc/chat/.env if present (ANTHROPIC_API_KEY=sk-ant-...), so the key
 // lives in a gitignored file instead of shell history or a chat transcript
 try {
-  for (const line of readFileSync(path.join(here, ".env"), "utf8").split("\n")) {
+  for (const line of readFileSync(path.join(here, ".env"), "utf8").split(
+    "\n"
+  )) {
     const m = line.match(/^\s*([A-Z_]+)\s*=\s*(.+?)\s*$/);
     if (m && !process.env[m[1]]) process.env[m[1]] = m[2];
   }
 } catch {}
-if (!process.env.ANTHROPIC_API_KEY || /your-key/.test(process.env.ANTHROPIC_API_KEY)) {
-  console.error("No real ANTHROPIC_API_KEY found. Paste it into poc/chat/.env as: ANTHROPIC_API_KEY=sk-ant-...");
+if (
+  !process.env.ANTHROPIC_API_KEY ||
+  /your-key/.test(process.env.ANTHROPIC_API_KEY)
+) {
+  console.error(
+    "No real ANTHROPIC_API_KEY found. Paste it into poc/chat/.env as: ANTHROPIC_API_KEY=sk-ant-..."
+  );
   process.exit(1);
 }
 
@@ -55,7 +62,9 @@ export async function chat(message, history = []) {
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: 400,
-    system: [{ type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } }],
+    system: [
+      { type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } },
+    ],
     tools,
     messages,
   });
@@ -64,7 +73,8 @@ export async function chat(message, history = []) {
   let open_page = null;
   for (const block of response.content) {
     if (block.type === "text") text += block.text;
-    if (block.type === "tool_use" && block.name === "open_page") open_page = block.input.slug;
+    if (block.type === "tool_use" && block.name === "open_page")
+      open_page = block.input.slug;
   }
 
   const u = response.usage;
@@ -75,8 +85,10 @@ export async function chat(message, history = []) {
       (u.cache_creation_input_tokens || 0) * PRICE.cacheWrite) /
     1_000_000;
 
+  // deterministic style guard: the dash ban (decision #18) is absolute, and the
+  // model occasionally slips one through despite the prompt; production keeps this
   return {
-    text: text.trim(),
+    text: text.trim().replace(/\s*[—–]\s*/g, ", "),
     open_page,
     usage: {
       input: u.input_tokens,
@@ -103,11 +115,20 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         req.on("end", async () => {
           try {
             const { message, history } = JSON.parse(body || "{}");
-            if (!message || typeof message !== "string" || message.length > 500) {
+            if (
+              !message ||
+              typeof message !== "string" ||
+              message.length > 500
+            ) {
               res.writeHead(400, { "content-type": "application/json" });
-              return res.end(JSON.stringify({ error: "message required (max 500 chars)" }));
+              return res.end(
+                JSON.stringify({ error: "message required (max 500 chars)" })
+              );
             }
-            const out = await chat(message, Array.isArray(history) ? history : []);
+            const out = await chat(
+              message,
+              Array.isArray(history) ? history : []
+            );
             res.writeHead(200, { "content-type": "application/json" });
             res.end(JSON.stringify(out));
           } catch (err) {

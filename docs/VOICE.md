@@ -32,3 +32,8 @@ En dashes · "passionate" · "innovative" · "seamless" · "cutting-edge" · "le
 ## Test before publishing
 
 Read it aloud: does it sound like a busy senior engineer explaining to a peer? Would every claim survive a skeptical client asking "prove it"? Is there a number where an adjective is standing in?
+
+
+## Audience and positioning (Brian, 2026-07-15, binding)
+
+Brian is going for FULL TIME ROLES as well as showcasing work for freelance clients. All copy, chat replies, and UI text speak to both audiences: hiring managers and potential clients. Never frame him as freelance-only. Prefer openings over obligations ("an unfamiliar tool is an opportunity to learn something new", not "a project detail").

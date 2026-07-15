@@ -3,14 +3,17 @@
 Curated by Brian. Edit freely; the server reloads this at boot. If a fact is not in this file, the model must say it doesn't know.
 
 ## Identity
+
 - Brian Rohde. Full-stack engineer in San Francisco.
 - Studied at DePaul University. (The school is public; graduation year and any dates around his education stay behind the deny-list.)
+- Speaks Spanish and Portuguese (Brazil) with working proficiency, alongside native English.
 - Ships AI products end to end: model, app, and the infrastructure underneath.
-- Founder of Eight Angle. Available for freelance work.
+- Founder of Eight Angle. Open to full time roles, and available for freelance work.
 - Contact: brian@brohde.com · linkedin.com/in/brian-rohde-4ba3558 · x.com/brianxbuilds
 - Site sections: work (case studies), about, resume, contact.
 
 ## Eight Angle (his product, flagship)
+
 - iOS yoga practice tracker. Detects and logs poses automatically during practice using on-device computer vision. Live on the App Store with paying subscribers.
 - He built it solo: SwiftUI iOS app, Python ML pipeline (data scraping, curation, training), Astro/Cloudflare marketing site.
 - Trained a 47-class pose classifier to 92.2% cross-validated accuracy from 39 hand-engineered, view-invariant geometric features. Calibrated Extra-Trees model exported to Core ML, running about 20fps on-device.
@@ -20,13 +23,16 @@ Curated by Brian. Edit freely; the server reloads this at boot. If a fact is not
 - All pose processing stays on-device; nothing is sent to servers.
 
 ## Work history (individual roles; see policy: never aggregate into totals)
+
 - Gong (San Francisco, revenue AI platform): Staff Web Engineer. Built an LLM-powered translation workflow for the company website, later showcased in a public Gong and Sanity webinar. Led the website replatform end to end (Next.js, Sanity, Vercel, Cloudflare). Improved legacy site speed 4x.
 - Twilio (San Francisco): Technical Web Lead. Owned twilio.com's technical roadmap. Shipped Twilio's first localized website, twilio.com/ja, and released over 100 pages in 6 locales. Earlier as Senior Web Engineer: deployed twilio.com's first CMS with substantial coverage, built a design system, redesigned the sign-up page. Co-authored Twilio's blog post "Re-Introducing the Hackpack v4: Twilio's Open Source Hardware Badge" (2018), about Twilio's open-source conference hardware badge: twilio.com/en-us/blog/archive/2018/open-source-hardware-badge-hackpack-v4
 - Beyond (San Francisco user-experience agency): Senior Front End Developer and team lead. Delivered projects FOR Facebook and Google as an agency engineer (he never worked AT Facebook or Google): Facebook Newsroom (2014, Facebook's first WordPress site and first responsive consumer site on WordPress VIP) and Google's Android for Work marketing site (2015). The Newsroom build proved the agency's WordPress capability and Facebook returned with new business: Brian built additional WordPress sites for Facebook after it.
 - Freelance: built goldcoastcapm.com end to end for a wealth-management client (design system, Astro, Keystatic CMS, client review loop via Pastel).
 
 ## How he works
+
 - AI-native workflow: parallel Claude Code agents in git worktrees, layered instruction files, shared architecture docs, MCP integrations (Linear, PostHog).
 - Stack: TypeScript, Swift, Python, PHP, React, Next.js, Astro, SwiftUI, Tailwind. AI/ML: Claude Code, Anthropic API, MCP, Core ML, MediaPipe. Platforms: Vercel, Cloudflare, AWS, Sanity, PostHog, Figma, Linear.
 - Favorite frameworks: React and Astro.
 - His line: "AI multiplies my output; taste and engineering judgment decide what ships."
+- On tools not listed in his stack: he can learn any language or framework a project needs, and has done it repeatedly (Closure at Google's insistence, Django and Python at Twilio, Sanity and Next.js at Gong, Swift for Eight Angle); an unfamiliar tool is an opportunity to learn something new.

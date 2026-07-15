@@ -2,19 +2,23 @@
 <style>
   /* ---------- lab chrome (stays dark; the stages under test carry their own two grounds) ---------- */
   :root {
-    --page: #0A0F0C;
-    --ink: #D6E5DC;
-    --bright: #F2F7F3;
-    --dim: #8FA79A;
-    --accent: #7EE787;
-    --hairline: #22312A;
-    --chip-bg: #141D17;
-    --chip-border: #2A3B31;
+    --page: #0a0f0c;
+    --ink: #d6e5dc;
+    --bright: #f2f7f3;
+    --dim: #8fa79a;
+    --accent: #7ee787;
+    --hairline: #22312a;
+    --chip-bg: #141d17;
+    --chip-border: #2a3b31;
     --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
-  * { box-sizing: border-box; }
-  [hidden] { display: none !important; }
+  * {
+    box-sizing: border-box;
+  }
+  [hidden] {
+    display: none !important;
+  }
   body {
     margin: 0;
     background: var(--page);
@@ -25,94 +29,219 @@
     overflow-x: clip;
     -webkit-text-size-adjust: 100%;
   }
-  ::selection { background: var(--accent); color: #0E1512; }
-  a { color: var(--accent); text-underline-offset: 3px; }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  #stage1.lite :focus-visible { outline-color: #086148; }
-  #panel-home:focus, #panel-chat:focus { outline: none; }
+  ::selection {
+    background: var(--accent);
+    color: #0e1512;
+  }
+  a {
+    color: var(--accent);
+    text-underline-offset: 3px;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  #stage1.lite :focus-visible {
+    outline-color: #086148;
+  }
+  #panel-home:focus,
+  #panel-chat:focus {
+    outline: none;
+  }
 
   .sr {
-    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
   }
 
-  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 clamp(14px, 3vw, 32px); }
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 clamp(14px, 3vw, 32px);
+  }
 
-  header.top { padding: 48px 0 30px; }
+  header.top {
+    padding: 48px 0 30px;
+  }
   .eyebrow {
-    font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--dim); margin: 0 0 14px;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin: 0 0 14px;
   }
   h1 {
-    font-family: var(--sans); color: var(--bright);
-    font-size: clamp(28px, 5vw, 44px); line-height: 1.08;
-    letter-spacing: -0.015em; margin: 0 0 12px; text-wrap: balance;
+    font-family: var(--sans);
+    color: var(--bright);
+    font-size: clamp(28px, 5vw, 44px);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    margin: 0 0 12px;
+    text-wrap: balance;
   }
-  .standfirst { font-family: var(--sans); font-size: 16px; color: var(--ink); max-width: 70ch; margin: 0 0 14px; }
-  .rules { font-size: 12.5px; line-height: 1.7; color: var(--dim); max-width: 92ch; margin: 0; }
+  .standfirst {
+    font-family: var(--sans);
+    font-size: 16px;
+    color: var(--ink);
+    max-width: 70ch;
+    margin: 0 0 14px;
+  }
+  .rules {
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--dim);
+    max-width: 92ch;
+    margin: 0;
+  }
 
-  section.demo { border-top: 1px solid var(--hairline); padding: 38px 0 12px; }
-  .demo-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 14px; }
-  .dnum { font-size: 13px; color: var(--dim); font-variant-numeric: tabular-nums; }
-  .demo-head h2 { font-family: var(--sans); color: var(--bright); font-size: clamp(20px, 2.6vw, 25px); letter-spacing: -0.01em; margin: 0; }
-  .ddesc { font-family: var(--sans); font-size: 14.5px; color: var(--dim); margin: 4px 0 0; max-width: 74ch; }
+  section.demo {
+    border-top: 1px solid var(--hairline);
+    padding: 38px 0 12px;
+  }
+  .demo-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+  .dnum {
+    font-size: 13px;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .demo-head h2 {
+    font-family: var(--sans);
+    color: var(--bright);
+    font-size: clamp(20px, 2.6vw, 25px);
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .ddesc {
+    font-family: var(--sans);
+    font-size: 14.5px;
+    color: var(--dim);
+    margin: 4px 0 0;
+    max-width: 74ch;
+  }
 
-  .demo-note { font-family: var(--sans); font-size: 13.5px; color: var(--dim); margin: 12px 0 10px; max-width: 100ch; }
-  .demo-note strong { color: var(--ink); font-weight: 600; }
-  .demo-note code { font-family: var(--mono); font-size: 12px; }
+  .demo-note {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--dim);
+    margin: 12px 0 10px;
+    max-width: 100ch;
+  }
+  .demo-note strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .demo-note code {
+    font-family: var(--mono);
+    font-size: 12px;
+  }
   .tech {
-    display: inline-block; margin-right: 8px; padding: 2px 8px;
-    font-family: var(--mono); font-size: 10.5px; font-weight: 600;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--dim); background: var(--chip-bg);
-    border: 1px solid var(--chip-border); border-radius: 4px;
+    display: inline-block;
+    margin-right: 8px;
+    padding: 2px 8px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dim);
+    background: var(--chip-bg);
+    border: 1px solid var(--chip-border);
+    border-radius: 4px;
   }
 
   /* ---------- control rows ---------- */
   .ctlrow {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
     margin: 0 0 12px;
   }
-  .ctl-lab { font-size: 12px; color: var(--dim); }
+  .ctl-lab {
+    font-size: 12px;
+    color: var(--dim);
+  }
   .tbtn {
-    min-height: 44px; padding: 8px 14px;
-    font: 600 13px var(--mono); color: var(--ink);
-    background: #101913; border: 1px solid var(--chip-border);
-    border-radius: 8px; cursor: pointer;
+    min-height: 44px;
+    padding: 8px 14px;
+    font: 600 13px var(--mono);
+    color: var(--ink);
+    background: #101913;
+    border: 1px solid var(--chip-border);
+    border-radius: 8px;
+    cursor: pointer;
   }
-  .tbtn:hover { border-color: var(--accent); color: var(--accent); }
-  .tbtn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #0E1512; }
-  .sep { color: var(--hairline); }
+  .tbtn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .tbtn[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0e1512;
+  }
+  .sep {
+    color: var(--hairline);
+  }
 
-  .slider-group { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .slider-group label { font-size: 12px; color: var(--dim); }
-  input[type="range"] {
-    width: clamp(110px, 24vw, 200px); accent-color: var(--accent);
-    margin: 0; min-height: 44px;
+  .slider-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
   }
-  #intensity-out { font-size: 12px; color: var(--ink); min-width: 8ch; }
+  .slider-group label {
+    font-size: 12px;
+    color: var(--dim);
+  }
+  input[type="range"] {
+    width: clamp(110px, 24vw, 200px);
+    accent-color: var(--accent);
+    margin: 0;
+    min-height: 44px;
+  }
+  #intensity-out,
+  #intensity4-out {
+    font-size: 12px;
+    color: var(--ink);
+    min-width: 8ch;
+  }
 
   /* ---------- stage 1: aurora terminal, two first-class grounds (night + lite);
      initial ground follows prefers-color-scheme, the toggle overrides ---------- */
   .stage {
     position: relative;
-    border: 1px solid var(--hairline); border-radius: 14px;
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
     overflow: hidden;
   }
-  #stage1 {
+  #stage1,
+  #stage4 {
     min-height: 620px;
     background: var(--sg);
 
-    --sg: #0E1512;
+    --sg: #0e1512;
     --glass: rgba(8, 13, 10, 0.7);
     --glass-solid: rgba(8, 13, 10, 0.94);
     --gborder: rgba(214, 229, 220, 0.16);
-    --t-bright: #F2F7F3;
-    --t-ink: #D6E5DC;
-    --t-dim: #8FA79A;
-    --t-accent: #7EE787;
-    --t-tag: #F5B968;
-    --t-onaccent: #0E1512;
+    --t-bright: #f2f7f3;
+    --t-ink: #d6e5dc;
+    --t-dim: #8fa79a;
+    --t-accent: #7ee787;
+    --t-tag: #f5b968;
+    --t-onaccent: #0e1512;
     --t-line: rgba(214, 229, 220, 0.18);
     --well: rgba(8, 13, 10, 0.55);
     --pborder: rgba(214, 229, 220, 0.28);
@@ -130,20 +259,21 @@
     --chat1: rgba(255, 170, 51, 0.55);
     --chat2: rgba(255, 215, 92, 0.45);
     --chat3: rgba(255, 107, 66, 0.36);
-    --chat4: rgba(255, 110, 150, 0.30);
+    --chat4: rgba(255, 110, 150, 0.3);
   }
   /* the light theme: same sky geometry and drift, daylight ground and dark inks */
-  #stage1.lite {
-    --sg: #FBFBF8;
+  #stage1.lite,
+  #stage4.lite {
+    --sg: #fbfbf8;
     --glass: rgba(252, 252, 250, 0.62);
     --glass-solid: rgba(252, 252, 250, 0.88);
     --gborder: rgba(20, 33, 26, 0.14);
-    --t-bright: #14211A;
-    --t-ink: #14211A;
-    --t-dim: #3F5348;
+    --t-bright: #14211a;
+    --t-ink: #14211a;
+    --t-dim: #3f5348;
     --t-accent: #086148;
-    --t-tag: #8A4D0F;
-    --t-onaccent: #FBFBF8;
+    --t-tag: #8a4d0f;
+    --t-onaccent: #fbfbf8;
     --t-line: rgba(20, 33, 26, 0.14);
     --well: rgba(252, 252, 250, 0.72);
     --pborder: rgba(20, 33, 26, 0.2);
@@ -155,248 +285,662 @@
 
     --home1: rgba(110, 90, 232, 0.44);
     --home2: rgba(30, 158, 146, 0.38);
-    --home3: rgba(79, 116, 232, 0.30);
+    --home3: rgba(79, 116, 232, 0.3);
     --home4: rgba(225, 104, 140, 0.22);
     --chat1: rgba(232, 155, 46, 0.46);
-    --chat2: rgba(239, 198, 63, 0.40);
-    --chat3: rgba(224, 96, 70, 0.30);
+    --chat2: rgba(239, 198, 63, 0.4);
+    --chat3: rgba(224, 96, 70, 0.3);
     --chat4: rgba(225, 104, 140, 0.24);
   }
 
-  .aur { position: absolute; inset: 0; z-index: 0; transition: opacity 2600ms ease; }
-  #stage1[data-state="home"] .aur-home { opacity: 1; }
-  #stage1[data-state="home"] .aur-chat { opacity: 0; }
-  #stage1[data-state="chat"] .aur-home { opacity: 0; }
-  #stage1[data-state="chat"] .aur-chat { opacity: 1; }
+  .aur {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    transition: opacity 2600ms ease;
+  }
+  #stage1[data-state="home"] .aur-home,
+  #stage4[data-state="home"] .aur-home {
+    opacity: 1;
+  }
+  #stage1[data-state="home"] .aur-chat,
+  #stage4[data-state="home"] .aur-chat {
+    opacity: 0;
+  }
+  #stage1[data-state="chat"] .aur-home,
+  #stage4[data-state="chat"] .aur-home {
+    opacity: 0;
+  }
+  #stage1[data-state="chat"] .aur-chat,
+  #stage4[data-state="chat"] .aur-chat {
+    opacity: 1;
+  }
 
   .blob {
-    position: absolute; border-radius: 50%;
+    position: absolute;
+    border-radius: 50%;
     filter: blur(64px);
     will-change: transform, opacity;
     aspect-ratio: 1;
   }
-  .pos1 { left: -12%; top: -20%; width: min(62%, 560px); animation: drift-a 56s ease-in-out infinite alternate; }
-  .pos2 { right: -14%; top: -6%; width: min(55%, 520px); animation: drift-b 68s ease-in-out infinite alternate; }
-  .pos3 { left: 18%; bottom: -32%; width: min(66%, 600px); animation: drift-c 82s ease-in-out infinite alternate; }
-  .pos4 { left: 42%; top: 4%; width: min(34%, 320px); animation: drift-d 47s ease-in-out infinite alternate; }
+  .pos1 {
+    left: -12%;
+    top: -20%;
+    width: min(62%, 560px);
+    animation: drift-a 56s ease-in-out infinite alternate;
+  }
+  .pos2 {
+    right: -14%;
+    top: -6%;
+    width: min(55%, 520px);
+    animation: drift-b 68s ease-in-out infinite alternate;
+  }
+  .pos3 {
+    left: 18%;
+    bottom: -32%;
+    width: min(66%, 600px);
+    animation: drift-c 82s ease-in-out infinite alternate;
+  }
+  .pos4 {
+    left: 42%;
+    top: 4%;
+    width: min(34%, 320px);
+    animation: drift-d 47s ease-in-out infinite alternate;
+  }
 
-  .aur-home .pos1 { background: radial-gradient(circle, var(--home1) 0%, transparent 70%); }
-  .aur-home .pos2 { background: radial-gradient(circle, var(--home2) 0%, transparent 70%); }
-  .aur-home .pos3 { background: radial-gradient(circle, var(--home3) 0%, transparent 70%); }
-  .aur-home .pos4 { background: radial-gradient(circle, var(--home4) 0%, transparent 70%); }
-  .aur-chat .pos1 { background: radial-gradient(circle, var(--chat1) 0%, transparent 70%); }
-  .aur-chat .pos2 { background: radial-gradient(circle, var(--chat2) 0%, transparent 70%); }
-  .aur-chat .pos3 { background: radial-gradient(circle, var(--chat3) 0%, transparent 70%); }
-  .aur-chat .pos4 { background: radial-gradient(circle, var(--chat4) 0%, transparent 70%); }
+  .aur-home .pos1 {
+    background: radial-gradient(circle, var(--home1) 0%, transparent 70%);
+  }
+  .aur-home .pos2 {
+    background: radial-gradient(circle, var(--home2) 0%, transparent 70%);
+  }
+  .aur-home .pos3 {
+    background: radial-gradient(circle, var(--home3) 0%, transparent 70%);
+  }
+  .aur-home .pos4 {
+    background: radial-gradient(circle, var(--home4) 0%, transparent 70%);
+  }
+  .aur-chat .pos1 {
+    background: radial-gradient(circle, var(--chat1) 0%, transparent 70%);
+  }
+  .aur-chat .pos2 {
+    background: radial-gradient(circle, var(--chat2) 0%, transparent 70%);
+  }
+  .aur-chat .pos3 {
+    background: radial-gradient(circle, var(--chat3) 0%, transparent 70%);
+  }
+  .aur-chat .pos4 {
+    background: radial-gradient(circle, var(--chat4) 0%, transparent 70%);
+  }
 
   @keyframes drift-a {
-    0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
-    55%  { transform: translate3d(30%, 14%, 0) scale(1.22); opacity: 0.65; }
-    100% { transform: translate3d(10%, 30%, 0) scale(0.92); opacity: 0.95; }
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 1;
+    }
+    55% {
+      transform: translate3d(30%, 14%, 0) scale(1.22);
+      opacity: 0.65;
+    }
+    100% {
+      transform: translate3d(10%, 30%, 0) scale(0.92);
+      opacity: 0.95;
+    }
   }
   @keyframes drift-b {
-    0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0.95; }
-    50%  { transform: translate3d(-24%, 20%, 0) scale(1.16); opacity: 0.6; }
-    100% { transform: translate3d(-8%, -6%, 0) scale(0.88); opacity: 0.9; }
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0.95;
+    }
+    50% {
+      transform: translate3d(-24%, 20%, 0) scale(1.16);
+      opacity: 0.6;
+    }
+    100% {
+      transform: translate3d(-8%, -6%, 0) scale(0.88);
+      opacity: 0.9;
+    }
   }
   @keyframes drift-c {
-    0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0.9; }
-    45%  { transform: translate3d(-16%, -12%, 0) scale(1.26); opacity: 0.55; }
-    100% { transform: translate3d(12%, -4%, 0) scale(1.04); opacity: 0.85; }
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+      opacity: 0.9;
+    }
+    45% {
+      transform: translate3d(-16%, -12%, 0) scale(1.26);
+      opacity: 0.55;
+    }
+    100% {
+      transform: translate3d(12%, -4%, 0) scale(1.04);
+      opacity: 0.85;
+    }
   }
   @keyframes drift-d {
-    0%   { transform: translate3d(0, 0, 0) scale(0.84); opacity: 0.4; }
-    35%  { transform: translate3d(-6%, 10%, 0) scale(0.96); opacity: 0.9; }
-    65%  { transform: translate3d(-14%, 24%, 0) scale(1.08); opacity: 0.5; }
-    100% { transform: translate3d(10%, -10%, 0) scale(1.18); opacity: 0.85; }
+    0% {
+      transform: translate3d(0, 0, 0) scale(0.84);
+      opacity: 0.4;
+    }
+    35% {
+      transform: translate3d(-6%, 10%, 0) scale(0.96);
+      opacity: 0.9;
+    }
+    65% {
+      transform: translate3d(-14%, 24%, 0) scale(1.08);
+      opacity: 0.5;
+    }
+    100% {
+      transform: translate3d(10%, -10%, 0) scale(1.18);
+      opacity: 0.85;
+    }
   }
 
   /* grain kills banding on the blurred fields */
   .stage-grainy::after {
-    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
     opacity: 0.06;
   }
 
-  .stage.anim-off .blob { animation-play-state: paused; }
-  .stage.anim-on .blob { animation-play-state: running; }
+  .stage.anim-off .blob {
+    animation-play-state: paused;
+  }
+  .stage.anim-on .blob {
+    animation-play-state: running;
+  }
 
   /* ---------- presence planes ---------- */
-  .planes { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  .planes {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
   .plane {
-    position: absolute; left: 0; top: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
     will-change: transform;
     color: var(--plane);
   }
-  .plane svg { display: block; width: 15px; height: 15px; margin: 0 auto; }
+  .plane svg {
+    display: block;
+    width: 15px;
+    height: 15px;
+    margin: 0 auto;
+  }
   .plabel {
-    display: block; margin-top: 3px;
-    font-size: 10.5px; line-height: 1.3; white-space: nowrap;
+    display: block;
+    margin-top: 3px;
+    font-size: 10.5px;
+    line-height: 1.3;
+    white-space: nowrap;
     text-align: center;
     color: var(--plane-label);
   }
 
   /* ---------- the glass terminal (dark scrim guarantees contrast over any blob overlap) ---------- */
   .term {
-    position: relative; z-index: 3;
+    position: relative;
+    z-index: 3;
     max-width: 620px;
     margin: clamp(18px, 4vw, 44px);
-    padding: clamp(16px, 3vw, 26px) clamp(16px, 3.4vw, 30px) clamp(14px, 2.6vw, 22px);
+    padding: clamp(16px, 3vw, 26px) clamp(16px, 3.4vw, 30px)
+      clamp(14px, 2.6vw, 22px);
     border: 1px solid var(--gborder);
     border-radius: 12px;
     background: var(--glass-solid);
   }
   @supports (backdrop-filter: blur(4px)) {
-    .term { background: var(--glass); backdrop-filter: blur(14px) saturate(1.05); }
+    .term {
+      background: var(--glass);
+      backdrop-filter: blur(14px) saturate(1.05);
+    }
   }
 
-  .p { color: var(--t-accent); }
-  .d, .br { color: var(--t-dim); }
-  .cmt { color: var(--t-dim); font-size: 12px; margin: 8px 0; }
-  .pline { margin: 0 0 4px; color: var(--t-ink); }
+  .p {
+    color: var(--t-accent);
+  }
+  .d,
+  .br {
+    color: var(--t-dim);
+  }
+  .cmt {
+    color: var(--t-dim);
+    font-size: 12px;
+    margin: 8px 0;
+  }
+  .pline {
+    margin: 0 0 4px;
+    color: var(--t-ink);
+  }
   .caret {
-    display: inline-block; width: 0.42em; height: 0.82em;
-    background: var(--t-accent); vertical-align: -0.06em;
+    display: inline-block;
+    width: 0.42em;
+    height: 0.82em;
+    background: var(--t-accent);
+    vertical-align: -0.06em;
     animation: blink 1.1s steps(1) infinite;
   }
-  @keyframes blink { 50% { opacity: 0; } }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
 
   .wordmark {
-    font-weight: 700; font-size: clamp(26px, 6.4vw, 40px); line-height: 1.12;
-    letter-spacing: -0.02em; color: var(--t-bright);
+    font-weight: 700;
+    font-size: clamp(26px, 6.4vw, 40px);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--t-bright);
     text-shadow: var(--wm-glow);
     margin: 6px 0 12px;
   }
-  .bio { margin: 3px 0; overflow-wrap: anywhere; color: var(--t-ink); }
-  .bio .k { color: var(--t-dim); }
+  .bio {
+    margin: 3px 0;
+    overflow-wrap: anywhere;
+    color: var(--t-ink);
+  }
+  .bio .k {
+    color: var(--t-dim);
+  }
 
-  .links { list-style: none; display: flex; flex-wrap: wrap; gap: 0 8px; margin: 6px 0 0; padding: 0; }
+  .links {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 8px;
+    margin: 6px 0 0;
+    padding: 0;
+  }
   .blink {
-    display: inline-flex; align-items: center; min-height: 44px;
-    padding: 0 4px; color: var(--t-accent); text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 4px;
+    color: var(--t-accent);
+    text-decoration: none;
   }
-  .blink .lbl { text-decoration: underline; text-underline-offset: 3px; }
-  .blink:hover .lbl { background: var(--t-accent); color: var(--t-onaccent); text-decoration: none; }
+  .blink .lbl {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .blink:hover .lbl {
+    background: var(--t-accent);
+    color: var(--t-onaccent);
+    text-decoration: none;
+  }
 
-  .menu { display: flex; flex-wrap: wrap; gap: 0 8px; margin: 6px 0 0; }
-  .cbtn {
-    display: inline-flex; align-items: center; min-height: 44px;
-    background: none; border: 0; padding: 0 6px; cursor: pointer;
-    color: var(--t-accent); font: inherit;
+  .menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 8px;
+    margin: 6px 0 0;
   }
-  .cbtn:hover { background: var(--t-accent); color: var(--t-onaccent); }
-  .cbtn:hover .br { color: var(--t-onaccent); }
+  .cbtn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    background: none;
+    border: 0;
+    padding: 0 6px;
+    cursor: pointer;
+    color: var(--t-accent);
+    font: inherit;
+  }
+  .cbtn:hover {
+    background: var(--t-accent);
+    color: var(--t-onaccent);
+  }
+  .cbtn:hover .br {
+    color: var(--t-onaccent);
+  }
 
   .prompt {
-    display: flex; align-items: center; gap: 10px;
-    border: 1px solid var(--pborder); background: var(--well);
-    border-radius: 8px; padding: 2px 14px; min-height: 52px; margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--pborder);
+    background: var(--well);
+    border-radius: 8px;
+    padding: 2px 14px;
+    min-height: 52px;
+    margin-top: 8px;
   }
   .prompt:focus-within {
     border-color: var(--t-accent);
     box-shadow: var(--pglow-home);
   }
-  #stage1[data-state="chat"] .prompt:focus-within { box-shadow: var(--pglow-chat); }
+  #stage1[data-state="chat"] .prompt:focus-within,
+  #stage4[data-state="chat"] .prompt:focus-within {
+    box-shadow: var(--pglow-chat);
+  }
   .prompt input {
-    flex: 1; min-width: 0; background: none; border: 0;
-    color: var(--t-bright); font-family: var(--mono); font-size: 16px;
-    line-height: 1.4; caret-color: var(--t-accent); padding: 13px 0;
+    flex: 1;
+    min-width: 0;
+    background: none;
+    border: 0;
+    color: var(--t-bright);
+    font-family: var(--mono);
+    font-size: 16px;
+    line-height: 1.4;
+    caret-color: var(--t-accent);
+    padding: 13px 0;
   }
-  .prompt input::placeholder { color: var(--t-dim); opacity: 1; }
-  .prompt input:focus { outline: none; }
+  .prompt input::placeholder {
+    color: var(--t-dim);
+    opacity: 1;
+  }
+  .prompt input:focus {
+    outline: none;
+  }
 
-  .hint { min-height: 1.4em; margin: 6px 0 0; transition: opacity 300ms; }
+  .hint {
+    min-height: 1.4em;
+    margin: 6px 0 0;
+    transition: opacity 300ms;
+  }
 
-  .log { margin-top: 16px; }
+  .log {
+    margin-top: 16px;
+  }
   .entry {
-    display: flex; align-items: baseline; gap: 10px;
-    padding: 10px 10px; margin: 0 -10px; border-radius: 4px;
-    text-decoration: none; color: var(--t-ink);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 10px 10px;
+    margin: 0 -10px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--t-ink);
   }
-  .line2 { display: contents; }
-  .ts { color: var(--t-dim); font-size: 12px; }
+  .line2 {
+    display: contents;
+  }
+  .ts {
+    color: var(--t-dim);
+    font-size: 12px;
+  }
   .ttl {
-    font-family: var(--sans); font-size: 16px; font-weight: 600;
-    color: var(--t-bright); line-height: 1.35;
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--t-bright);
+    line-height: 1.35;
   }
-  .entry:hover, .entry:focus-visible { background: var(--t-accent); }
-  .entry:hover .ts, .entry:hover .p, .entry:hover .ttl,
-  .entry:focus-visible .ts, .entry:focus-visible .p, .entry:focus-visible .ttl { color: var(--t-onaccent); }
+  .entry:hover,
+  .entry:focus-visible {
+    background: var(--t-accent);
+  }
+  .entry:hover .ts,
+  .entry:hover .p,
+  .entry:hover .ttl,
+  .entry:focus-visible .ts,
+  .entry:focus-visible .p,
+  .entry:focus-visible .ttl {
+    color: var(--t-onaccent);
+  }
 
   .status {
-    border-top: 1px solid var(--t-line); margin-top: 18px; padding-top: 10px;
-    color: var(--t-dim); font-size: 12px;
+    border-top: 1px solid var(--t-line);
+    margin-top: 18px;
+    padding-top: 10px;
+    color: var(--t-dim);
+    font-size: 12px;
   }
 
   /* chat panel */
   .chatbar {
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 8px 14px; flex-wrap: wrap;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px 14px;
+    flex-wrap: wrap;
     border-bottom: 1px solid var(--t-line);
-    padding-bottom: 4px; margin-bottom: 6px;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
   }
   .backbtn {
-    display: inline-flex; align-items: center; min-height: 44px;
-    background: none; border: 0; padding: 0 10px; margin-left: -10px;
-    cursor: pointer; color: var(--t-accent); font: inherit;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    background: none;
+    border: 0;
+    padding: 0 10px;
+    margin-left: -10px;
+    cursor: pointer;
+    color: var(--t-accent);
+    font: inherit;
   }
-  .backbtn:hover { background: var(--t-accent); color: var(--t-onaccent); }
-  .backbtn:hover .br { color: var(--t-onaccent); }
-  .tbl { color: var(--t-tag); font-size: 12px; }
-  .uline { color: var(--t-bright); margin-top: 16px; overflow-wrap: anywhere; }
+  .backbtn:hover {
+    background: var(--t-accent);
+    color: var(--t-onaccent);
+  }
+  .backbtn:hover .br {
+    color: var(--t-onaccent);
+  }
+  .tbl {
+    color: var(--t-tag);
+    font-size: 12px;
+  }
+  .uline {
+    color: var(--t-bright);
+    margin-top: 16px;
+    overflow-wrap: anywhere;
+  }
   .reply {
-    font-family: var(--sans); font-size: 15.5px; line-height: 1.65;
-    color: var(--t-ink); max-width: 62ch;
-    border-left: 2px solid var(--t-line); padding-left: 13px;
-    margin: 10px 0 2px; white-space: pre-wrap; overflow-wrap: anywhere;
+    font-family: var(--sans);
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: var(--t-ink);
+    max-width: 62ch;
+    border-left: 2px solid var(--t-line);
+    padding-left: 13px;
+    margin: 10px 0 2px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
-  .keybar { display: flex; flex-wrap: wrap; gap: 0 6px; margin-top: 10px; }
+  .keybar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 6px;
+    margin-top: 10px;
+  }
 
   /* ---------- stage 2: glyph tide from an image (both grounds, follows the same toggle) ---------- */
-  #stage2 { height: 62vh; min-height: 420px; max-height: 720px; background: #0E1512; }
-  #stage2.lite { background: #FBFBF8; }
-  #stage2 canvas { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; display: block; }
-  .stagetag {
-    position: absolute; z-index: 2; left: 14px; bottom: 12px;
-    font-size: 11.5px; color: var(--dim);
-    background: rgba(8, 13, 10, 0.82); border-radius: 6px; padding: 3px 9px;
-    max-width: calc(100% - 28px); overflow-wrap: anywhere;
+  #stage2 {
+    height: 62vh;
+    min-height: 420px;
+    max-height: 720px;
+    background: #0e1512;
   }
-  #stage2.lite .stagetag { color: #3F5348; background: rgba(252, 252, 250, 0.88); }
+  #stage2.lite {
+    background: #fbfbf8;
+  }
+  #stage2 canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .stagetag {
+    position: absolute;
+    z-index: 2;
+    left: 14px;
+    bottom: 12px;
+    font-size: 11.5px;
+    color: var(--dim);
+    background: rgba(8, 13, 10, 0.82);
+    border-radius: 6px;
+    padding: 3px 9px;
+    max-width: calc(100% - 28px);
+    overflow-wrap: anywhere;
+  }
+  #stage2.lite .stagetag {
+    color: #3f5348;
+    background: rgba(252, 252, 250, 0.88);
+  }
 
-  footer.fin { border-top: 1px solid var(--hairline); margin-top: 40px; padding: 24px 0 60px; color: var(--dim); font-size: 13px; }
+  /* ---------- stage 4: the composed scene. tide canvas under the aurora layers,
+     glass on top; three placements. the glass pours stronger than stage 1
+     (0.78 night, 0.80 light) because a picture now lives under it ---------- */
+  #stage4 {
+    --glass: rgba(8, 13, 10, 0.78);
+  }
+  #stage4.lite {
+    --glass: rgba(252, 252, 250, 0.8);
+  }
+  #stage4 canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition: opacity 400ms ease;
+  }
+  #stage4 .aur {
+    z-index: 1;
+  }
+  #stage4 .term {
+    max-width: 560px;
+  }
+  #stage4[data-placement="gutter"] canvas {
+    left: auto;
+    width: min(37%, 400px);
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 14%);
+    mask-image: linear-gradient(to right, transparent, #000 14%);
+  }
+  #stage4[data-placement="hero"] canvas {
+    bottom: auto;
+    height: clamp(190px, 30vh, 280px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 76%, transparent);
+    mask-image: linear-gradient(to bottom, #000 76%, transparent);
+  }
+  #stage4[data-placement="hero"] .term {
+    margin-top: calc(clamp(190px, 30vh, 280px) - 20px);
+  }
+  #stage4[data-state="home"] .only-chat {
+    display: none;
+  }
+  #stage4[data-state="chat"] .only-home {
+    display: none;
+  }
+  #stage4 .lrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 10px;
+    margin: 6px 0;
+  }
+  #stage4.lite .stagetag {
+    color: #3f5348;
+    background: rgba(252, 252, 250, 0.88);
+  }
+  @media (max-width: 700px) {
+    /* no gutter on phones: the tide slides to a band under the content instead */
+    #stage4[data-placement="gutter"] canvas {
+      left: 0;
+      top: auto;
+      bottom: 0;
+      width: 100%;
+      height: 190px;
+      -webkit-mask-image: linear-gradient(to top, #000 55%, transparent);
+      mask-image: linear-gradient(to top, #000 55%, transparent);
+    }
+  }
+
+  footer.fin {
+    border-top: 1px solid var(--hairline);
+    margin-top: 40px;
+    padding: 24px 0 60px;
+    color: var(--dim);
+    font-size: 13px;
+  }
 
   @media (max-width: 560px) {
-    .entry { display: block; }
-    .entry .ts { display: block; margin-bottom: 3px; }
-    .entry .line2 { display: block; }
-    #stage1 { min-height: 540px; }
+    .entry {
+      display: block;
+    }
+    .entry .ts {
+      display: block;
+      margin-bottom: 3px;
+    }
+    .entry .line2 {
+      display: block;
+    }
+    #stage1 {
+      min-height: 540px;
+    }
   }
   @media (max-width: 480px) {
-    body { font-size: 13px; }
-    .wrap { padding: 0 14px; }
-    .term { margin: 12px; }
+    body {
+      font-size: 13px;
+    }
+    .wrap {
+      padding: 0 14px;
+    }
+    .term {
+      margin: 12px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .blob { animation-play-state: paused !important; }
-    .aur { transition: none; }
-    .caret { animation: none; }
-    .hint { transition: none; }
+    .blob {
+      animation-play-state: paused !important;
+    }
+    .aur {
+      transition: none;
+    }
+    .caret {
+      animation: none;
+    }
+    .hint {
+      transition: none;
+    }
+    #stage4 canvas {
+      transition: none;
+    }
   }
 </style>
 
 <header class="top">
   <div class="wrap">
-    <p class="eyebrow">brohde.com &middot; art direction lab &middot; build.log, aurora studies</p>
-    <h1>An aurora over the terminal, day and night, and a tide that carries a picture</h1>
-    <p class="standfirst">Three of Brian&rsquo;s ideas, built on the build.log ground. One aurora system, two grounds: a night terminal and a daylight one, and the stage opens on whichever your system prefers. The aurora drifts over the terminal like northern lights behind glass. The sky changes color when you move from the log to the chat: a cold aurora for reading, a warm gold one for talking. The glyph tide learns to render an image so real photos can live inside the character field. And the little paper planes overhead are the visitors.</p>
-    <p class="rules">House rules, applied everywhere: devicePixelRatio capped at 2 &middot; canvas ticks throttled &middot; everything pauses offscreen and on hidden tabs &middot; prefers-reduced-motion gets composed stills and instant state swaps &middot; every text ink measured at the worst possible blob overlap, all AA or better on the glass, on both grounds.</p>
+    <p class="eyebrow">
+      brohde.com &middot; art direction lab &middot; build.log, aurora studies
+    </p>
+    <h1>
+      An aurora over the terminal, day and night, and a tide that carries a
+      picture
+    </h1>
+    <p class="standfirst">
+      Three of Brian&rsquo;s ideas, built on the build.log ground. One aurora
+      system, two grounds: a night terminal and a daylight one, and the stage
+      opens on whichever your system prefers. The aurora drifts over the
+      terminal like northern lights behind glass. The sky changes color when you
+      move from the log to the chat: a cold aurora for reading, a warm gold one
+      for talking. The glyph tide learns to render an image so real photos can
+      live inside the character field. And the little paper planes overhead are
+      the visitors. Demo 04 folds the sky, the tide and the glass into one scene
+      and auditions three tide placements against the full homepage.
+    </p>
+    <p class="rules">
+      House rules, applied everywhere: devicePixelRatio capped at 2 &middot;
+      canvas ticks throttled &middot; everything pauses offscreen and on hidden
+      tabs &middot; prefers-reduced-motion gets composed stills and instant
+      state swaps &middot; every text ink measured at the worst possible blob
+      overlap, all AA or better on the glass, on both grounds.
+    </p>
   </div>
 </header>
 
 <main>
-
   <!-- ============ 01 TWO STATE AURORA TERMINAL ============ -->
   <section class="demo" id="demo-aurora" aria-labelledby="h-1">
     <div class="wrap">
@@ -404,19 +948,47 @@
         <span class="dnum" aria-hidden="true">01</span>
         <div>
           <h2 id="h-1">Aurora over the terminal, two states, two grounds</h2>
-          <p class="ddesc">The sky above the terminal is the interface mood. Home reads under a cold aurora (violet, teal, indigo). Entering chat warms the same sky to gold (amber, warm yellow, coral) over 2.6 seconds. One rose blob never changes: the thread that keeps both states one family. The whole system runs on two grounds, night and light; the stage opens on your system&rsquo;s preference, and the ground toggle overrides it.</p>
+          <p class="ddesc">
+            The sky above the terminal is the interface mood. Home reads under a
+            cold aurora (violet, teal, indigo). Entering chat warms the same sky
+            to gold (amber, warm yellow, coral) over 2.6 seconds. One rose blob
+            never changes: the thread that keeps both states one family. The
+            whole system runs on two grounds, night and light; the stage opens
+            on your system&rsquo;s preference, and the ground toggle overrides
+            it.
+          </p>
         </div>
       </header>
 
       <div class="ctlrow" role="group" aria-label="Demo controls">
         <span class="ctl-lab" id="viewlab">view</span>
-        <button type="button" class="tbtn" id="btn-view-home" aria-pressed="true">home</button>
-        <button type="button" class="tbtn" id="btn-view-chat" aria-pressed="false">chat</button>
+        <button
+          type="button"
+          class="tbtn"
+          id="btn-view-home"
+          aria-pressed="true"
+        >
+          home
+        </button>
+        <button
+          type="button"
+          class="tbtn"
+          id="btn-view-chat"
+          aria-pressed="false"
+        >
+          chat
+        </button>
         <span class="sep" aria-hidden="true">&middot;</span>
-        <button type="button" class="tbtn" id="btn-aurora" aria-pressed="false">aurora: drifting</button>
-        <button type="button" class="tbtn" id="btn-planes" aria-pressed="false">planes: drifting</button>
+        <button type="button" class="tbtn" id="btn-aurora" aria-pressed="false">
+          aurora: drifting
+        </button>
+        <button type="button" class="tbtn" id="btn-planes" aria-pressed="false">
+          planes: drifting
+        </button>
         <span class="sep" aria-hidden="true">&middot;</span>
-        <button type="button" class="tbtn" id="btn-ground" aria-pressed="false">ground: night</button>
+        <button type="button" class="tbtn" id="btn-ground" aria-pressed="false">
+          ground: night
+        </button>
       </div>
 
       <div class="stage stage-grainy anim-on" id="stage1" data-state="home">
@@ -435,89 +1007,301 @@
 
         <div class="planes" id="planes" aria-hidden="true">
           <div class="plane" data-lane="0">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2L2 14v7z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M2 21l21-9L2 3v7l15 2L2 14v7z" />
+            </svg>
             <span class="plabel">guest_12 &middot; reading eight-angle</span>
           </div>
           <div class="plane" data-lane="1">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2L2 14v7z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M2 21l21-9L2 3v7l15 2L2 14v7z" />
+            </svg>
             <span class="plabel">guest_31 &middot; at the prompt</span>
           </div>
           <div class="plane" data-lane="2">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2L2 14v7z"/></svg>
-            <span class="plabel">guest_07 &middot; &ldquo;just browsing&rdquo;</span>
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M2 21l21-9L2 3v7l15 2L2 14v7z" />
+            </svg>
+            <span class="plabel"
+              >guest_07 &middot; &ldquo;just browsing&rdquo;</span
+            >
           </div>
         </div>
 
         <div class="term" id="term">
-
           <!-- home panel -->
           <div id="panel-home" tabindex="-1">
             <p class="pline"><span class="p">$</span> whoami</p>
-            <p class="wordmark">brian rohde<span class="caret" aria-hidden="true"></span></p>
-            <p class="bio">full-stack engineer <span class="d">&middot;</span> san francisco</p>
-            <p class="bio">ships AI products end to end <span class="d">&middot;</span> founder, eight angle</p>
-            <p class="bio"><span class="k">prev:</span> gong <span class="d">&middot;</span> twilio <span class="d">&middot;</span> beyond (projects for facebook + google)</p>
+            <p class="wordmark">
+              brian rohde<span class="caret" aria-hidden="true"></span>
+            </p>
+            <p class="bio">
+              full-stack engineer <span class="d">&middot;</span> san francisco
+            </p>
+            <p class="bio">
+              ships AI products end to end
+              <span class="d">&middot;</span> founder, eight angle
+            </p>
+            <p class="bio">
+              <span class="k">prev:</span> gong
+              <span class="d">&middot;</span> twilio
+              <span class="d">&middot;</span> beyond (projects for facebook +
+              google)
+            </p>
 
             <ul class="links" aria-label="Profiles and resume">
-              <li><a class="blink" href="https://www.linkedin.com/in/brian-rohde-4ba3558/" target="_blank" rel="noopener"><span class="br" aria-hidden="true">[</span><span class="lbl">linkedin</span><span class="br" aria-hidden="true">]</span></a></li>
-              <li><a class="blink" id="resumelink" href="#"><span class="br" aria-hidden="true">[</span><span class="lbl">resume</span><span class="br" aria-hidden="true">]</span></a></li>
-              <li><a class="blink" id="xlink" href="https://x.com/brianxbuilds" target="_blank" rel="noopener" title="@brianxbuilds" aria-label="X, at brianxbuilds"><span class="br" aria-hidden="true">[</span><span class="lbl">x</span><span class="br" aria-hidden="true">]</span></a></li>
+              <li>
+                <a
+                  class="blink"
+                  href="https://www.linkedin.com/in/brian-rohde-4ba3558/"
+                  target="_blank"
+                  rel="noopener"
+                  ><span class="br" aria-hidden="true">[</span
+                  ><span class="lbl">linkedin</span
+                  ><span class="br" aria-hidden="true">]</span></a
+                >
+              </li>
+              <li>
+                <a class="blink" id="resumelink" href="#"
+                  ><span class="br" aria-hidden="true">[</span
+                  ><span class="lbl">resume</span
+                  ><span class="br" aria-hidden="true">]</span></a
+                >
+              </li>
+              <li>
+                <a
+                  class="blink"
+                  id="xlink"
+                  href="https://x.com/brianxbuilds"
+                  target="_blank"
+                  rel="noopener"
+                  title="@brianxbuilds"
+                  aria-label="X, at brianxbuilds"
+                  ><span class="br" aria-hidden="true">[</span
+                  ><span class="lbl">x</span
+                  ><span class="br" aria-hidden="true">]</span></a
+                >
+              </li>
             </ul>
 
             <nav class="menu" aria-label="Commands">
-              <button type="button" class="cbtn" data-cmd="work"><span class="br" aria-hidden="true">[</span>work<span class="br" aria-hidden="true">]</span></button>
-              <button type="button" class="cbtn" data-cmd="about"><span class="br" aria-hidden="true">[</span>about<span class="br" aria-hidden="true">]</span></button>
-              <button type="button" class="cbtn" data-cmd="chat"><span class="br" aria-hidden="true">[</span>chat<span class="br" aria-hidden="true">]</span></button>
+              <button type="button" class="cbtn" data-cmd="work">
+                <span class="br" aria-hidden="true">[</span>work<span
+                  class="br"
+                  aria-hidden="true"
+                  >]</span
+                >
+              </button>
+              <button type="button" class="cbtn" data-cmd="about">
+                <span class="br" aria-hidden="true">[</span>about<span
+                  class="br"
+                  aria-hidden="true"
+                  >]</span
+                >
+              </button>
+              <button type="button" class="cbtn" data-cmd="chat">
+                <span class="br" aria-hidden="true">[</span>chat<span
+                  class="br"
+                  aria-hidden="true"
+                  >]</span
+                >
+              </button>
             </nav>
 
             <form class="prompt" id="f-home1">
-              <label class="sr" for="in-home1">Ask about my work, or type a command</label>
+              <label class="sr" for="in-home1"
+                >Ask about my work, or type a command</label
+              >
               <span class="p" aria-hidden="true">$</span>
-              <input id="in-home1" name="q" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="240" placeholder="ask about my work&hellip;" enterkeyhint="send">
+              <input
+                id="in-home1"
+                name="q"
+                autocomplete="off"
+                autocapitalize="off"
+                autocorrect="off"
+                spellcheck="false"
+                maxlength="240"
+                placeholder="ask about my work&hellip;"
+                enterkeyhint="send"
+              />
             </form>
-            <p class="cmt"># questions flip this screen to chat, and the sky from cold to gold</p>
+            <p class="cmt">
+              # questions flip this screen to chat, and the sky from cold to
+              gold
+            </p>
             <p class="cmt hint" id="hint1" aria-live="polite"></p>
 
             <div class="log" aria-label="Article log">
-              <a class="entry" href="#"><span class="ts">[2026-02-12]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Building the ML model behind Eight Angle</span></span></a>
-              <a class="entry" href="#"><span class="ts">[2026-05-28]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">How I run parallel Claude Code agents</span></span></a>
-              <a class="entry" href="#"><span class="ts">[2025-11-14]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">From idea to production in four hours</span></span></a>
-              <a class="entry" href="#"><span class="ts">[2014-07-22]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Facebook&rsquo;s first WordPress site</span></span></a>
+              <a class="entry" href="#"
+                ><span class="ts">[2026-02-12]</span
+                ><span class="line2"
+                  ><span class="p" aria-hidden="true">&#10095;</span>
+                  <span class="ttl"
+                    >Building the ML model behind Eight Angle</span
+                  ></span
+                ></a
+              >
+              <a class="entry" href="#"
+                ><span class="ts">[2026-05-28]</span
+                ><span class="line2"
+                  ><span class="p" aria-hidden="true">&#10095;</span>
+                  <span class="ttl"
+                    >How I run parallel Claude Code agents</span
+                  ></span
+                ></a
+              >
+              <a class="entry" href="#"
+                ><span class="ts">[2025-11-14]</span
+                ><span class="line2"
+                  ><span class="p" aria-hidden="true">&#10095;</span>
+                  <span class="ttl"
+                    >From idea to production in four hours</span
+                  ></span
+                ></a
+              >
+              <a class="entry" href="#"
+                ><span class="ts">[2014-07-22]</span
+                ><span class="line2"
+                  ><span class="p" aria-hidden="true">&#10095;</span>
+                  <span class="ttl"
+                    >Facebook&rsquo;s first WordPress site</span
+                  ></span
+                ></a
+              >
             </div>
 
-            <footer class="status">status: available for freelance <span aria-hidden="true">&middot;</span> 3 guests overhead<span id="docknote" hidden> <span aria-hidden="true">&middot;</span> presence docked on small screens</span></footer>
+            <footer class="status">
+              status: available for freelance
+              <span aria-hidden="true">&middot;</span> 3 guests overhead<span
+                id="docknote"
+                hidden
+              >
+                <span aria-hidden="true">&middot;</span> presence docked on
+                small screens</span
+              >
+            </footer>
           </div>
 
           <!-- chat panel -->
           <div id="panel-chat" tabindex="-1" hidden>
             <div class="chatbar">
-              <button type="button" class="backbtn" data-cmd="home" aria-label="Back to home"><span class="br" aria-hidden="true">[</span>esc<span class="br" aria-hidden="true">]</span>&nbsp;back</button>
-              <span class="tbl">chat <span aria-hidden="true">&middot;</span> golden hour <span aria-hidden="true">&middot;</span> demo</span>
+              <button
+                type="button"
+                class="backbtn"
+                data-cmd="home"
+                aria-label="Back to home"
+              >
+                <span class="br" aria-hidden="true">[</span>esc<span
+                  class="br"
+                  aria-hidden="true"
+                  >]</span
+                >&nbsp;back
+              </button>
+              <span class="tbl"
+                >chat <span aria-hidden="true">&middot;</span> golden hour
+                <span aria-hidden="true">&middot;</span> demo</span
+              >
             </div>
             <div id="chatlog1">
-              <p class="cmt"># demo chat &middot; esc returns home &middot; watch the sky warm up</p>
-              <div class="uline"><span class="p" aria-hidden="true">$ </span>what is eight angle</div>
-              <div class="reply">Eight Angle is an iOS yoga tracker I founded and built solo. It detects poses automatically: a 47-class pose classifier I trained to 92.2% cross-validated accuracy, running on-device at roughly 20fps.</div>
-              <p class="cmt"># demo mode: live model (claude haiku) ships with the real site</p>
+              <p class="cmt">
+                # demo chat &middot; esc returns home &middot; watch the sky
+                warm up
+              </p>
+              <div class="uline">
+                <span class="p" aria-hidden="true">$ </span>what is eight angle
+              </div>
+              <div class="reply">
+                Eight Angle is an iOS yoga tracker I founded and built solo. It
+                detects poses automatically: a 47-class pose classifier I
+                trained to 92.2% cross-validated accuracy, running on-device at
+                roughly 20fps.
+              </div>
+              <p class="cmt">
+                # demo mode: live model (claude haiku) ships with the real site
+              </p>
             </div>
             <div class="keybar">
-              <button type="button" class="cbtn" data-cmd="home"><span class="br" aria-hidden="true">[</span>home<span class="br" aria-hidden="true">]</span></button>
-              <button type="button" class="cbtn" data-cmd="clear"><span class="br" aria-hidden="true">[</span>clear<span class="br" aria-hidden="true">]</span></button>
+              <button type="button" class="cbtn" data-cmd="home">
+                <span class="br" aria-hidden="true">[</span>home<span
+                  class="br"
+                  aria-hidden="true"
+                  >]</span
+                >
+              </button>
+              <button type="button" class="cbtn" data-cmd="clear">
+                <span class="br" aria-hidden="true">[</span>clear<span
+                  class="br"
+                  aria-hidden="true"
+                  >]</span
+                >
+              </button>
             </div>
             <form class="prompt" id="f-chat1">
-              <label class="sr" for="in-chat1">Ask a question or type a command</label>
+              <label class="sr" for="in-chat1"
+                >Ask a question or type a command</label
+              >
               <span class="p" aria-hidden="true">$</span>
-              <input id="in-chat1" name="q" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="240" placeholder="ask or type a command&hellip;" enterkeyhint="send">
+              <input
+                id="in-chat1"
+                name="q"
+                autocomplete="off"
+                autocapitalize="off"
+                autocorrect="off"
+                spellcheck="false"
+                maxlength="240"
+                placeholder="ask or type a command&hellip;"
+                enterkeyhint="send"
+              />
             </form>
           </div>
-
         </div>
       </div>
 
-      <p class="demo-note"><span class="tech">pure css aurora</span><span class="tech">crossfade state morph</span><strong>Technique.</strong> Two stacked blob layers share one geometry and one set of drift keyframes; only the colors differ. Switching state crossfades the layers over 2.6s, so the sky appears to change hue while nothing repaints on the main thread. The terminal sits on glass: 70% near black on the night ground, 62% near white on the light one, backdrop blur either way, so the lights glow around the text, never under it.</p>
-      <p class="demo-note"><strong>Contrast, measured on both grounds.</strong> The rule: text lives on the glass, only decoration touches bare sky. The worst possible spot is every blob stacked at peak alpha, which the layout never produces. On the night glass it measures body ink #D6E5DC at 10.2:1 under the cold aurora and 9.3:1 under gold, headline #F2F7F3 at 12.3:1 and 11.2:1, secondary #8FA79A at 5.2:1 and 4.7:1, mint accent #7EE787 at 8.7:1 and 7.9:1, and the amber chat tag #F5B968 at 6.9:1 in its own state. On the light glass the same impossible worst measures ink #14211A at 11.2:1 under the cold aurora and 12.2:1 under gold, secondary #3F5348 at 5.6:1 and 6.1:1, deep green accent #086148 at 5.0:1 and 5.5:1, the brown chat tag #8A4D0F at 4.9:1 in its own state, and the #086148 focus ring at 5.0:1 or better against the glass it draws on. All AA or better, body ink comfortably AAA, on both grounds.</p>
-      <p class="demo-note"><strong>Two grounds, one system.</strong> Brian&rsquo;s phrase was aurora on white, and the studio first built it literally: light ground, dark ink. The night read came later, and both survived review, so the site ships both: light and dark themes matching the visitor&rsquo;s system preference. The stage above opens on your system&rsquo;s ground; the toggle is a manual override, and until you touch it the stage follows live if your system scheme changes. Same sky geometry, same drift, same glass: only the ground and the inks swap.</p>
-      <p class="demo-note"><strong>Production wiring.</strong> State follows the route: log and article pages get the cold aurora, the chat screen gets gold. Same class toggle as this demo. Ground follows prefers-color-scheme exactly as this stage does: two custom property sheets, one class swap on the root, a live media query listener, no flash. Reduced motion swaps instantly and holds the blobs still; the content switch itself is always instant, a terminal jumps.</p>
+      <p class="demo-note">
+        <span class="tech">pure css aurora</span
+        ><span class="tech">crossfade state morph</span
+        ><strong>Technique.</strong> Two stacked blob layers share one geometry
+        and one set of drift keyframes; only the colors differ. Switching state
+        crossfades the layers over 2.6s, so the sky appears to change hue while
+        nothing repaints on the main thread. The terminal sits on glass: 70%
+        near black on the night ground, 62% near white on the light one,
+        backdrop blur either way, so the lights glow around the text, never
+        under it.
+      </p>
+      <p class="demo-note">
+        <strong>Contrast, measured on both grounds.</strong> The rule: text
+        lives on the glass, only decoration touches bare sky. The worst possible
+        spot is every blob stacked at peak alpha, which the layout never
+        produces. On the night glass it measures body ink #D6E5DC at 10.2:1
+        under the cold aurora and 9.3:1 under gold, headline #F2F7F3 at 12.3:1
+        and 11.2:1, secondary #8FA79A at 5.2:1 and 4.7:1, mint accent #7EE787 at
+        8.7:1 and 7.9:1, and the amber chat tag #F5B968 at 6.9:1 in its own
+        state. On the light glass the same impossible worst measures ink #14211A
+        at 11.2:1 under the cold aurora and 12.2:1 under gold, secondary #3F5348
+        at 5.6:1 and 6.1:1, deep green accent #086148 at 5.0:1 and 5.5:1, the
+        brown chat tag #8A4D0F at 4.9:1 in its own state, and the #086148 focus
+        ring at 5.0:1 or better against the glass it draws on. All AA or better,
+        body ink comfortably AAA, on both grounds.
+      </p>
+      <p class="demo-note">
+        <strong>Two grounds, one system.</strong> Brian&rsquo;s phrase was
+        aurora on white, and the studio first built it literally: light ground,
+        dark ink. The night read came later, and both survived review, so the
+        site ships both: light and dark themes matching the visitor&rsquo;s
+        system preference. The stage above opens on your system&rsquo;s ground;
+        the toggle is a manual override, and until you touch it the stage
+        follows live if your system scheme changes. Same sky geometry, same
+        drift, same glass: only the ground and the inks swap.
+      </p>
+      <p class="demo-note">
+        <strong>Production wiring.</strong> State follows the route: log and
+        article pages get the cold aurora, the chat screen gets gold. Same class
+        toggle as this demo. Ground follows prefers-color-scheme exactly as this
+        stage does: two custom property sheets, one class swap on the root, a
+        live media query listener, no flash. Reduced motion swaps instantly and
+        holds the blobs still; the content switch itself is always instant, a
+        terminal jumps.
+      </p>
     </div>
   </section>
 
@@ -528,35 +1312,96 @@
         <span class="dnum" aria-hidden="true">02</span>
         <div>
           <h2 id="h-2">Glyph tide from an image</h2>
-          <p class="ddesc">Brian asked: can the glyph matrix come from images I provide, so they stay somewhat visible? Yes. Luminance drives glyph density and weight; the tide keeps rolling through it, and the densest cells peak in phosphor mint on the night ground, deep green on the light one. Both sources here are drawn procedurally (no assets allowed in the lab), and real photos drop into the exact same pipeline.</p>
+          <p class="ddesc">
+            Brian asked: can the glyph matrix come from images I provide, so
+            they stay somewhat visible? Yes. Luminance drives glyph density and
+            weight; the tide keeps rolling through it, and the densest cells
+            peak in phosphor mint on the night ground, deep green on the light
+            one. Both sources here are drawn procedurally (no assets allowed in
+            the lab), and real photos drop into the exact same pipeline.
+          </p>
         </div>
       </header>
 
       <div class="ctlrow" role="group" aria-label="Glyph tide controls">
         <span class="ctl-lab">source</span>
-        <button type="button" class="tbtn" id="src-eight" aria-pressed="true">numeral 8</button>
-        <button type="button" class="tbtn" id="src-pose" aria-pressed="false">pose figure</button>
+        <button type="button" class="tbtn" id="src-eight" aria-pressed="true">
+          numeral 8
+        </button>
+        <button type="button" class="tbtn" id="src-pose" aria-pressed="false">
+          pose figure
+        </button>
         <span class="sep" aria-hidden="true">&middot;</span>
         <span class="slider-group">
           <label for="intensity">image presence</label>
-          <input type="range" id="intensity" min="0" max="100" value="65" step="5" aria-describedby="intensity-out">
+          <input
+            type="range"
+            id="intensity"
+            min="0"
+            max="100"
+            value="65"
+            step="5"
+            aria-describedby="intensity-out"
+          />
           <output id="intensity-out" for="intensity">balanced</output>
         </span>
         <span class="sep" aria-hidden="true">&middot;</span>
-        <button type="button" class="tbtn" id="btn-tide" aria-pressed="false">tide: rolling</button>
+        <button type="button" class="tbtn" id="btn-tide" aria-pressed="false">
+          tide: rolling
+        </button>
         <span class="sep" aria-hidden="true">&middot;</span>
-        <button type="button" class="tbtn" id="btn-ground2" aria-pressed="false">ground: night</button>
+        <button
+          type="button"
+          class="tbtn"
+          id="btn-ground2"
+          aria-pressed="false"
+        >
+          ground: night
+        </button>
       </div>
 
       <div class="stage" id="stage2">
         <canvas id="canvas2" aria-hidden="true"></canvas>
-        <p class="stagetag"># source drawn in code for this lab &middot; your photo or video drops in here</p>
+        <p class="stagetag">
+          # source drawn in code for this lab &middot; your photo or video drops
+          in here
+        </p>
       </div>
 
-      <p class="demo-note"><span class="tech">canvas 2d text raster</span><span class="tech">offscreen sampling</span><strong>Pipeline.</strong> A 480&times;300 offscreen canvas holds the source. On resize it downsamples to one pixel per glyph cell (about 1,800 cells), one getImageData call, luminance cached. Each tick, every cell mixes its image value with the rolling wave and picks a character from the ramp: the figure draws in dense bright glyphs, the empty sky stays near black. 9fps on purpose; roughly 2ms a tick.</p>
-      <p class="demo-note"><strong>Real images.</strong> Swap the procedural drawing for <code>drawImage(photo)</code>, done: same sampling, same cache. Best sources are bold and high contrast: a backlit yoga silhouette, a figure against sky, big shapes over fine detail. <strong>Video</strong> is the same call per tick, <code>drawImage(video)</code> plus one getImageData every frame: roughly 1 to 2ms extra at this grid, fine at 9fps, and worth a muted 10 to 15s loop rather than a full clip.</p>
-      <p class="demo-note"><strong>The control.</strong> Image presence blends the two fields: subtle keeps the tide dominant with the picture ghosting through; strong quiets the background so the figure carries. Reduced motion renders one settled frame at the chosen strength.</p>
-      <p class="demo-note"><strong>Two grounds.</strong> The night raster runs faint light ink up to phosphor mint #7EE787 at the densest cells: light burned into glass. The light ground mirrors it with a dark ink ramp (#14211A at rising alpha) peaking in the deep green accent #086148, 7.2:1 against the light ground, so the figure reads as ink drawn onto paper. Same buckets, same tide, only the ramp swaps; the ground follows your system preference, and either ground toggle switches both stages together.</p>
+      <p class="demo-note">
+        <span class="tech">canvas 2d text raster</span
+        ><span class="tech">offscreen sampling</span
+        ><strong>Pipeline.</strong> A 480&times;300 offscreen canvas holds the
+        source. On resize it downsamples to one pixel per glyph cell (about
+        1,800 cells), one getImageData call, luminance cached. Each tick, every
+        cell mixes its image value with the rolling wave and picks a character
+        from the ramp: the figure draws in dense bright glyphs, the empty sky
+        stays near black. 9fps on purpose; roughly 2ms a tick.
+      </p>
+      <p class="demo-note">
+        <strong>Real images.</strong> Swap the procedural drawing for
+        <code>drawImage(photo)</code>, done: same sampling, same cache. Best
+        sources are bold and high contrast: a backlit yoga silhouette, a figure
+        against sky, big shapes over fine detail. <strong>Video</strong> is the
+        same call per tick, <code>drawImage(video)</code> plus one getImageData
+        every frame: roughly 1 to 2ms extra at this grid, fine at 9fps, and
+        worth a muted 10 to 15s loop rather than a full clip.
+      </p>
+      <p class="demo-note">
+        <strong>The control.</strong> Image presence blends the two fields:
+        subtle keeps the tide dominant with the picture ghosting through; strong
+        quiets the background so the figure carries. Reduced motion renders one
+        settled frame at the chosen strength.
+      </p>
+      <p class="demo-note">
+        <strong>Two grounds.</strong> The night raster runs faint light ink up
+        to phosphor mint #7EE787 at the densest cells: light burned into glass.
+        The light ground mirrors it with a dark ink ramp (#14211A at rising
+        alpha) peaking in the deep green accent #086148, 7.2:1 against the light
+        ground, so the figure reads as ink drawn onto paper. Same buckets, same
+        tide, only the ramp swaps; the ground follows your system preference,
+        and either ground toggle switches both stages together.
+      </p>
     </div>
   </section>
 
@@ -567,391 +1412,823 @@
         <span class="dnum" aria-hidden="true">03</span>
         <div>
           <h2 id="h-3">Presence over the aurora</h2>
-          <p class="ddesc">Live visitors as tiny paper planes drifting through the night sky in demo 01, each with a mono label: who they are and what they are doing, including one custom status. They are weather, not content: low contrast, slow, and they never enter the text column.</p>
+          <p class="ddesc">
+            Live visitors as tiny paper planes drifting through the night sky in
+            demo 01, each with a mono label: who they are and what they are
+            doing, including one custom status. They are weather, not content:
+            low contrast, slow, and they never enter the text column.
+          </p>
         </div>
       </header>
 
-      <p class="demo-note"><span class="tech">3 dom nodes + transforms</span><strong>The mock, live in demo 01.</strong> Three planes wander bounded curves in the gutter to the right of the glass panel, 20fps transform updates, headings follow their velocity. Labels are the ground&rsquo;s own ink at roughly half opacity (light ink on night, dark ink on light), dim enough to sit inside the aurora&rsquo;s glow on either ground. The layer is decorative (aria-hidden, pointer-events none); the accessible equivalent is the status line: 3 guests overhead. The planes button pauses them, reduced motion parks them, and below about 760px the gutter disappears so they dock into the status line instead of crowding the column.</p>
-      <p class="demo-note"><strong>Real data.</strong> A Cloudflare Durable Object keeps the visitor roster; each client holds a WebSocket (or falls back to a 20s poll). Payload per guest: anonymous id, current page slug mapped to a verb (reading eight-angle, at the prompt), and an optional custom status set via a /status command in chat: length capped, links stripped, profanity filtered, and shown in quotes so it reads as the guest speaking. Cap the sky at 3 planes; beyond that the status line says n guests overhead. No accounts, no cookies, ids rotate per session.</p>
-      <p class="demo-note"><strong>Taste guardrails.</strong> Labels stay at 10.5px and roughly half opacity, planes never exceed walking pace, and the whole layer sits under the grain so it feels painted into the sky rather than stuck on top. If it ever competes with reading, it loses: one setting turns it off site-wide.</p>
+      <p class="demo-note">
+        <span class="tech">3 dom nodes + transforms</span
+        ><strong>The mock, live in demo 01.</strong> Three planes wander bounded
+        curves in the gutter to the right of the glass panel, 20fps transform
+        updates, headings follow their velocity. Labels are the ground&rsquo;s
+        own ink at roughly half opacity (light ink on night, dark ink on light),
+        dim enough to sit inside the aurora&rsquo;s glow on either ground. The
+        layer is decorative (aria-hidden, pointer-events none); the accessible
+        equivalent is the status line: 3 guests overhead. The planes button
+        pauses them, reduced motion parks them, and below about 760px the gutter
+        disappears so they dock into the status line instead of crowding the
+        column.
+      </p>
+      <p class="demo-note">
+        <strong>Real data.</strong> A Cloudflare Durable Object keeps the
+        visitor roster; each client holds a WebSocket (or falls back to a 20s
+        poll). Payload per guest: anonymous id, current page slug mapped to a
+        verb (reading eight-angle, at the prompt), and an optional custom status
+        set via a /status command in chat: length capped, links stripped,
+        profanity filtered, and shown in quotes so it reads as the guest
+        speaking. Cap the sky at 3 planes; beyond that the status line says n
+        guests overhead. No accounts, no cookies, ids rotate per session.
+      </p>
+      <p class="demo-note">
+        <strong>Taste guardrails.</strong> Labels stay at 10.5px and roughly
+        half opacity, planes never exceed walking pace, and the whole layer sits
+        under the grain so it feels painted into the sky rather than stuck on
+        top. If it ever competes with reading, it loses: one setting turns it
+        off site-wide.
+      </p>
     </div>
   </section>
 
+  <!-- ============ 04 THE COMPOSED SCENE: AURORA + TIDE + GLASS ============ -->
+  <section class="demo" id="demo-composed" aria-labelledby="h-4">
+    <div class="wrap">
+      <header class="demo-head">
+        <span class="dnum" aria-hidden="true">04</span>
+        <div>
+          <h2 id="h-4">
+            Aurora plus the image tide, one scene, three placements
+          </h2>
+          <p class="ddesc">
+            Brian asked for the aurora and the glyph tide together, then asked
+            whether the tide should cover the full background at all: with
+            terminal text it might get busy. So this stage is the whole homepage
+            (wordmark, bio, log, prompt) under one sky, and the tide auditions
+            three placements: whisper strength across the full sky, full voice
+            in the right gutter, or a contained hero band up top. The view
+            toggle warms sky and tide together from cold mint to gold; sources
+            are per page (pose for Eight Angle, f and G stand in for the
+            Facebook and Google articles) and every source exits into pure tide
+            before the next one forms.
+          </p>
+        </div>
+      </header>
+
+      <div
+        class="ctlrow"
+        role="group"
+        aria-label="Composed scene: placement, view and ground"
+      >
+        <span class="ctl-lab">placement</span>
+        <button type="button" class="tbtn" id="pl-sky" aria-pressed="true">
+          full sky
+        </button>
+        <button type="button" class="tbtn" id="pl-gutter" aria-pressed="false">
+          gutter
+        </button>
+        <button type="button" class="tbtn" id="pl-hero" aria-pressed="false">
+          hero band
+        </button>
+        <span class="sep" aria-hidden="true">&middot;</span>
+        <span class="ctl-lab">view</span>
+        <button type="button" class="tbtn" id="btn4-home" aria-pressed="true">
+          home
+        </button>
+        <button type="button" class="tbtn" id="btn4-chat" aria-pressed="false">
+          chat
+        </button>
+        <span class="sep" aria-hidden="true">&middot;</span>
+        <button
+          type="button"
+          class="tbtn"
+          id="btn-ground4"
+          aria-pressed="false"
+        >
+          ground: night
+        </button>
+      </div>
+      <div
+        class="ctlrow"
+        role="group"
+        aria-label="Composed scene: tide source and strength"
+      >
+        <span class="ctl-lab">source</span>
+        <button
+          type="button"
+          class="tbtn"
+          id="src4-eight"
+          aria-pressed="true"
+          aria-label="Source: numeral 8"
+        >
+          8
+        </button>
+        <button
+          type="button"
+          class="tbtn"
+          id="src4-pose"
+          aria-pressed="false"
+          aria-label="Source: pose figure, the Eight Angle article"
+        >
+          pose
+        </button>
+        <button
+          type="button"
+          class="tbtn"
+          id="src4-f"
+          aria-pressed="false"
+          aria-label="Source: letter f, stand-in for the Facebook Newsroom article"
+        >
+          f
+        </button>
+        <button
+          type="button"
+          class="tbtn"
+          id="src4-g"
+          aria-pressed="false"
+          aria-label="Source: letter G, stand-in for the Android for Work article"
+        >
+          G
+        </button>
+        <button type="button" class="tbtn" id="btn4-cycle" aria-pressed="false">
+          cycle: manual
+        </button>
+        <span class="sep" aria-hidden="true">&middot;</span>
+        <span class="slider-group">
+          <label for="intensity4">image presence</label>
+          <input
+            type="range"
+            id="intensity4"
+            min="0"
+            max="100"
+            value="12"
+            step="2"
+            aria-describedby="intensity4-out"
+          />
+          <output id="intensity4-out" for="intensity4">whisper</output>
+        </span>
+        <span class="sep" aria-hidden="true">&middot;</span>
+        <button
+          type="button"
+          class="tbtn"
+          id="btn4-motion"
+          aria-pressed="false"
+        >
+          motion: drifting
+        </button>
+      </div>
+
+      <div
+        class="stage stage-grainy anim-on"
+        id="stage4"
+        data-state="home"
+        data-placement="sky"
+      >
+        <canvas id="canvas4" aria-hidden="true"></canvas>
+        <div class="aur aur-home" aria-hidden="true">
+          <div class="blob pos1"></div>
+          <div class="blob pos2"></div>
+          <div class="blob pos3"></div>
+          <div class="blob pos4"></div>
+        </div>
+        <div class="aur aur-chat" aria-hidden="true">
+          <div class="blob pos1"></div>
+          <div class="blob pos2"></div>
+          <div class="blob pos3"></div>
+          <div class="blob pos4"></div>
+        </div>
+
+        <div class="term">
+          <p class="pline"><span class="p">$</span> hello</p>
+          <p class="wordmark">
+            brian rohde<span class="caret" aria-hidden="true"></span>
+          </p>
+          <p class="bio">
+            full-stack engineer <span class="d">&middot;</span> san francisco
+          </p>
+          <p class="bio">
+            ships AI products end to end
+            <span class="d">&middot;</span> founder, eight angle
+          </p>
+          <p class="bio">
+            <span class="k">prev:</span> gong
+            <span class="d">&middot;</span> twilio
+            <span class="d">&middot;</span> beyond (projects for facebook +
+            google)
+          </p>
+
+          <form class="prompt" id="f-home4">
+            <label class="sr" for="in-home4"
+              >Scenery prompt: submitting warms the scene to the chat
+              state</label
+            >
+            <span class="p" aria-hidden="true">$</span>
+            <input
+              id="in-home4"
+              name="q"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+              maxlength="240"
+              placeholder="ask about my work&hellip;"
+              enterkeyhint="send"
+            />
+          </form>
+          <p class="cmt">
+            <span class="only-home"
+              ># sky: cold aurora &middot; submit, or press the chat toggle, to
+              warm it</span
+            >
+            <span class="only-chat"
+              ><span class="tbl">chat &middot; golden hour</span> &middot; esc
+              or the home toggle cools it back</span
+            >
+          </p>
+
+          <div class="log" aria-label="Article log specimen">
+            <p class="lrow">
+              <span class="ts">[2026-02-12]</span
+              ><span class="p" aria-hidden="true">&#10095;</span>
+              <span class="ttl">Building the ML model behind Eight Angle</span>
+            </p>
+            <p class="lrow">
+              <span class="ts">[2014-07-22]</span
+              ><span class="p" aria-hidden="true">&#10095;</span>
+              <span class="ttl">Facebook&rsquo;s first WordPress site</span>
+            </p>
+            <p class="lrow">
+              <span class="ts">[2016-02-09]</span
+              ><span class="p" aria-hidden="true">&#10095;</span>
+              <span class="ttl">Android for Work, redesigned</span>
+            </p>
+          </div>
+
+          <footer class="status">
+            status: composed scene &middot; every ink on this glass measured AA
+            or better at the worst overlap, both grounds
+          </footer>
+        </div>
+
+        <p class="stagetag">
+          # sources drawn in code: 8, pose, f and G stand-ins &middot; real
+          photos and brand marks drop into the same pipeline
+        </p>
+      </div>
+
+      <p class="demo-note">
+        <span class="tech">tide under the blobs</span
+        ><span class="tech">gpu tint compositing</span
+        ><span class="tech">luminance envelope</span
+        ><strong>Layering.</strong> The tide canvas sits under the aurora layers
+        and the glass sits over both. That order is the whole trick: the blobs
+        are translucent blurred fields, so whatever color drifts over a glyph
+        tints it in the compositor, for free, and the 2.6s home-to-chat
+        crossfade recolors the wash with zero added JavaScript. Two alternatives
+        lost on purpose. Sampling blob colors per cell means reading animated
+        geometry from the DOM every tick and re-deriving a 64px blur falloff per
+        cell: real cost, and it drifts from what CSS actually renders. Drawing
+        the tide over the aurora keeps glyphs crisp but they occlude the sky and
+        the field reads as a screen door. On top of the compositor tint, the
+        tide speaks the state too: the dense buckets lerp from phosphor mint
+        #7EE787 toward the gold tag #F5B968 on night (deep green #086148 toward
+        brown #8A4D0F on light) on the same 2.6s clock as the sky.
+      </p>
+      <p class="demo-note">
+        <strong
+          >Three placements, one worry: busyness against terminal text.</strong
+        >
+        Full sky runs at whisper by default: image weight low, the whole canvas
+        held near a third of full strength (dark-on-light texture carries more
+        edge contrast, so the light ground needs the deeper cut), and the glass
+        panel is the only surface text ever sits on; it is the most atmospheric
+        and the most dangerous, so it gets the strongest restraint cap. Gutter
+        confines the tide to the right of the text column at full voice, where
+        the presence planes fly: clean ground behind the column, and the canvas
+        edge fades in with a mask so there is no seam; on phones the gutter
+        disappears and the tide slides to a band under the content. Hero band
+        contains the tide in a top strip that fades out before the content
+        begins: the article-hero pattern from the placement discussion, calm
+        ground below. Studio verdict:
+        <strong>gutter wins for the homepage</strong> (the sky keeps the
+        weather, the picture gets a stage, the text keeps a calm column), the
+        <strong>hero band wins for article pages</strong> with each
+        article&rsquo;s own source, and full sky stays a whisper-only option for
+        moments Brian wants maximum atmosphere. Each placement picks its own
+        default strength when selected; the slider stays live so any placement
+        can be pushed to any strength.
+      </p>
+      <p class="demo-note">
+        <strong>Sources enter and exit through pure tide.</strong> Per-page
+        sources are the confirmed goal: the pose figure for the Eight Angle
+        article, an f letterform standing in for the Facebook Newsroom article,
+        a G letterform for Android for Work. The stand-ins are drawn in code
+        with the same white-ground black-figure pipeline as the 8 and the pose;
+        real brand assets can swap in later pending a trademark-use check. A
+        source never swaps, it travels: the luminance envelope eases the picture
+        back into pure rolling tide over 1.4s, the tide holds alone for 0.9s,
+        then the next picture forms out of the same tide over 1.4s. Press any
+        source button to watch one full cycle, or set cycle to auto and it
+        rotates through all four with a 4.6s dwell. Reduced motion skips the
+        theater: source and state changes render a settled still instantly.
+      </p>
+      <p class="demo-note">
+        <strong
+          >Contrast, measured at the worst overlap on both grounds.</strong
+        >
+        A picture under the glass changes the worst case, so this stage pours
+        the glass stronger than demo 01: 78% night, 80% light (the
+        no-backdrop-filter fallbacks are stronger still). The impossible worst
+        spot is a solid peak glyph under all four blobs stacked at center alpha
+        under the glass. Night glass, home state: headline #F2F7F3 at 13.2:1,
+        body ink #D6E5DC at 10.9:1, secondary #8FA79A at 5.5:1, mint accent
+        #7EE787 at 9.3:1. Night glass, chat state: 12.4:1, 10.3:1, 5.2:1, 8.8:1,
+        and the amber tag #F5B968 at 7.7:1. Light glass, worst case is the
+        darkest spot (dense glyph mass, no blobs): ink #14211A at 11.7:1 home
+        and 11.8:1 chat, secondary #3F5348 at 5.8:1 and 5.9:1, green accent
+        #086148 at 5.3:1 both, brown tag #8A4D0F at 4.7:1 in its own state.
+        Everything AA or better, body inks AAA, on both grounds in both states.
+      </p>
+      <p class="demo-note">
+        <strong>Cost, measured.</strong> Same 9fps cadence and cell grid as demo
+        02; the additions are one envelope multiply per cell and four rgba
+        strings per tick. Measured in headless Chrome on the software
+        rasterizer, full sky at strong presence (a 1036&times;620 stage, about
+        2,400 cells): 0.50ms average per tick at dpr 1 (p95 0.7ms, observed max
+        1.3ms on the first tick), and 0.43 to 0.68ms average at dpr 2 including
+        source transitions, the state recolor and placement switches, max 0.9ms.
+        Budget was 4ms; the scene runs at roughly an eighth of it, and the
+        aurora tint costs nothing on the main thread because the compositor does
+        it. All four sources are sampled once per resize, not per tick. Pause,
+        offscreen and hidden-tab behavior come from the shared runner; the
+        motion button parks the blobs and the tide together. Production wiring
+        is the same story as demos 01 and 02: placement is a per-page class,
+        source is a per-page asset, state follows the route.
+      </p>
+    </div>
+  </section>
 </main>
 
 <footer class="fin">
-  <div class="wrap">aurora terminal lab for brohde.com &middot; 2026-07-15 &middot; palettes measured on both grounds, pipelines real: photos and presence data wire into the same seams shown here.</div>
+  <div class="wrap">
+    aurora terminal lab for brohde.com &middot; 2026-07-15 &middot; palettes
+    measured on both grounds, pipelines real: photos and presence data wire into
+    the same seams shown here.
+  </div>
 </footer>
 
 <script>
-(function () {
-  'use strict';
+  (function () {
+    "use strict";
 
-  var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var demos = [];
+    var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var demos = [];
 
-  function $(s) { return document.querySelector(s); }
-  function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
-
-  function fitCanvas(canvas) {
-    var r = canvas.getBoundingClientRect();
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.max(1, Math.round(r.width * dpr));
-    canvas.height = Math.max(1, Math.round(r.height * dpr));
-    var ctx = canvas.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { w: r.width, h: r.height, ctx: ctx };
-  }
-
-  /* ------- shared runner: run = !userPaused && visible && !document.hidden ------- */
-
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      for (var i = 0; i < demos.length; i++) {
-        if (demos[i].stage === e.target) {
-          demos[i].visible = e.isIntersecting;
-          demos[i].update();
-        }
-      }
-    });
-  }, { threshold: 0.05 });
-
-  function wire(stage, impl) {
-    var demo = {
-      stage: stage, impl: impl,
-      userPaused: REDUCED, visible: false, running: false,
-      raf: null, last: 0, t: 0
-    };
-    function loop(now) {
-      demo.raf = null;
-      if (!demo.running) return;
-      if (now - demo.last >= impl.interval) {
-        var dt = demo.last === 0 ? impl.interval : Math.min(now - demo.last, 100);
-        demo.last = now;
-        demo.t += dt;
-        impl.step(dt, demo.t);
-      }
-      demo.raf = requestAnimationFrame(loop);
+    function $(s) {
+      return document.querySelector(s);
     }
-    demo.update = function () {
-      var run = !demo.userPaused && demo.visible && !document.hidden;
-      if (impl.css) {
-        demo.stage.classList.toggle('anim-on', run);
-        demo.stage.classList.toggle('anim-off', !run);
+    function clamp(v, lo, hi) {
+      return v < lo ? lo : v > hi ? hi : v;
+    }
+
+    function fitCanvas(canvas) {
+      var r = canvas.getBoundingClientRect();
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(r.width * dpr));
+      canvas.height = Math.max(1, Math.round(r.height * dpr));
+      var ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { w: r.width, h: r.height, ctx: ctx };
+    }
+
+    /* ------- shared runner: run = !userPaused && visible && !document.hidden ------- */
+
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (e) {
+          for (var i = 0; i < demos.length; i++) {
+            if (demos[i].stage === e.target) {
+              demos[i].visible = e.isIntersecting;
+              demos[i].update();
+            }
+          }
+        });
+      },
+      { threshold: 0.05 }
+    );
+
+    function wire(stage, impl) {
+      var demo = {
+        stage: stage,
+        impl: impl,
+        userPaused: REDUCED,
+        visible: false,
+        running: false,
+        raf: null,
+        last: 0,
+        t: 0,
+      };
+      function loop(now) {
+        demo.raf = null;
+        if (!demo.running) return;
+        if (now - demo.last >= impl.interval) {
+          var dt =
+            demo.last === 0 ? impl.interval : Math.min(now - demo.last, 100);
+          demo.last = now;
+          demo.t += dt;
+          impl.step(dt, demo.t);
+        }
+        demo.raf = requestAnimationFrame(loop);
+      }
+      demo.update = function () {
+        var run = !demo.userPaused && demo.visible && !document.hidden;
+        if (impl.css) {
+          demo.stage.classList.toggle("anim-on", run);
+          demo.stage.classList.toggle("anim-off", !run);
+          return;
+        }
+        if (run && !demo.running) {
+          demo.running = true;
+          demo.last = 0;
+          if (!demo.raf) demo.raf = requestAnimationFrame(loop);
+        } else if (!run) {
+          demo.running = false;
+        }
+      };
+      demos.push(demo);
+      if (impl.resize) impl.resize();
+      if (impl.staticFrame) impl.staticFrame();
+      io.observe(stage);
+      return demo;
+    }
+
+    /* ================= 01 two state aurora terminal ================= */
+
+    var stage1 = $("#stage1");
+    var panels = { home: $("#panel-home"), chat: $("#panel-chat") };
+    var btnHome = $("#btn-view-home");
+    var btnChat = $("#btn-view-chat");
+    var chatlog = $("#chatlog1");
+    var live = document.createElement("div");
+    live.className = "sr";
+    live.setAttribute("aria-live", "polite");
+    document.body.appendChild(live);
+
+    var state = "home";
+
+    function setState(next, focusInto) {
+      if (next === state) return;
+      state = next;
+      stage1.setAttribute("data-state", next);
+      panels.home.hidden = next !== "home";
+      panels.chat.hidden = next !== "chat";
+      btnHome.setAttribute("aria-pressed", String(next === "home"));
+      btnChat.setAttribute("aria-pressed", String(next === "chat"));
+      live.textContent =
+        next === "chat"
+          ? "chat view, the aurora warms to gold"
+          : "home view, the aurora cools back down";
+      if (focusInto) {
+        var target = next === "chat" ? $("#in-chat1") : panels.home;
+        if (target) target.focus({ preventScroll: true });
+      }
+    }
+
+    btnHome.addEventListener("click", function () {
+      setState("home", false);
+    });
+    btnChat.addEventListener("click", function () {
+      setState("chat", false);
+    });
+
+    /* transient hints on the home panel */
+    var hintTimer = 0;
+    function hint(msg) {
+      var el = $("#hint1");
+      el.textContent = msg;
+      el.style.opacity = "1";
+      clearTimeout(hintTimer);
+      hintTimer = setTimeout(function () {
+        el.style.opacity = "0";
+        hintTimer = setTimeout(function () {
+          el.textContent = "";
+          el.style.opacity = "1";
+        }, 350);
+      }, 2600);
+    }
+
+    /* chat primitives */
+    var NOTE =
+      "# demo mode: live model (claude haiku) ships with the real site";
+    var A_EIGHT =
+      "Eight Angle is an iOS yoga tracker I founded and built solo. It detects poses automatically: a 47-class pose classifier I trained to 92.2% cross-validated accuracy, running on-device at roughly 20fps.";
+    var A_WORK =
+      "I ship AI products end to end. Right now that is Eight Angle, an iOS yoga tracker I founded. Before that: Staff Web Engineer at Gong, Technical Web Lead at Twilio, and projects for Facebook and Google at the agency Beyond.\n\nType home to browse the write-ups in the log.";
+    var A_CONTACT =
+      "I’m available for freelance work. Email brian@brohde.com, or use the linkedin link on the home screen.";
+    var A_DEFAULT =
+      "That one is past my script. This lab answers a few canned questions; the real site wires this prompt to a live model grounded in a facts file, and it will say “I don’t know, email brian@brohde.com” rather than guess.\n\nTry: tell me about your work, what is eight angle, or how do I contact you.";
+
+    function chatLine(cls, text) {
+      var d = document.createElement("div");
+      d.className = cls;
+      if (text !== undefined) d.textContent = text;
+      chatlog.appendChild(d);
+      return d;
+    }
+
+    function echo(t) {
+      var d = document.createElement("div");
+      d.className = "uline";
+      var p = document.createElement("span");
+      p.className = "p";
+      p.setAttribute("aria-hidden", "true");
+      p.textContent = "$ ";
+      d.appendChild(p);
+      d.appendChild(document.createTextNode(t));
+      chatlog.appendChild(d);
+    }
+
+    var typer = null;
+    function flushTyper() {
+      if (!typer) return;
+      clearInterval(typer.timer);
+      typer.node.textContent = typer.full;
+      chatLine("cmt", NOTE);
+      typer = null;
+    }
+    function reply(text) {
+      live.textContent = text;
+      var d = chatLine("reply", "");
+      if (REDUCED) {
+        d.textContent = text;
+        chatLine("cmt", NOTE);
         return;
       }
-      if (run && !demo.running) {
-        demo.running = true;
-        demo.last = 0;
-        if (!demo.raf) demo.raf = requestAnimationFrame(loop);
-      } else if (!run) {
-        demo.running = false;
+      var CPS = 140;
+      typer = { node: d, full: text, start: Date.now(), timer: 0 };
+      typer.timer = setInterval(function () {
+        if (!typer) return;
+        var n = Math.floor(((Date.now() - typer.start) * CPS) / 1000);
+        typer.node.textContent = typer.full.slice(0, n);
+        if (n >= typer.full.length) {
+          clearInterval(typer.timer);
+          typer = null;
+          chatLine("cmt", NOTE);
+        }
+      }, 24);
+    }
+
+    function ask(q) {
+      flushTyper();
+      echo(q);
+      var l = q.toLowerCase();
+      var a;
+      if (/eight\s*angle|yoga|pose|classifier|on.device|ios/.test(l))
+        a = A_EIGHT;
+      else if (
+        /contact|email|hire|hiring|available|freelance|reach|rate/.test(l)
+      )
+        a = A_CONTACT;
+      else if (
+        /work|project|experience|background|built|build|portfolio|gong|twilio|resume|career|about you|yourself|do you do/.test(
+          l
+        )
+      )
+        a = A_WORK;
+      else a = A_DEFAULT;
+      reply(a);
+    }
+
+    function handleInput(raw) {
+      var v = (raw || "").trim();
+      if (!v) return;
+      var low = v.toLowerCase();
+      if (low === "home" || low === "exit") {
+        if (state === "chat") setState("home", true);
+        else hint("# you are home");
+        return;
       }
-    };
-    demos.push(demo);
-    if (impl.resize) impl.resize();
-    if (impl.staticFrame) impl.staticFrame();
-    io.observe(stage);
-    return demo;
-  }
-
-  /* ================= 01 two state aurora terminal ================= */
-
-  var stage1 = $('#stage1');
-  var panels = { home: $('#panel-home'), chat: $('#panel-chat') };
-  var btnHome = $('#btn-view-home');
-  var btnChat = $('#btn-view-chat');
-  var chatlog = $('#chatlog1');
-  var live = document.createElement('div');
-  live.className = 'sr';
-  live.setAttribute('aria-live', 'polite');
-  document.body.appendChild(live);
-
-  var state = 'home';
-
-  function setState(next, focusInto) {
-    if (next === state) return;
-    state = next;
-    stage1.setAttribute('data-state', next);
-    panels.home.hidden = (next !== 'home');
-    panels.chat.hidden = (next !== 'chat');
-    btnHome.setAttribute('aria-pressed', String(next === 'home'));
-    btnChat.setAttribute('aria-pressed', String(next === 'chat'));
-    live.textContent = next === 'chat'
-      ? 'chat view, the aurora warms to gold'
-      : 'home view, the aurora cools back down';
-    if (focusInto) {
-      var target = next === 'chat' ? $('#in-chat1') : panels.home;
-      if (target) target.focus({ preventScroll: true });
-    }
-  }
-
-  btnHome.addEventListener('click', function () { setState('home', false); });
-  btnChat.addEventListener('click', function () { setState('chat', false); });
-
-  /* transient hints on the home panel */
-  var hintTimer = 0;
-  function hint(msg) {
-    var el = $('#hint1');
-    el.textContent = msg;
-    el.style.opacity = '1';
-    clearTimeout(hintTimer);
-    hintTimer = setTimeout(function () {
-      el.style.opacity = '0';
-      hintTimer = setTimeout(function () { el.textContent = ''; el.style.opacity = '1'; }, 350);
-    }, 2600);
-  }
-
-  /* chat primitives */
-  var NOTE = '# demo mode: live model (claude haiku) ships with the real site';
-  var A_EIGHT = 'Eight Angle is an iOS yoga tracker I founded and built solo. It detects poses automatically: a 47-class pose classifier I trained to 92.2% cross-validated accuracy, running on-device at roughly 20fps.';
-  var A_WORK = 'I ship AI products end to end. Right now that is Eight Angle, an iOS yoga tracker I founded. Before that: Staff Web Engineer at Gong, Technical Web Lead at Twilio, and projects for Facebook and Google at the agency Beyond.\n\nType home to browse the write-ups in the log.';
-  var A_CONTACT = 'I’m available for freelance work. Email brian@brohde.com, or use the linkedin link on the home screen.';
-  var A_DEFAULT = 'That one is past my script. This lab answers a few canned questions; the real site wires this prompt to a live model grounded in a facts file, and it will say “I don’t know, email brian@brohde.com” rather than guess.\n\nTry: tell me about your work, what is eight angle, or how do I contact you.';
-
-  function chatLine(cls, text) {
-    var d = document.createElement('div');
-    d.className = cls;
-    if (text !== undefined) d.textContent = text;
-    chatlog.appendChild(d);
-    return d;
-  }
-
-  function echo(t) {
-    var d = document.createElement('div');
-    d.className = 'uline';
-    var p = document.createElement('span');
-    p.className = 'p';
-    p.setAttribute('aria-hidden', 'true');
-    p.textContent = '$ ';
-    d.appendChild(p);
-    d.appendChild(document.createTextNode(t));
-    chatlog.appendChild(d);
-  }
-
-  var typer = null;
-  function flushTyper() {
-    if (!typer) return;
-    clearInterval(typer.timer);
-    typer.node.textContent = typer.full;
-    chatLine('cmt', NOTE);
-    typer = null;
-  }
-  function reply(text) {
-    live.textContent = text;
-    var d = chatLine('reply', '');
-    if (REDUCED) {
-      d.textContent = text;
-      chatLine('cmt', NOTE);
-      return;
-    }
-    var CPS = 140;
-    typer = { node: d, full: text, start: Date.now(), timer: 0 };
-    typer.timer = setInterval(function () {
-      if (!typer) return;
-      var n = Math.floor((Date.now() - typer.start) * CPS / 1000);
-      typer.node.textContent = typer.full.slice(0, n);
-      if (n >= typer.full.length) {
-        clearInterval(typer.timer);
-        typer = null;
-        chatLine('cmt', NOTE);
+      if (low === "chat") {
+        if (state === "home") setState("chat", true);
+        return;
       }
-    }, 24);
-  }
-
-  function ask(q) {
-    flushTyper();
-    echo(q);
-    var l = q.toLowerCase();
-    var a;
-    if (/eight\s*angle|yoga|pose|classifier|on.device|ios/.test(l)) a = A_EIGHT;
-    else if (/contact|email|hire|hiring|available|freelance|reach|rate/.test(l)) a = A_CONTACT;
-    else if (/work|project|experience|background|built|build|portfolio|gong|twilio|resume|career|about you|yourself|do you do/.test(l)) a = A_WORK;
-    else a = A_DEFAULT;
-    reply(a);
-  }
-
-  function handleInput(raw) {
-    var v = (raw || '').trim();
-    if (!v) return;
-    var low = v.toLowerCase();
-    if (low === 'home' || low === 'exit') {
-      if (state === 'chat') setState('home', true);
-      else hint('# you are home');
-      return;
+      if (low === "clear") {
+        if (state === "chat") {
+          flushTyper();
+          chatlog.innerHTML = "";
+          chatLine("cmt", "# cleared");
+        } else hint("# nothing to clear here");
+        return;
+      }
+      if (low === "work" || low === "about") {
+        if (state === "home")
+          hint("# " + low + " ships in the full build.log prototype");
+        else {
+          setState("home", true);
+        }
+        return;
+      }
+      /* free-form goes to chat */
+      if (state === "chat") {
+        ask(v);
+      } else {
+        setState("chat", true);
+        ask(v);
+      }
     }
-    if (low === 'chat') {
-      if (state === 'home') setState('chat', true);
-      return;
-    }
-    if (low === 'clear') {
-      if (state === 'chat') {
-        flushTyper();
-        chatlog.innerHTML = '';
-        chatLine('cmt', '# cleared');
-      } else hint('# nothing to clear here');
-      return;
-    }
-    if (low === 'work' || low === 'about') {
-      if (state === 'home') hint('# ' + low + ' ships in the full build.log prototype');
-      else { setState('home', true); }
-      return;
-    }
-    /* free-form goes to chat */
-    if (state === 'chat') { ask(v); }
-    else { setState('chat', true); ask(v); }
-  }
 
-  $('#f-home1').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var i = $('#in-home1');
-    handleInput(i.value);
-    i.value = '';
-  });
-  $('#f-chat1').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var i = $('#in-chat1');
-    handleInput(i.value);
-    i.value = '';
-  });
-
-  document.getElementById('demo-aurora').addEventListener('click', function (e) {
-    var b = e.target.closest ? e.target.closest('[data-cmd]') : null;
-    if (b) { handleInput(b.getAttribute('data-cmd')); return; }
-    var entry = e.target.closest ? e.target.closest('.entry') : null;
-    if (entry) { e.preventDefault(); hint('# article pages ship with the real site'); return; }
-    var r = e.target.closest ? e.target.closest('#resumelink') : null;
-    if (r) { e.preventDefault(); hint('# resume.pdf placeholder in this lab'); return; }
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Escape' || state !== 'chat') return;
-    var within = e.target === document.body ||
-      (e.target.closest && e.target.closest('#demo-aurora'));
-    if (within) {
+    $("#f-home1").addEventListener("submit", function (e) {
       e.preventDefault();
-      setState('home', true);
-    }
-  });
+      var i = $("#in-home1");
+      handleInput(i.value);
+      i.value = "";
+    });
+    $("#f-chat1").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var i = $("#in-chat1");
+      handleInput(i.value);
+      i.value = "";
+    });
 
-  /* aurora pause button (css blobs, runner just toggles the class) */
-  var auroraDemo = wire(stage1, { css: true, interval: 0 });
-  var btnAurora = $('#btn-aurora');
-  function syncAurora() {
-    btnAurora.textContent = auroraDemo.userPaused ? 'aurora: paused' : 'aurora: drifting';
-    btnAurora.setAttribute('aria-pressed', String(auroraDemo.userPaused));
-  }
-  btnAurora.addEventListener('click', function () {
-    auroraDemo.userPaused = !auroraDemo.userPaused;
+    document
+      .getElementById("demo-aurora")
+      .addEventListener("click", function (e) {
+        var b = e.target.closest ? e.target.closest("[data-cmd]") : null;
+        if (b) {
+          handleInput(b.getAttribute("data-cmd"));
+          return;
+        }
+        var entry = e.target.closest ? e.target.closest(".entry") : null;
+        if (entry) {
+          e.preventDefault();
+          hint("# article pages ship with the real site");
+          return;
+        }
+        var r = e.target.closest ? e.target.closest("#resumelink") : null;
+        if (r) {
+          e.preventDefault();
+          hint("# resume.pdf placeholder in this lab");
+          return;
+        }
+      });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape" || state !== "chat") return;
+      var within =
+        e.target === document.body ||
+        (e.target.closest && e.target.closest("#demo-aurora"));
+      if (within) {
+        e.preventDefault();
+        setState("home", true);
+      }
+    });
+
+    /* aurora pause button (css blobs, runner just toggles the class) */
+    var auroraDemo = wire(stage1, { css: true, interval: 0 });
+    var btnAurora = $("#btn-aurora");
+    function syncAurora() {
+      btnAurora.textContent = auroraDemo.userPaused
+        ? "aurora: paused"
+        : "aurora: drifting";
+      btnAurora.setAttribute("aria-pressed", String(auroraDemo.userPaused));
+    }
+    btnAurora.addEventListener("click", function () {
+      auroraDemo.userPaused = !auroraDemo.userPaused;
+      syncAurora();
+      auroraDemo.update();
+    });
     syncAurora();
-    auroraDemo.update();
-  });
-  syncAurora();
 
-  /* ------- presence planes ------- */
+    /* ------- presence planes ------- */
 
-  var planesLayer = $('#planes');
-  var planeEls = planesLayer.querySelectorAll('.plane');
-  var term = $('#term');
-  var dock = $('#docknote');
-  var planeGeo = { ok: false, x0: 0, x1: 0, y0: 0, y1: 0 };
-  var LANES = [
-    { fx: 0.36, fy: 0.135, ax: 0.9, ay: 0.5, wx: 0.000041, wy: 0.000067, px: 0.4, py: 1.9 },
-    { fx: 0.60, fy: 0.46,  ax: 0.8, ay: 0.6, wx: 0.000053, wy: 0.000036, px: 3.1, py: 0.2 },
-    { fx: 0.44, fy: 0.80,  ax: 0.85, ay: 0.45, wx: 0.000036, wy: 0.000057, px: 5.2, py: 4.0 }
-  ];
-  var MIN_GUTTER = 210;
-  var LABEL_W = 185;
+    var planesLayer = $("#planes");
+    var planeEls = planesLayer.querySelectorAll(".plane");
+    var term = $("#term");
+    var dock = $("#docknote");
+    var planeGeo = { ok: false, x0: 0, x1: 0, y0: 0, y1: 0 };
+    var LANES = [
+      {
+        fx: 0.36,
+        fy: 0.135,
+        ax: 0.9,
+        ay: 0.5,
+        wx: 0.000041,
+        wy: 0.000067,
+        px: 0.4,
+        py: 1.9,
+      },
+      {
+        fx: 0.6,
+        fy: 0.46,
+        ax: 0.8,
+        ay: 0.6,
+        wx: 0.000053,
+        wy: 0.000036,
+        px: 3.1,
+        py: 0.2,
+      },
+      {
+        fx: 0.44,
+        fy: 0.8,
+        ax: 0.85,
+        ay: 0.45,
+        wx: 0.000036,
+        wy: 0.000057,
+        px: 5.2,
+        py: 4.0,
+      },
+    ];
+    var MIN_GUTTER = 210;
+    var LABEL_W = 185;
 
-  function planeLayout() {
-    var sr = stage1.getBoundingClientRect();
-    var tr = term.getBoundingClientRect();
-    var x0 = (tr.right - sr.left) + 18;
-    var x1 = sr.width - 20;
-    planeGeo.ok = (x1 - x0) >= MIN_GUTTER;
-    planeGeo.x0 = x0; planeGeo.x1 = x1;
-    planeGeo.y0 = 26; planeGeo.y1 = Math.max(120, sr.height - 60);
-    planesLayer.hidden = !planeGeo.ok;
-    dock.hidden = planeGeo.ok;
-  }
-
-  function planeStep(dt, t) {
-    if (!planeGeo.ok) return;
-    var gw = planeGeo.x1 - planeGeo.x0;
-    var gh = planeGeo.y1 - planeGeo.y0;
-    for (var i = 0; i < planeEls.length; i++) {
-      var L = LANES[i];
-      var laneH = gh / 3;
-      var cy = planeGeo.y0 + L.fy * gh;
-      var cx = planeGeo.x0 + L.fx * gw;
-      var axp = Math.max(10, (gw - LABEL_W) / 2 * L.ax);
-      var ayp = Math.max(8, laneH * 0.4 * L.ay);
-      var x = cx + axp * Math.sin(L.wx * t + L.px);
-      var y = cy + ayp * Math.sin(L.wy * t + L.py);
-      x = clamp(x, planeGeo.x0 + LABEL_W / 2, planeGeo.x1 - LABEL_W / 2);
-      var vx = axp * L.wx * Math.cos(L.wx * t + L.px);
-      var vy = ayp * L.wy * Math.cos(L.wy * t + L.py);
-      var ang = Math.atan2(vy, vx) * 180 / Math.PI;
-      var el = planeEls[i];
-      el.style.transform = 'translate3d(' + (x - LABEL_W / 2).toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
-      el.style.width = LABEL_W + 'px';
-      el.firstElementChild.style.transform = 'rotate(' + ang.toFixed(1) + 'deg)';
+    function planeLayout() {
+      var sr = stage1.getBoundingClientRect();
+      var tr = term.getBoundingClientRect();
+      var x0 = tr.right - sr.left + 18;
+      var x1 = sr.width - 20;
+      planeGeo.ok = x1 - x0 >= MIN_GUTTER;
+      planeGeo.x0 = x0;
+      planeGeo.x1 = x1;
+      planeGeo.y0 = 26;
+      planeGeo.y1 = Math.max(120, sr.height - 60);
+      planesLayer.hidden = !planeGeo.ok;
+      dock.hidden = planeGeo.ok;
     }
-  }
 
-  var planesDemo = wire(stage1, {
-    interval: 50,
-    resize: planeLayout,
-    step: planeStep,
-    staticFrame: function () { planeStep(0, 47000); }
-  });
-  var btnPlanes = $('#btn-planes');
-  function syncPlanes() {
-    btnPlanes.textContent = planesDemo.userPaused ? 'planes: paused' : 'planes: drifting';
-    btnPlanes.setAttribute('aria-pressed', String(planesDemo.userPaused));
-  }
-  btnPlanes.addEventListener('click', function () {
-    planesDemo.userPaused = !planesDemo.userPaused;
+    function planeStep(dt, t) {
+      if (!planeGeo.ok) return;
+      var gw = planeGeo.x1 - planeGeo.x0;
+      var gh = planeGeo.y1 - planeGeo.y0;
+      for (var i = 0; i < planeEls.length; i++) {
+        var L = LANES[i];
+        var laneH = gh / 3;
+        var cy = planeGeo.y0 + L.fy * gh;
+        var cx = planeGeo.x0 + L.fx * gw;
+        var axp = Math.max(10, ((gw - LABEL_W) / 2) * L.ax);
+        var ayp = Math.max(8, laneH * 0.4 * L.ay);
+        var x = cx + axp * Math.sin(L.wx * t + L.px);
+        var y = cy + ayp * Math.sin(L.wy * t + L.py);
+        x = clamp(x, planeGeo.x0 + LABEL_W / 2, planeGeo.x1 - LABEL_W / 2);
+        var vx = axp * L.wx * Math.cos(L.wx * t + L.px);
+        var vy = ayp * L.wy * Math.cos(L.wy * t + L.py);
+        var ang = (Math.atan2(vy, vx) * 180) / Math.PI;
+        var el = planeEls[i];
+        el.style.transform =
+          "translate3d(" +
+          (x - LABEL_W / 2).toFixed(1) +
+          "px," +
+          y.toFixed(1) +
+          "px,0)";
+        el.style.width = LABEL_W + "px";
+        el.firstElementChild.style.transform =
+          "rotate(" + ang.toFixed(1) + "deg)";
+      }
+    }
+
+    var planesDemo = wire(stage1, {
+      interval: 50,
+      resize: planeLayout,
+      step: planeStep,
+      staticFrame: function () {
+        planeStep(0, 47000);
+      },
+    });
+    var btnPlanes = $("#btn-planes");
+    function syncPlanes() {
+      btnPlanes.textContent = planesDemo.userPaused
+        ? "planes: paused"
+        : "planes: drifting";
+      btnPlanes.setAttribute("aria-pressed", String(planesDemo.userPaused));
+    }
+    btnPlanes.addEventListener("click", function () {
+      planesDemo.userPaused = !planesDemo.userPaused;
+      syncPlanes();
+      planesDemo.update();
+    });
     syncPlanes();
-    planesDemo.update();
-  });
-  syncPlanes();
 
-  /* ================= 02 glyph tide from an image ================= */
+    /* ------- procedural glyph sources, 480x300, white ground + black figure,
+     shared by demos 02 and 04 (no external assets in the lab; sampling inverts:
+     dark source areas become bright glyphs on the night ground) ------- */
 
-  var glyph = (function () {
-    var canvas = $('#canvas2');
-    var ctx, w, h, cols, rows;
-    var CW = 15, CH = 18;
-    var RAMP = [' ', '.', '·', ':', '~', '+', 'x', '8', '#'];
-    /* night raster: faint light ink up to phosphor mint at the densest cells;
-       light raster mirrors it: dark ink ramp peaking in the deep green accent */
-    var COLORS_NIGHT = ['rgba(143,167,154,0.4)', 'rgba(214,229,220,0.55)', 'rgba(214,229,220,0.8)', '#7EE787'];
-    var COLORS_LITE = ['rgba(63,83,72,0.4)', 'rgba(20,33,26,0.55)', 'rgba(20,33,26,0.8)', '#086148'];
-    var lite = false;
-    var lum = null;
-    var source = 'eight';
-    var intensity = 0.65;
-
-    /* hi-res procedural source, 480x300, white ground + black figure
-       (sampling inverts: dark source areas become bright glyphs on the night ground) */
-    var srcHi = document.createElement('canvas');
-    srcHi.width = 480; srcHi.height = 300;
-    var sctx = srcHi.getContext('2d');
-
-    function drawEight() {
-      sctx.fillStyle = '#FFFFFF';
+    function drawSrcEight(sctx) {
+      sctx.fillStyle = "#FFFFFF";
       sctx.fillRect(0, 0, 480, 300);
-      sctx.fillStyle = '#000000';
-      sctx.font = '900 300px ' + 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
-      sctx.textAlign = 'center';
-      sctx.textBaseline = 'middle';
-      sctx.fillText('8', 240, 162);
+      sctx.fillStyle = "#000000";
+      sctx.font =
+        "900 300px " + 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+      sctx.textAlign = "center";
+      sctx.textBaseline = "middle";
+      sctx.fillText("8", 240, 162);
     }
 
-    function capsule(x1, y1, x2, y2, wdt) {
+    function capsule(sctx, x1, y1, x2, y2, wdt) {
       sctx.lineWidth = wdt;
-      sctx.lineCap = 'round';
+      sctx.lineCap = "round";
       sctx.beginPath();
       sctx.moveTo(x1, y1);
       sctx.lineTo(x2, y2);
@@ -959,203 +2236,750 @@
     }
 
     /* eight-angle pose (astavakrasana) as a bold silhouette: head right,
-       torso leaning over two straight arms, legs extended left and crossed */
-    function drawPose() {
-      sctx.fillStyle = '#FFFFFF';
+     torso leaning over two straight arms, legs extended left and crossed */
+    function drawSrcPose(sctx) {
+      sctx.fillStyle = "#FFFFFF";
       sctx.fillRect(0, 0, 480, 300);
-      sctx.strokeStyle = '#000000';
-      sctx.fillStyle = '#000000';
+      sctx.strokeStyle = "#000000";
+      sctx.fillStyle = "#000000";
       /* legs, extended left, slight cross at the ankles */
-      capsule(205, 168, 62, 200, 34);
-      capsule(202, 182, 70, 232, 30);
+      capsule(sctx, 205, 168, 62, 200, 34);
+      capsule(sctx, 202, 182, 70, 232, 30);
       /* torso mass */
-      capsule(292, 138, 198, 168, 58);
+      capsule(sctx, 292, 138, 198, 168, 58);
       /* arms, straight down to the floor */
-      capsule(226, 152, 218, 254, 21);
-      capsule(266, 146, 272, 254, 21);
+      capsule(sctx, 226, 152, 218, 254, 21);
+      capsule(sctx, 266, 146, 272, 254, 21);
       /* head */
       sctx.beginPath();
       sctx.arc(318, 112, 31, 0, 6.2832);
       sctx.fill();
       /* floor line under the hands */
-      capsule(150, 262, 360, 262, 6);
+      capsule(sctx, 150, 262, 360, 262, 6);
     }
 
-    function sample() {
-      if (source === 'eight') drawEight(); else drawPose();
-      var sc = document.createElement('canvas');
-      sc.width = cols; sc.height = rows;
-      var scx = sc.getContext('2d', { willReadFrequently: true });
-      /* cover-fit crop so the figure is never distorted */
-      var stageAspect = (cols * CW) / (rows * CH);
-      var srcAspect = 480 / 300;
-      var sw = 480, sh = 300, sx = 0, sy = 0;
-      if (srcAspect > stageAspect) { sw = 300 * stageAspect; sx = (480 - sw) / 2; }
-      else { sh = 480 / stageAspect; sy = (300 - sh) / 2; }
-      scx.fillStyle = '#FFFFFF';
-      scx.fillRect(0, 0, cols, rows);
-      scx.drawImage(srcHi, sx, sy, sw, sh, 0, 0, cols, rows);
-      var data = scx.getImageData(0, 0, cols, rows).data;
-      lum = new Float32Array(cols * rows);
-      for (var i = 0; i < cols * rows; i++) {
-        var r = data[i * 4], g = data[i * 4 + 1], b = data[i * 4 + 2];
-        lum[i] = 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; /* 1 = figure */
-      }
+    /* letterform stand-ins for the per-page brand sources (f: facebook newsroom,
+     G: android for work). drawn, not traced: real marks come later, pending
+     a trademark-use check. stroke over fill beefs the letter into a mass
+     the coarse cell grid can hold onto */
+    function drawSrcLetter(sctx, ch, px) {
+      sctx.fillStyle = "#FFFFFF";
+      sctx.fillRect(0, 0, 480, 300);
+      sctx.fillStyle = "#000000";
+      sctx.strokeStyle = "#000000";
+      sctx.lineWidth = 26;
+      sctx.lineJoin = "round";
+      sctx.font =
+        "900 " + px + 'px ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+      sctx.textAlign = "center";
+      sctx.textBaseline = "middle";
+      sctx.strokeText(ch, 240, 162);
+      sctx.fillText(ch, 240, 162);
     }
 
-    function resize() {
-      var f = fitCanvas(canvas); ctx = f.ctx; w = f.w; h = f.h;
-      cols = Math.ceil(w / CW);
-      rows = Math.ceil(h / CH);
-      sample();
-    }
+    /* ================= 02 glyph tide from an image ================= */
 
-    function step(dt, t) {
-      ctx.clearRect(0, 0, w, h);
-      ctx.font = '12px ui-monospace, "SF Mono", Menlo, Consolas, monospace';
-      ctx.textBaseline = 'top';
-      var imgW = 0.35 + 0.55 * intensity;
-      var tideW = 1.08 - imgW;
-      var pal = lite ? COLORS_LITE : COLORS_NIGHT;
-      var lastBucket = -1;
-      for (var cy = 0; cy < rows; cy++) {
-        for (var cx = 0; cx < cols; cx++) {
-          var tide = (Math.sin(cx * 0.42 + t * 0.00040)
-                    + Math.sin(cy * 0.71 - t * 0.00029)
-                    + Math.sin((cx + cy) * 0.27 + t * 0.00019) + 3) / 6;
-          var v = lum[cy * cols + cx] * imgW + tide * tideW;
-          var idx = Math.floor(clamp(v, 0, 0.999) * RAMP.length);
-          if (idx < 1) continue;
-          var bucket = idx < 3 ? 0 : (idx < 5 ? 1 : (idx < 7 ? 2 : 3));
-          if (bucket !== lastBucket) { ctx.fillStyle = pal[bucket]; lastBucket = bucket; }
-          ctx.fillText(RAMP[idx], cx * CW + 2, cy * CH + 3);
+    var glyph = (function () {
+      var canvas = $("#canvas2");
+      var ctx, w, h, cols, rows;
+      var CW = 15,
+        CH = 18;
+      var RAMP = [" ", ".", "·", ":", "~", "+", "x", "8", "#"];
+      /* night raster: faint light ink up to phosphor mint at the densest cells;
+       light raster mirrors it: dark ink ramp peaking in the deep green accent */
+      var COLORS_NIGHT = [
+        "rgba(143,167,154,0.4)",
+        "rgba(214,229,220,0.55)",
+        "rgba(214,229,220,0.8)",
+        "#7EE787",
+      ];
+      var COLORS_LITE = [
+        "rgba(63,83,72,0.4)",
+        "rgba(20,33,26,0.55)",
+        "rgba(20,33,26,0.8)",
+        "#086148",
+      ];
+      var lite = false;
+      var lum = null;
+      var source = "eight";
+      var intensity = 0.65;
+
+      /* hi-res source canvas; the drawers are shared with demo 04 above */
+      var srcHi = document.createElement("canvas");
+      srcHi.width = 480;
+      srcHi.height = 300;
+      var sctx = srcHi.getContext("2d");
+
+      function sample() {
+        if (source === "eight") drawSrcEight(sctx);
+        else drawSrcPose(sctx);
+        var sc = document.createElement("canvas");
+        sc.width = cols;
+        sc.height = rows;
+        var scx = sc.getContext("2d", { willReadFrequently: true });
+        /* cover-fit crop so the figure is never distorted */
+        var stageAspect = (cols * CW) / (rows * CH);
+        var srcAspect = 480 / 300;
+        var sw = 480,
+          sh = 300,
+          sx = 0,
+          sy = 0;
+        if (srcAspect > stageAspect) {
+          sw = 300 * stageAspect;
+          sx = (480 - sw) / 2;
+        } else {
+          sh = 480 / stageAspect;
+          sy = (300 - sh) / 2;
+        }
+        scx.fillStyle = "#FFFFFF";
+        scx.fillRect(0, 0, cols, rows);
+        scx.drawImage(srcHi, sx, sy, sw, sh, 0, 0, cols, rows);
+        var data = scx.getImageData(0, 0, cols, rows).data;
+        lum = new Float32Array(cols * rows);
+        for (var i = 0; i < cols * rows; i++) {
+          var r = data[i * 4],
+            g = data[i * 4 + 1],
+            b = data[i * 4 + 2];
+          lum[i] =
+            1 - (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; /* 1 = figure */
         }
       }
+
+      function resize() {
+        var f = fitCanvas(canvas);
+        ctx = f.ctx;
+        w = f.w;
+        h = f.h;
+        cols = Math.ceil(w / CW);
+        rows = Math.ceil(h / CH);
+        sample();
+      }
+
+      function step(dt, t) {
+        ctx.clearRect(0, 0, w, h);
+        ctx.font = '12px ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+        ctx.textBaseline = "top";
+        var imgW = 0.35 + 0.55 * intensity;
+        var tideW = 1.08 - imgW;
+        var pal = lite ? COLORS_LITE : COLORS_NIGHT;
+        var lastBucket = -1;
+        for (var cy = 0; cy < rows; cy++) {
+          for (var cx = 0; cx < cols; cx++) {
+            var tide =
+              (Math.sin(cx * 0.42 + t * 0.0004) +
+                Math.sin(cy * 0.71 - t * 0.00029) +
+                Math.sin((cx + cy) * 0.27 + t * 0.00019) +
+                3) /
+              6;
+            var v = lum[cy * cols + cx] * imgW + tide * tideW;
+            var idx = Math.floor(clamp(v, 0, 0.999) * RAMP.length);
+            if (idx < 1) continue;
+            var bucket = idx < 3 ? 0 : idx < 5 ? 1 : idx < 7 ? 2 : 3;
+            if (bucket !== lastBucket) {
+              ctx.fillStyle = pal[bucket];
+              lastBucket = bucket;
+            }
+            ctx.fillText(RAMP[idx], cx * CW + 2, cy * CH + 3);
+          }
+        }
+      }
+
+      return {
+        interval: 110,
+        resize: resize,
+        step: step,
+        staticFrame: function () {
+          step(0, 52000);
+        },
+        setSource: function (s) {
+          source = s;
+          sample();
+        },
+        setIntensity: function (k) {
+          intensity = k;
+        },
+        setGround: function (v) {
+          lite = v;
+        },
+      };
+    })();
+
+    var glyphDemo = wire($("#stage2"), glyph);
+
+    var srcEight = $("#src-eight");
+    var srcPose = $("#src-pose");
+    function setSource(s) {
+      glyph.setSource(s);
+      srcEight.setAttribute("aria-pressed", String(s === "eight"));
+      srcPose.setAttribute("aria-pressed", String(s === "pose"));
+      if (!glyphDemo.running) glyph.staticFrame();
     }
+    srcEight.addEventListener("click", function () {
+      setSource("eight");
+    });
+    srcPose.addEventListener("click", function () {
+      setSource("pose");
+    });
 
-    return {
-      interval: 110,
-      resize: resize,
-      step: step,
-      staticFrame: function () { step(0, 52000); },
-      setSource: function (s) { source = s; sample(); },
-      setIntensity: function (k) { intensity = k; },
-      setGround: function (v) { lite = v; }
-    };
-  })();
+    var slider = $("#intensity");
+    var sliderOut = $("#intensity-out");
+    function syncSlider() {
+      var v = Number(slider.value);
+      glyph.setIntensity(v / 100);
+      sliderOut.textContent =
+        v < 34 ? "subtle" : v < 67 ? "balanced" : "strong";
+      if (!glyphDemo.running) glyph.staticFrame();
+    }
+    slider.addEventListener("input", syncSlider);
+    syncSlider();
 
-  var glyphDemo = wire($('#stage2'), glyph);
-
-  var srcEight = $('#src-eight');
-  var srcPose = $('#src-pose');
-  function setSource(s) {
-    glyph.setSource(s);
-    srcEight.setAttribute('aria-pressed', String(s === 'eight'));
-    srcPose.setAttribute('aria-pressed', String(s === 'pose'));
-    if (!glyphDemo.running) glyph.staticFrame();
-  }
-  srcEight.addEventListener('click', function () { setSource('eight'); });
-  srcPose.addEventListener('click', function () { setSource('pose'); });
-
-  var slider = $('#intensity');
-  var sliderOut = $('#intensity-out');
-  function syncSlider() {
-    var v = Number(slider.value);
-    glyph.setIntensity(v / 100);
-    sliderOut.textContent = v < 34 ? 'subtle' : (v < 67 ? 'balanced' : 'strong');
-    if (!glyphDemo.running) glyph.staticFrame();
-  }
-  slider.addEventListener('input', syncSlider);
-  syncSlider();
-
-  var btnTide = $('#btn-tide');
-  function syncTide() {
-    btnTide.textContent = glyphDemo.userPaused ? 'tide: paused' : 'tide: rolling';
-    btnTide.setAttribute('aria-pressed', String(glyphDemo.userPaused));
-    if (glyphDemo.userPaused) glyph.staticFrame();
-  }
-  btnTide.addEventListener('click', function () {
-    glyphDemo.userPaused = !glyphDemo.userPaused;
+    var btnTide = $("#btn-tide");
+    function syncTide() {
+      btnTide.textContent = glyphDemo.userPaused
+        ? "tide: paused"
+        : "tide: rolling";
+      btnTide.setAttribute("aria-pressed", String(glyphDemo.userPaused));
+      if (glyphDemo.userPaused) glyph.staticFrame();
+    }
+    btnTide.addEventListener("click", function () {
+      glyphDemo.userPaused = !glyphDemo.userPaused;
+      syncTide();
+      glyphDemo.update();
+    });
     syncTide();
-    glyphDemo.update();
-  });
-  syncTide();
 
-  /* ================= ground: one aurora system, two grounds =================
+    /* ================= 04 the composed scene ================= */
+
+    var glyph4 = (function () {
+      var canvas = $("#canvas4");
+      var ctx, w, h, cols, rows;
+      var CW = 15,
+        CH = 18;
+      var RAMP = [" ", ".", "·", ":", "~", "+", "x", "8", "#"];
+
+      /* bucket palettes as numbers so the state tint can lerp on the same 2.6s
+       clock as the sky: night peaks mint (home) or the gold tag (chat),
+       light peaks deep green (home) or the brown tag (chat) */
+      var PALS = {
+        night: {
+          home: [
+            [143, 167, 154, 0.4],
+            [214, 229, 220, 0.55],
+            [214, 229, 220, 0.8],
+            [126, 231, 135, 1],
+          ],
+          chat: [
+            [167, 158, 143, 0.4],
+            [229, 223, 211, 0.55],
+            [233, 223, 205, 0.8],
+            [245, 185, 104, 1],
+          ],
+        },
+        lite: {
+          home: [
+            [63, 83, 72, 0.4],
+            [20, 33, 26, 0.55],
+            [20, 33, 26, 0.8],
+            [8, 97, 72, 1],
+          ],
+          chat: [
+            [90, 74, 55, 0.4],
+            [48, 35, 22, 0.55],
+            [48, 35, 22, 0.8],
+            [138, 77, 15, 1],
+          ],
+        },
+      };
+      var SOURCES = ["eight", "pose", "f", "g"];
+      var DRAW = {
+        eight: function (c) {
+          drawSrcEight(c);
+        },
+        pose: function (c) {
+          drawSrcPose(c);
+        },
+        f: function (c) {
+          drawSrcLetter(c, "f", 320);
+        },
+        g: function (c) {
+          drawSrcLetter(c, "G", 280);
+        },
+      };
+
+      var lite = false;
+      var LUM = {}; /* source name -> Float32Array, sampled per resize */
+      var cur = "eight"; /* source on the canvas */
+      var pending = null; /* source we are travelling to */
+      var phase = "idle"; /* idle | out | hold | in */
+      var m = 1; /* image envelope: 1 fully formed, 0 pure tide */
+      var holdT = 0;
+      var auto = false;
+      var idleT = 0;
+      var mix = 0,
+        target = 0; /* state tint: 0 home, 1 chat */
+      var intensity = 0.12;
+      var OUT_MS = 1400,
+        HOLD_MS = 900,
+        IN_MS = 1400,
+        DWELL_MS = 4600;
+      var listeners = { change: null };
+
+      var srcHi = document.createElement("canvas");
+      srcHi.width = 480;
+      srcHi.height = 300;
+      var sctx = srcHi.getContext("2d");
+
+      function sampleOne(name) {
+        DRAW[name](sctx);
+        var sc = document.createElement("canvas");
+        sc.width = cols;
+        sc.height = rows;
+        var scx = sc.getContext("2d", { willReadFrequently: true });
+        var stageAspect = (cols * CW) / (rows * CH);
+        var srcAspect = 480 / 300;
+        var sw = 480,
+          sh = 300,
+          sx = 0,
+          sy = 0;
+        if (srcAspect > stageAspect) {
+          sw = 300 * stageAspect;
+          sx = (480 - sw) / 2;
+        } else {
+          sh = 480 / stageAspect;
+          sy = (300 - sh) / 2;
+        }
+        scx.fillStyle = "#FFFFFF";
+        scx.fillRect(0, 0, cols, rows);
+        scx.drawImage(srcHi, sx, sy, sw, sh, 0, 0, cols, rows);
+        var data = scx.getImageData(0, 0, cols, rows).data;
+        var out = new Float32Array(cols * rows);
+        for (var i = 0; i < cols * rows; i++) {
+          var r = data[i * 4],
+            g = data[i * 4 + 1],
+            b = data[i * 4 + 2];
+          out[i] = 1 - (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        }
+        return out;
+      }
+
+      function resize() {
+        var f = fitCanvas(canvas);
+        ctx = f.ctx;
+        w = f.w;
+        h = f.h;
+        cols = Math.ceil(w / CW);
+        rows = Math.ceil(h / CH);
+        for (var i = 0; i < SOURCES.length; i++)
+          LUM[SOURCES[i]] = sampleOne(SOURCES[i]);
+      }
+
+      var lastT = 52000;
+
+      function ease(x) {
+        return x * x * (3 - 2 * x);
+      }
+
+      function advance(dt) {
+        if (mix !== target) {
+          var dc = dt / 2600;
+          mix =
+            target > mix
+              ? Math.min(target, mix + dc)
+              : Math.max(target, mix - dc);
+        }
+        if (phase === "out") {
+          m -= dt / OUT_MS;
+          if (m <= 0) {
+            m = 0;
+            cur = pending || cur;
+            pending = null;
+            phase = "hold";
+            holdT = 0;
+          }
+        } else if (phase === "hold") {
+          holdT += dt;
+          if (holdT >= HOLD_MS) phase = "in";
+        } else if (phase === "in") {
+          m += dt / IN_MS;
+          if (m >= 1) {
+            m = 1;
+            phase = "idle";
+            idleT = 0;
+          }
+        } else if (auto) {
+          idleT += dt;
+          if (idleT >= DWELL_MS)
+            request(
+              SOURCES[(SOURCES.indexOf(cur) + 1) % SOURCES.length],
+              false
+            );
+        }
+      }
+
+      function step(dt, t) {
+        lastT = t;
+        advance(dt);
+        var k = ease(mix);
+        var gp = lite ? PALS.lite : PALS.night;
+        var pal = [];
+        for (var b = 0; b < 4; b++) {
+          var c0 = gp.home[b],
+            c1 = gp.chat[b];
+          pal.push(
+            "rgba(" +
+              Math.round(c0[0] + (c1[0] - c0[0]) * k) +
+              "," +
+              Math.round(c0[1] + (c1[1] - c0[1]) * k) +
+              "," +
+              Math.round(c0[2] + (c1[2] - c0[2]) * k) +
+              "," +
+              (c0[3] + (c1[3] - c0[3]) * k).toFixed(2) +
+              ")"
+          );
+        }
+        ctx.clearRect(0, 0, w, h);
+        ctx.font = '12px ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+        ctx.textBaseline = "top";
+        var em = ease(m);
+        var imgW = (0.35 + 0.55 * intensity) * em;
+        var tideW = 1.08 - imgW;
+        var lum = LUM[cur];
+        var lastBucket = -1;
+        for (var cy = 0; cy < rows; cy++) {
+          for (var cx = 0; cx < cols; cx++) {
+            var tide =
+              (Math.sin(cx * 0.42 + t * 0.0004) +
+                Math.sin(cy * 0.71 - t * 0.00029) +
+                Math.sin((cx + cy) * 0.27 + t * 0.00019) +
+                3) /
+              6;
+            var v = lum[cy * cols + cx] * imgW + tide * tideW;
+            var idx = Math.floor(clamp(v, 0, 0.999) * RAMP.length);
+            if (idx < 1) continue;
+            var bucket = idx < 3 ? 0 : idx < 5 ? 1 : idx < 7 ? 2 : 3;
+            if (bucket !== lastBucket) {
+              ctx.fillStyle = pal[bucket];
+              lastBucket = bucket;
+            }
+            ctx.fillText(RAMP[idx], cx * CW + 2, cy * CH + 3);
+          }
+        }
+      }
+
+      /* jump every envelope to its destination: the reduced-motion still */
+      function settle() {
+        if (pending) {
+          cur = pending;
+          pending = null;
+        }
+        phase = "idle";
+        m = 1;
+        holdT = 0;
+        idleT = 0;
+        mix = target;
+      }
+
+      /* a source never swaps, it travels: out to pure tide, hold, in.
+       requests mid-flight reroute gracefully from wherever the envelope is */
+      function request(next, snap) {
+        if (snap) {
+          pending = next;
+          settle();
+          notify();
+          return;
+        }
+        if (phase === "idle" && next === cur) return;
+        if (phase === "in" && next === cur && !pending) {
+          notify();
+          return;
+        }
+        if (phase === "hold") {
+          cur = next;
+          pending = null;
+          notify();
+          return;
+        }
+        if (phase === "out") {
+          pending = next;
+          notify();
+          return;
+        }
+        pending = next;
+        phase = "out";
+        notify();
+      }
+
+      function notify() {
+        if (listeners.change) listeners.change();
+      }
+
+      return {
+        interval: 110,
+        resize: resize,
+        step: step,
+        staticFrame: function () {
+          settle();
+          step(0, 52000);
+        },
+        redraw: function () {
+          step(0, lastT);
+        },
+        request: request,
+        current: function () {
+          return pending || cur;
+        },
+        onChange: function (fn) {
+          listeners.change = fn;
+        },
+        setView: function (v) {
+          target = v === "chat" ? 1 : 0;
+        },
+        setAuto: function (v) {
+          auto = v;
+          idleT = 0;
+        },
+        setIntensity: function (k) {
+          intensity = k;
+          /* whisper also dims the whole field so it can sit behind a page;
+           the curve bottoms out near a third of full strength because
+           dark-on-light texture carries more edge contrast than light-on-dark */
+          canvas.style.opacity = (0.12 + 0.88 * Math.min(k / 0.45, 1)).toFixed(
+            2
+          );
+        },
+        setGround: function (v) {
+          lite = v;
+        },
+      };
+    })();
+
+    var stage4 = $("#stage4");
+    var aurora4 = wire(stage4, { css: true, interval: 0 });
+    var glyph4Demo = wire(stage4, glyph4);
+
+    /* view: warms sky and tide together */
+    var btn4Home = $("#btn4-home");
+    var btn4Chat = $("#btn4-chat");
+    var view4 = "home";
+    function setView4(next) {
+      if (next === view4) return;
+      view4 = next;
+      stage4.setAttribute("data-state", next);
+      btn4Home.setAttribute("aria-pressed", String(next === "home"));
+      btn4Chat.setAttribute("aria-pressed", String(next === "chat"));
+      glyph4.setView(next);
+      if (!glyph4Demo.running) glyph4.staticFrame();
+      live.textContent =
+        next === "chat"
+          ? "composed scene: chat, the sky and the tide warm to gold"
+          : "composed scene: home, the sky and the tide cool back down";
+    }
+    btn4Home.addEventListener("click", function () {
+      setView4("home");
+    });
+    btn4Chat.addEventListener("click", function () {
+      setView4("chat");
+    });
+
+    /* the prompt is scenery with one honest behavior: it changes the weather */
+    $("#f-home4").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var i = $("#in-home4");
+      var v = i.value.trim().toLowerCase();
+      setView4(v === "home" || v === "exit" || v === "esc" ? "home" : "chat");
+      i.value = "";
+    });
+    $("#in-home4").addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && view4 === "chat") {
+        e.preventDefault();
+        setView4("home");
+      }
+    });
+
+    /* placement: each option carries its own recommended strength */
+    var slider4 = $("#intensity4");
+    var out4 = $("#intensity4-out");
+    function syncSlider4() {
+      var v = Number(slider4.value);
+      glyph4.setIntensity(v / 100);
+      out4.textContent =
+        v <= 16
+          ? "whisper"
+          : v < 40
+            ? "subtle"
+            : v < 70
+              ? "balanced"
+              : "strong";
+      if (!glyph4Demo.running) glyph4.staticFrame();
+    }
+    slider4.addEventListener("input", syncSlider4);
+
+    var PLACE_DEFAULT = { sky: 12, gutter: 70, hero: 60 };
+    var plBtns = {
+      sky: $("#pl-sky"),
+      gutter: $("#pl-gutter"),
+      hero: $("#pl-hero"),
+    };
+    function setPlacement(p) {
+      stage4.setAttribute("data-placement", p);
+      for (var k in plBtns)
+        plBtns[k].setAttribute("aria-pressed", String(k === p));
+      slider4.value = String(PLACE_DEFAULT[p]);
+      syncSlider4();
+      glyph4.resize();
+      /* resize clears the bitmap; repaint now rather than waiting one tick */
+      if (glyph4Demo.running) glyph4.redraw();
+      else glyph4.staticFrame();
+      live.textContent =
+        p === "sky"
+          ? "placement: full sky at whisper strength"
+          : p === "gutter"
+            ? "placement: right gutter beside the text column"
+            : "placement: hero band above the content";
+    }
+    Object.keys(plBtns).forEach(function (k) {
+      plBtns[k].addEventListener("click", function () {
+        setPlacement(k);
+      });
+    });
+
+    /* sources + the enter-and-exit cycle */
+    var srcBtns4 = {
+      eight: $("#src4-eight"),
+      pose: $("#src4-pose"),
+      f: $("#src4-f"),
+      g: $("#src4-g"),
+    };
+    function syncSrc4() {
+      var cur = glyph4.current();
+      for (var k in srcBtns4)
+        srcBtns4[k].setAttribute("aria-pressed", String(k === cur));
+      if (!glyph4Demo.running) glyph4.staticFrame();
+    }
+    glyph4.onChange(syncSrc4);
+    Object.keys(srcBtns4).forEach(function (k) {
+      srcBtns4[k].addEventListener("click", function () {
+        glyph4.request(k, REDUCED || !glyph4Demo.running);
+      });
+    });
+
+    var btnCycle4 = $("#btn4-cycle");
+    var cycling4 = false;
+    btnCycle4.addEventListener("click", function () {
+      cycling4 = !cycling4;
+      glyph4.setAuto(cycling4);
+      btnCycle4.textContent = cycling4 ? "cycle: auto" : "cycle: manual";
+      btnCycle4.setAttribute("aria-pressed", String(cycling4));
+    });
+
+    /* one motion button parks the blobs and the tide together */
+    var btn4Motion = $("#btn4-motion");
+    function syncMotion4() {
+      var p = glyph4Demo.userPaused;
+      btn4Motion.textContent = p ? "motion: paused" : "motion: drifting";
+      btn4Motion.setAttribute("aria-pressed", String(p));
+      if (p) glyph4.staticFrame();
+    }
+    btn4Motion.addEventListener("click", function () {
+      var p = !glyph4Demo.userPaused;
+      glyph4Demo.userPaused = p;
+      aurora4.userPaused = p;
+      syncMotion4();
+      glyph4Demo.update();
+      aurora4.update();
+    });
+    syncSlider4();
+    syncMotion4();
+    syncSrc4();
+
+    /* ================= ground: one aurora system, two grounds =================
      the initial ground follows the visitor's system scheme and tracks live
      changes; either toggle is a manual override for both stages together */
 
-  var stage2El = $('#stage2');
-  var btnGround = $('#btn-ground');
-  var btnGround2 = $('#btn-ground2');
-  var mqScheme = window.matchMedia('(prefers-color-scheme: light)');
-  var groundLite = false;
-  var groundOverridden = false;
+    var stage2El = $("#stage2");
+    var btnGround = $("#btn-ground");
+    var btnGround2 = $("#btn-ground2");
+    var btnGround4 = $("#btn-ground4");
+    var mqScheme = window.matchMedia("(prefers-color-scheme: light)");
+    var groundLite = false;
+    var groundOverridden = false;
 
-  function applyGround(isLite, announce) {
-    groundLite = isLite;
-    stage1.classList.toggle('lite', isLite);
-    stage2El.classList.toggle('lite', isLite);
-    glyph.setGround(isLite);
-    if (!glyphDemo.running) glyph.staticFrame();
-    var label = isLite ? 'ground: light' : 'ground: night';
-    btnGround.textContent = label;
-    btnGround2.textContent = label;
-    btnGround.setAttribute('aria-pressed', String(isLite));
-    btnGround2.setAttribute('aria-pressed', String(isLite));
-    if (announce) {
-      live.textContent = isLite
-        ? 'light ground, the daylight theme'
-        : 'night ground, the dark theme';
+    function applyGround(isLite, announce) {
+      groundLite = isLite;
+      stage1.classList.toggle("lite", isLite);
+      stage2El.classList.toggle("lite", isLite);
+      stage4.classList.toggle("lite", isLite);
+      glyph.setGround(isLite);
+      if (!glyphDemo.running) glyph.staticFrame();
+      glyph4.setGround(isLite);
+      if (!glyph4Demo.running) glyph4.staticFrame();
+      var label = isLite ? "ground: light" : "ground: night";
+      btnGround.textContent = label;
+      btnGround2.textContent = label;
+      btnGround4.textContent = label;
+      btnGround.setAttribute("aria-pressed", String(isLite));
+      btnGround2.setAttribute("aria-pressed", String(isLite));
+      btnGround4.setAttribute("aria-pressed", String(isLite));
+      if (announce) {
+        live.textContent = isLite
+          ? "light ground, the daylight theme"
+          : "night ground, the dark theme";
+      }
     }
-  }
-  function toggleGround() { groundOverridden = true; applyGround(!groundLite, true); }
-  btnGround.addEventListener('click', toggleGround);
-  btnGround2.addEventListener('click', toggleGround);
-  applyGround(mqScheme.matches, false);
-  if (mqScheme.addEventListener) {
-    mqScheme.addEventListener('change', function (e) {
-      if (!groundOverridden) applyGround(e.matches, false);
-    });
-  }
-
-  /* ================= global plumbing ================= */
-
-  document.addEventListener('visibilitychange', function () {
-    demos.forEach(function (d) { d.update(); });
-  });
-
-  var rto = null;
-  window.addEventListener('resize', function () {
-    if (rto) clearTimeout(rto);
-    rto = setTimeout(function () {
-      demos.forEach(function (d) {
-        if (d.impl.resize) {
-          d.impl.resize();
-          if (!d.running && d.impl.staticFrame) d.impl.staticFrame();
-        }
+    function toggleGround() {
+      groundOverridden = true;
+      applyGround(!groundLite, true);
+    }
+    btnGround.addEventListener("click", toggleGround);
+    btnGround2.addEventListener("click", toggleGround);
+    btnGround4.addEventListener("click", toggleGround);
+    applyGround(mqScheme.matches, false);
+    if (mqScheme.addEventListener) {
+      mqScheme.addEventListener("change", function (e) {
+        if (!groundOverridden) applyGround(e.matches, false);
       });
-    }, 180);
-  });
+    }
 
-  var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-  function onMq(e) {
-    REDUCED = e.matches;
-    demos.forEach(function (d) {
-      d.userPaused = e.matches;
-      d.update();
-      if (e.matches && d.impl.staticFrame) d.impl.staticFrame();
+    /* ================= global plumbing ================= */
+
+    document.addEventListener("visibilitychange", function () {
+      demos.forEach(function (d) {
+        d.update();
+      });
     });
-    syncAurora();
-    syncPlanes();
-    syncTide();
-  }
-  if (mq.addEventListener) mq.addEventListener('change', onMq);
 
-  /* plane geometry depends on final layout */
-  requestAnimationFrame(function () {
-    planeLayout();
-    if (!planesDemo.running) planeStep(0, 47000);
-  });
-})();
+    var rto = null;
+    window.addEventListener("resize", function () {
+      if (rto) clearTimeout(rto);
+      rto = setTimeout(function () {
+        demos.forEach(function (d) {
+          if (d.impl.resize) {
+            d.impl.resize();
+            if (!d.running && d.impl.staticFrame) d.impl.staticFrame();
+          }
+        });
+      }, 180);
+    });
+
+    var mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    function onMq(e) {
+      REDUCED = e.matches;
+      demos.forEach(function (d) {
+        d.userPaused = e.matches;
+        d.update();
+        if (e.matches && d.impl.staticFrame) d.impl.staticFrame();
+      });
+      syncAurora();
+      syncPlanes();
+      syncTide();
+      syncMotion4();
+    }
+    if (mq.addEventListener) mq.addEventListener("change", onMq);
+
+    /* plane geometry depends on final layout */
+    requestAnimationFrame(function () {
+      planeLayout();
+      if (!planesDemo.running) planeStep(0, 47000);
+    });
+  })();
 </script>

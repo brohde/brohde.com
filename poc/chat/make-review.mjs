@@ -18,14 +18,18 @@ for (const b of blocks) {
   if (!head) continue;
   const action = b.match(/\*\*action:\*\* (.+)$/m)?.[1] ?? "?";
   const cost = b.match(/<sub>(.+)<\/sub>/)?.[1] ?? "";
-  const reply = b
-    .split(/\*\*action:\*\*.+\n/)[1]
-    ?.split(/<sub>/)[0]
-    ?.trim() ?? "";
+  const reply =
+    b
+      .split(/\*\*action:\*\*.+\n/)[1]
+      ?.split(/<sub>/)[0]
+      ?.trim() ?? "";
   items.push({ cat: head[1], q: head[2], action, reply, cost });
 }
 
-const DATA = JSON.stringify({ run: runLine, totalCost, items }).replace(/</g, "\\u003c");
+const DATA = JSON.stringify({ run: runLine, totalCost, items }).replace(
+  /</g,
+  "\\u003c"
+);
 
 const html = `<title>chat eval review · brohde.com</title>
 <style>
@@ -190,4 +194,6 @@ render();
 `;
 
 writeFileSync(path.join(here, "eval-review.html"), html);
-console.log(`eval-review.html written: ${items.length} questions from "${runLine}"`);
+console.log(
+  `eval-review.html written: ${items.length} questions from "${runLine}"`
+);

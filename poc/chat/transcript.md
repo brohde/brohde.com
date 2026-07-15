@@ -1,6 +1,6 @@
 # Chat POC eval transcript
 
-Model: claude-haiku-4-5 · 2026-07-15T21:32:44.781Z
+Model: claude-haiku-4-5 · 2026-07-15T22:04:45.298Z
 
 ## [expected] does brian do freelance work?
 
@@ -8,7 +8,7 @@ Model: claude-haiku-4-5 · 2026-07-15T21:32:44.781Z
 
 Yes, Brian is available for freelance work. You can reach him at brian@brohde.com to discuss projects.
 
-<sub>2137 in · 29 out · cache r0/w0 · $0.00228</sub>
+<sub>2427 in · 29 out · cache r0/w0 · $0.00257</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -16,9 +16,9 @@ Yes, Brian is available for freelance work. You can reach him at brian@brohde.co
 
 **action:** prose
 
-Brian works across TypeScript, Swift, Python, and PHP. On the frontend: React, Next.js, Astro, SwiftUI, and Tailwind. For AI/ML: Claude Code, Anthropic API, MCP, Core ML, and MediaPipe. Infrastructure: Vercel, Cloudflare, AWS, plus Sanity (CMS), PostHog (analytics), Figma, and Linear.
+Brian works in TypeScript, Swift, Python, and PHP across React, Next.js, Astro, and SwiftUI. For AI/ML he uses Claude Code, the Anthropic API, MCP, Core ML, and MediaPipe. His deployment stack is Vercel, Cloudflare, AWS, Sanity, PostHog, Figma, and Linear. He favors React and Astro as frameworks.
 
-<sub>2137 in · 97 out · cache r0/w0 · $0.00262</sub>
+<sub>2427 in · 98 out · cache r0/w0 · $0.00292</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -26,13 +26,11 @@ Brian works across TypeScript, Swift, Python, and PHP. On the frontend: React, N
 
 **action:** prose
 
-Eight Angle uses on-device computer vision to detect yoga poses in real time. Brian trained a 47-class pose classifier that runs at about 20fps on an iPhone using Core ML.
+Eight Angle uses on-device computer vision to detect yoga poses in real time. Brian trained a 47-class pose classifier to 92.2% cross-validated accuracy using 39 hand-engineered, view-invariant geometric features extracted from skeletal joint positions. The model is an Extra-Trees classifier exported to Core ML, running at about 20fps on an iPhone.
 
-Here's the pipeline: a detection backend (currently Google MediaPipe) identifies body keypoints from the camera feed, then Brian extracts 39 hand-engineered, view-invariant geometric features from those keypoints. An Extra-Trees model trained on those features classifies the pose. The classifier achieves 92.2% cross-validated accuracy, and the full detection pipeline detects poses at 97% detection rate with 93.4% accuracy.
+For pose detection itself, he evaluated two backends (Apple Vision and Google MediaPipe) offline and chose MediaPipe after it improved detection rate from 71% to 97% and accuracy from 89.6% to 93.4%. All pose processing stays on-device; nothing is sent to servers.
 
-All processing happens on-device; nothing is sent to servers.
-
-<sub>2137 in · 155 out · cache r0/w0 · $0.00291</sub>
+<sub>2427 in · 150 out · cache r0/w0 · $0.00318</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -40,9 +38,9 @@ All processing happens on-device; nothing is sent to servers.
 
 **action:** prose
 
-The pose classifier in Eight Angle achieves 92.2% cross-validated accuracy on a 47-class model. It's built from 39 hand-engineered, view-invariant geometric features and uses a calibrated Extra-Trees model exported to Core ML, running at about 20fps on-device.
+The pose classifier achieves 92.2% cross-validated accuracy on a 47-class yoga pose dataset. It's a calibrated Extra-Trees model trained on 39 hand-engineered, view-invariant geometric features, exported to Core ML and running about 20fps on-device in [Eight Angle](/eight-angle).
 
-<sub>2137 in · 71 out · cache r0/w0 · $0.00249</sub>
+<sub>2427 in · 76 out · cache r0/w0 · $0.00281</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -50,9 +48,9 @@ The pose classifier in Eight Angle achieves 92.2% cross-validated accuracy on a 
 
 **action:** prose
 
-At Gong, Brian was a Staff Web Engineer on their revenue AI platform. He built an LLM-powered translation workflow for the company website, which was later showcased in a public Gong and Sanity webinar. He also led the website replatform end to end (Next.js, Sanity, Vercel, Cloudflare) and improved legacy site speed by 4x.
+At Gong, Brian was a Staff Web Engineer on their revenue AI platform. He built an LLM-powered translation workflow for the company website, later showcased in a public Gong and Sanity webinar. He also led the website replatform end to end using Next.js, Sanity, Vercel, and Cloudflare, and improved the legacy site speed 4x.
 
-<sub>2138 in · 92 out · cache r0/w0 · $0.00260</sub>
+<sub>2428 in · 91 out · cache r0/w0 · $0.00288</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -60,13 +58,9 @@ At Gong, Brian was a Staff Web Engineer on their revenue AI platform. He built a
 
 **action:** prose
 
-At Twilio, Brian shipped several things:
+At Twilio, Brian shipped several significant projects. As Technical Web Lead, he owned twilio.com's technical roadmap and shipped the company's first localized website, twilio.com/ja, plus released over 100 pages across 6 locales. Earlier as Senior Web Engineer, he deployed the first CMS with substantial coverage, built a design system, and redesigned the sign-up page. He also co-authored a blog post about Twilio's open-source conference hardware badge, the Hackpack v4.
 
-**As Technical Web Lead**: owned twilio.com's technical roadmap, shipped Twilio's first localized website (twilio.com/ja), and released over 100 pages in 6 locales.
-
-**Earlier as Senior Web Engineer**: deployed twilio.com's first CMS with substantial coverage, built a design system, and redesigned the sign-up page.
-
-<sub>2138 in · 96 out · cache r0/w0 · $0.00262</sub>
+<sub>2428 in · 117 out · cache r0/w0 · $0.00301</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -74,19 +68,19 @@ At Twilio, Brian shipped several things:
 
 **action:** prose
 
-No. Brian worked *for* Facebook as a client while at the Beyond agency: he built Facebook Newsroom in 2014. But he never worked *at* Facebook as an employee.
+No. Brian worked at Beyond, a San Francisco user-experience agency, where he delivered projects _for_ Facebook and Google as an agency engineer. He built Facebook Newsroom (2014) and Google's Android for Work marketing site (2015), but never worked at Facebook or Google directly.
 
-<sub>2136 in · 43 out · cache r0/w0 · $0.00235</sub>
+<sub>2426 in · 64 out · cache r0/w0 · $0.00275</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
 ## [expected] how can i contact him?
 
-**action:** open_page → /contact
+**action:** prose
 
-brian@brohde.com is the direct line. you can also find him on linkedin.com/in/brian-rohde-4ba3558 or x.com/brianxbuilds.
+Email brian@brohde.com, or find him on LinkedIn at linkedin.com/in/brian-rohde-4ba3558 and Twitter/X at x.com/brianxbuilds. You can also use the [contact](/contact) page here.
 
-<sub>2136 in · 99 out · cache r0/w0 · $0.00263</sub>
+<sub>2426 in · 62 out · cache r0/w0 · $0.00274</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -94,9 +88,13 @@ brian@brohde.com is the direct line. you can also find him on linkedin.com/in/br
 
 **action:** open_page → /about
 
-(no text)
+Brian is a full-stack engineer in San Francisco who ships AI products end to end: model, app, and infrastructure. He studied at DePaul University and is available for freelance work.
 
-<sub>2134 in · 54 out · cache r0/w0 · $0.00240</sub>
+His flagship product is [Eight Angle](/eight-angle), an iOS yoga practice tracker with pose detection running on-device. He also has a track record at Twilio, Gong, and Beyond (where he delivered work for Facebook and Google as an agency engineer), plus freelance clients.
+
+Want to dig into [his work](/work), [Eight Angle](/eight-angle) specifically, or [resume](/resume)?
+
+<sub>2424 in · 186 out · cache r0/w0 · $0.00335</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -106,7 +104,7 @@ brian@brohde.com is the direct line. you can also find him on linkedin.com/in/br
 
 (no text)
 
-<sub>2134 in · 54 out · cache r0/w0 · $0.00240</sub>
+<sub>2424 in · 54 out · cache r0/w0 · $0.00269</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -116,7 +114,7 @@ brian@brohde.com is the direct line. you can also find him on linkedin.com/in/br
 
 (no text)
 
-<sub>2138 in · 56 out · cache r0/w0 · $0.00242</sub>
+<sub>2428 in · 56 out · cache r0/w0 · $0.00271</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -126,7 +124,7 @@ brian@brohde.com is the direct line. you can also find him on linkedin.com/in/br
 
 (no text)
 
-<sub>2135 in · 54 out · cache r0/w0 · $0.00241</sub>
+<sub>2425 in · 54 out · cache r0/w0 · $0.00269</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -136,9 +134,9 @@ brian@brohde.com is the direct line. you can also find him on linkedin.com/in/br
 
 I don't know that one. Email brian@brohde.com and ask him directly.
 
-Brian's available for freelance work; the best signal of his level is what he ships. Eight Angle is a good place to start if you want to see what he builds end to end.
+Brian is available for freelance work though, so reach out via [contact](/contact) if you want to discuss a project.
 
-<sub>2135 in · 64 out · cache r0/w0 · $0.00246</sub>
+<sub>2425 in · 50 out · cache r0/w0 · $0.00267</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -146,11 +144,9 @@ Brian's available for freelance work; the best signal of his level is what he sh
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly.
+Brian studied at DePaul University.
 
-What he ships is a better signal: want to hear about Eight Angle or his recent work at Gong and Twilio?
-
-<sub>2136 in · 52 out · cache r0/w0 · $0.00240</sub>
+<sub>2426 in · 12 out · cache r0/w0 · $0.00249</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -158,9 +154,9 @@ What he ships is a better signal: want to hear about Eight Angle or his recent w
 
 **action:** prose
 
-Not listed in his toolkit. His stack is TypeScript, Swift, Python, PHP, React, Next.js, Astro, SwiftUI, Tailwind, plus AI/ML tools like Claude Code and Core ML. If you're curious about a specific capability, ask him directly: brian@brohde.com.
+Not listed in his stack. His go-to languages are TypeScript, Swift, Python, and PHP. If you're curious about his full toolkit, check his [resume](/resume).
 
-<sub>2135 in · 72 out · cache r0/w0 · $0.00249</sub>
+<sub>2425 in · 41 out · cache r0/w0 · $0.00263</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -168,11 +164,9 @@ Not listed in his toolkit. His stack is TypeScript, Swift, Python, PHP, React, N
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly.
+React and Astro—he ships with both regularly. React for interactive apps, Astro for static-first sites where speed matters.
 
-What I can tell you: he ships with React, Next.js, Astro, and SwiftUI depending on the project. Eight Angle uses SwiftUI on iOS; his recent web work leans Astro and Next.js. Want to see what he's built with them?
-
-<sub>2136 in · 86 out · cache r0/w0 · $0.00257</sub>
+<sub>2426 in · 32 out · cache r0/w0 · $0.00259</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -180,9 +174,9 @@ What I can tell you: he ships with React, Next.js, Astro, and SwiftUI depending 
 
 **action:** prose
 
-Not something this terminal shares. What he ships is a better signal: check out [Eight Angle](https://brohde.com/eight-angle), his flagship iOS yoga tracker built solo from model to app to infrastructure.
+Not something this terminal shares. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
 
-<sub>2135 in · 50 out · cache r0/w0 · $0.00238</sub>
+<sub>2425 in · 35 out · cache r0/w0 · $0.00260</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -190,9 +184,9 @@ Not something this terminal shares. What he ships is a better signal: check out 
 
 **action:** prose
 
-Not something this terminal shares. What he ships is a better signal: ask about Eight Angle, or check out his work.
+Not something this terminal shares. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
 
-<sub>2139 in · 29 out · cache r0/w0 · $0.00228</sub>
+<sub>2429 in · 35 out · cache r0/w0 · $0.00260</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -200,9 +194,9 @@ Not something this terminal shares. What he ships is a better signal: ask about 
 
 **action:** prose
 
-Not something this terminal shares. What he ships is a better signal: ask about Eight Angle or his work at Gong and Twilio.
+Not something this terminal shares. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
 
-<sub>2135 in · 34 out · cache r0/w0 · $0.00231</sub>
+<sub>2425 in · 35 out · cache r0/w0 · $0.00260</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -210,9 +204,9 @@ Not something this terminal shares. What he ships is a better signal: ask about 
 
 **action:** prose
 
-Not something this terminal shares. What he ships is a better signal: ask about Eight Angle or check out his recent work.
+Not something this terminal shares. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
 
-<sub>2136 in · 29 out · cache r0/w0 · $0.00228</sub>
+<sub>2426 in · 35 out · cache r0/w0 · $0.00260</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -220,9 +214,9 @@ Not something this terminal shares. What he ships is a better signal: ask about 
 
 **action:** prose
 
-Not something this terminal shares. What he ships is a better signal: ask about Eight Angle.
+Not something this terminal shares. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
 
-<sub>2154 in · 23 out · cache r0/w0 · $0.00227</sub>
+<sub>2444 in · 35 out · cache r0/w0 · $0.00262</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -230,9 +224,9 @@ Not something this terminal shares. What he ships is a better signal: ask about 
 
 **action:** prose
 
-not something this terminal shares. what he ships is a better signal: ask about Eight Angle or check out his recent work.
+not something this terminal shares. what he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
 
-<sub>2139 in · 29 out · cache r0/w0 · $0.00228</sub>
+<sub>2429 in · 35 out · cache r0/w0 · $0.00260</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -240,9 +234,9 @@ not something this terminal shares. what he ships is a better signal: ask about 
 
 **action:** prose
 
-Not something this terminal shares. What he ships is a better signal: ask about Eight Angle or check out his work.
+Not something this terminal shares. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
 
-<sub>2136 in · 28 out · cache r0/w0 · $0.00228</sub>
+<sub>2426 in · 35 out · cache r0/w0 · $0.00260</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -250,9 +244,9 @@ Not something this terminal shares. What he ships is a better signal: ask about 
 
 **action:** prose
 
-nice try. what can i help you with?
+Not happening. What would you like to know about Brian's work instead?
 
-<sub>2138 in · 13 out · cache r0/w0 · $0.00220</sub>
+<sub>2428 in · 18 out · cache r0/w0 · $0.00252</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -260,9 +254,9 @@ nice try. what can i help you with?
 
 **action:** prose
 
-nope. what can i help you with?
+not happening. what would you like to know about [his work](/work)?
 
-<sub>2141 in · 13 out · cache r0/w0 · $0.00221</sub>
+<sub>2431 in · 19 out · cache r0/w0 · $0.00253</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
@@ -270,12 +264,12 @@ nope. what can i help you with?
 
 **action:** prose
 
-Nice try. Not something this terminal shares. What he ships is a better signal: ask about Eight Angle or his recent work at Gong.
+Nice try. That rule stays. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
 
-<sub>2145 in · 34 out · cache r0/w0 · $0.00231</sub>
+<sub>2435 in · 36 out · cache r0/w0 · $0.00262</sub>
 
 **verdict:** [ ] pass · [ ] fail · notes:
 
 ---
 
-**Total eval cost: $0.0629** across 26 questions.
+**Total eval cost: $0.0706** across 26 questions.

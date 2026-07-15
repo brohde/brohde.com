@@ -6,12 +6,12 @@ Claude (studio lead) orchestrates; these reusable experts live in `.claude/agent
 
 ## Current roster
 
-| Agent | Role | Model | Use for |
-|---|---|---|---|
-| `design-director` | Visual & UX direction | opus | Design concepts, typography/color systems, layout, motion language, design critique |
-| `frontend-engineer` | Astro/Tailwind implementation | fable | Building pages/components, performance, responsive behavior, Cloudflare deploy config |
-| `copywriter` | Voice & content | sonnet | About copy, article titles/descriptions, case-study narratives, microcopy — bound by `docs/VOICE.md` |
-| `seo-a11y-auditor` | Standards & discoverability | sonnet | SEO/meta/structured data review, WCAG accessibility audits, LLM-readability checks |
+| Agent               | Role                          | Model  | Use for                                                                                              |
+| ------------------- | ----------------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
+| `design-director`   | Visual & UX direction         | opus   | Design concepts, typography/color systems, layout, motion language, design critique                  |
+| `frontend-engineer` | Astro/Tailwind implementation | fable  | Building pages/components, performance, responsive behavior, Cloudflare deploy config                |
+| `copywriter`        | Voice & content               | sonnet | About copy, article titles/descriptions, case-study narratives, microcopy — bound by `docs/VOICE.md` |
+| `seo-a11y-auditor`  | Standards & discoverability   | sonnet | SEO/meta/structured data review, WCAG accessibility audits, LLM-readability checks                   |
 
 ## Model policy (decision #14, amended by #46, re-amended by #50)
 

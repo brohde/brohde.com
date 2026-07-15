@@ -68,6 +68,7 @@ The site is built, reviewed, and staged on Cloudflare. Cutover, the DNS switch t
 ## Image candidates
 
 **Before (WordPress site), full-page screenshots already captured:**
+
 - `/Users/brian/Projects/anthony-thomas-galante/migration/reference/screenshots/home-desktop.png` (+ `home-mobile.png`)
 - `/Users/brian/Projects/anthony-thomas-galante/migration/reference/screenshots/press-desktop.png` (+ `press-mobile.png`)
 - `/Users/brian/Projects/anthony-thomas-galante/migration/reference/screenshots/custom-desktop.png` (+ `custom-mobile.png`)
@@ -79,12 +80,14 @@ The site is built, reviewed, and staged on Cloudflare. Cutover, the DNS switch t
 **New candidate for the free-CMS pillar:** a screenshot of the Keystatic admin (`/keystatic`, either local dev or the deployed instance) showing the email sign-in and a real collection, e.g., press or collections. This is the clearest visual proof of "editable by the client, at no cost" and there isn't an equivalent shot in the current candidate list. Would need to be captured fresh; not yet stored anywhere.
 
 **Design comps:** not stored as local files. The design concept studies were built and reviewed as hosted Claude.ai artifacts, referenced by URL in `docs/decisions.md`:
+
 - First 3-concept press study: `https://claude.ai/code/artifact/fbb53b9c-2c85-41e2-97bc-c51b108fe4f0`
 - "The Catalogue" (concept 04, approved): `https://claude.ai/code/artifact/c32e26f8-77b6-46a8-8f56-e6deb72fbfd0`
 - Custom-pages concept board is referenced as `design-direction-preview.html` (a scratchpad artifact) in `docs/plans/03-design-direction.md` but I didn't find a saved local copy; it may only exist as a hosted artifact link elsewhere in the log, or may need regenerating.
-These are useful screenshots (they show the concept-comparison workflow directly) but they're both client work product and live links that could change or expire. Recommend capturing static screenshots of them now, before publishing, if Brian wants to use them.
+  These are useful screenshots (they show the concept-comparison workflow directly) but they're both client work product and live links that could change or expire. Recommend capturing static screenshots of them now, before publishing, if Brian wants to use them.
 
 **Log excerpts worth screenshotting** (from `/Users/brian/Projects/anthony-thomas-galante/SESSION_LOG.txt`, 1,850 lines):
+
 - Lines 1 to 75: the opening exchange, session start through both exploration agents reporting back, and Brian's real-time correction about subagent model choice (line ~45-54).
 - Line ~465: "I love #2 and #3. Any way to combine these?" This is the design-hybrid request, a clean example of the human-taste checkpoint in action.
 - Line ~699: "LOVE CONCEPT 4 !!!!! Lets go." The approval moment for the final press design.
