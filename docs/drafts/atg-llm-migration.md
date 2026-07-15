@@ -6,7 +6,7 @@
 
 ## Title options
 
-1. **13 pages, one long day, zero mismatched captions: migrating anthonythomasgalante.com off WordPress**
+1. **13 pages, one morning, zero mismatched captions: migrating anthonythomasgalante.com off WordPress**
 2. **What I delegate to Claude Code on a client migration, and what stays mine**
 3. **Running a WordPress migration through AI agents: the checkpoints that keep it honest**
 
@@ -38,7 +38,7 @@ Before any extracted page went into the CMS, a review pass checked all 34 captio
 
 ### Where the time actually went
 
-The bulk of the build happened in one long day, roughly 11 hours, with three separate production deploys along the way as fixes landed and got verified live. A second day followed for loose ends: confirming the actual domain registrar (it turned out to be different from what everyone assumed), checking DNS and mail records ahead of cutover. Thirteen pages migrated. I recovered 98 unique media originals out of 320 total attachments in the old library (97 found, 1 confirmed gone for good) and optimized the set 247.7MB → 26.0MB. All of it staged, reviewed, and CMS-ready before the client saw a single deploy.
+The build ran one morning: about five hours at the keyboard, 7:40am to 12:45pm, one sitting with no break longer than fifteen minutes. Roughly four of those hours were the build proper, after an hour of planning and a parallel site-audit up front. That four-hour figure already includes every second spent waiting on the model. Subtract the LLM's own generation and agent-run time and my hands-on share, directing, reviewing, deciding, testing between turns, was about two hours. Three production deploys landed along the way as fixes got verified live. Two shorter sittings followed later, under an hour combined: an evening pass on the session-logging tooling, then a separate day on DNS, mail records, and registrar access ahead of cutover, which turned up the real registrar, DreamHost, not the one everyone assumed. Thirteen pages migrated. I recovered 98 unique media originals out of 320 total attachments in the old library (97 found, 1 confirmed gone for good) and optimized the set 247.7MB → 26.0MB. All of it staged, reviewed, and CMS-ready before the client saw a single deploy.
 
 ### What actually got delegated
 
@@ -74,7 +74,11 @@ These are useful screenshots (they show the concept-comparison workflow directly
 
 ## Open questions for Brian
 
-1. **Is this the "WordPress to Astro in under 4 hours" project from your notes, or a different one?** Based on the atg repo's commit history and session log, this build ran roughly 11 hours across a single day (10:40am to past 9:40pm), plus a second, lighter day for DNS/registrar follow-up. That doesn't match an "under 4 hours" claim. Either the 4-hour story is a different (possibly smaller or hypothetical) project, or it refers to a narrower slice of this one (e.g., just the initial scaffold-to-first-deploy window, which I didn't try to isolate). I did not write the "4 hours" framing into this draft since I can't confirm it. Let me know which is true and I'll adjust either this piece or `docs/CONTENT.md` item #2 so the two don't contradict each other on the same site.
+1. **Timing, resolved (was: 11 hours vs 4 hours).** The 11-hour figure was wrong. It came from reading the first-to-last timestamp in `SESSION_LOG.txt` (which renders in Pacific time: [10:40] to [21:42]), a span that straddles a roughly six-hour afternoon break. Remove the break and the initial build was one morning: about five hours at the keyboard (four after the planning hour), no gap over fifteen minutes. That matches your memory of about four hours including LLM waiting.
+
+   Method (two sentences): I parsed the Claude Code session transcripts (three `.jsonl` files under `~/.claude/projects/-Users-brian-Projects-anthony-thomas-galante/`) for per-record UTC timestamps and roles, never loading them whole, then classified every gap as LLM working time (a prompt to the end of the following assistant or agent activity), Brian hands-on time (assistant output to my next message when the gap is under fifteen minutes), or away time (any gap over fifteen minutes, excluded). I cross-checked every interval against the atg repo's git author timestamps, which cluster 08:40 to 12:35 Hawaii time on 2026-07-11.
+
+   Headline numbers, initial build: wall-clock span about 5.0h (7:40am to 12:45pm Hawaii, one sitting, zero breaks over 15 min); total including LLM waiting the same 5.0h because nothing broke the sitting, roughly 4.0h of that the build proper after the planning-and-audit hour; my hands-on time with LLM generation subtracted about 2.0h. Follow-up, separate and later: about 20 minutes that same evening on the session-logging tooling (git commit at 18:54 Hawaii), then about 35 minutes of active work on 2026-07-14 across a couple of resumed sessions on DNS, mail, and registrar checks ahead of cutover (this is where DreamHost surfaced as the real registrar), under an hour of work combined. Caveat: the logs only see time inside Claude Code sessions. Browser testing, edits in another app, registrar-dashboard work, or client calls during away gaps are invisible, and any reading or testing I did while the model was mid-turn is counted here as LLM time, so 2.0h hands-on is a floor and the honest elapsed figure is the ~5h at the keyboard. If `docs/CONTENT.md` item #2 still carries an "under 4 hours" claim, reconcile it to "about four hours including LLM waiting, one morning."
 
 2. **Is anthonythomasgalante.com actually live on the new stack yet?** As of the repo's last commit (2026-07-14), Phase 4 (DNS cutover) was still open, blocked on registrar access. I wrote the ending to reflect "built and staged, cutover pending" rather than claiming it's live. If it has since launched, I'll update the close to say so (and the before/after screenshots become much easier to get).
 
