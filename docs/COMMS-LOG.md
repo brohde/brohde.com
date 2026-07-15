@@ -164,4 +164,8 @@ Running log of Brian ↔ Claude exchanges and delegated sub-agent work. Newest e
 
 **Claude:** Logged #63; all three items folded into the Fable hardening worktree brief alongside interaction review, new-engineer docs, and the perf audit.
 
+**Brian (batch 29):** Build out the blog/article pages with the actual draft content; he reviews them live on the site.
+
+**Claude:** Copywriter (sonnet) dispatched in the main tree (the hardening worktree owns different files): the five drafts' "## Draft" bodies become the live article bodies (frontmatter kept, editorial meta sections stay in docs/drafts, VOICE binding), then astro check + build verified. Gold Coast's Dragan-consent flag stays open: local review is fine, the flag gates public deploy. Studio lead reviews + commits when it lands.
+
 **Claude (chat feasibility, per Brian's ask):** wrote `docs/reference/chat-feasibility.md`. Headlines: ~$0.002/reply on Claude Haiku 4.5 with prompt caching (~500 replies/$); Cloudflare Workers AI free tier covers ~15-20 replies/day at $0 (open-source Llama, lower quality); recommend Cloudflare AI Gateway to swap/compare providers (the "learn different LLMs" goal); "perfect chat" via deterministic command layer (work/about/resume answered without the LLM, which also keeps projects/about discoverable per Brian's usability note) + facts-file grounding + eval set + Turnstile/rate limits/spend cap; SEO preserved by hybrid architecture (static site canonical, terminal as hero layer). Presence ideas delivered (9), top picks: online counter + terminal `who` command + visitors as live constellation nodes (or CV detections), all on one Cloudflare Durable Object at ~zero cost. Status: exploration, awaiting Brian's greenlight.
