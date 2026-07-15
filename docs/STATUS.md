@@ -15,7 +15,9 @@ _Last updated: 2026-07-15 (session 1, late). Brian may clear the session; this f
 
 ## ⚠️ In-flight background agents (die if session clears; contingency inline)
 
-1. **Boot sequence for build.log v3** (decision #36) → should modify `docs/design/lab/build-log-v3.html` in place: first load starts blank with just the chatbox, "hello" auto-types, then the homepage reveals as the terminal's answer (once per session, any input skips, reduced-motion disabled, content stays in DOM for SEO, deep links skip it). If the file lacks it in a new session: re-brief a design-director with this paragraph. After it lands, republish the artifact from the same file path (URL in table above).
+1. **Aurora lab REWORK** (Brian's correction: aurora over DARK ground with light text, not a light page; decision #26 amended). Updates `lab/aurora-terminal.html` in place; republish artifact at its existing URL when done. If missing: re-brief per COMMS-LOG batch 6.
+2. **Android for Work lifespan research** → updates `docs/drafts/google-android-for-work.md` (decommission window, evidence, likely tied to the Android Enterprise rebrand ~2017-2018). If missing: re-run via Wayback in-browser + CDX.
+3. **Boot sequence for build.log v3** (decision #36) → should modify `docs/design/lab/build-log-v3.html` in place: first load starts blank with just the chatbox, "hello" auto-types, then the homepage reveals as the terminal's answer (once per session, any input skips, reduced-motion disabled, content stays in DOM for SEO, deep links skip it). If the file lacks it in a new session: re-brief a design-director with this paragraph. After it lands, republish the artifact from the same file path (URL in table above).
 
 ## Where we are
 

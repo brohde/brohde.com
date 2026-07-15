@@ -108,17 +108,6 @@
   .blink .lbl { text-decoration: underline; text-underline-offset: 3px; }
   .blink:hover .lbl { background: var(--mint); color: var(--bg); text-decoration: none; }
 
-  .hswitch { display: flex; align-items: center; color: var(--dim); font-size: 12px; }
-  .hswitch .hsl { margin-right: 4px; }
-  .hswitch button {
-    min-width: 44px; min-height: 44px;
-    background: none; border: 0; padding: 0; cursor: pointer;
-    color: var(--mint); font: inherit; font-size: 13.5px;
-  }
-  .hswitch button .n { padding: 1px 5px; border-radius: 2px; }
-  .hswitch button[aria-pressed="true"] .n { background: var(--mint); color: var(--bg); }
-  .hswitch button:hover .n { background: var(--mint); color: var(--bg); }
-
   /* ---------- command menu + prompt ---------- */
   .menu { display: flex; flex-wrap: wrap; gap: 0 8px; margin: 8px 0 0; }
   .cbtn {
@@ -235,6 +224,12 @@
   #wipe { position: fixed; inset: 0; z-index: 99; background: var(--bg); }
   #wipe span { position: absolute; top: 18px; left: 22px; width: 9px; height: 18px; background: var(--mint); }
 
+  /* ---------- boot sequence (first load per session) ---------- */
+  /* visibility only, every element is in the DOM from the first byte;
+     production keeps all content crawlable for SEO and LLMs */
+  html.boot #scr-home .bseq { visibility: hidden; }
+  html.boot #scr-home .bseq.bon { visibility: visible; }
+
   /* ---------- small screens ---------- */
   @media (max-width: 560px) {
     .entry { display: block; }
@@ -251,8 +246,33 @@
     * { animation: none !important; transition: none !important; }
     .caret { animation: none; }
     html { scroll-behavior: auto; }
+    /* safety net: the boot gate already skips the sequence under reduced
+       motion, this guarantees content is visible even if html.boot is set */
+    html.boot #scr-home .bseq { visibility: visible; }
   }
 </style>
+
+<script>
+/* boot gate: decides before first paint whether the boot sequence plays,
+   so full content never flashes. All page content is server rendered and
+   stays in the DOM either way; the sequence only toggles visibility, and
+   production keeps the full page crawlable for SEO and LLMs.
+   Plays once per browser session; deep links (#/chat, #/about) and
+   prefers-reduced-motion always render instantly. */
+(function () {
+  try {
+    var seen = sessionStorage.getItem('brohde.boot');
+    sessionStorage.setItem('brohde.boot', '1');
+    if (!seen &&
+        location.hash !== '#/chat' && location.hash !== '#/about' &&
+        !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('boot');
+      /* failsafe: never leave content hidden if the main script dies */
+      setTimeout(function () { document.documentElement.classList.remove('boot'); }, 6000);
+    }
+  } catch (e) { /* storage blocked (private mode): skip the sequence */ }
+})();
+</script>
 
 <div id="wipe" hidden aria-hidden="true"><span></span></div>
 
@@ -261,16 +281,20 @@
   <div class="wrap homepad">
 
     <header class="hd">
-      <!-- header treatment 1: phosphor wordmark (primary) -->
-      <div class="hv" data-h="1">
-        <p class="pline"><span class="p">$</span> whoami</p>
-        <h1 class="wordmark">brian rohde<span class="caret" aria-hidden="true"></span></h1>
-        <p class="bio">full-stack engineer <span class="d">·</span> san francisco</p>
-        <p class="bio">ships AI products end to end <span class="d">·</span> founder, eight angle</p>
-        <p class="bio"><span class="k">prev:</span> gong <span class="d">·</span> twilio <span class="d">·</span> beyond (projects for facebook + google)</p>
+      <!-- header treatment 1: phosphor wordmark (chosen default; the boot
+           sequence is designed around it: glow + scanlines warm up first,
+           then the wordmark flushes in). bseq on the container reveals the
+           CRT texture (its pseudo elements) as the first frame. -->
+      <div class="hv bseq" data-h="1">
+        <p class="pline bseq"><span class="p">$</span> whoami</p>
+        <h1 class="wordmark bseq">brian rohde<span class="caret" aria-hidden="true"></span></h1>
+        <p class="bio bseq">full-stack engineer <span class="d">·</span> san francisco</p>
+        <p class="bio bseq">ships AI products end to end <span class="d">·</span> founder, eight angle</p>
+        <p class="bio bseq"><span class="k">prev:</span> gong <span class="d">·</span> twilio <span class="d">·</span> beyond (projects for facebook + google)</p>
       </div>
 
-      <!-- header treatment 2: tmux status bar -->
+      <!-- header treatments 2 and 3 kept for comparison via the quiet
+           typed command "header N" only; nothing visible advertises them -->
       <div class="hv" data-h="2" hidden>
         <div class="tmux"><span>[brohde.com]</span><span>sf <span aria-hidden="true">·</span> available <span aria-hidden="true">·</span> up 13y</span></div>
         <p class="pline"><span class="p">$</span> whoami</p>
@@ -289,22 +313,16 @@
         </div>
       </div>
 
-      <div class="hrow">
+      <div class="hrow bseq">
         <ul class="links" aria-label="Profiles and resume">
           <li><a class="blink" href="https://www.linkedin.com/in/brian-rohde-4ba3558/" target="_blank" rel="noopener"><span class="br" aria-hidden="true">[</span><span class="lbl">linkedin</span><span class="br" aria-hidden="true">]</span></a></li>
           <li><a class="blink" href="/resume.pdf"><span class="br" aria-hidden="true">[</span><span class="lbl">resume</span><span class="br" aria-hidden="true">]</span></a></li>
           <li><a class="blink" id="xlink" href="https://x.com/brianxbuilds" target="_blank" rel="noopener" title="@brianxbuilds" aria-label="X, at brianxbuilds"><span class="br" aria-hidden="true">[</span><span class="lbl">x</span><span class="br" aria-hidden="true">]</span></a></li>
         </ul>
-        <div class="hswitch" role="group" aria-label="Header treatment switcher, prototype only">
-          <span class="hsl" aria-hidden="true"># header</span>
-          <button type="button" data-hset="1" aria-pressed="true" aria-label="Header treatment 1"><span class="n">1</span></button>
-          <button type="button" data-hset="2" aria-pressed="false" aria-label="Header treatment 2"><span class="n">2</span></button>
-          <button type="button" data-hset="3" aria-pressed="false" aria-label="Header treatment 3"><span class="n">3</span></button>
-        </div>
       </div>
     </header>
 
-    <nav class="menu" aria-label="Commands">
+    <nav class="menu bseq" aria-label="Commands">
       <button type="button" class="cbtn" data-cmd="work"><span class="br" aria-hidden="true">[</span>work<span class="br" aria-hidden="true">]</span></button>
       <button type="button" class="cbtn" data-cmd="about"><span class="br" aria-hidden="true">[</span>about<span class="br" aria-hidden="true">]</span></button>
       <button type="button" class="cbtn" data-cmd="resume"><span class="br" aria-hidden="true">[</span>resume<span class="br" aria-hidden="true">]</span></button>
@@ -316,21 +334,21 @@
       <span class="p" aria-hidden="true">$</span>
       <span class="iwrap"><input id="in-home" name="q" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="240" placeholder="ask about my work&hellip;" enterkeyhint="send"><span class="ph" aria-hidden="true">ask about my work&hellip;<span class="caret"></span></span></span>
     </form>
-    <p class="cmt"># questions open a chat screen <span aria-hidden="true">·</span> help lists commands</p>
+    <p class="cmt bseq"># questions open a chat screen <span aria-hidden="true">·</span> help lists commands</p>
     <p class="cmt hint" id="hint-top" aria-live="polite"></p>
 
     <section class="log" id="log" aria-label="Article log">
-      <a class="entry" href="#"><span class="ts">[2026-02-12]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Building the ML model behind Eight Angle</span></span></a>
-      <a class="entry" href="#"><span class="ts">[2026-05-28]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">How I run parallel Claude Code agents</span></span></a>
-      <a class="entry" href="#"><span class="ts">[2025-11-14]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">From idea to production in four hours</span></span></a>
-      <div class="cmt"># migrated a live WordPress site to Astro before lunch</div>
-      <a class="entry" href="#"><span class="ts">[2025-09-30]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Alternatives to Squarespace</span></span></a>
-      <a class="entry" href="#"><span class="ts">[2014-07-22]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Facebook&rsquo;s first WordPress site</span></span></a>
+      <a class="entry bseq" href="#"><span class="ts">[2026-02-12]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Building the ML model behind Eight Angle</span></span></a>
+      <a class="entry bseq" href="#"><span class="ts">[2026-05-28]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">How I run parallel Claude Code agents</span></span></a>
+      <a class="entry bseq" href="#"><span class="ts">[2025-11-14]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">From idea to production in four hours</span></span></a>
+      <div class="cmt bseq"># migrated a live WordPress site to Astro before lunch</div>
+      <a class="entry bseq" href="#"><span class="ts">[2025-09-30]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Alternatives to Squarespace</span></span></a>
+      <a class="entry bseq" href="#"><span class="ts">[2014-07-22]</span><span class="line2"><span class="p" aria-hidden="true">&#10095;</span> <span class="ttl">Facebook&rsquo;s first WordPress site</span></span></a>
     </section>
     <p class="cmt hint" id="hint-log" aria-live="polite"></p>
 
-    <footer class="status">status: available for freelance <span aria-hidden="true">·</span> 3 guests online</footer>
-    <p class="cmt proto"># build.log v3 <span aria-hidden="true">·</span> interactive prototype <span aria-hidden="true">·</span> 2026-07-15</p>
+    <footer class="status bseq">status: available for freelance <span aria-hidden="true">·</span> 3 guests online</footer>
+    <p class="cmt proto bseq"># build.log v3 <span aria-hidden="true">·</span> interactive prototype <span aria-hidden="true">·</span> 2026-07-15</p>
   </div>
 </section>
 
@@ -419,7 +437,6 @@
     '  home      back to the log\n' +
     '  clear     wipe this chat\n' +
     '  help      this list\n' +
-    '  header N  try header 1, 2, 3\n' +
     '<span class="c"># anything else goes to chat</span>';
 
   var CONTACT_HTML = 'email     <a href="mailto:brian@brohde.com">brian@brohde.com</a>\n' +
@@ -589,12 +606,12 @@
   }
 
   /* ---------- header treatments ---------- */
+  /* treatment 1 (phosphor wordmark) is the chosen default; "header N" stays
+     as a quiet typed command for later comparison, with no visible UI */
 
   function setHeader(n) {
     var vs = document.querySelectorAll('.hv');
     for (var i = 0; i < vs.length; i++) vs[i].hidden = (vs[i].getAttribute('data-h') !== String(n));
-    var bs = document.querySelectorAll('.hswitch button');
-    for (var j = 0; j < bs.length; j++) bs[j].setAttribute('aria-pressed', String(bs[j].getAttribute('data-hset') === String(n)));
   }
 
   /* ---------- command router (deterministic layer) ---------- */
@@ -668,8 +685,6 @@
   document.addEventListener('click', function (e) {
     var b = e.target.closest ? e.target.closest('[data-cmd]') : null;
     if (b) { handleInput(b.getAttribute('data-cmd')); return; }
-    var h = e.target.closest ? e.target.closest('[data-hset]') : null;
-    if (h) { setHeader(h.getAttribute('data-hset')); return; }
     var entry = e.target.closest ? e.target.closest('.entry') : null;
     if (entry) { e.preventDefault(); transient('hint-log', '# article pages ship with the real site'); return; }
   });
