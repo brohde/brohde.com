@@ -107,6 +107,12 @@
   height: 0.82em;
   vertical-align: -0.06em;
 }
+/* Single-cursor model (#63): the wordmark caret is the page's resting cursor.
+   While the roving cursor or the prompt owns focus (html.cfocus, set by
+   terminal.ts), the wordmark caret yields so exactly one cursor is visible. */
+html.cfocus .wordmark .caret {
+  visibility: hidden;
+}
 .bio {
   margin: 3px 0;
   overflow-wrap: anywhere;
@@ -249,9 +255,6 @@
   color: var(--dim);
   font-size: 16px;
   white-space: nowrap;
-}
-.ph .caret {
-  margin-left: 2px;
 }
 .prompt input:placeholder-shown:not(:focus) + .ph {
   display: flex;

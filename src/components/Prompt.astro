@@ -56,9 +56,9 @@ const acId = `ac-${id}`;
         placeholder={placeholder}
         enterkeyhint="send"
       />
-      <span class="ph" aria-hidden="true"
-        >{placeholder}<span class="caret"></span></span
-      >
+      {/* ghost placeholder, no caret: the page cursor (#63) rests on the
+          wordmark; a caret appears here only while the input is focused */}
+      <span class="ph" aria-hidden="true">{placeholder}</span>
     </span>
   </form>
 </div>

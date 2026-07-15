@@ -118,6 +118,56 @@ function hint(msg: string) {
   }, 2600);
 }
 
+/* ------------------------------------------------- roving cursor (#63) ---- */
+/* One page cursor: the block caret rests on the wordmark; Tab reaches the
+ * cursor group (a single tab stop) and the prompt; arrow keys walk every
+ * interactive element (links, commands, log entries) terminal-style. The
+ * highlight is the element's :focus-visible treatment, so it is always
+ * visible and screen-reader semantics stay native (roles untouched;
+ * tabindex=-1 keeps elements in the accessibility tree). Arrows are handled
+ * only while focus is already ON a cursor element, so page scrolling is
+ * never hijacked while the cursor is inactive or focus sits in an input.
+ */
+const ROVE_SELECTOR = "a[href], button[data-cmd]";
+let roveHinted = false;
+
+function roveEls(): HTMLElement[] {
+  const screen = document.querySelector("[data-screen]");
+  if (!screen) return [];
+  return Array.from(screen.querySelectorAll<HTMLElement>(ROVE_SELECTOR));
+}
+
+function isRove(el: HTMLElement | null): el is HTMLElement {
+  return (
+    !!el && !!el.matches?.(ROVE_SELECTOR) && !!el.closest?.("[data-screen]")
+  );
+}
+
+/** roving tabindex: exactly one element in the group is the tab stop */
+function setRoveStop(target: HTMLElement, els?: HTMLElement[]) {
+  for (const el of els ?? roveEls()) {
+    el.tabIndex = el === target ? 0 : -1;
+  }
+}
+
+function moveRove(from: HTMLElement, dir: 1 | -1) {
+  const els = roveEls();
+  if (!els.length) return;
+  const i = els.indexOf(from);
+  const next =
+    i === -1 ? els[0] : els[(i + dir + els.length) % els.length];
+  setRoveStop(next, els);
+  next.focus();
+}
+
+function moveRoveEnd(last: boolean) {
+  const els = roveEls();
+  if (!els.length) return;
+  const next = els[last ? els.length - 1 : 0];
+  setRoveStop(next, els);
+  next.focus();
+}
+
 function setCaretEnd(input: HTMLInputElement) {
   const n = input.value.length;
   try {
@@ -482,6 +532,13 @@ function initPage() {
   closeAC();
   histIndex = history.length;
 
+  // roving cursor (#63): the group's tab stop starts at its first element;
+  // focus resets to body on swaps, so the resting cursor returns to the
+  // wordmark (cfocus off) until focus lands somewhere live again.
+  document.documentElement.classList.remove("cfocus");
+  const rove = roveEls();
+  if (rove.length) setRoveStop(rove[0], rove);
+
   const after = pendingAfter;
   pendingAfter = null;
   const focusId = pendingFocus;
@@ -560,6 +617,27 @@ function setupOnce() {
     }
   });
 
+  // single-cursor bookkeeping (#63): html.cfocus hides the wordmark caret
+  // while the cursor group or a prompt input owns focus; the roving tab stop
+  // follows focus (clicks included) so Tab re-enters where the cursor left.
+  document.addEventListener("focusin", (e) => {
+    const t = e.target as HTMLElement;
+    const live = !!t.matches?.(".prompt input") || isRove(t);
+    document.documentElement.classList.toggle("cfocus", live);
+    if (isRove(t)) {
+      setRoveStop(t);
+      if (!roveHinted && t.matches(":focus-visible")) {
+        roveHinted = true;
+        hint("# arrows move the cursor · enter opens");
+      }
+    }
+  });
+  document.addEventListener("focusout", (e) => {
+    if (!e.relatedTarget) {
+      document.documentElement.classList.remove("cfocus");
+    }
+  });
+
   // input: refresh autocomplete for the active prompt
   document.addEventListener("input", (e) => {
     const input = e.target as HTMLElement;
@@ -573,10 +651,19 @@ function setupOnce() {
   // Arrow/Tab logic only runs while a prompt input is focused, so page
   // scrolling is never hijacked (#44).
   document.addEventListener("keydown", (e) => {
+    const t = e.target as HTMLElement;
+
     if (e.key === "Escape") {
       if (ac.open) {
         e.preventDefault();
         closeAC();
+        return;
+      }
+      // single-cursor model (#63): the first Escape parks the cursor back on
+      // the wordmark (blur); from rest, Escape leaves non-home screens.
+      if (t && (t.matches?.(".prompt input") || isRove(t))) {
+        e.preventDefault();
+        t.blur();
         return;
       }
       if (currentScreen() !== "home") {
@@ -586,8 +673,26 @@ function setupOnce() {
       return;
     }
 
-    const t = e.target as HTMLElement;
-    if (!t.matches?.(".prompt input")) return;
+    // roving cursor (#63): arrows walk the page's interactive elements, but
+    // only while one of them already holds focus; otherwise arrows scroll.
+    if (isRove(t) && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+        e.preventDefault();
+        moveRove(t, 1);
+      } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        moveRove(t, -1);
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        moveRoveEnd(false);
+      } else if (e.key === "End") {
+        e.preventDefault();
+        moveRoveEnd(true);
+      }
+      return;
+    }
+
+    if (!t?.matches?.(".prompt input")) return;
     const input = t as HTMLInputElement;
 
     // Enter runs the highlighted suggestion, or the typed text. preventDefault
