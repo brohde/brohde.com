@@ -4,8 +4,8 @@
 /* ============================================================================
    brohde.com design tokens
    Two grounds, one system (decision #40): the site matches the visitor's
-   system color scheme via prefers-color-scheme, with a live matchMedia
-   listener (see terminal.ts) that keeps <meta name="theme-color"> in sync.
+   system color scheme via prefers-color-scheme; <meta name="theme-color">
+   follows through two static media-attributed tags in BaseLayout.astro.
 
    Semantic token names only (never "dark"/"light" in component code). The
    values swap under the media queries below; Tailwind utilities (bg-ground,
