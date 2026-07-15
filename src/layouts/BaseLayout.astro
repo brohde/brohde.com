@@ -5,6 +5,52 @@ import Analytics from "@/components/Analytics.astro";
 import { SITE } from "@/lib/site";
 import "@/styles/global.css";
 
+/* ============================================================================
+   PERCEIVED-LOAD CONTRACT  (decision #62) — read before adding to the shell.
+
+   The site must paint instantly. The whole page is static HTML styled with
+   system fonts (no webfonts, no font swap), so the browser can paint as soon
+   as the document arrives. Everything below protects that first paint. Keep it
+   true; measure the built output (dist), not dev.
+
+   What is in the pre-paint critical path, and nothing else:
+     1. The HTML document itself.
+     2. The inlined stylesheet (build.inlineStylesheets: "always") — one <style>
+        in <head>, so paint never waits on a second round-trip. ~5 KB gzip.
+     3. The inline boot gate below — a few lines, no network, no dependencies.
+   Verified: FCP is identical whether the boot sequence runs or not, i.e. paint
+   is gated by CSS delivery, not by any script. Baseline: FCP ~1.1s, LCP ~1.2s,
+   TBT 0, CLS 0 (Lighthouse mobile, gzip). Do not regress these.
+
+   What must NEVER enter the pre-paint path:
+     - Webfonts (system stack only; a swap is a flash and a shift).
+     - Render-blocking <link>/<script> in <head> that isn't the gate.
+     - Any fetch/XHR/connection before first paint (chat, analytics beacons).
+     - Synchronous work in the body-end module beyond wiring listeners.
+
+   All script is deferred: ClientRouter and the terminal module are type=module
+   (implicitly deferred) and never block the parser. Analytics ships only when a
+   PostHog key is set and captures nothing before astro:page-load.
+
+   === FACADE PATTERN for future heavy layers (aurora canvas, glyph tide, live
+   chat — the #59 integration will consume this) ===
+   These are ATMOSPHERE and ENHANCEMENT, never first paint. Each MUST:
+     - Render a cheap static facade first (a CSS gradient stand-in for the
+       aurora, the already-server-rendered glyph text, a plain prompt for chat).
+       The facade is what the user sees "quickly"; the live layer swaps in later.
+     - Defer real init to idle/visible: requestIdleCallback (with a setTimeout
+       fallback) for atmosphere, IntersectionObserver for per-section tides,
+       first-interaction for the live chat model/connection. Never on load.
+     - Cost zero bytes on the pre-paint path: lazy-import the heavy module from
+       the terminal controller's idle hook; do not add <script>/<link> here.
+     - Respect prefers-reduced-motion (freeze/skip animation) and honor the perf
+       budget (canvas work off the main thread or throttled; keep TBT ~0, CLS 0).
+     - Reserve layout up front so nothing shifts when the live layer arrives
+       (the boot gate uses visibility, not display, for exactly this reason).
+   Rule of thumb: if a new layer changes FCP/LCP/CLS on the built homepage, it
+   is in the wrong place. Put it behind idle/visible/interaction, with a facade.
+   ========================================================================== */
+
 interface Props {
   title?: string;
   description?: string;
@@ -78,6 +124,17 @@ const props = Astro.props;
     <a href="#main" class="sr">skip to content</a>
     <slot />
     <Analytics />
+    {/*
+      Single hydration point. One deferred module (type=module) drives every
+      interactive behavior; it wires delegated listeners and reveals the boot
+      sequence, but does no network work and nothing that blocks paint.
+
+      Future heavy layers hang off THIS module's idle hook, never off new tags
+      here — see the FACADE PATTERN in the frontmatter. Lazy-import them
+      (await import("...")) from an idle/visible/first-interaction callback so
+      they stay off the pre-paint path. Adding another <script src>/<link> to
+      the shell is the wrong lever; it competes with the critical bytes.
+    */}
     <script>
       import "@/scripts/terminal.ts";
     </script>
