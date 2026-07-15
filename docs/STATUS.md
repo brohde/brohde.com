@@ -76,5 +76,5 @@ See the ⚠️ in-flight agents section at the top: aurora dark-ground rework, A
 - ATG draft: timing being recomputed from Claude Code session logs (Brian: ~4h total incl. LLM waiting; publish hands-on time minus LLM waiting; later touch-ups counted separately; forensics agent in flight). THEN a copywriter revision restructures around Brian's three pillars: the migration, UI refresh preserving the same look and feel, FREE hosting + FREE CMS (verify $0 claims against the repo). Queued behind the forensics agent, same file
 - Boot: fake caret during the auto-type? (input deliberately unfocused, so none shows today)
 - Supply images (folder path) for the glyph-tide-from-images pipeline whenever ready
-- LL Circular web license purchase (only matters if any Circular use survives into build.log)
+- LL Circular web license: LIVE AGAIN (Brian wants Circular on designed surfaces, batch 32); confirm/purchase with Lineto before production ships it
 - Earlier open items: writing samples for VOICE, Substack canonical, travel placement, pre-dates, resume format
