@@ -9,13 +9,13 @@ Claude (studio lead) orchestrates; these reusable experts live in `.claude/agent
 | Agent | Role | Model | Use for |
 |---|---|---|---|
 | `design-director` | Visual & UX direction | opus | Design concepts, typography/color systems, layout, motion language, design critique |
-| `frontend-engineer` | Astro/Tailwind implementation | opus | Building pages/components, performance, responsive behavior, Cloudflare deploy config |
+| `frontend-engineer` | Astro/Tailwind implementation | fable | Building pages/components, performance, responsive behavior, Cloudflare deploy config |
 | `copywriter` | Voice & content | sonnet | About copy, article titles/descriptions, case-study narratives, microcopy — bound by `docs/VOICE.md` |
 | `seo-a11y-auditor` | Standards & discoverability | sonnet | SEO/meta/structured data review, WCAG accessibility audits, LLM-readability checks |
 
-## Model policy (decision #14, amended by #46)
+## Model policy (decision #14, amended by #46, re-amended by #50)
 
-Fable was for the direction/planning/POC phase only (Brian, 2026-07-15). The official build runs on **Opus for design + frontend implementation** and **Sonnet for content, audits, and simpler tasks** (haiku = mechanical). Delegate per task; override an agent's default model downward when the task is routine.
+Brian, 2026-07-15: "We need a perfect build for a long running product." The studio lead delegates across the full range per task: **Fable for core product engineering** (terminal interaction layer, theme system, boot sequence, chat integration, anything visitors touch every day), **Opus for general implementation** (scaffolding, ports, config, plumbing), **Sonnet for content/audits/routine**, haiku for mechanical. frontend-engineer defaults to fable; explicitly downgrade per spawn for routine chores.
 
 ## Working rules
 
