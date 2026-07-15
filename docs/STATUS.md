@@ -25,12 +25,14 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 - Content: 5 real case studies render on the site (validated on rendered HTML after the content-store staleness fix, see ENGINEERING.md §2); `brohde-com-build` stubbed `draft: true`; `twilio-hackpack-v4` is an `external:` entry.
 - Chat POC: real Haiku 4.5 at localhost:8787 (`cd poc/chat && npm start`), dev CORS for the Astro site; key in gitignored `poc/chat/.env` (expires 2026-08-14).
 
-## ⚠️ In-flight background agents (5 spawned; 1 landed)
+## Agent board (this session)
+
+Also in flight: **production chat build (opus, worktree)** per #73 — `functions/api/chat.ts` porting the frozen POC, Turnstile + rate limiting, eval-over-HTTP acceptance; server-side only, client bridge stays with the interaction agent.
 
 1. **Interaction cluster (fable, worktree `a7593d05a409df7a7`)**: single-cursor #63, boot entry-only #64, ~140ms wipe #64, hover unification, chat dev-bridge (terminal free-form → localhost:8787), hello tour + arrow underline #68, "ask me anything" on the chat screen #65. Sent mid-flight: docs-audit code pointers + **#69 requirement** (transition layer must treat the slab expand/collapse morph as a first-class transition type, e.g. persistent `view-transition-name` on the slab).
 2. **Perf (opus) — DONE, merged bab2a76**: inline critical CSS + cache headers + binding facade contract (#70); Lighthouse mobile Perf 100/TBT 0/CLS 0, validated on built dist. Its HIGH finding (boot = ~1.3s blank screen; prompt is `.bseq`-hidden so hello types invisibly) routed to the interaction agent as part of its #64 boot work.
 3. **Docs (sonnet) — DONE, merged f199195**: `docs/ENGINEERING.md` + README. Flags 4 decision-vs-code gaps inline (all in the interaction agent's scope) → needs a **reconciliation pass after the interaction merge** (resume the same agent or quick lead edit).
-4. **Demo 04 refinements (fable, `a6e3a77096f9cda8d`)**: finishing all three refinements (contain-fit, background fallback, brand palettes incl. Eight Angle logo source) per #72's quality-first call, then republishes the aurora artifact + reports. Works in the MAIN tree on `docs/design/lab/aurora-terminal.html` (currently modified — do not commit or revert it under the agent).
+4. **Demo 04 refinements — DONE, committed 8971c33, aurora artifact republished**: contain-fit, phone background fallback (whisper cap), per-page brand palettes (eight angle teal + logo source, newsroom Facebook blue, android Google quartet). Contrast all AA+ (worst 4.6:1), perf well inside budget. Taste flags await Brian in COMMS batch: gutter presents landscape sources small; chat stays golden hour under every theme; android drops the rose blob; phone fallback near-invisible on light ground by design.
 5. **Cloudflare Pages setup — DONE**: https://brohde-com.pages.dev live, auto-deploys on push to `main`. Follow-ups: custom domain (needs registrar answer), PostHog env var later, 2 cosmetic `z` deprecation hints in content.config.ts.
 
 **Only the interaction worktree remains to merge.** Lead reviews commits, merges, validates on the RENDERED surface (standing rule: agent reports are claims, not evidence), then ENGINEERING.md reconciliation.
