@@ -8,14 +8,14 @@ Claude (studio lead) orchestrates; these reusable experts live in `.claude/agent
 
 | Agent | Role | Model | Use for |
 |---|---|---|---|
-| `design-director` | Visual & UX direction | fable | Design concepts, typography/color systems, layout, motion language, design critique |
-| `frontend-engineer` | Astro/Tailwind implementation | fable | Building pages/components, performance, responsive behavior, Cloudflare deploy config |
+| `design-director` | Visual & UX direction | opus | Design concepts, typography/color systems, layout, motion language, design critique |
+| `frontend-engineer` | Astro/Tailwind implementation | opus | Building pages/components, performance, responsive behavior, Cloudflare deploy config |
 | `copywriter` | Voice & content | sonnet | About copy, article titles/descriptions, case-study narratives, microcopy — bound by `docs/VOICE.md` |
 | `seo-a11y-auditor` | Standards & discoverability | sonnet | SEO/meta/structured data review, WCAG accessibility audits, LLM-readability checks |
 
-## Model policy (decision #14)
+## Model policy (decision #14, amended by #46)
 
-Fable for all design and all frontend work. Other roles: pick the cheapest model that genuinely does the job (haiku = mechanical, sonnet = exploration/content/audits, fable = design, frontend, planning/architecture).
+Fable was for the direction/planning/POC phase only (Brian, 2026-07-15). The official build runs on **Opus for design + frontend implementation** and **Sonnet for content, audits, and simpler tasks** (haiku = mechanical). Delegate per task; override an agent's default model downward when the task is routine.
 
 ## Working rules
 
