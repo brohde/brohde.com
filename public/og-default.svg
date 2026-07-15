@@ -10,4 +10,5 @@
   <text x="90" y="250" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="34" fill="#7EE787">$ hello</text>
   <text x="88" y="360" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="104" font-weight="700" fill="#7EE787">Brian Rohde</text>
   <text x="90" y="430" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="30" fill="#D6E5DC">AI Product Engineer · San Francisco</text>
+  <text x="90" y="478" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="30" fill="#8FA79A">Founder, Eight Angle</text>
 </svg>
