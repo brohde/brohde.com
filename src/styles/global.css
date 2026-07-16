@@ -6,6 +6,9 @@
    Two grounds, one system (decision #40): the site matches the visitor's
    system color scheme via prefers-color-scheme; <meta name="theme-color">
    follows through two static media-attributed tags in BaseLayout.astro.
+   The visitor may pin either ground explicitly (#92, the theme toggle):
+   html[data-theme="light" | "dark"] overrides the system preference in both
+   directions via the :root[data-theme] blocks below. No attribute = system.
 
    Semantic token names only (never "dark"/"light" in component code). The
    values swap under the media queries below; Tailwind utilities (bg-ground,
@@ -127,6 +130,59 @@
 
     color-scheme: light;
   }
+}
+
+/* ----------------------------------------------------------------------------
+   Explicit visitor override (#92, the theme toggle). :root[data-theme] out-
+   specifies bare :root (0,2,0 vs 0,1,0), so each block below beats BOTH token
+   sets above regardless of the system scheme: a pinned theme wins in both
+   directions. No data-theme attribute = the #40 system-matching defaults.
+
+   The values are exact copies of the two palettes above, never new colors.
+   Keep all three blocks in sync (the styleguide forces the same palettes a
+   fourth time). The slab and every other phosphor material scope their own
+   fixed night tokens directly on the element, which inherit closer than
+   :root: the machine stays always-night under either override (#67).
+
+   Stamping: a pre-paint inline gate in BaseLayout.astro applies the stored
+   override before first paint; src/scripts/theme.ts re-stamps it after every
+   ClientRouter swap (Astro replaces root attributes) and owns all changes.
+   ------------------------------------------------------------------------- */
+:root[data-theme="dark"] {
+  --ground: #0e1512;
+  --ink: #d6e5dc;
+  --bright: #f2f7f3;
+  --dim: #8fa79a;
+  --accent: #7ee787;
+  --on-accent: #0e1512;
+  --line: #2e4a3c;
+  --line-strong: #33523f;
+  --well: #12201a;
+
+  --wm-glow:
+    0 0 26px rgba(126, 231, 135, 0.3), 0 0 3px rgba(126, 231, 135, 0.35);
+  --crt-alpha: 0.45;
+  --glow-field: rgba(126, 231, 135, 0.07);
+
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --ground: #fbfbf8;
+  --ink: #14211a;
+  --bright: #14211a;
+  --dim: #3f5348;
+  --accent: #086148;
+  --on-accent: #fbfbf8;
+  --line: #dae0d6;
+  --line-strong: #c7d0c4;
+  --well: #f1f2ec;
+
+  --wm-glow: none;
+  --crt-alpha: 0;
+  --glow-field: rgba(8, 97, 72, 0.05);
+
+  color-scheme: light;
 }
 
 /* Expose the tokens to Tailwind as utilities + keep the type scale here. */
