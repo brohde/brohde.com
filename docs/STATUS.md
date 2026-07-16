@@ -8,7 +8,8 @@ _Last updated: 2026-07-15 (session 1, evening). Brian may clear the session; thi
 | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------- |
 | **Homepage structure lab** (treatments A/B/C + article variants; **C CHOSEN, #67**)             | https://claude.ai/code/artifact/70935e14-01f4-43ed-8223-06946903b26c | `lab/homepage-structure.html`     |
 | **build.log v3 interactive prototype** (interaction reference: boot, commands, alternate screen) | https://claude.ai/code/artifact/7ca6a6c4-df52-477a-b6e6-051b8cd40855 | `lab/build-log-v3.html`           |
-| **Aurora Terminal Lab** (demo 04 composed scene; refinement agent republishing)                 | https://claude.ai/code/artifact/9b0b7ddf-75b3-4e68-bd36-d6b76647bd71 | `lab/aurora-terminal.html`        |
+| **Aurora Terminal Lab** (demo 04 composed scene; hero geometry #97 in flight, republish after)   | https://claude.ai/code/artifact/9b0b7ddf-75b3-4e68-bd36-d6b76647bd71 | `lab/aurora-terminal.html`        |
+| **Article visuals lab** (imagery system: screen/paper/lifted; AWAITING BRIAN + asset list)       | https://claude.ai/code/artifact/82405b82-a35d-4cb1-8cce-d5d0c67e32fd | `lab/article-visuals.html`        |
 | **Chat eval review** (interactive grading; regen via `node poc/chat/make-review.mjs`)           | https://claude.ai/code/artifact/55298a58-d9e4-4952-afdf-951c78adcbd2 | `../../poc/chat/eval-review.html` |
 | Animation Lab (6 ambient demos)                                                                 | https://claude.ai/code/artifact/6b30f13b-9b24-4825-a7b2-7744d0168e38 | `lab/animations.html`             |
 | Parked directions (Quarterly/Blackletter/Exposed Grid, round-2 split)                           | https://claude.ai/code/artifact/95d8afd0-bf02-4478-8f54-b87ea803c4f3 | `lab/parked-directions.html`      |
@@ -29,10 +30,13 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 **THE C BUILD IS MERGED TO MAIN (6228713) AND DEPLOYED** — C1 slab+editorial home (26873bb), C2 morph + live chat bridge (1b6ff53, #85), C3 article pages (8206723, #86), C4 chrome unification + straight-100s audit pass (76ac001, #87). Brian approved on the rendered preview (#87). The deployed pages.dev chat UI now talks to the production /api/chat. The old C engineer is RETIRED per #95 (no more resuming it).
 
-In flight (all fresh agents, spawned 2026-07-15 evening; lead merges worktrees on completion — watch for terminal.css/header overlap between the two engineers):
-- **Engineer A (opus, worktree)** — Brian's chrome/copy change orders: unbrand build.log (#88), hint line + textfield + placeholder (#89), (contract) + header arrows + hover restyle (#90), Circular copyright footer (#91).
-- **Engineer B (opus, worktree)** — theme toggle (#92); told to stay OUT of EditorialHeader.astro (engineer A owns it) and keep CSS separable.
-- **Design director (opus, per Brian)** — article visuals: system proposal + per-article plan + ASSET REQUEST LIST for Brian + mockups in NEW file docs/design/lab/article-visuals.html only; no commits (lead reviews/commits).
+**MODEL POLICY (#96)**: Opus for all agents, lower only where the task genuinely doesn't need it. `frontend-engineer.md` was still `model: fable` and BOTH original engineers died mid-work on a Fable out-of-credits API error (they had been mis-reported to Brian as Opus; a subagent's model is fixed at spawn). Definition now `opus`; copywriter + seo-a11y-auditor stay sonnet by choice. **If an agent dies on credits, check the definition's model first.**
+
+In flight (fresh Opus agents; lead merges worktrees on completion — the two engineers have explicit file fences, see below):
+- **Engineer A (opus) — RESPAWNED onto the surviving worktree** `.claude/worktrees/change-orders` (branch `feat/review-change-orders`, base 02eeb57): Brian's chrome/copy change orders: unbrand build.log (#88), hint line + textfield + placeholder (#89), (contract) + header arrows + hover restyle (#90), Circular copyright footer (#91). OWNS `EditorialHeader.astro`, `index.astro`, `styleguide.astro`, `terminal.css`. Ports 4330-4339.
+- **Engineer B (opus) — RESPAWNED onto the surviving worktree** `.claude/worktrees/theme-toggle` (branch `feat/theme-toggle`, base 02eeb57): theme toggle (#92). OWNS `global.css`, `ThemeToggle.astro`, `theme.ts`; BARRED from engineer A's four files. Ports 4340-4349.
+- **Design director (opus) — hero geometry #97**: reworks demo 04's hero placement in `docs/design/lab/aurora-terminal.html` ONLY (top 30% band, body bleeds from ~20%, symbol centered/height-100%/width-auto, perf + contrast re-measure). No commits. Ports 4350-4359.
+- ~~Design director (opus) — article visuals~~ **DONE, committed a03bae1, artifact published** (82405b82-a35d-4cb1-8cce-d5d0c67e32fd). Direction: **no third visual language** — every figure declares its material. Diagram = **screen** object (always-night phosphor mono, in-house inline SVG, theme-independent); screenshot/archival still = **paper** object on an editorial plate that follows the theme (bright captures reined in on night ground only, `brightness(.9)`); argument-carrying numbers = **lifted card** (the stat-band pattern). No device frames, hairlines not shadows, cards not charts. Per-article figure plan for all five pieces; both archival pieces LEAD with a house diagram so they survive a trademark no. Lead fixed 2 stale "build.log" labels in the mockup pre-publish (#88). **AWAITING BRIAN**: asset request list + 4 open questions (see below).
 - ~~Doc agent (sonnet)~~ **DONE, reviewed + committed 297d94d**: `aurora-handoff.md` now trails the theme-press rework (f653063) and records Brian's approval of its four taste flags (#94). Lead verified the load-bearing claims against `aurora-terminal.html` source (all 16 PEAKS hexes = the file's RGB triplets, PLACE_DEFAULT sky 26, THEME_SOURCE map, 0.12/0.28 caps, 0.66/0.74 sky glass pour, stage-scoped inks `#a2b8ab`/`#7c440c`, themed grounds); zero dashes (#18). The four OLDER demo-04 flags (landscape sources small in gutter, newsroom-blue chat, android rose variant, phone fallback cap ~0.2) survive as "still open (variants, not blockers)" — Brian's "I'm good with this!" answered the THEME flags, not these.
 
 **Brian review surfaces**: localhost:4326 = scratchpad preview of the C4 tip with WORKING chat (POC CORS patched, ebe7365; POC on :8787); https://brohde-com.pages.dev = the same code with the real production chat.
@@ -67,6 +71,19 @@ Done this stretch:
 - Real brand marks in the glyph tide pending trademark-use check (#45/#59 note)
 
 ## Open questions for Brian
+
+**ASSET REQUEST LIST (article visuals, 2026-07-15)** — only Brian can supply these; the in-house diagrams are unblocked and cost nothing but SVG:
+1. **Eight Angle audit gallery screenshot** (the MediaPipe accept/reject browser gate). Proof of tooling discipline; nothing else shows it. _Priority 1._
+2. **Eight Angle live app: pose overlay + 3D skeleton**, mid-practice, pose locked with the confidence chip. The "it actually works" shot. _Priority 1._
+3. **Eight Angle Picture-in-Picture in action** (YouTube full-screen + tracking tile). Carries the marquee feature and the hardest-bug story. _Priority 1, optional but high value._
+4. **Gold Coast: the original ChatGPT comps** (any 1-2 of the eight PNGs). The live "after" is already in the repo; without the comps the two-up thesis opener is impossible. _Priority 2._
+5. **ATG "before"**: a WordPress-era screenshot or Wayback still ("after" already in repo). _Priority 3._
+6. **Decision, not a file: provenance/trademark comfort** on showing Facebook- and Google-branded Wayback captures (`newsroom-still-*.jpg`, `afw-still-*.jpg` already on hand). Documenting your own work is defensible editorial use, but #45/#59 flagged trademark caution. If no, house diagrams carry both pieces.
+
+**Article visuals open questions (studio recommendations in brackets):**
+- Do in-body diagrams re-theme with the live tide (#59/#74)? [studio: **no** — content figures hold canonical mint, only the ambient band takes the per-page palette; themed color belongs to atmosphere, a client reading a diagram should get fixed legibility. If Brian wants themed figures, mint-on-#0b110e needs a per-palette contrast re-audit]
+- Night-ground dimming strength: shipped `brightness(.9)`, deliberately subtle so it never reads as broken/greyed-out; can go `.85` if bright shots still glare.
+- Eight Angle unconfirmed numbers are now MORE load-bearing: fig.3 repeats 71.2/97.4/89.6/93.4 and the honest headstand -12.2%. Confirm before the figures ship (already flagged #86).
 
 - **Brian's C-lab questions**: ~~lowercase vs sentence case~~ ANSWERED: sentence case (#76, sweep in flight); still open: always-dark slab on light ground OK?; does "build.log" stay the archive's public name?
 - Title line: Brian weighing "from training the model to shipping the app" clause + "AI Engineer" in metadata only (batch 46); copywriter exploration offered, not yet ordered
