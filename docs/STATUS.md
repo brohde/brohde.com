@@ -32,7 +32,7 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 ## READ THIS FIRST (2026-07-16: direction locked #106-#117; D1 + B1 + loading indicator DISPATCHED)
 
-**State: plan approved with Brian's edits (batch 58); three fresh Fable agents in flight** (see agent board below). Main is pushed and verified live on pages.dev. **Model policy #117: design-director + frontend-engineer now FABLE** (amends #96); if a Fable agent dies on credits like yesterday's two, fall back to Opus and tell Brian.
+**State: plan approved with Brian's edits (batch 58); D1 + B1 Fable agents in flight; the loading indicator is DONE and merged (#118)** (see agent board below). Main is pushed; pages.dev auto-deploys. **Model policy #117: design-director + frontend-engineer now FABLE** (amends #96); if a Fable agent dies on credits like yesterday's two, fall back to Opus and tell Brian.
 
 **Direction locked (Brian, 2026-07-16) — decisions #106-#112:**
 
@@ -55,7 +55,7 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 - **D1 design-director (fable)**: builds `docs/design/lab/shell-d1.html` ONLY (new file; no other edits, no commits). Lead reads, verifies, commits, publishes as a NEW artifact. Validation ports 4380-4389.
 - **B1 frontend-engineer (fable, isolated worktree)**: ports the frozen lab scene to a production module (facade pattern, #114 placement parameterization, homepage ambient placement first). BARRED from chat send/reply UI code paths. Commits on its worktree branch; lead merges. Ports 4360-4369.
-- **Loading-indicator frontend-engineer (fable, isolated worktree)**: #116 chat send indicator. OWNS the chat send/reply UI region; BARRED from facade/idle-hook wiring and scene files. Commits on its worktree branch; lead merges. Ports 4370-4379.
+- ~~Loading-indicator frontend-engineer (fable, isolated worktree)~~ **DONE, merged (#118)**: thinking dots in the reply slot, same-node swap (zero shift), reduced-motion static label, 8/8 rendered checks. Lead corrected its `#theme-announce` dead-region flag (alive: theme.ts creates it).
 - All three: browser validation ONLY via Sonnet subagents (#82 extends to Fable agents); no "terminal" in copy or naming (#116); zero em dashes in user-visible copy (#18).
 
 **Still awaiting Brian (unchanged from last night, nothing blocked):** article-visuals asset request list (artifact 82405b82; the 3 Eight Angle captures are priority 1), Eight Angle unconfirmed numbers (now load-bearing in fig.3), veto flags #99-#105 (65% underline, three-state toggle, --dim brackets, footer height + safe-area, hero-geometry split), in-body diagram re-theming question (studio: no), night dimming strength (.9 vs .85).
