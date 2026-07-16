@@ -1,0 +1,154 @@
+/* ============================================================================
+   The aurora + glyph tide scene, FACADE styles (#106/#114/#120): only what
+   Scene.astro server-renders lives here, because this sheet rides the
+   inlined critical CSS on every page (#70). Everything the live module
+   builds at idle is styled by src/scripts/scene/live.css, which ships
+   inside the lazy chunk: zero live-layer bytes on the pre-paint path.
+   Ported from the FROZEN reference spec, docs/design/lab/aurora-terminal.html
+   (demo 04).
+
+   Layer order inside .scene (the lab's core trick, bottom to top): tide
+   canvas (z0) under the sky (z1: blurred blobs tint the glyphs in the
+   compositor for free), the static facade sky (z2, fades out when the live
+   sky arrives), the pour (z3), grain (z4, live only).
+
+   THE POUR is the production translation of the lab's glass: in the lab,
+   text only ever sat on glass over the scene; on the site, editorial text
+   sits on the bare ground with the scene drifting behind it (#120: the tide
+   spans the FULL background, the content column included), so the content
+   column gets the glass instead: a ground-colored gradient at the lab's
+   poured alphas (0.78 night / 0.80 light), fading out over the right gutter
+   where no text lives. Measured (B1 contrast harness, lab audit method):
+   worst text ink over the worst backdrop (peak glyph at full alpha + all
+   four blobs stacked at center alpha, both grounds x both states, under the
+   pour) is night dim at 4.81:1; every ink AA+. Pouring lighter than ~0.75
+   breaks night dim under 4.5:1 unless the site's night dim token moves to
+   #a2b8ab (the lab's stage-4 move): a site-wide token change deliberately
+   NOT taken in B1.
+
+   The pour's edge tracks the REAL content column (#120): the module
+   measures the column rect and stamps --scene-edge on the container; the
+   calc() fallback below covers the facade stage (a centered wrap) before
+   any script runs. Below gutter widths the solid stop exceeds the viewport,
+   so the same gradient degrades to a uniform pour: the mobile background
+   treatment (#109/#114) needs no extra rule.
+
+   Ground resolution (#92): sky palettes and pour follow the site theme
+   through the same three-block pattern global.css uses (system media query
+   default, :root[data-theme] override wins in both directions). The pour
+   derives from var(--ground), so future per-page ground identities (#74,
+   B3) re-pour automatically. Themed sky palettes (eight/news/android,
+   .skyslot[data-sky] blocks in the lab) land with the first themed page
+   (B3); only the default sky ships in B1.
+
+   Keep in sync with src/scripts/scene/index.ts: --scene-content-w (760px,
+   the no-column-found fallback) and MIN_GUTTER.
+   ========================================================================== */
+
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: -1; /* behind all in-flow page content; body's background is
+                  transparent (see global.css) so the layer shows through */
+  pointer-events: none;
+  overflow: hidden;
+  contain: strict;
+
+  --scene-content-w: 760px; /* fallback column width, see header */
+
+  /* night sky, default theme (lab stage vars, verbatim) */
+  --sc-h1: rgba(139, 108, 255, 0.55);
+  --sc-h2: rgba(43, 212, 180, 0.45);
+  --sc-h3: rgba(77, 134, 255, 0.36);
+  --sc-h4: rgba(255, 110, 150, 0.28);
+  --sc-c1: rgba(255, 170, 51, 0.55);
+  --sc-c2: rgba(255, 215, 92, 0.45);
+  --sc-c3: rgba(255, 107, 66, 0.36);
+  --sc-c4: rgba(255, 110, 150, 0.3);
+  --sc-pour: color-mix(in srgb, var(--ground) 78%, transparent);
+}
+@media (prefers-color-scheme: light) {
+  .scene {
+    --sc-h1: rgba(110, 90, 232, 0.44);
+    --sc-h2: rgba(30, 158, 146, 0.38);
+    --sc-h3: rgba(79, 116, 232, 0.3);
+    --sc-h4: rgba(225, 104, 140, 0.22);
+    --sc-c1: rgba(232, 155, 46, 0.46);
+    --sc-c2: rgba(239, 198, 63, 0.4);
+    --sc-c3: rgba(224, 96, 70, 0.3);
+    --sc-c4: rgba(225, 104, 140, 0.24);
+    --sc-pour: color-mix(in srgb, var(--ground) 80%, transparent);
+  }
+}
+:root[data-theme="dark"] .scene {
+  --sc-h1: rgba(139, 108, 255, 0.55);
+  --sc-h2: rgba(43, 212, 180, 0.45);
+  --sc-h3: rgba(77, 134, 255, 0.36);
+  --sc-h4: rgba(255, 110, 150, 0.28);
+  --sc-c1: rgba(255, 170, 51, 0.55);
+  --sc-c2: rgba(255, 215, 92, 0.45);
+  --sc-c3: rgba(255, 107, 66, 0.36);
+  --sc-c4: rgba(255, 110, 150, 0.3);
+  --sc-pour: color-mix(in srgb, var(--ground) 78%, transparent);
+}
+:root[data-theme="light"] .scene {
+  --sc-h1: rgba(110, 90, 232, 0.44);
+  --sc-h2: rgba(30, 158, 146, 0.38);
+  --sc-h3: rgba(79, 116, 232, 0.3);
+  --sc-h4: rgba(225, 104, 140, 0.22);
+  --sc-c1: rgba(232, 155, 46, 0.46);
+  --sc-c2: rgba(239, 198, 63, 0.4);
+  --sc-c3: rgba(224, 96, 70, 0.3);
+  --sc-c4: rgba(225, 104, 140, 0.24);
+  --sc-pour: color-mix(in srgb, var(--ground) 80%, transparent);
+}
+
+/* --------------------------- the static facade ---------------------------
+   A no-script stand-in for the resting home sky (#70): the four blobs at
+   their keyframe-0 positions as radial gradients (blob 4 at its resting 40%
+   opacity). The live sky's drift keyframes start from these same positions,
+   so the crossfade when the module arrives reads as the sky waking up. */
+.scn-static {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(
+      circle calc(min(62vw, 560px) / 2) at calc(-12vw + min(62vw, 560px) / 2)
+        calc(-20vh + min(62vw, 560px) / 2),
+      var(--sc-h1),
+      transparent
+    ),
+    radial-gradient(
+      circle calc(min(55vw, 520px) / 2) at calc(114vw - min(55vw, 520px) / 2)
+        calc(-6vh + min(55vw, 520px) / 2),
+      var(--sc-h2),
+      transparent
+    ),
+    radial-gradient(
+      circle calc(min(66vw, 600px) / 2) at calc(18vw + min(66vw, 600px) / 2)
+        calc(132vh - min(66vw, 600px) / 2),
+      var(--sc-h3),
+      transparent
+    ),
+    radial-gradient(
+      circle calc(min(34vw, 320px) / 2) at calc(42vw + min(34vw, 320px) / 2)
+        calc(4vh + min(34vw, 320px) / 2),
+      color-mix(in srgb, var(--sc-h4) 40%, transparent),
+      transparent
+    );
+}
+
+/* ------------------------------- the pour -------------------------------- */
+.scn-pour {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(
+    to right,
+    var(--sc-pour) 0,
+    var(--sc-pour) var(--scene-edge, calc(50% + var(--scene-content-w) / 2)),
+    transparent
+      calc(var(--scene-edge, calc(50% + var(--scene-content-w) / 2)) + 140px)
+  );
+}
