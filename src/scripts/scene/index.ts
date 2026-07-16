@@ -333,9 +333,8 @@ function mount(container: HTMLElement): SceneHandle {
   let lastT = 52000;
   /* production delta (perf, identical math): the lab computed three sins
      per cell per tick; the terms are separable by column, row and diagonal,
-     so they precompute into these per-tick (sized per resize). Measured on
-     the built dist: the 2560x1440 dpr2 worst case fell back inside the 4ms
-     tick budget. */
+     so they precompute into these per-tick (sized per resize). Tick
+     distributions measured on the built dist live in the B1 report. */
   let sinCol = new Float32Array(0);
   let sinRow = new Float32Array(0);
   let sinDiag = new Float32Array(0);
@@ -344,8 +343,18 @@ function mount(container: HTMLElement): SceneHandle {
     return bgMode ? Math.min(placement.intensity, 0.12) : placement.intensity;
   }
 
-  /* whisper dims the whole field so it can sit behind a page (lab curve) */
+  /* whisper dims the whole field so it can sit behind a page (lab curve).
+     Hidden documents never tick CSS transitions (the 400ms fade would stall
+     at 0 until first visibility, verified on rendered validation), so when
+     hidden the value lands instantly and the fade is restored for future
+     changes on the next rendered frame, which by definition is visible. */
   function applyAlpha() {
+    if (document.hidden) {
+      canvas.style.transition = "none";
+      requestAnimationFrame(() => {
+        canvas.style.transition = "";
+      });
+    }
     canvas.style.opacity = (0.12 + 0.88 * Math.min(eff() / 0.45, 1)).toFixed(2);
   }
 
@@ -704,32 +713,44 @@ function mount(container: HTMLElement): SceneHandle {
   cleanups.push(() => unDpr?.());
 
   /* --------------------------------- boot --------------------------------
-     Staged across frames so no single task can cross the long-task line on
-     a throttled mobile trace (#70: TBT ~0 must hold even though init lands
-     inside the Lighthouse window). The DOM was built above; sizing and
-     sampling land in one frame, the first paint + facade handoff in the
-     next, and the canvas fade-in target a frame after its initial 0 so the
-     400ms transition actually runs (instant under reduced motion). */
-  requestAnimationFrame(() => {
-    if (destroyed) return;
+     Staged so no single task can cross the long-task line on a throttled
+     mobile trace (#70: TBT ~0 must hold even though init lands inside the
+     Lighthouse window): sizing + sampling in one stage, the first paint +
+     facade handoff in the next, the canvas fade-in target after its
+     committed 0 so the 400ms transition actually runs (instant under
+     reduced motion).
+
+     Stage boundaries prefer a frame (rAF: work splits across paints on
+     visible tabs and the fade reads properly) but MUST NOT depend on one:
+     rendering opportunities are suppressed in backgrounded tabs and can be
+     starved right after a client-side navigation (view-transition cover),
+     which rendered validation caught twice (a remount stuck at opacity 0;
+     a background tab that never booted at all). Each stage races rAF
+     against a wall-clock timeout, first one wins; a hidden tab completes
+     the boot on throttled timers with one cheap settled frame while the
+     runner itself stays paused until visibility (update()). */
+  function defer(fn: () => void, ms: number) {
+    let done = false;
+    const once = () => {
+      if (done || destroyed) return;
+      done = true;
+      fn();
+    };
+    requestAnimationFrame(once);
+    window.setTimeout(once, ms);
+  }
+
+  defer(() => {
     resize();
     lum(cur); // sample the mark off the paint path
-    requestAnimationFrame(() => {
-      if (destroyed) return;
+    defer(() => {
       ready = true;
       staticFrame(); // the first painted frame (a settled still under RM)
       container.classList.add("live"); // fades the facade sky out
       update(); // starts the runner (visibility and reduced motion permitting)
-      requestAnimationFrame(applyAlpha);
-      /* rendering opportunities can be starved right after a client-side
-         navigation (view-transition cover, backgrounded tabs), and opacity
-         is set exactly once: a wall-clock net so the tide can never be left
-         invisible. On the happy path this re-sets the same value, a no-op
-         that does not restart the fade. Found on rendered validation: the
-         /about round-trip remount landed with the canvas stuck at 0. */
-      window.setTimeout(applyAlpha, 600);
-    });
-  });
+      defer(applyAlpha, 600);
+    }, 300);
+  }, 300);
 
   /* ------------------------------ handle API ----------------------------- */
 
