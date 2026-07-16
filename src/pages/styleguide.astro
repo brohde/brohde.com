@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Topbar from "@/components/Topbar.astro";
 
 // Specimen page (D4 pattern). Forces both grounds side by side regardless of
 // system scheme, so a token change can be eyeballed in light and dark at once.
@@ -27,8 +26,16 @@ const themes = [
 
 <BaseLayout title="styleguide" noindex={true}>
   <section class="screen" data-screen="styleguide" tabindex="-1">
-    <Topbar label="styleguide" />
     <main id="main" class="wrap aboutpad">
+      <div class="atop">
+        <a class="homechip" href="/">
+          <span class="br" aria-hidden="true">[</span>home<span
+            class="br"
+            aria-hidden="true">]</span
+          >
+        </a>
+        <span class="tbl">styleguide</span>
+      </div>
       <h1 class="arttitle">styleguide</h1>
       <p class="cmt">
         # design tokens + component specimens, forced into both grounds (#40).

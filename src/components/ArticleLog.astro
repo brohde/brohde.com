@@ -34,7 +34,6 @@ const posts = (await getCollection("articles", ({ data }) => !data.draft)).sort(
           href={post.data.external}
           target="_blank"
           rel="noopener"
-          aria-label={`${post.data.title} (external, opens in a new tab)`}
         >
           <span class="lts">{isoDate(post.data.date)}</span>
           <span class="lttl">
@@ -42,6 +41,9 @@ const posts = (await getCollection("articles", ({ data }) => !data.draft)).sort(
             <span class="ext" aria-hidden="true">
               &#8599;
             </span>
+            {/* sr suffix instead of an aria-label override, so the accessible
+                name always contains the visible text (speech input) */}
+            <span class="sr"> (external, opens in a new tab)</span>
           </span>
         </a>
       ) : (

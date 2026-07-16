@@ -554,26 +554,9 @@ html.cfocus .wordmark .caret {
   padding-bottom: 36px;
 }
 
-/* ----------------- alternate screens (chat, about) ----------------------- */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: color-mix(in srgb, var(--ground) 90%, transparent);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid var(--line);
-}
-@supports not (background: color-mix(in srgb, red 50%, blue)) {
-  .topbar {
-    background: var(--ground);
-  }
-}
-.tbrow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 52px;
-}
+/* ------------------------ the chat screen bits --------------------------- */
+/* [esc] back lives in the expanded slab's head (chat); .tbl is the dim
+   right-hand label shared with the .atop bars. */
 .backbtn {
   display: inline-flex;
   align-items: center;
@@ -699,7 +682,11 @@ html.cfocus .wordmark .caret {
 }
 .prose a {
   color: var(--accent);
+  /* explicit: Tailwind preflight strips the UA underline, and links inside
+     body text need a non-color affordance (WCAG 1.4.1) */
+  text-decoration: underline;
   text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
 }
 .prose ul,
 .prose ol {
@@ -818,7 +805,10 @@ html.cfocus .wordmark .caret {
   border: 1px solid #33523f;
   box-shadow: 0 0 30px rgba(126, 231, 135, 0.1);
 }
-.tideband .glyphs {
+/* the glyph field is pseudo-element CONTENT (from --glyphs, set inline by
+   TideBand.astro): a pure texture, never document text */
+.tideband::before {
+  content: var(--glyphs, "");
   position: absolute;
   inset: -8px;
   font-family: var(--font-mono);

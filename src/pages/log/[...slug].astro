@@ -49,7 +49,12 @@ const articleLd = {
   <section class="screen" data-screen="log" tabindex="-1">
     <div class="wrap artpad">
       <div class="atop">
-        <a class="homechip" href="/" aria-label="Back to home">
+        {
+          /* no aria-label overrides on the chips: the visible command word IS
+            the accessible name (brackets are aria-hidden), so speech-input
+            users can say what they see */
+        }
+        <a class="homechip" href="/">
           <span class="br" aria-hidden="true">[</span>home<span
             class="br"
             aria-hidden="true">]</span
@@ -88,13 +93,13 @@ const articleLd = {
         </article>
 
         <footer class="aend">
-          <a class="homechip" href="/" aria-label="Back to home">
+          <a class="homechip" href="/">
             <span class="br" aria-hidden="true">[</span>home<span
               class="br"
               aria-hidden="true">]</span
             >
           </a>
-          <a class="homechip" href="/#log" aria-label="Back to the log">
+          <a class="homechip" href="/#log">
             <span class="br" aria-hidden="true">[</span>build.log<span
               class="br"
               aria-hidden="true">]</span

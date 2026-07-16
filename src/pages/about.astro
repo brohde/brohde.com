@@ -1,7 +1,5 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Topbar from "@/components/Topbar.astro";
-import CommandMenu from "@/components/CommandMenu.astro";
 import { SITE, LINKS, COMPANIES } from "@/lib/site";
 
 const description =
@@ -23,47 +21,76 @@ const profilePage = {
 
 <BaseLayout title="About" description={description} jsonLd={profilePage}>
   <section class="screen" id="scr-about" data-screen="about" tabindex="-1">
-    <Topbar label="about.txt" />
-    <main id="main" class="wrap aboutpad">
-      <h1 class="sr">About Brian Rohde</h1>
-      <p class="pline"><span class="p">$</span> cat about.txt</p>
-      <article class="prose">
-        <p>
-          I'm an AI Product Engineer in San Francisco. I ship AI products end to
-          end: model, app, and the infrastructure underneath.
-        </p>
-        <p>
-          I founded <a
-            href={COMPANIES.eightAngle}
-            target="_blank"
-            rel="noopener">Eight Angle</a
-          >, an iOS yoga tracker that detects poses automatically. I trained its
-          47-class pose classifier to 92.2% cross-validated accuracy, and it
-          runs on-device at roughly 20fps.
-        </p>
-        <p>
-          Before that I was Staff Web Engineer at <a
-            href={COMPANIES.gong}
-            target="_blank"
-            rel="noopener">Gong</a
-          >, where I built an LLM translation workflow and replatformed the
-          site. At <a href={COMPANIES.twilio} target="_blank" rel="noopener"
-            >Twilio</a
-          > I was Technical Web Lead and shipped the company's first localized site,
-          twilio.com/ja. Earlier, at the agency <a
-            href={COMPANIES.beyond}
-            target="_blank"
-            rel="noopener">Beyond</a
-          >, I built projects for Facebook (Newsroom, Facebook's first WordPress
-          site) and Google (Android for Work).
-        </p>
-        <p>
-          I'm open to full time roles and freelance projects. If you want an
-          engineer who takes things from idea to production, start a
-          conversation: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
-        </p>
-      </article>
-      <CommandMenu items={["home", "work", "resume"]} label="More commands" />
-    </main>
+    <div class="wrap artpad">
+      <div class="atop">
+        <a class="homechip" href="/">
+          <span class="br" aria-hidden="true">[</span>home<span
+            class="br"
+            aria-hidden="true">]</span
+          >
+        </a>
+        <span class="tbl">brohde.com/about</span>
+      </div>
+      <main id="main">
+        <h1 class="atitle">About</h1>
+        <article class="prose" style="margin-top:0">
+          <p>
+            I'm an AI Product Engineer in San Francisco. I ship AI products end
+            to end: model, app, and the infrastructure underneath.
+          </p>
+          <p>
+            I founded <a
+              href={COMPANIES.eightAngle}
+              target="_blank"
+              rel="noopener">Eight Angle</a
+            >, an iOS yoga tracker that detects poses automatically. I trained
+            its 47-class pose classifier to 92.2% cross-validated accuracy, and
+            it runs on-device at roughly 20fps.
+          </p>
+          <p>
+            Before that I was Staff Web Engineer at <a
+              href={COMPANIES.gong}
+              target="_blank"
+              rel="noopener">Gong</a
+            >, where I built an LLM translation workflow and replatformed the
+            site. At <a href={COMPANIES.twilio} target="_blank" rel="noopener"
+              >Twilio</a
+            > I was Technical Web Lead and shipped the company's first localized site,
+            twilio.com/ja. Earlier, at the agency <a
+              href={COMPANIES.beyond}
+              target="_blank"
+              rel="noopener">Beyond</a
+            >, I built projects for Facebook (Newsroom, Facebook's first
+            WordPress site) and Google (Android for Work).
+          </p>
+          <p>
+            I'm open to full time roles and freelance projects. If you want an
+            engineer who takes things from idea to production, start a
+            conversation: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+          </p>
+        </article>
+
+        <footer class="aend">
+          <a class="homechip" href="/">
+            <span class="br" aria-hidden="true">[</span>home<span
+              class="br"
+              aria-hidden="true">]</span
+            >
+          </a>
+          <a class="homechip" href="/#log">
+            <span class="br" aria-hidden="true">[</span>build.log<span
+              class="br"
+              aria-hidden="true">]</span
+            >
+          </a>
+          <a class="homechip" href={LINKS.resume}>
+            <span class="br" aria-hidden="true">[</span>resume.pdf<span
+              class="br"
+              aria-hidden="true">]</span
+            >
+          </a>
+        </footer>
+      </main>
+    </div>
   </section>
 </BaseLayout>
