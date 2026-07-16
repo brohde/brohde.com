@@ -1,12 +1,25 @@
 ---
+import ThemeToggle from "@/components/ThemeToggle.astro";
+
 /**
  * The site footer (#91): a generic copyright, set in the editorial face on
- * the editorial ground. Replaces the home slab's "Status: open to full time
- * roles + freelance" and "# brohde.com" lines.
+ * the editorial ground, paired with the theme override control (#92).
  *
  * BaseLayout renders this outside .screen, so it is the page's single
  * contentinfo landmark and is identical across page types. /chat opts out
  * via footer={false}: it is the full-window slab, with no editorial ground.
+ * That opt-out is also what removes the theme control from /chat, which is
+ * correct by design (the expanded slab is always-night, so the control would
+ * visibly do nothing there).
+ *
+ * The row (#101): copyright left, control right, one flex line. The control
+ * used to be a FIXED chip bottom-right, which occluded live body text through
+ * the whole scroll on mobile (the content column nearly fills a 390px
+ * viewport, so an opaque overlay anchored to the viewport is never clear of
+ * the text). Docking it here removes the entire occlusion class rather than
+ * mitigating it: an in-flow element cannot overlap anything. It wraps to two
+ * lines only if the row cannot fit, which at the narrowest realistic viewport
+ * (320px) it does not need to.
  *
  * The year is literal on purpose (Brian's exact string). Deriving it from the
  * build date would self-maintain, but that is his call to make, not ours.
@@ -16,5 +29,6 @@
 <footer class="sfoot">
   <div class="wrap">
     <p>&copy; 2026 Brian Rohde</p>
+    <ThemeToggle />
   </div>
 </footer>

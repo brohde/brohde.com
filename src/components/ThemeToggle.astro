@@ -1,17 +1,30 @@
 ---
 /**
- * The theme override control (#92): a fixed editorial chip, bottom right,
- * cycling system -> light/dark override -> back to system. Standalone by
- * design and mounted from BaseLayout, never from EditorialHeader (that
- * component is owned by parallel work). All state semantics, persistence,
- * and the after-swap re-stamp live in src/scripts/theme.ts; the pre-paint
- * gate in BaseLayout stamps html[data-theme] so a stored override never
- * flashes.
+ * The theme override control (#92): an editorial chip cycling
+ * system -> light/dark override -> back to system. All state semantics,
+ * persistence, and the after-swap re-stamp live in src/scripts/theme.ts; the
+ * pre-paint gate in BaseLayout stamps html[data-theme] so a stored override
+ * never flashes.
+ *
+ * Placement (#101): mounted from SiteFooter as a normal in-flow child of the
+ * footer row (copyright left, control right), NOT from BaseLayout as a fixed
+ * overlay. The fixed version was a mobile defect: the content column nearly
+ * fills a 390px viewport, so an opaque chip pinned to the viewport sat over
+ * live body text for the entire scroll, not just at the page bottom. In flow
+ * it cannot overlap anything, so the whole class of bug is gone rather than
+ * mitigated. Cost accepted in #101: the footer is below the fold, which is
+ * less discoverable than top chrome, but the site has no shared site-wide
+ * header to dock into.
+ *
+ * Because the footer is what carries it, /chat (footer={false}) simply has no
+ * control, which is the behavior #92 wanted there anyway. No hiding rule is
+ * needed: the node is never rendered.
  *
  * This component carries markup + style only, no <script>: theme.ts is
  * imported by BaseLayout's single hydration point alongside terminal.ts, per
- * the one-deferred-module contract in that file. The control is a singleton
- * mounted once from the layout, so it never needs its own entry.
+ * the one-deferred-module contract in that file. theme.ts delegates its click
+ * handler on document against #themectl, so the node's position in the DOM is
+ * irrelevant to it.
  *
  * The visible label always reflects the current state with zero JS: all
  * three labels are server-rendered and CSS keyed on html[data-theme] shows
@@ -22,9 +35,9 @@
  *
  * Material: the control recolors the PAGE, so it sits on the page ground in
  * the bracket-control idiom; it is never phosphor (#67: phosphor is the
- * machine's material, and the machine ignores this control). Hidden on
- * /chat: the expanded slab is always-night, so a theme control there would
- * visibly do nothing (#91 exempts /chat from editorial chrome the same way).
+ * machine's material, and the machine ignores this control). The hover fill
+ * comes from the unified bracket rule in terminal.css, shared with .cbtn and
+ * .backbtn, so the three can never drift.
  *
  * Copy: bracket-label tokens stay lowercase (#76); no dashes (#18); never
  * the t-word in visitor-facing copy (#58).
@@ -40,18 +53,18 @@
 </button>
 
 <style>
+  /* In flow in the footer row: no position, no z-index, no opaque background
+     to hide anything behind (#101). The border keeps it reading as a control
+     rather than as more footer text, which is what the copyright beside it
+     already is. */
   .themectl {
-    position: fixed;
-    right: 12px;
-    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-    z-index: 40; /* above page content, always below the #wipe cover (99) */
     display: inline-flex;
     align-items: center;
     min-height: 44px;
     padding: 0 10px;
     border: 1px solid var(--line);
     border-radius: 7px;
-    background: var(--ground);
+    background: none;
     color: var(--dim); /* the brackets */
     font-family: var(--font-mono);
     font-size: 12.5px;
@@ -59,13 +72,6 @@
   }
   .lbl {
     color: var(--accent);
-  }
-  /* the unified bracket-control treatment (terminal.css): label fills with
-     the accent on hover/focus-visible, brackets stay put */
-  .themectl:hover .lbl,
-  .themectl:focus-visible .lbl {
-    background: var(--accent);
-    color: var(--on-accent);
   }
 
   /* one visible label, keyed on the pre-paint html[data-theme] stamp */
@@ -76,11 +82,5 @@
   :global(html[data-theme="light"]) .tlab-light,
   :global(html[data-theme="dark"]) .tlab-dark {
     display: inline;
-  }
-
-  /* /chat is the expanded slab: always night, nothing editorial to recolor,
-     and the chip would float over the phosphor screen */
-  :global(body:has([data-screen="chat"])) .themectl {
-    display: none;
   }
 </style>

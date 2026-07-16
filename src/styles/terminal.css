@@ -175,14 +175,18 @@ html.cfocus .wordmark .caret {
 }
 
 /* Unified fill treatment for EVERY bracket-style interactive element:
-   command menu + keybar (.cbtn), back button (.backbtn). On hover and
-   focus-visible the label fills with the accent and flips to ground-colored
-   text; the brackets stay accent (prototype treatment from build-log-v3.html).
+   command menu + keybar (.cbtn), back button (.backbtn), theme control
+   (.themectl, folded in with #101 when it docked into the footer and its
+   local copy of this rule became a duplicate). On hover and focus-visible the
+   label fills with the accent and flips to ground-colored text; the brackets
+   stay put (prototype treatment from build-log-v3.html).
    One rule so they can never drift. */
 .cbtn:hover .lbl,
 .cbtn:focus-visible .lbl,
 .backbtn:hover .lbl,
-.backbtn:focus-visible .lbl {
+.backbtn:focus-visible .lbl,
+.themectl:hover .lbl,
+.themectl:focus-visible .lbl {
   background: var(--accent);
   color: var(--on-accent);
   text-decoration: none;
@@ -572,9 +576,27 @@ html.cfocus .wordmark .caret {
    Editorial face on the editorial ground. Dim ink holds 7.19:1 (night) and
    7.97:1 (light) against the ground, past the 4.5:1 AA floor. Static and
    server rendered above the fold boundary of nothing, so CLS stays 0. */
+/* The row (#101) also carries the theme control (#92), which used to be a
+   fixed overlay and occluded body text through the whole scroll on mobile.
+   Copyright left, control right, on one line: measured 38px of clearance at
+   320px, the narrowest realistic viewport. flex-wrap is a safety valve only,
+   and its real trigger is a LONGER COPYRIGHT STRING, not a text-size change
+   (this face is sized in px, so a root font-size preference cannot move it;
+   page zoom scales the whole row together and reflow is covered by the 320px
+   case above). Verified: at 320px a string long enough to close the gap
+   stacks the control onto its own line instead of colliding.
+   The bottom padding clears the iOS home indicator now that a real touch
+   target, not just text, ends the page. */
 .sfoot {
   border-top: 1px solid var(--line);
-  padding: 18px 0 28px;
+  padding: 18px 0 calc(28px + env(safe-area-inset-bottom, 0px));
+}
+.sfoot .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
 }
 .sfoot p {
   margin: 0;
