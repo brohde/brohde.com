@@ -1,0 +1,19 @@
+# Cloudflare Pages config (config-as-code) for the brohde-com Pages project.
+#
+# Scope: this exists so the chat Pages Function (functions/api/chat.ts) runs correctly.
+# The static build is unchanged (build command `npm run build` -> `dist`, set in the
+# dashboard; pages_build_output_dir just mirrors it here).
+#
+# compatibility_flags: the @anthropic-ai/sdk bundle resolves cleanly on workerd, but
+# `nodejs_compat` is declared so any node: builtin the SDK reaches for is available in
+# production, matching the local `wrangler pages dev` run used to validate this.
+#
+# Secrets/bindings are NOT declared here (they carry values/ids): ANTHROPIC_API_KEY (and
+# later TURNSTILE_SECRET) are Pages secrets set in the dashboard; the CHAT_RL KV namespace
+# binding is added in the dashboard (or as a [[kv_namespaces]] block once its id exists).
+# ANTHROPIC_BASE_URL (AI Gateway) is a plain env var, dashboard or here, when wired.
+
+name = "brohde-com"
+pages_build_output_dir = "dist"
+compatibility_date = "2025-05-01"
+compatibility_flags = ["nodejs_compat"]
