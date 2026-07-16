@@ -2,6 +2,7 @@
 import { ClientRouter } from "astro:transitions";
 import SEO from "@/components/SEO.astro";
 import Analytics from "@/components/Analytics.astro";
+import SiteFooter from "@/components/SiteFooter.astro";
 import { SITE } from "@/lib/site";
 import "@/styles/global.css";
 // Editorial face (#67/#20): same hashed assets the @font-face rules in
@@ -70,6 +71,12 @@ interface Props {
   ogType?: "website" | "article" | "profile";
   noindex?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /**
+   * Render the site footer (#91). Default true: every editorial page type
+   * gets the same contentinfo. /chat passes false, being the full-window
+   * slab with no editorial ground under it.
+   */
+  footer?: boolean;
 }
 
 const props = Astro.props;
@@ -155,6 +162,7 @@ const props = Astro.props;
   <body>
     <a href="#main" class="sr">skip to content</a>
     <slot />
+    {props.footer !== false && <SiteFooter />}
     <Analytics />
     {
       /*

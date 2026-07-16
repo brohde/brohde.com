@@ -105,11 +105,33 @@ html.cfocus .wordmark .caret {
   max-width: 52ch;
   text-wrap: pretty;
 }
-.cco a {
+/* Header links (Brian's 2026-07-15 review). The lead's preferred rest state
+   was accent ink with NO underline, but that fails WCAG 1.4.1/G183 in these
+   mixed-text lines: accent vs the surrounding ink measures 1.18:1 (night)
+   and 2.23:1 (light), far under the 3:1 G183 requires, so color alone can
+   never mark these links. Shipped fallback: the rest underline stays as the
+   non-color affordance but drops to 65% accent alpha; hover and
+   focus-visible bring it to full accent ink.
+   Why 65% and not the ~40% first tried: this underline is now the ONLY
+   at-rest affordance, so it has to carry the burden color failed. Composited
+   over the ground, 40% lands at 2.89:1 (night) and 1.97:1 (light), i.e.
+   invisible on paper, which quietly re-creates the color-only failure the
+   fallback exists to prevent. 65% is the lowest 5% step that clears 3:1 on
+   BOTH grounds (5.69:1 night, 3.25:1 light) while still reading clearly
+   softer than the full-ink hover (12.05:1 / 7.20:1). One alpha, not a
+   per-ground media query, so an explicit theme override cannot strand it.
+   Thickness is 1px in every state (the old rest-1px-to-hover-2px read as
+   duplicative, Brian's note); offset 3px; .cprofiles keeps its 44px touch
+   targets. Browsers without color-mix keep the full-ink underline
+   (declaration order below). */
+.cco a,
+.cprofiles a {
   color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
+  text-decoration-color: var(--accent);
+  text-decoration-color: color-mix(in srgb, var(--accent) 65%, transparent);
 }
 .cprofiles {
   list-style: none;
@@ -125,20 +147,24 @@ html.cfocus .wordmark .caret {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  text-decoration-thickness: 1px;
 }
 .cco a:hover,
 .cco a:focus-visible,
 .cprofiles a:hover,
 .cprofiles a:focus-visible {
-  text-decoration-thickness: 2px;
+  text-decoration-color: var(--accent);
+}
+/* "(contract)" in the companies line (Brian's 2026-07-15 review): one size
+   step down from .cco's 15.5px, one ink step softer (ink to dim). Dim holds
+   7.19:1 night / 7.97:1 light against the ground, past the 4.5:1 AA floor. */
+.cnote {
+  font-size: 13.5px;
+  color: var(--dim);
 }
 /* external marker (#68): the ↗ is never underlined, label only. inline-block
    keeps it outside any underline (underlines don't propagate into
-   inline-block descendants). Shared with the ledger's external entries. */
+   inline-block descendants). Used by the ledger's external entries; the
+   header's ↗ markers are removed for now (Brian's 2026-07-15 review). */
 .ext {
   display: inline-block;
   text-decoration: none;
@@ -188,6 +214,12 @@ html.cfocus .wordmark .caret {
   margin-top: 6px;
 }
 
+/* Roomier prompt (Brian's 2026-07-15 review, #89b). Height is driven by the
+   input's own padding, not these min-heights, so the step lives there: 13px
+   to 17px per side takes the field from ~52px to ~60px, one 8px move on the
+   4px grid. Deliberate, but not a jump. The min-heights below track it as a
+   floor. Font stays 16px: that is the iOS no-zoom floor and the mono scale is
+   shared with the styleguide specimen. */
 .prompt {
   display: flex;
   align-items: center;
@@ -196,7 +228,7 @@ html.cfocus .wordmark .caret {
   background: var(--well);
   border-radius: 8px;
   padding: 2px 14px;
-  min-height: 52px;
+  min-height: 60px;
 }
 .prompt:focus-within {
   border-color: var(--accent);
@@ -219,7 +251,7 @@ html.cfocus .wordmark .caret {
   font-size: 16px; /* >=16px: never zooms on iOS focus */
   line-height: 1.4;
   caret-color: var(--accent);
-  padding: 13px 0;
+  padding: 17px 0; /* #89b: the roomier field, see .prompt above */
 }
 .prompt input::placeholder {
   color: transparent;
@@ -425,7 +457,7 @@ html.cfocus .wordmark .caret {
   background: none;
   border-radius: 0;
   padding: 2px 0;
-  min-height: 50px;
+  min-height: 58px; /* #89b: tracks the base prompt's 8px step */
 }
 .slab .prompt:focus-within {
   border-color: var(--line);
@@ -530,17 +562,25 @@ html.cfocus .wordmark .caret {
   margin-left: 6px;
 }
 
-.status {
+/* --------------------------- site footer (#91) --------------------------- */
+/* Replaces the home slab's status + "# brohde.com" lines, which were mono
+   chrome sitting inside the homepage wrap. This is a real site footer: it
+   renders from BaseLayout OUTSIDE .screen, so it is never nested in a
+   section and therefore always maps to the one contentinfo landmark, the
+   same on every editorial page type. /chat opts out (footer={false}): it is
+   the full-window slab and has no editorial ground to sit on.
+   Editorial face on the editorial ground. Dim ink holds 7.19:1 (night) and
+   7.97:1 (light) against the ground, past the 4.5:1 AA floor. Static and
+   server rendered above the fold boundary of nothing, so CLS stays 0. */
+.sfoot {
   border-top: 1px solid var(--line);
-  margin-top: 44px;
-  padding-top: 12px;
-  color: var(--dim);
-  font-size: 12px;
-  font-family: var(--font-mono);
+  padding: 18px 0 28px;
 }
-.proto {
-  font-size: 11.5px;
-  margin: 6px 0 0;
+.sfoot p {
+  margin: 0;
+  font-family: var(--font-edit);
+  font-size: 13.5px;
+  color: var(--dim);
 }
 .homepad {
   padding-top: 4px;

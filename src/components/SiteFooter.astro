@@ -1,0 +1,20 @@
+---
+/**
+ * The site footer (#91): a generic copyright, set in the editorial face on
+ * the editorial ground. Replaces the home slab's "Status: open to full time
+ * roles + freelance" and "# brohde.com" lines.
+ *
+ * BaseLayout renders this outside .screen, so it is the page's single
+ * contentinfo landmark and is identical across page types. /chat opts out
+ * via footer={false}: it is the full-window slab, with no editorial ground.
+ *
+ * The year is literal on purpose (Brian's exact string). Deriving it from the
+ * build date would self-maintain, but that is his call to make, not ours.
+ */
+---
+
+<footer class="sfoot">
+  <div class="wrap">
+    <p>&copy; 2026 Brian Rohde</p>
+  </div>
+</footer>
