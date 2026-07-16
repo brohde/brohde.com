@@ -104,14 +104,23 @@ export async function chat(message, history = []) {
 // Serve the POC UI + endpoint only when run directly (eval.mjs imports chat()).
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const INDEX = readFileSync(path.join(here, "index.html"));
-  // dev-only CORS so the Astro dev site (localhost:4321) can use the live POC
-  const CORS = {
-    "access-control-allow-origin": "http://localhost:4321",
-    "access-control-allow-methods": "POST, OPTIONS",
-    "access-control-allow-headers": "content-type",
+  // dev-only CORS: trust any localhost origin — the Astro dev site (4321) and
+  // lead review previews on whatever port astro preview lands on. This server
+  // is never deployed; production chat is same-origin via the Pages Function.
+  const corsFor = (req) => {
+    const o = req.headers.origin || "";
+    return {
+      "access-control-allow-origin": /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(o)
+        ? o
+        : "http://localhost:4321",
+      "access-control-allow-methods": "POST, OPTIONS",
+      "access-control-allow-headers": "content-type",
+      vary: "origin",
+    };
   };
   http
     .createServer(async (req, res) => {
+      const CORS = corsFor(req);
       if (req.method === "OPTIONS") {
         res.writeHead(204, CORS);
         return res.end();
