@@ -1,0 +1,38 @@
+---
+/**
+ * Glyph tide hero band, STATIC FACADE stage (#59 via the #70 contract).
+ * The band is always-night phosphor glass with a server-rendered glyph field:
+ * zero script, zero layout shift, decorative only (aria-hidden). The live
+ * tide (per-page palette, image-derived glyphs, per-character animation)
+ * replaces the field in its own phase; this component is its reserved slot.
+ * The field is seeded from the page slug so each article gets a stable,
+ * deterministic texture (no build-to-build churn).
+ */
+interface Props {
+  /** seed for the deterministic glyph field, e.g. the article id */
+  seed: string;
+}
+const { seed } = Astro.props;
+
+const BLOCKS = ["░", "▒", "▓", "█"];
+const CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+let h = 2166136261;
+for (const c of seed) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0 || 1;
+
+const tokens: string[] = [];
+for (let i = 0; i < 380; i++) {
+  h = (Math.imul(h, 1103515245) + 12345) >>> 0;
+  tokens.push(
+    BLOCKS[h % BLOCKS.length],
+    " ",
+    CHARS[(h >>> 8) % CHARS.length] + CHARS[(h >>> 16) % CHARS.length],
+    " "
+  );
+}
+const glyphs = tokens.join("");
+---
+
+<div class="tideband" aria-hidden="true">
+  <div class="glyphs">{glyphs}</div>
+</div>

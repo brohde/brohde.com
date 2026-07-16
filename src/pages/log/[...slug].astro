@@ -1,10 +1,16 @@
 ---
 import { getCollection, render } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Topbar from "@/components/Topbar.astro";
-import CommandMenu from "@/components/CommandMenu.astro";
+import TideBand from "@/components/TideBand.astro";
 import { SITE, logHref, logStamp, isoDate } from "@/lib/site";
 
+/**
+ * Article page, #67 C variant: editorial reading surface (Circular via
+ * .prose/.atitle) on the system ground; every terminal moment is a piece of
+ * the phosphor screen (the homechips, the tide band facade, pre excerpts).
+ * SEO/JSON-LD/RSS behavior unchanged from the previous layout; internal
+ * navigation keeps the wipe (#64, articles are never a morph pair).
+ */
 export async function getStaticPaths() {
   // External entries live off-site: no page is generated for them.
   const posts = await getCollection(
@@ -16,7 +22,7 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
-const { title, description, date } = post.data;
+const { title, description, date, stats } = post.data;
 
 const canonical = new URL(logHref(post.id), SITE.url).href;
 
@@ -41,28 +47,61 @@ const articleLd = {
   jsonLd={articleLd}
 >
   <section class="screen" data-screen="log" tabindex="-1">
-    <Topbar label={`log/${post.id}`} />
-    <main id="main" class="wrap aboutpad">
-      <article>
-        <p class="artmeta">
-          <span class="p" aria-hidden="true">$</span> cat {logHref(post.id)}
-        </p>
-        <h1 class="arttitle">{title}</h1>
-        <p class="artmeta">
-          <time datetime={isoDate(date)}>{logStamp(date)}</time>
-        </p>
-        {
-          description && (
-            <p class="prose" style="margin-top:10px">
-              {description}
-            </p>
-          )
-        }
-        <div class="prose">
-          <Content />
-        </div>
-      </article>
-      <CommandMenu items={["home", "work", "about"]} label="More commands" />
-    </main>
+    <div class="wrap artpad">
+      <div class="atop">
+        <a class="homechip" href="/" aria-label="Back to home">
+          <span class="br" aria-hidden="true">[</span>home<span
+            class="br"
+            aria-hidden="true">]</span
+          >
+        </a>
+        <span class="tbl">brohde.com/log</span>
+      </div>
+
+      <TideBand seed={post.id} />
+
+      <main id="main">
+        <article>
+          <p class="adate">
+            <time datetime={isoDate(date)}>{logStamp(date)}</time>{" "}
+            <span aria-hidden="true">·</span> build.log
+          </p>
+          <h1 class="atitle">{title}</h1>
+
+          {
+            stats && (
+              <div class="astats" role="group" aria-label="Key numbers">
+                {stats.map((s) => (
+                  <div class="astat">
+                    <span class="n">{s.n}</span>
+                    <span class="l">{s.label}</span>
+                  </div>
+                ))}
+              </div>
+            )
+          }
+
+          <div class="prose" style="margin-top:0">
+            {description && <p>{description}</p>}
+            <Content />
+          </div>
+        </article>
+
+        <footer class="aend">
+          <a class="homechip" href="/" aria-label="Back to home">
+            <span class="br" aria-hidden="true">[</span>home<span
+              class="br"
+              aria-hidden="true">]</span
+            >
+          </a>
+          <a class="homechip" href="/#log" aria-label="Back to the log">
+            <span class="br" aria-hidden="true">[</span>build.log<span
+              class="br"
+              aria-hidden="true">]</span
+            >
+          </a>
+        </footer>
+      </main>
+    </div>
   </section>
 </BaseLayout>
