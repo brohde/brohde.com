@@ -30,15 +30,19 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 **THE C BUILD IS MERGED TO MAIN (6228713) AND DEPLOYED** — C1 slab+editorial home (26873bb), C2 morph + live chat bridge (1b6ff53, #85), C3 article pages (8206723, #86), C4 chrome unification + straight-100s audit pass (76ac001, #87). Brian approved on the rendered preview (#87). The deployed pages.dev chat UI now talks to the production /api/chat. The old C engineer is RETIRED per #95 (no more resuming it).
 
-## READ THIS FIRST (2026-07-15, late evening: Brian went to sleep mid-session)
+## READ THIS FIRST (2026-07-15, late evening: Brian asleep; work continued and is PUSHED)
 
-**Main has UNPUSHED local merges. Do not push until the chip fix lands + validates.** Both engineer branches are merged into local `main` (`feat/review-change-orders` = chrome/copy #88-#91, `feat/theme-toggle` = #92), BaseLayout conflict resolved by hand (both engineers added to the same two regions: footer renders after the slot as page content, theme control stays last in the DOM for tab order). Build green, 10 pages. The merged combination was audited on the rendered surface and is sound EXCEPT one defect, now being fixed by a fresh Opus engineer in the main checkout (uncommitted): **the fixed theme chip occludes live body text throughout mobile scroll** (13 of 14 sampled depths on an article at 390px), so it docks into the site footer as a static element (#101). When that agent reports: review its diff, commit, push (push = deploy to pages.dev), then tell Brian.
+**Main is pushed and deploying (74f6813). The C build + both engineer branches + the chip fix are all live-bound.** Merged tonight: `feat/review-change-orders` (chrome/copy #88-#91) and `feat/theme-toggle` (#92), BaseLayout conflict resolved by hand, then #101 (chip docks into the footer) on top. Build green, 10 pages, Lighthouse mobile 100/100/100 with TBT 0 / CLS 0 on home, article and /chat (chat SEO 66 = pre-existing `noindex`, by design).
 
-**For Brian when he's up** (all logged, nothing needs him tonight):
-- **His hover question got answered by measurement, not by the lead's opinion, and the lead's answer was WRONG**: color-only marking scored 1.18:1 night / 2.23:1 light against G183's required 3:1, so the fallback shipped (65% rest underline going full ink on hover). See #99. He should be told this plainly since the lead told him the color-only spec was the plan.
-- Theme toggle shipped three-state with two flags for his veto (#100), placement changed by #101.
-- Article visuals direction + asset request list awaits him (artifact 82405b82).
-- Aurora hero geometry (#97) still in flight with the design director.
+**For Brian when he's up** (nothing is blocked on him; all logged):
+1. **His hover question was answered by measurement, and the lead's answer was WRONG.** Color-only link marking scored 1.18:1 night / 2.23:1 light against G183's required 3:1, so the fallback shipped: a 65% rest underline going full ink on hover, 1px in every state (which still kills the duplication he flagged, since the old style thickened to 2px). #99. He was told the color-only spec was the plan, so he should hear this plainly.
+2. **A merge-only audit caught what neither engineer could see alone**: the fixed theme chip occluded live body text through the whole mobile scroll. Fixed by docking it into the footer (#101). The fixing engineer found the defect was WORSE than the audit knew (10/14 overlaps at 768px too), and honestly reported that it could NOT reproduce the audit's homepage claim. Both facts are in the log.
+3. **Open flags for his veto**: three-state toggle cycle (#100); chip brackets staying `--dim` (#102, engineer's evidence reversed the lead's premise); footer grew 67px to 91px to hold a 44px control; `env(safe-area-inset-bottom)` added unasked so a real touch target ends the page on iOS.
+4. **Article visuals**: direction + per-article plan + ASSET REQUEST LIST await him (artifact 82405b82). #98 green-lit archival captures; the lead then found stronger originals already in the repo (see the asset section below).
+5. **Aurora hero geometry (#97)**: design director still in flight on `docs/design/lab/aurora-terminal.html` (uncommitted, do not touch). Republish the aurora artifact after it reports.
+6. **Then dispatch #59/#74**: the aurora + tide site integration, now unblocked (the toggle it was waiting on is merged).
+
+**Known debt, not fixed on purpose**: `BaseLayout.astro` carries pre-existing em dashes in comment blocks (#18 covers comments); the fixing engineer left them rather than add diff noise to a scoped fix. Worth a separate sweep.
 
 **MODEL POLICY (#96)**: Opus for all agents, lower only where the task genuinely doesn't need it. `frontend-engineer.md` was still `model: fable` and BOTH original engineers died mid-work on a Fable out-of-credits API error (they had been mis-reported to Brian as Opus; a subagent's model is fixed at spawn). Definition now `opus`; copywriter + seo-a11y-auditor stay sonnet by choice. **If an agent dies on credits, check the definition's model first.**
 
