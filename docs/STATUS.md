@@ -30,9 +30,9 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 **THE C BUILD IS MERGED TO MAIN (6228713) AND DEPLOYED** — C1 slab+editorial home (26873bb), C2 morph + live chat bridge (1b6ff53, #85), C3 article pages (8206723, #86), C4 chrome unification + straight-100s audit pass (76ac001, #87). Brian approved on the rendered preview (#87). The deployed pages.dev chat UI now talks to the production /api/chat. The old C engineer is RETIRED per #95 (no more resuming it).
 
-## READ THIS FIRST (2026-07-16: ALL WORK STREAMS PAUSED — direction locked, phased plan awaiting Brian's sign-off)
+## READ THIS FIRST (2026-07-16: direction locked #106-#117; D1 + B1 + loading indicator DISPATCHED)
 
-**State: clean freeze.** No agents running. Main is pushed and verified live on pages.dev; everything since is docs. Brian paused all streams to lock direction and align.
+**State: plan approved with Brian's edits (batch 58); three fresh Fable agents in flight** (see agent board below). Main is pushed and verified live on pages.dev. **Model policy #117: design-director + frontend-engineer now FABLE** (amends #96); if a Fable agent dies on credits like yesterday's two, fall back to Opus and tell Brian.
 
 **Direction locked (Brian, 2026-07-16) — decisions #106-#112:**
 
@@ -40,14 +40,23 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 - **Chat is core navigation**: global header on every page — real input at desktop widths, compact control on phones (#107).
 - **Expand-to-full-screen chat is RETIRED** (#108, supersedes #69): a send from the header/homepage navigates to /chat, a normal page with its own theme; designed transitions connect pages (the C2 morph machinery is raw material, not dead code).
 - **Global layout law (#109)**: page content always in the LEFT COLUMN; the right gutter is preserved on EVERY page (homepage, /chat, /about, contact, articles) as the scene's home. Navigation = one persistent scene, pages swap through the left column. Phone widths: scene falls back to the lab's faint background treatment (confirm in D1).
-- **Header nav (#110)**: wordmark (home link) + quiet mono about/contact links, chat right. Wordmark text ("Brian Rohde" per #76 vs "brohde.com") is a design-phase detail.
+- **Header nav (#110)**: wordmark (home link) + quiet mono about/contact links, chat right. Wordmark SETTLED #115: **"brian rohde", lowercase**.
+- **Not a terminal (#116)**: the homepage surface mimics Claude/ChatGPT and stays as is; docs/briefs say "chat surface"/"slab".
 - **Per-article theme identity (#111)**: shared night/light grounds; each article carries its own accent tint + tide mark.
 - **Process (#112)**: phase definitions get Brian's sign-off BEFORE any build, including artifacts.
 
-**Next: two workstreams, phases presented in COMMS batch 57 — dispatch ONLY after Brian approves the plan:**
+**Workstreams (plan approved batch 58; #113 = SEPARATE artifact per D phase):**
 
-- **Design D1-D4** (new "site shell + interior pages" artifact, fresh design-director per phase): D1 global shell (header + gutter + footer, both themes, desktop + mobile) → D2 article template (per-article identity, #97 hero band, article-visuals materials) → D3 core pages + /chat-as-page + homepage adaptation → D4 transitions demo (persistent scene, left-column swaps).
-- **Build B1-B4** (production port; B1 proposed to start in parallel with D1 since the scene is already approved #94): B1 scene module behind the facade pattern (perf budget on built dist) → B2 global shell + retire the expand morph → B3 article template with per-article identities → B4 core pages + chat page conversion. B2-B4 trail the matching design sign-offs.
+- **Design D1-D4** (fresh design-director per phase, one small artifact each): D1 global shell in TWO type treatments (V1 Circular editorial, V2 mono/compact 04 look; final site copy; wordmark "brian rohde") → D2 article template (per-article identity, #97 hero band, article-visuals materials) → D3 core pages + /chat-as-page + homepage adaptation → D4 transitions demo (persistent scene, left-column swaps).
+- **Build B1-B4**: B1 scene module behind the facade pattern with #114 placement spec (mark centered + FIXED in the right gutter on desktop, site background on mobile; scene full-width; perf budget on built dist) → B2 global shell + retire the expand morph → B3 article template with per-article identities → B4 core pages + chat page conversion. B2-B4 trail the matching design sign-offs.
+- **Loading indicator (#116)**: small scoped engineer, chat send indicator, runs now.
+
+## Agent board (2026-07-16)
+
+- **D1 design-director (fable)**: builds `docs/design/lab/shell-d1.html` ONLY (new file; no other edits, no commits). Lead reads, verifies, commits, publishes as a NEW artifact. Validation ports 4380-4389.
+- **B1 frontend-engineer (fable, isolated worktree)**: ports the frozen lab scene to a production module (facade pattern, #114 placement parameterization, homepage ambient placement first). BARRED from chat send/reply UI code paths. Commits on its worktree branch; lead merges. Ports 4360-4369.
+- **Loading-indicator frontend-engineer (fable, isolated worktree)**: #116 chat send indicator. OWNS the chat send/reply UI region; BARRED from facade/idle-hook wiring and scene files. Commits on its worktree branch; lead merges. Ports 4370-4379.
+- All three: browser validation ONLY via Sonnet subagents (#82 extends to Fable agents); no "terminal" in copy or naming (#116); zero em dashes in user-visible copy (#18).
 
 **Still awaiting Brian (unchanged from last night, nothing blocked):** article-visuals asset request list (artifact 82405b82; the 3 Eight Angle captures are priority 1), Eight Angle unconfirmed numbers (now load-bearing in fig.3), veto flags #99-#105 (65% underline, three-state toggle, --dim brackets, footer height + safe-area, hero-geometry split), in-body diagram re-theming question (studio: no), night dimming strength (.9 vs .85).
 
@@ -93,7 +102,7 @@ Done this stretch:
 
 ## Next actions
 
-1. **Brian approves/edits the phased plan** (COMMS batch 57; workstreams D and B in READ THIS FIRST above) → lead dispatches D1 (and B1 if the parallel start is approved).
+1. ~~Brian approves/edits the phased plan~~ APPROVED with edits (batch 58) → D1 + B1 + loading indicator dispatched 2026-07-16. Lead reviews agent deliveries, merges worktrees, publishes the D1 artifact for Brian.
 2. **Chat go-live** (unchanged): Brian sets `ANTHROPIC_API_KEY` (Pages → Settings → Variables and secrets, Secret, Production+Preview) → next push/redeploy activates it → validate `/api/chat` on brohde-com.pages.dev via curl (subagent for any browser check, #82). Turnstile + AI Gateway wiring later; #49 audit before chat is surfaced publicly.
 3. Custom domain cutover at DreamHost when launch-ready (#93).
 
