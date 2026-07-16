@@ -104,7 +104,7 @@ Done this stretch:
 
 ## Next actions
 
-1. ~~Brian approves/edits the phased plan~~ APPROVED with edits (batch 58) → D1 + B1 + loading indicator dispatched 2026-07-16. Lead reviews agent deliveries, merges worktrees, publishes the D1 artifact for Brian.
+1. **B2 proposed (COMMS batch 63), awaiting Brian's go**: Phase 1 global header (two-row, chat input, send → /chat with the question carried over) → Phase 2 /chat as a page in the shell + expand/morph RETIRED → Phase 3 transition polish + scene to /about and articles. Straight to code per #126, fresh Fable engineer per phase.
 2. **Chat go-live** (unchanged): Brian sets `ANTHROPIC_API_KEY` (Pages → Settings → Variables and secrets, Secret, Production+Preview) → next push/redeploy activates it → validate `/api/chat` on brohde-com.pages.dev via curl (subagent for any browser check, #82). Turnstile + AI Gateway wiring later; #49 audit before chat is surfaced publicly.
 3. Custom domain cutover at DreamHost when launch-ready (#93).
 
