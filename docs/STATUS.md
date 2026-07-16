@@ -37,7 +37,7 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 **Direction locked (Brian, 2026-07-16) — decisions #106-#112:**
 
 - **Demo 04 (aurora + image tide, one scene, three placements) IS the site build direction.** The aurora lab (`lab/aurora-terminal.html`) is FROZEN as the reference spec; the scene ports into production through BaseLayout's reserved facade slot. New design work goes in fresh, smaller artifacts (#106).
-- **Chat is core navigation**: global header on every page — real input at desktop widths, compact control on phones (#107).
+- **Chat is core navigation**: global header on every page (#107). Layout per #121: TWO ROWS — identity row (wordmark + links), chat input on its own row below; mobile matches desktop (real input, no compact control).
 - **Expand-to-full-screen chat is RETIRED** (#108, supersedes #69): a send from the header/homepage navigates to /chat, a normal page with its own theme; designed transitions connect pages (the C2 morph machinery is raw material, not dead code).
 - **Global layout law (#109)**: page content always in the LEFT COLUMN; the right gutter is preserved on EVERY page (homepage, /chat, /about, contact, articles) as the scene's home. Navigation = one persistent scene, pages swap through the left column. Phone widths: scene falls back to the lab's faint background treatment (confirm in D1).
 - **Header nav (#110)**: wordmark (home link) + quiet mono about/contact links, chat right. Wordmark SETTLED #115: **"brian rohde", lowercase**.
@@ -47,7 +47,7 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 **Workstreams (plan approved batch 58; #113 = SEPARATE artifact per D phase):**
 
-- **Design D1-D4** (fresh design-director per phase, one small artifact each): D1 global shell in TWO type treatments (V1 Circular editorial, V2 mono/compact 04 look; final site copy; wordmark "brian rohde") → D2 article template (per-article identity, #97 hero band, article-visuals materials) → D3 core pages + /chat-as-page + homepage adaptation → D4 transitions demo (persistent scene, left-column swaps).
+- **Design D1-D4** (fresh design-director per phase, one small artifact each): D1 global shell — EDITORIAL treatment chosen (#119, mono V2 dropped); two-row header (#121); centered container [content | gutter] with full-background drift + gutter-fixed mark (#120); final site copy; wordmark "brian rohde" → D2 article template (per-article identity, #97 hero band, article-visuals materials) → D3 core pages + /chat-as-page + homepage adaptation → D4 transitions demo (persistent scene, left-column swaps).
 - **Build B1-B4**: B1 scene module behind the facade pattern with #114 placement spec (mark centered + FIXED in the right gutter on desktop, site background on mobile; scene full-width; perf budget on built dist) → B2 global shell + retire the expand morph → B3 article template with per-article identities → B4 core pages + chat page conversion. B2-B4 trail the matching design sign-offs.
 - **Loading indicator (#116)**: small scoped engineer, chat send indicator, runs now.
 
