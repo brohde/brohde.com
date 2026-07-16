@@ -1061,6 +1061,27 @@ function setupOnce() {
 
   // per-page setup, on initial load and every VT navigation
   document.addEventListener("astro:page-load", initPage);
+
+  // THE IDLE HOOK (#70 facade contract; first consumer: the aurora + tide
+  // scene, #106/#114). Heavy atmosphere layers lazy-import from here, never
+  // from a tag in BaseLayout: zero bytes on the pre-paint path. When a page
+  // carries a reserved facade ([data-scene]), the scene module loads at idle
+  // (requestIdleCallback, setTimeout fallback for Safari); after the first
+  // import the module re-binds itself across client-side navigations, so
+  // this fires the import exactly once per full page lifetime.
+  let sceneRequested = false;
+  const requestScene = () => {
+    if (sceneRequested || !document.querySelector("[data-scene]")) return;
+    sceneRequested = true;
+    const idle: (cb: () => void) => void =
+      "requestIdleCallback" in window
+        ? (cb) => requestIdleCallback(cb, { timeout: 2500 })
+        : (cb) => window.setTimeout(cb, 1500);
+    idle(() => {
+      void import("@/scripts/scene").then((m) => m.initScene());
+    });
+  };
+  document.addEventListener("astro:page-load", requestScene);
 }
 
 const w = window as unknown as { __terminalInit?: boolean };

@@ -1,0 +1,50 @@
+---
+/**
+ * The aurora + glyph tide scene, STATIC FACADE stage (#106/#114 via the #70
+ * contract). Server-rendered, zero script, aria-hidden, position:fixed: it
+ * reserves the whole background layer up front, so the live scene causes no
+ * shift when it arrives (CLS 0 by construction). What paints here is a CSS
+ * gradient stand-in for the resting home sky plus the pour that keeps the
+ * content column's text AA over the scene (see scene.css).
+ *
+ * The live layer (src/scripts/scene) is lazy-imported from terminal.ts's
+ * idle hook; it finds this container by [data-scene], builds the tide canvas
+ * and drifting sky inside it, and crossfades them in. transition:persist
+ * keeps the live DOM alive across client-side navigations once other pages
+ * carry the scene too (#109: one persistent scene, pages swap through the
+ * left column).
+ *
+ * Per-page identity (#111) is parameterized here and read by the module:
+ *   placement: "ambient" now; hero (#97/#103) and chat placements later.
+ *   theme:     sky palette + tide peak + mark travel identity. B1 ships
+ *              "default" fully; themed sky CSS lands with B3.
+ *   mark:      the tide's source figure. Homepage identity: the 8 (#74).
+ *   state:     home (cold sky) or chat (golden hour).
+ */
+interface Props {
+  placement?: "ambient";
+  theme?: "default" | "eight" | "news" | "android";
+  mark?: "eight" | "logo" | "pose" | "f" | "g";
+  state?: "home" | "chat";
+}
+const {
+  placement = "ambient",
+  theme = "default",
+  mark = "eight",
+  state = "home",
+} = Astro.props;
+---
+
+<div
+  class="scene"
+  data-scene
+  data-scene-placement={placement}
+  data-scene-theme={theme}
+  data-scene-mark={mark}
+  data-scene-state={state}
+  aria-hidden="true"
+  transition:persist="scene"
+>
+  <div class="scn-static"></div>
+  <div class="scn-pour"></div>
+</div>

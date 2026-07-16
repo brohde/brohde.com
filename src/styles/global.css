@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./terminal.css";
+@import "./scene.css";
 
 /* ============================================================================
    brohde.com design tokens
@@ -214,7 +215,12 @@ html {
 
 body {
   margin: 0;
-  background: var(--ground);
+  /* transparent on purpose (#106/#114): html above carries the ground, and
+     the ambient scene is a fixed z-index:-1 layer that must paint between
+     the html ground and the page content. In-flow backgrounds paint above
+     negative z-index layers, so an opaque body background would hide the
+     scene on every page. Zero visual change where no scene is mounted. */
+  background: transparent;
   color: var(--ink);
   font-family: var(--font-mono);
   font-size: 13.5px;

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import EditorialHeader from "@/components/EditorialHeader.astro";
+import Scene from "@/components/Scene.astro";
 import Slab from "@/components/Slab.astro";
 import ArticleLog from "@/components/ArticleLog.astro";
 import { SITE, LINKS, COMPANIES } from "@/lib/site";
@@ -38,6 +39,11 @@ const website = {
 ---
 
 <BaseLayout ogType="profile" jsonLd={[person, website]}>
+  {
+    /* ambient scene (#106/#114): fixed background layer, facade-first (#70).
+    Homepage identity: default palette, the 8 (defaults of Scene.astro). */
+  }
+  <Scene />
   <section class="screen" id="scr-home" data-screen="home" tabindex="-1">
     <div class="wrap homepad">
       <EditorialHeader />
