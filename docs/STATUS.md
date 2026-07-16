@@ -28,7 +28,7 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 ## Agent board (this session)
 
 In flight:
-- **OPTION C BUILD (fable frontend-engineer, worktree a45e93ca…)** — **C1 COMPLETE (26873bb in worktree: editorial homepage + slab, Circular shipped for real per #78, header per #80, Lighthouse 100/0/0, 13/13 keyboard pass; five delivery decisions accepted by lead)**. Now in **C2** (chat-expands-slab morph #69) with the production `/api/chat` client contract relayed (turnstileToken seam later, no widget yet; merge main into the worktree before chat work). Then C3 (article pages) → C4 (polish/audits). Lead merges + validates rendered at the end.
+- **OPTION C BUILD (fable frontend-engineer, worktree a45e93ca…)** — **C1 COMPLETE (26873bb)**, **C2 COMPLETE + ACCEPTED (1b6ff53, #85)**: /chat = the expanded slab, home↔chat morphs as one physical object (`.vtslab` + `data-vt="morph"`, wipe cover never drops for morph, instant under reduced motion), live `/api/chat` bridge off-localhost (error bodies verbatim via text-node-only renderReply; cost line localhost-only; turnstileToken seam marked), `chat` router bug fixed, main merged in at 6d9c1cf. Evidence: 15/15 morph checks, 5/5 bridge renders, Lighthouse 100/0/0 holds. Lead diff review clean (production Function Prettier-only). C4 pickup: far-scrolled long-chat collapse cross-fades more than morphs (design-director pass optional). Now in **C3** (article pages incl. /about, /chat redesign follow-ons, italics evaluation) → C4 (polish/audits). Lead merges + validates rendered at the end.
 
 Done this stretch:
 - **Production chat build (opus) — DONE, merged 4825d0c** per #73/#81: `functions/api/chat.ts` (POC port, parity proven via eval-http: 35/38 = the POC's identical 35/38, all stale labels), build-time prompt codegen from `poc/chat/*.md`, `wrangler.toml` (nodejs_compat), Turnstile graceful-skip, per-IP rate limiting. **KV `CHAT_RL` created + bound (ef0fbe1, #83).** GO-LIVE: waiting only on Brian's `ANTHROPIC_API_KEY` Pages secret + one redeploy after it (any push redeploys). TURNSTILE_SECRET must stay unset until the client sends tokens. Until the key exists, `/api/chat` returns the friendly 503; the deployed site's chat UI still uses the stub, so nothing user-visible breaks. #49 audit still gates public launch.
@@ -46,7 +46,7 @@ Done this stretch:
 ## Next actions
 
 1. **Chat go-live**: Brian sets `ANTHROPIC_API_KEY` (Pages → Settings → Variables and secrets, Secret, Production+Preview) → next push/redeploy activates it → validate `/api/chat` on brohde-com.pages.dev via curl (subagent for any browser check, #82). Turnstile + AI Gateway wiring later; #49 audit before chat is surfaced publicly.
-2. **Option C phases**: review C2 (morph #69) when the agent reports; then C3/C4; merge at the end, validate rendered, update ENGINEERING.md for the C architecture.
+2. **Option C phases**: C2 reviewed + accepted (#85); review C3 (article pages) when the agent reports, then C4; merge at the end, validate rendered (browser checks via subagent, #82), update ENGINEERING.md for the C architecture.
 3. Brian reviews the aurora artifact's 4 new taste flags (COMMS batch 51) → then lead updates `aurora-handoff.md` to trail the file.
 4. Then **#59/#74 aurora + tide site integration** (per-page themes as full-scene identities) after C lands.
 
