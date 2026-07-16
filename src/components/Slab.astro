@@ -1,0 +1,38 @@
+---
+/**
+ * The slab (#67): ONE always-night physical object holding everything
+ * interactive: the title bar, the "$ hello" line, the command menu, the
+ * prompt. Its token scope is fixed night (see .slab in terminal.css), so its
+ * interior never follows the page ground.
+ *
+ * It is the booting screen (#36/#64): the slab never carries .bseq, so it is
+ * fully visible from first paint while "hello" types into its prompt and the
+ * editorial page reveals around it. Chat expansion (#69) morphs this same
+ * object toward full window (phase C2).
+ */
+import CommandMenu from "@/components/CommandMenu.astro";
+import Prompt from "@/components/Prompt.astro";
+
+interface Props {
+  /** prompt key, e.g. "home" (the boot types into in-home) */
+  promptId?: string;
+}
+const { promptId = "home" } = Astro.props;
+---
+
+<section class="slab vtslab" aria-label="Chat">
+  <div class="slabhead">
+    <span>brohde.com · chat</span>
+    <span class="ccstat"><span class="dot" aria-hidden="true"></span>ready</span
+    >
+  </div>
+  <div class="slabbody">
+    <p class="slabhello"><span class="p">$</span> hello</p>
+    <CommandMenu />
+    <Prompt id={promptId} />
+    <p class="cfoot">
+      # Questions open the chat <span aria-hidden="true">·</span> help lists commands
+    </p>
+    <p class="cmt hint" id="hint-top" aria-live="polite"></p>
+  </div>
+</section>

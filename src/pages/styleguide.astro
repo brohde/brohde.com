@@ -1,9 +1,10 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Topbar from "@/components/Topbar.astro";
 
 // Specimen page (D4 pattern). Forces both grounds side by side regardless of
 // system scheme, so a token change can be eyeballed in light and dark at once.
+// The slab specimen renders IDENTICALLY in both panels: it scopes its own
+// fixed night tokens (#67), which is exactly the point.
 // noindex + excluded from the sitemap.
 
 const swatches = [
@@ -23,14 +24,23 @@ const themes = [
 ];
 ---
 
-<BaseLayout title="Styleguide" noindex={true}>
+<BaseLayout title="styleguide" noindex={true}>
   <section class="screen" data-screen="styleguide" tabindex="-1">
-    <Topbar label="Styleguide" />
     <main id="main" class="wrap aboutpad">
-      <h1 class="arttitle">Styleguide</h1>
+      <div class="atop">
+        <a class="homechip" href="/">
+          <span class="br" aria-hidden="true">[</span>home<span
+            class="br"
+            aria-hidden="true">]</span
+          >
+        </a>
+        <span class="tbl">styleguide</span>
+      </div>
+      <h1 class="arttitle">styleguide</h1>
       <p class="cmt">
-        # Design tokens + component specimens, forced into both grounds (#40).
-        This page is noindex and out of the sitemap.
+        # design tokens + component specimens, forced into both grounds (#40).
+        The slab is always night by design (#67). This page is noindex and out
+        of the sitemap.
       </p>
 
       {
@@ -54,46 +64,124 @@ const themes = [
               ))}
             </div>
 
-            <h2 class="sg-h">header</h2>
-            <p class="pline">
-              <span class="p">$</span> hello
-            </p>
-            <p class="wordmark">Brian Rohde</p>
-            <p class="bio">
-              AI Product Engineer <span class="d">·</span> San Francisco
-            </p>
-
-            <h2 class="sg-h">links + commands</h2>
-            <ul class="links">
-              <li>
-                <a class="blink" href="#">
-                  <span class="br">[</span>
-                  <span class="lbl">LinkedIn</span>
-                  <span class="br">]</span>
+            <h2 class="sg-h">editorial identity</h2>
+            <div class="cid" style="padding-top:0">
+              <p class="wordmark" style="margin-bottom:10px">
+                Brian Rohde
+                <span class="caret" aria-hidden="true" />
+              </p>
+              <p class="crole">
+                AI Product Engineer <span class="d">·</span> San Francisco
+              </p>
+              <p class="cco">
+                Founder,{" "}
+                <a href="#">
+                  Eight Angle
+                  <span class="ext" aria-hidden="true">
+                    &#8599;
+                  </span>
                 </a>
-              </li>
-              <li>
-                <a class="blink" href="#">
-                  <span class="br">[</span>
-                  <span class="lbl">Resume</span>
-                  <span class="br">]</span>
-                </a>
-              </li>
-            </ul>
-            <div class="menu">
-              {["work", "about", "resume", "contact"].map((c) => (
-                <span class="cbtn">
-                  <span class="br">[</span>
-                  <span class="lbl">{c}</span>
-                  <span class="br">]</span>
-                </span>
-              ))}
+              </p>
+              <p class="cco">
+                <span class="d">Prev:</span>{" "}
+                <a href="#">
+                  Gong
+                  <span class="ext" aria-hidden="true">
+                    &#8599;
+                  </span>
+                </a>{" "}
+                <span class="d">·</span>{" "}
+                <a href="#">
+                  Twilio
+                  <span class="ext" aria-hidden="true">
+                    &#8599;
+                  </span>
+                </a>{" "}
+                <span class="d">·</span> <a href="#">Facebook</a> +{" "}
+                <a href="#">Google</a> (contract)
+              </p>
+              <ul class="cprofiles">
+                <li>
+                  <a href="#">
+                    LinkedIn
+                    <span class="ext" aria-hidden="true">
+                      &#8599;
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">Resume</a>
+                </li>
+              </ul>
             </div>
 
-            <h2 class="sg-h">prompt + autocomplete</h2>
+            <h2 class="sg-h">the slab (always night, both grounds)</h2>
+            <div class="slab" style="margin-top:0">
+              <div class="slabhead">
+                <span>brohde.com · chat</span>
+                <span class="ccstat">
+                  <span class="dot" aria-hidden="true" />
+                  ready
+                </span>
+              </div>
+              <div class="slabbody">
+                <p class="slabhello">
+                  <span class="p">$</span> hello
+                </p>
+                <div class="menu">
+                  {["work", "about", "resume", "contact"].map((c) => (
+                    <span class="cbtn">
+                      <span class="br">[</span>
+                      <span class="lbl">{c}</span>
+                      <span class="br">]</span>
+                    </span>
+                  ))}
+                </div>
+                <div class="promptzone">
+                  <div class="prompt">
+                    <span class="p">$</span>
+                    <span class="iwrap">
+                      <span style="color:var(--dim);font-size:16px">
+                        Ask me anything…
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                <p class="cfoot">
+                  # Questions open the chat <span aria-hidden="true">·</span>{" "}
+                  help lists commands
+                </p>
+              </div>
+            </div>
+
+            <h2 class="sg-h">ledger entries</h2>
+            <div class="clog" style="margin-top:0">
+              <div class="loghead">
+                <span>build.log</span>
+                <span class="rule" aria-hidden="true" />
+              </div>
+              <span class="lentry">
+                <span class="lts">2026-02-12</span>
+                <span class="lttl">
+                  Eight Angle: I built a 47-class yoga pose classifier that runs
+                  entirely on the phone
+                </span>
+              </span>
+              <span class="lentry">
+                <span class="lts">2018-10-25</span>
+                <span class="lttl">
+                  Re-Introducing the Hackpack v4
+                  <span class="ext" aria-hidden="true">
+                    &#8599;
+                  </span>
+                </span>
+              </span>
+            </div>
+
+            <h2 class="sg-h">autocomplete</h2>
             <div class="promptzone" style="margin-bottom:14px">
               <div class="ac" style="position:static;margin-bottom:8px">
-                <p class="ac-head">Commands · Tab to accept · ↑↓ to cycle</p>
+                <p class="ac-head">Commands · tab to accept · ↑↓ to cycle</p>
                 <ul class="ac-list">
                   <li class="ac-chip" aria-selected="true">
                     <span>work</span>
@@ -113,23 +201,10 @@ const themes = [
               </div>
             </div>
 
-            <h2 class="sg-h">log entry</h2>
-            <div class="log" style="margin-top:0">
-              <span class="entry">
-                <span class="ts">[2026-02-12]</span>
-                <span class="entry-main">
-                  <span class="p">&#10095;</span>{" "}
-                  <span class="ttl">
-                    Building the ML model behind Eight Angle
-                  </span>
-                </span>
-              </span>
-            </div>
-
             <h2 class="sg-h">prose</h2>
             <div class="prose" style="margin-top:0">
               <p>
-                Body copy sets in the sans stack. Metric-first, plain nouns:
+                Body copy sets in the editorial face. Metric-first, plain nouns:
                 47-class classifier at 92.2% accuracy, roughly 20fps on-device.
               </p>
             </div>
@@ -152,9 +227,6 @@ const themes = [
     --line: #2e4a3c;
     --line-strong: #33523f;
     --well: #12201a;
-    --wm-glow:
-      0 0 26px rgba(126, 231, 135, 0.3), 0 0 3px rgba(126, 231, 135, 0.35);
-    --glow-field: rgba(126, 231, 135, 0.07);
     color-scheme: dark;
   }
   .theme-light {
@@ -167,8 +239,6 @@ const themes = [
     --line: #dae0d6;
     --line-strong: #c7d0c4;
     --well: #f1f2ec;
-    --wm-glow: none;
-    --glow-field: rgba(8, 97, 72, 0.05);
     color-scheme: light;
   }
   .sg-panel {

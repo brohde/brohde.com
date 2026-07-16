@@ -24,7 +24,10 @@ const pocDir = path.join(repoRoot, "poc", "chat");
 const outDir = path.join(repoRoot, "functions", "api");
 const outFile = path.join(outDir, "_chat-prompt.generated.ts");
 
-const systemPrompt = readFileSync(path.join(pocDir, "system-prompt.md"), "utf8");
+const systemPrompt = readFileSync(
+  path.join(pocDir, "system-prompt.md"),
+  "utf8"
+);
 const facts = readFileSync(path.join(pocDir, "facts.md"), "utf8");
 const SYSTEM = systemPrompt + "\n\n# FACTS PACK\n\n" + facts;
 

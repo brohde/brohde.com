@@ -24,6 +24,15 @@ const articles = defineCollection({
     // External log entries (Brian's writing published elsewhere). When set,
     // the homepage log links out to this URL and no article page is generated.
     external: z.string().url().optional(),
+    // Lifted stat band under the title (#67 C article variant): the ONLY
+    // designed home for standout numbers besides terminal excerpts; inline
+    // numbers stay in the body face (VOICE.md: numbers persuade, they should
+    // not fight the sentence). Optional; omit for articles without headline
+    // metrics.
+    stats: z
+      .array(z.object({ n: z.string(), label: z.string() }))
+      .max(4)
+      .optional(),
   }),
 });
 

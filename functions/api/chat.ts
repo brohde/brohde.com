@@ -68,7 +68,12 @@ const tools = [
 interface ChatResult {
   text: string;
   open_page: string | null;
-  usage: { input: number; output: number; cache_read: number; cache_write: number };
+  usage: {
+    input: number;
+    output: number;
+    cache_read: number;
+    cache_write: number;
+  };
   cost: number;
 }
 
@@ -92,7 +97,9 @@ async function runChat(
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: 400,
-    system: [{ type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } }],
+    system: [
+      { type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } },
+    ],
     tools,
     messages,
   });
@@ -189,21 +196,29 @@ async function rateLimit(
     const oldest = Math.min(...inMinute);
     return {
       ok: false,
-      retryAfter: Math.max(1, Math.ceil((RL_MINUTE.windowMs - (now - oldest)) / 1000)),
+      retryAfter: Math.max(
+        1,
+        Math.ceil((RL_MINUTE.windowMs - (now - oldest)) / 1000)
+      ),
     };
   }
   if (times.length >= RL_DAY.max) {
     const oldest = Math.min(...times);
     return {
       ok: false,
-      retryAfter: Math.max(1, Math.ceil((RL_DAY.windowMs - (now - oldest)) / 1000)),
+      retryAfter: Math.max(
+        1,
+        Math.ceil((RL_DAY.windowMs - (now - oldest)) / 1000)
+      ),
     };
   }
 
   times.push(now);
   if (env.CHAT_RL) {
     // KV min TTL is 60s; a day keeps the key alive across the daily window then self-expires.
-    await env.CHAT_RL.put(key, JSON.stringify(times), { expirationTtl: 86_400 });
+    await env.CHAT_RL.put(key, JSON.stringify(times), {
+      expirationTtl: 86_400,
+    });
   } else {
     memBuckets.set(key, times);
   }
@@ -248,7 +263,11 @@ async function verifyTurnstile(
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
 
-  let parsed: { message?: unknown; history?: unknown; turnstileToken?: unknown } = {};
+  let parsed: {
+    message?: unknown;
+    history?: unknown;
+    turnstileToken?: unknown;
+  } = {};
   try {
     parsed = (await request.json()) as typeof parsed;
   } catch {
@@ -269,7 +288,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // Rate limit first: the cheapest way to shed a flood before siteverify or the model call.
   const rl = await rateLimit(env, ip);
   if (!rl.ok) {
-    return json({ error: THROTTLED }, 429, { "Retry-After": String(rl.retryAfter) });
+    return json({ error: THROTTLED }, 429, {
+      "Retry-After": String(rl.retryAfter),
+    });
   }
 
   // Turnstile (skipped until TURNSTILE_SECRET is set; see verifyTurnstile).

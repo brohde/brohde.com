@@ -1,25 +1,46 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Topbar from "@/components/Topbar.astro";
 import Prompt from "@/components/Prompt.astro";
 
+/**
+ * The chat screen = the EXPANDED slab (#67/#69): the same always-night
+ * phosphor object from the homepage, grown to the full window. It shares the
+ * slab's view-transition-name (.vtslab), so home <-> chat morphs the one
+ * physical object in both directions; the slab head doubles as the pinned
+ * way back (#24). Copy sentence-cased per #76.
+ */
 const keys = ["home", "help", "clear"];
 ---
 
 <BaseLayout
   title="Chat"
-  description="Ask about Brian Rohde's work. Live chat is coming soon."
+  description="Ask about Brian Rohde's work. Answers come from a live model."
   noindex={true}
 >
-  <section class="screen" id="scr-chat" data-screen="chat" tabindex="-1">
-    <Topbar label="Chat · preview" />
+  <section
+    class="screen slab slab-full vtslab"
+    id="scr-chat"
+    data-screen="chat"
+    tabindex="-1"
+  >
+    <header class="slabhead">
+      <span>brohde.com · chat</span>
+      <span class="ccstat">
+        <a class="backbtn" href="/" data-cmd="home">
+          <span class="br" aria-hidden="true">[</span><span class="lbl"
+            >esc</span
+          ><span class="br" aria-hidden="true">]</span>&nbsp;back
+        </a>
+        <span class="dot" aria-hidden="true"></span>ready
+      </span>
+    </header>
     <main id="main" class="wrap chatwrap">
       <h1 class="sr">Chat</h1>
       <div class="chatlog" id="chatlog">
         {/* on localhost terminal.ts swaps this line for the live-POC note */}
         <p class="cmt" id="chat-note">
-          # The live model (Claude Haiku) ships with the site. This is a
-          preview.
+          # Ask about Brian's work <span aria-hidden="true">·</span> answers come
+          from a live model
         </p>
         <p class="cmt">
           # Type help for commands <span aria-hidden="true">·</span> esc returns home
@@ -43,8 +64,10 @@ const keys = ["home", "help", "clear"];
             ))
           }
         </nav>
-        {/* no placeholder/label overrides: the chat prompt inherits the
-            "ask me anything" invitation copy (#65) */}
+        {
+          /* no placeholder/label overrides: the chat prompt inherits the
+            "ask me anything" invitation copy (#65) */
+        }
         <Prompt id="chat" />
       </div>
     </main>

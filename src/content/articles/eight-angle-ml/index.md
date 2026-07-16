@@ -3,6 +3,13 @@ title: "Eight Angle: I built a 47-class yoga pose classifier that runs entirely 
 description: "How I built and trained the on-device pose classifier behind Eight Angle: 47 classes, 92.2% cross-validated accuracy, zero cloud calls."
 date: 2026-02-12
 draft: false
+stats:
+  - n: "47"
+    label: "pose classes, on-device"
+  - n: "92.2%"
+    label: "cross-validated accuracy"
+  - n: "~20fps"
+    label: "live inference on the phone"
 ---
 
 Eight Angle is an iOS app that watches your yoga practice through the front camera, on-device, and tells you what pose you're in. It records the session, builds a timeline of what you practiced, and turns that into insights and achievements afterward. Free tier, subscription for insights, achievements, and sync ($5.99/month or $39.99/year, with a 7-day trial that starts on your first practice, not on install). It's built to pair with the yoga content people already use, YouTube classes, in-person instruction, not to replace it.

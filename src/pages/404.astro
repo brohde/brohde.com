@@ -1,19 +1,40 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Topbar from "@/components/Topbar.astro";
-import CommandMenu from "@/components/CommandMenu.astro";
 ---
 
 <BaseLayout title="404" noindex={true}>
   <section class="screen" data-screen="404" tabindex="-1">
-    <Topbar label="404" />
-    <main id="main" class="wrap aboutpad">
-      <h1 class="arttitle">Command not found</h1>
-      <p class="prose" style="margin-top:8px">
-        That page is not on the log. Head home and browse the work, or ask a
-        question at the prompt.
-      </p>
-      <CommandMenu items={["home", "work", "about"]} label="Commands" />
-    </main>
+    <div class="wrap artpad">
+      <div class="atop">
+        <a class="homechip" href="/">
+          <span class="br" aria-hidden="true">[</span>home<span
+            class="br"
+            aria-hidden="true">]</span
+          >
+        </a>
+        <span class="tbl">brohde.com</span>
+      </div>
+      <main id="main">
+        <h1 class="atitle">Command not found</h1>
+        <p class="prose" style="margin-top:0">
+          That page is not on the log. Head home and browse the work, or ask a
+          question at the prompt.
+        </p>
+        <footer class="aend">
+          <a class="homechip" href="/">
+            <span class="br" aria-hidden="true">[</span>home<span
+              class="br"
+              aria-hidden="true">]</span
+            >
+          </a>
+          <a class="homechip" href="/#log">
+            <span class="br" aria-hidden="true">[</span>build.log<span
+              class="br"
+              aria-hidden="true">]</span
+            >
+          </a>
+        </footer>
+      </main>
+    </div>
   </section>
 </BaseLayout>

@@ -4,26 +4,38 @@ import SEO from "@/components/SEO.astro";
 import Analytics from "@/components/Analytics.astro";
 import { SITE } from "@/lib/site";
 import "@/styles/global.css";
+// Editorial face (#67/#20): same hashed assets the @font-face rules in
+// global.css resolve to; imported here so the preloads below can't drift
+// from the CSS. Book + Bold are preloaded (used above the fold on every
+// page); Medium loads on demand behind the metric-tuned fallback.
+import circularBook from "@/assets/fonts/circular-book.woff2?url";
+import circularBold from "@/assets/fonts/circular-bold.woff2?url";
 
 /* ============================================================================
    PERCEIVED-LOAD CONTRACT  (decision #62) — read before adding to the shell.
 
-   The site must paint instantly. The whole page is static HTML styled with
-   system fonts (no webfonts, no font swap), so the browser can paint as soon
-   as the document arrives. Everything below protects that first paint. Keep it
-   true; measure the built output (dist), not dev.
+   The site must paint instantly: static HTML, one inlined stylesheet, nothing
+   render-blocking. Everything below protects that first paint. Keep it true;
+   measure the built output (dist), not dev.
 
    What is in the pre-paint critical path, and nothing else:
      1. The HTML document itself.
      2. The inlined stylesheet (build.inlineStylesheets: "always") — one <style>
-        in <head>, so paint never waits on a second round-trip. ~5 KB gzip.
+        in <head>, so paint never waits on a second round-trip.
      3. The inline boot gate below — a few lines, no network, no dependencies.
    Verified: FCP is identical whether the boot sequence runs or not, i.e. paint
    is gated by CSS delivery, not by any script. Baseline: FCP ~1.1s, LCP ~1.2s,
    TBT 0, CLS 0 (Lighthouse mobile, gzip). Do not regress these.
 
+   Fonts (#67/#20, license confirmed 2026-07-15): the ONE sanctioned webfont is
+   the editorial face, LL Circular Pro — self-hosted woff2 subsets, three
+   weights, ~88 KB total, font-display: swap behind a size-adjust'd fallback so
+   the swap never shifts layout (CLS 0 measured with fonts live). Preloads are
+   async and never block paint. Mono stays system-stack; do not add faces or
+   weights without re-measuring Lighthouse on dist.
+
    What must NEVER enter the pre-paint path:
-     - Webfonts (system stack only; a swap is a flash and a shift).
+     - Additional webfonts beyond the editorial face above.
      - Render-blocking <link>/<script> in <head> that isn't the gate.
      - Any fetch/XHR/connection before first paint (chat, analytics beacons).
      - Synchronous work in the body-end module beyond wiring listeners.
@@ -77,6 +89,26 @@ const props = Astro.props;
     />
     <meta name="generator" content={Astro.generator} />
 
+    {
+      /* Editorial font preloads (#67/#20): async, non-blocking; crossorigin is
+      required on font preloads even same-origin or the fetch is double-keyed
+      and re-downloaded. */
+    }
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={circularBook}
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={circularBold}
+      crossorigin
+    />
+
     {/* theme-color follows the ground on both schemes (#40) */}
     <meta
       name="theme-color"
@@ -124,7 +156,8 @@ const props = Astro.props;
     <a href="#main" class="sr">skip to content</a>
     <slot />
     <Analytics />
-    {/*
+    {
+      /*
       Single hydration point. One deferred module (type=module) drives every
       interactive behavior; it wires delegated listeners and reveals the boot
       sequence, but does no network work and nothing that blocks paint.
@@ -134,7 +167,8 @@ const props = Astro.props;
       (await import("...")) from an idle/visible/first-interaction callback so
       they stay off the pre-paint path. Adding another <script src>/<link> to
       the shell is the wrong lever; it competes with the critical bytes.
-    */}
+    */
+    }
     <script>
       import "@/scripts/terminal.ts";
     </script>
