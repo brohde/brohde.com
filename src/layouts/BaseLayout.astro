@@ -2,6 +2,7 @@
 import { ClientRouter } from "astro:transitions";
 import SEO from "@/components/SEO.astro";
 import Analytics from "@/components/Analytics.astro";
+import ThemeToggle from "@/components/ThemeToggle.astro";
 import { SITE } from "@/lib/site";
 import "@/styles/global.css";
 // Editorial face (#67/#20): same hashed assets the @font-face rules in
@@ -125,6 +126,33 @@ const props = Astro.props;
 
     {
       /*
+      Theme gate (#92). Runs before first paint so a stored override never
+      flashes the wrong ground: it stamps html[data-theme], which the
+      :root[data-theme] blocks in global.css use to beat prefers-color-scheme
+      in both directions. No stored value = no attribute = the #40 system
+      default, untouched. Deliberately tiny, no network, no dependencies:
+      it sits in the pre-paint critical path and must stay cheap (#70).
+
+      The <meta name="theme-color"> pair above is media-scoped and still
+      resolves by system preference at this point; theme.ts reconciles it to
+      the override once the deferred module runs. That is browser chrome, not
+      page paint, so it costs no flash on the surface itself.
+    */
+    }
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem("theme");
+          if (t === "light" || t === "dark")
+            document.documentElement.setAttribute("data-theme", t);
+        } catch (e) {
+          /* storage blocked: fall through to the system default */
+        }
+      })();
+    </script>
+
+    {
+      /*
       Boot gate (decisions #36, #41). Runs before first paint so full content
       never flashes: on a genuine load of the homepage (and not under reduced
       motion) it adds html.boot, which hides the .bseq blocks until the reveal
@@ -155,6 +183,14 @@ const props = Astro.props;
   <body>
     <a href="#main" class="sr">skip to content</a>
     <slot />
+    {
+      /* The theme override control (#92). Last in the DOM on purpose: it is a
+      fixed, page-level utility, so it lands at the end of the tab order rather
+      than ahead of the content on every page. It hides itself on /chat (the
+      expanded slab is always-night, so there is nothing there for it to
+      recolor). */
+    }
+    <ThemeToggle />
     <Analytics />
     {
       /*
@@ -171,6 +207,7 @@ const props = Astro.props;
     }
     <script>
       import "@/scripts/terminal.ts";
+      import "@/scripts/theme.ts";
     </script>
   </body>
 </html>

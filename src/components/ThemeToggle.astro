@@ -1,0 +1,86 @@
+---
+/**
+ * The theme override control (#92): a fixed editorial chip, bottom right,
+ * cycling system -> light/dark override -> back to system. Standalone by
+ * design and mounted from BaseLayout, never from EditorialHeader (that
+ * component is owned by parallel work). All state semantics, persistence,
+ * and the after-swap re-stamp live in src/scripts/theme.ts; the pre-paint
+ * gate in BaseLayout stamps html[data-theme] so a stored override never
+ * flashes.
+ *
+ * This component carries markup + style only, no <script>: theme.ts is
+ * imported by BaseLayout's single hydration point alongside terminal.ts, per
+ * the one-deferred-module contract in that file. The control is a singleton
+ * mounted once from the layout, so it never needs its own entry.
+ *
+ * The visible label always reflects the current state with zero JS: all
+ * three labels are server-rendered and CSS keyed on html[data-theme] shows
+ * exactly one. display:none drops the hidden two from the accessible name
+ * as well, so the button's name ("theme: system" / "theme: light" /
+ * "theme: dark") is correct from first paint, before any script runs, and
+ * speech-input users can say exactly what they see.
+ *
+ * Material: the control recolors the PAGE, so it sits on the page ground in
+ * the bracket-control idiom; it is never phosphor (#67: phosphor is the
+ * machine's material, and the machine ignores this control). Hidden on
+ * /chat: the expanded slab is always-night, so a theme control there would
+ * visibly do nothing (#91 exempts /chat from editorial chrome the same way).
+ *
+ * Copy: bracket-label tokens stay lowercase (#76); no dashes (#18); never
+ * the t-word in visitor-facing copy (#58).
+ */
+---
+
+<button type="button" class="themectl" id="themectl">
+  <span class="br" aria-hidden="true">[</span><span class="lbl"
+    ><span class="tlab tlab-system">theme: system</span><span
+      class="tlab tlab-light">theme: light</span
+    ><span class="tlab tlab-dark">theme: dark</span></span
+  ><span class="br" aria-hidden="true">]</span>
+</button>
+
+<style>
+  .themectl {
+    position: fixed;
+    right: 12px;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    z-index: 40; /* above page content, always below the #wipe cover (99) */
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 10px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--ground);
+    color: var(--dim); /* the brackets */
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+  .lbl {
+    color: var(--accent);
+  }
+  /* the unified bracket-control treatment (terminal.css): label fills with
+     the accent on hover/focus-visible, brackets stay put */
+  .themectl:hover .lbl,
+  .themectl:focus-visible .lbl {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  /* one visible label, keyed on the pre-paint html[data-theme] stamp */
+  .tlab {
+    display: none;
+  }
+  :global(html:not([data-theme])) .tlab-system,
+  :global(html[data-theme="light"]) .tlab-light,
+  :global(html[data-theme="dark"]) .tlab-dark {
+    display: inline;
+  }
+
+  /* /chat is the expanded slab: always night, nothing editorial to recolor,
+     and the chip would float over the phosphor screen */
+  :global(body:has([data-screen="chat"])) .themectl {
+    display: none;
+  }
+</style>
