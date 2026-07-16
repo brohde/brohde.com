@@ -20,8 +20,11 @@ interface Props {
 }
 const {
   id,
-  placeholder = "Ask me anything…",
-  label = "Ask me anything, or type a command",
+  /* Brian's 2026-07-15 review: exact copy. The label matches the visible
+     placeholder verbatim so the accessible name always contains what a
+     speech-input user sees (label-in-name). */
+  placeholder = "Ask me anything or type help",
+  label = "Ask me anything or type help",
 } = Astro.props; // boot accepted (see Props) but unused: prompt never hides
 
 const inputId = `in-${id}`;

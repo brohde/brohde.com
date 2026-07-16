@@ -431,13 +431,6 @@ html.cfocus .wordmark .caret {
   border-color: var(--line);
   box-shadow: none; /* the slab itself lights up instead */
 }
-.slab .cfoot {
-  color: var(--dim);
-  font-size: 12px;
-  margin: 0;
-  border-top: 1px solid var(--line);
-  padding-top: 6px;
-}
 .slab .hint {
   font-size: 12px;
   color: var(--dim);

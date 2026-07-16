@@ -31,7 +31,7 @@ interface Cmd {
 
 /* Copy case (#76): human-language strings use sentence case; lowercase is
    reserved for literal terminal tokens (typed commands, file-ish names like
-   build.log and resume.pdf, URLs and emails). */
+   resume.pdf, URLs and emails). */
 const COMMANDS: Cmd[] = [
   { name: "work", desc: "Browse the log" },
   { name: "about", desc: "Who I am" },
@@ -63,7 +63,7 @@ const HELP_HTML =
    output. */
 const HELLO_HTML =
   "Hello! Here's what's on the site:\n" +
-  '<a href="/">Work</a>: the build log, case studies of what I ship\n' +
+  '<a href="/">Work</a>: the log, case studies of what I ship\n' +
   '<a href="/about">About</a>: who I am in four paragraphs\n' +
   '<a href="/resume.pdf">Resume</a>: the PDF\n' +
   '<a href="/chat">Chat</a>: ask me anything\n' +

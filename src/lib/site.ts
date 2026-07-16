@@ -38,7 +38,7 @@ export const COMPANIES = {
   beyond: "https://bynd.com",
 } as const;
 
-/** Where the article collection is served. Terminal identity: the build.log. */
+/** Where the article collection is served. Unbranded: just "the log". */
 export const LOG_BASE = "/log";
 
 export function logHref(id: string): string {

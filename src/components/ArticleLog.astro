@@ -1,6 +1,7 @@
 ---
 /**
- * The build.log as a ledger (#67 treatment C): unbracketed mono dates in a
+ * The log as a ledger (#67 treatment C, unbranded per Brian's 2026-07-15
+ * review): unbracketed mono dates in a
  * fixed column, editorial titles, one hairline per row. Newest first, title +
  * pre-date (#2, #3); descriptions live on the article pages, meta, and RSS.
  * Each entry is a real link to /log/<id> (or the external URL, marked with a
@@ -24,7 +25,7 @@ const posts = (await getCollection("articles", ({ data }) => !data.draft)).sort(
 <section class="clog" id="log" aria-label="Article log">
   <h2 class="sr">Writing and project log</h2>
   <div class:list={["loghead", { bseq: boot }]}>
-    <span>build.log</span><span class="rule" aria-hidden="true"></span>
+    <span>log</span><span class="rule" aria-hidden="true"></span>
   </div>
   {
     posts.map((post) =>
