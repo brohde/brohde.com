@@ -30,6 +30,16 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 **THE C BUILD IS MERGED TO MAIN (6228713) AND DEPLOYED** — C1 slab+editorial home (26873bb), C2 morph + live chat bridge (1b6ff53, #85), C3 article pages (8206723, #86), C4 chrome unification + straight-100s audit pass (76ac001, #87). Brian approved on the rendered preview (#87). The deployed pages.dev chat UI now talks to the production /api/chat. The old C engineer is RETIRED per #95 (no more resuming it).
 
+## READ THIS FIRST (2026-07-15, late evening: Brian went to sleep mid-session)
+
+**Main has UNPUSHED local merges. Do not push until the chip fix lands + validates.** Both engineer branches are merged into local `main` (`feat/review-change-orders` = chrome/copy #88-#91, `feat/theme-toggle` = #92), BaseLayout conflict resolved by hand (both engineers added to the same two regions: footer renders after the slot as page content, theme control stays last in the DOM for tab order). Build green, 10 pages. The merged combination was audited on the rendered surface and is sound EXCEPT one defect, now being fixed by a fresh Opus engineer in the main checkout (uncommitted): **the fixed theme chip occludes live body text throughout mobile scroll** (13 of 14 sampled depths on an article at 390px), so it docks into the site footer as a static element (#101). When that agent reports: review its diff, commit, push (push = deploy to pages.dev), then tell Brian.
+
+**For Brian when he's up** (all logged, nothing needs him tonight):
+- **His hover question got answered by measurement, not by the lead's opinion, and the lead's answer was WRONG**: color-only marking scored 1.18:1 night / 2.23:1 light against G183's required 3:1, so the fallback shipped (65% rest underline going full ink on hover). See #99. He should be told this plainly since the lead told him the color-only spec was the plan.
+- Theme toggle shipped three-state with two flags for his veto (#100), placement changed by #101.
+- Article visuals direction + asset request list awaits him (artifact 82405b82).
+- Aurora hero geometry (#97) still in flight with the design director.
+
 **MODEL POLICY (#96)**: Opus for all agents, lower only where the task genuinely doesn't need it. `frontend-engineer.md` was still `model: fable` and BOTH original engineers died mid-work on a Fable out-of-credits API error (they had been mis-reported to Brian as Opus; a subagent's model is fixed at spawn). Definition now `opus`; copywriter + seo-a11y-auditor stay sonnet by choice. **If an agent dies on credits, check the definition's model first.**
 
 In flight (fresh Opus agents; lead merges worktrees on completion — the two engineers have explicit file fences, see below):

@@ -965,14 +965,62 @@
     -webkit-mask-image: linear-gradient(to right, transparent, #000 14%);
     mask-image: linear-gradient(to right, transparent, #000 14%);
   }
+  /* hero band: the top 30% of the first screen, with the page rising into it
+     instead of stacking below it.
+
+     the reference frame is a screen, not the document: an article scrolls for
+     thousands of pixels, so "30% of the page" can only mean 30% of the screen
+     the page opens on. --screen is that stand-in. in the lab the stage plays
+     the first screen; in production this becomes 100svh. every other number
+     is a share of it, so the geometry holds at every size.
+
+     --hero-band  0.30   the band, top of screen down
+     --hero-bleed 0.20   where the page ground starts bleeding up over the
+                         tide. this is the bleed: the tide dissolves into the
+                         ground across the band's bottom third, so the band
+                         has no bottom edge to read as a rectangle
+     --hero-card  0.275  where the body card's top edge lands, so the card
+                         overlaps the band rather than clearing it
+
+     why the card sits at 0.275 and not at the bleed: the mark contain-fits
+     the band, so the deepest ink in the source set (the logo mark, ink to
+     0.887 of its frame) lands at 26.6% of the screen. a card edge above that
+     slices the mark's base off, which is exactly what the mark must not do
+     on an article page. 0.275 is the highest the card goes while clearing
+     every mark's ink. a production source therefore needs a bottom safe area
+     of about 11% of its frame.
+
+     the mark needs no special casing. sampleOne contain-fits it, and a band
+     this wide is the height-limited case, which is already Brian's spec:
+     full band height, width auto, centered on both axes, never cropped.
+     below about 460px wide the band turns portrait and width becomes the
+     limit; contain keeps the mark whole there rather than cropping it to
+     hold height 100%. the stage grows past --screen when a narrow card runs
+     taller than the screen, which is just the page scrolling, as it will in
+     production; the band stays a share of the screen either way */
+  #stage4[data-placement="hero"] {
+    --screen: max(640px, 100svh);
+    --hero-band: 0.3;
+    --hero-bleed: 0.2;
+    --hero-card: 0.275;
+    min-height: var(--screen);
+  }
   #stage4[data-placement="hero"] canvas {
     bottom: auto;
-    height: clamp(190px, 30vh, 280px);
-    -webkit-mask-image: linear-gradient(to bottom, #000 76%, transparent);
-    mask-image: linear-gradient(to bottom, #000 76%, transparent);
+    height: calc(var(--screen) * var(--hero-band));
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 calc(var(--hero-bleed) / var(--hero-band) * 100%),
+      transparent
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      #000 calc(var(--hero-bleed) / var(--hero-band) * 100%),
+      transparent
+    );
   }
   #stage4[data-placement="hero"] .term {
-    margin-top: calc(clamp(190px, 30vh, 280px) - 20px);
+    margin-top: calc(var(--screen) * var(--hero-card));
   }
   #stage4[data-state="home"] .only-chat {
     display: none;
@@ -1946,9 +1994,9 @@
         standing exclusion rule holds: text only ever sits on the glass, never
         on bare tide. Narrow the window with gutter selected to watch the
         fallback engage. Hero band
-        contains the tide in a top strip that fades out before the content
-        begins: the article-hero pattern from the placement discussion, calm
-        ground below. Studio verdict:
+        gives the tide the top 30% of the first screen and lets the page rise
+        into it: the article-hero pattern from the placement discussion, sized
+        so the mark reads at a glance. Studio verdict:
         <strong>gutter wins for the homepage</strong> (the sky keeps the
         weather, the picture gets a stage, the text keeps a calm column), the
         <strong>hero band wins for article pages</strong> with each
@@ -1957,6 +2005,34 @@
         default strength when selected; the slider stays live everywhere, and
         the two capped modes are exactly the two where the tide lives behind
         the whole page: full sky, and the phone background fallback.
+      </p>
+      <p class="demo-note">
+        <strong>The hero band is a share of a screen, not of the page.</strong>
+        An article scrolls for thousands of pixels, so &ldquo;the top 30% of
+        the page&rdquo; can only mean 30% of the screen the page opens on. The
+        band takes that 30%, the page ground bleeds up over its bottom third
+        from the 20% line, and the body card&rsquo;s top edge lands at 27.5%,
+        inside the band rather than below it. In the lab the stage plays the
+        first screen; in production the same three numbers hang off 100svh.
+        The old band was a clamped 30vh that stopped growing at 280px, so it
+        shrank against tall monitors; this one keeps its share at every
+        height. Below the card the stage is mostly open ground because the
+        lab&rsquo;s body is a short terminal, where an article would keep
+        going.
+      </p>
+      <p class="demo-note">
+        <strong>Why the card sits at 27.5% and not at the 20% line.</strong>
+        The mark contain-fits the band, so the deepest ink in the source set,
+        the logo mark at 0.887 of its frame, lands at 26.6% of the screen. A
+        card edge at 20% cuts the base off every mark: the 8 loses its lower
+        bowl, the logo loses the A&rsquo;s legs. So the bleed and the card are
+        two numbers, not one. The bleed is the ground, and it starts at 20% as
+        asked: the tide dissolves into it across the band&rsquo;s bottom third,
+        which is what kills the band&rsquo;s rectangle, and the mark&rsquo;s
+        own base dissolves with it instead of being sliced. The card then
+        overlaps the band as high as it can go without crossing any
+        mark&rsquo;s ink. A production source needs a bottom safe area of
+        about 11% of its frame to keep that clearance.
       </p>
       <p class="demo-note">
         <strong>Sources are contained, never cropped.</strong> Brian&rsquo;s
@@ -3307,7 +3383,7 @@
           ? "placement: full sky; the glass lightens so the tide ghosts through, and strength is capped at a murmur"
           : p === "gutter"
             ? "placement: right gutter beside the text column; on narrow screens the tide becomes the page background at whisper"
-            : "placement: hero band above the content";
+            : "placement: hero band across the top 30% of the screen, with the page ground bleeding up over its lower third";
     }
     Object.keys(plBtns).forEach(function (k) {
       plBtns[k].addEventListener("click", function () {
