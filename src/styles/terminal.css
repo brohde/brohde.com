@@ -444,6 +444,43 @@ html.cfocus .wordmark .caret {
   margin: 2px 0 0;
 }
 
+/* The morphing slab identity (#69): applied to the ONE live slab per page
+   (home + chat screen), never to styleguide specimens: view-transition-names
+   must be unique per document or the whole transition aborts. */
+.vtslab {
+  view-transition-name: slab;
+}
+
+/* --------------- the expanded slab: the chat screen (#69) ----------------- */
+/* The alternate screen made physical: on /chat the slab IS the window. Same
+   material (night scope, scanlines, glow), no card chrome. Content scrolls
+   the document; the head stays pinned as the way back (#24). */
+.slab-full {
+  margin-top: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible; /* the card clips its radius; the screen must scroll */
+}
+.slab-full:focus-within {
+  box-shadow: none;
+}
+.slab-full .slabhead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--ground) 90%, transparent);
+  backdrop-filter: blur(6px);
+}
+@supports not (background: color-mix(in srgb, red 50%, blue)) {
+  .slab-full .slabhead {
+    background: var(--ground);
+  }
+}
+.slab-full .ccstat {
+  gap: 12px;
+}
+
 /* ------------------------- the log as a ledger (#67) --------------------- */
 /* A work record a client can audit: unbracketed mono dates in a fixed
    column, editorial titles, one hairline per row. */

@@ -139,30 +139,57 @@ function hint(msg: string) {
   }, 2600);
 }
 
-/* ---------------------------------------------- route transitions (#64) --- */
-/* Every internal navigation shares one transition, both directions: the
- * ~140ms terminal wipe from build-log-v3.html. A ground-colored cover with a
- * resting block caret drops before the old page changes, the swap happens
- * underneath (the underlying view transition is set to animation:none in
+/* ---------------------------------------- route transitions (#64, #69) ---- */
+/* Named transition kinds, resolved per navigation:
+ *
+ * "wipe" (#64), the default for internal navigations: a ground-colored cover
+ * with a resting block caret drops before the old page changes, the swap
+ * happens underneath (the underlying view transition is animation:none in
  * global.css), and the cover lifts ~50ms after the new page has rendered, so
  * the destination is always visually complete when it appears.
  *
- * Structured as named kinds so the next phase (option C: the slab
- * expand/collapse morph into chat) can slot in as another kind here instead
- * of reworking this layer: resolveTransition() picks per navigation, each
- * kind covers/uncovers around the ClientRouter lifecycle. Under reduced
- * motion navigation is instant: no cover, no held loader.
+ * "morph" (#69), home <-> chat only: the slab expands toward full window on
+ * chat engagement and collapses back home, both directions elegant, never a
+ * hard cut. Mechanism: the slab carries a persistent view-transition-name
+ * (.vtslab, on the home slab and the chat screen); this layer stamps
+ * html[data-vt="morph"], which global.css uses to re-time the UA's group
+ * interpolation and cross-fade the editorial root around it. The wipe's
+ * opaque cover MUST NOT drop for this kind: it would hide the morph. The
+ * attribute is re-stamped after the swap (Astro replaces root attributes)
+ * so it is present when the transition's animations are set up, and cleared
+ * once the morph has finished.
+ *
+ * "instant" under reduced motion: no cover, no held loader, no morph (the
+ * data-vt attribute is never stamped, so every VT animation stays none).
  */
-type TransitionKind = "wipe" | "instant";
+type TransitionKind = "wipe" | "instant" | "morph";
 
 const WIPE_HOLD_MS = 140; // cover time before the swap may land
 const WIPE_LIFT_MS = 50; // settle time after the new page renders
+const MORPH_MS = 360; // keep in sync with the [data-vt="morph"] CSS timings
 
 let wipeEl: HTMLElement | null = null;
 let wipeTimer = 0; // one handle for pending lift AND failsafe: a new drop cancels both
+let navKind: TransitionKind = "instant"; // kind of the navigation in flight
+let vtTimer = 0; // pending data-vt cleanup; a new navigation cancels it
 
-function resolveTransition(): TransitionKind {
-  return RM() ? "instant" : "wipe";
+/** the home <-> chat pair morphs; everything else wipes (instant under RM) */
+function resolveTransition(from?: URL, to?: URL): TransitionKind {
+  if (RM()) return "instant";
+  if (from && to) {
+    const a = from.pathname;
+    const b = to.pathname;
+    if ((a === "/" && b === "/chat") || (a === "/chat" && b === "/")) {
+      return "morph";
+    }
+  }
+  return "wipe";
+}
+
+function stampMorph(on: boolean) {
+  const root = document.documentElement;
+  if (on) root.setAttribute("data-vt", "morph");
+  else root.removeAttribute("data-vt");
 }
 
 function wipe(): HTMLElement {
