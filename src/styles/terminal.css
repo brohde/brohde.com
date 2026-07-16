@@ -685,6 +685,74 @@ html.cfocus .wordmark .caret {
   cursor: pointer;
 }
 
+/* --------------------- thinking indicator (#116) -------------------------- */
+/* The waiting state between send and reply, model round trips only: three
+   phosphor dots pulsing in sequence, the assistant idiom (Claude/ChatGPT)
+   on the slab's material. It renders inside the same .reply box the answer
+   will fill, so the reply's arrival swaps content, never boxes: no layout
+   shift. The dots are aria-hidden decoration; the announcement happens once,
+   in the script's polite live region. The dots sit in the line box .reply's
+   own type defines (16px/1.65), so the indicator is exactly one reply line
+   tall, the same first line the answer occupies. */
+.thinking .tdots {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  vertical-align: middle;
+}
+.thinking .tdots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(126, 231, 135, 0.5);
+  animation: thinkpulse 1.1s ease-in-out infinite;
+}
+.thinking .tdots span:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.thinking .tdots span:nth-child(3) {
+  animation-delay: 0.36s;
+}
+/* the caret blinks on the same 1.1s clock; the pulse shares its rhythm */
+@keyframes thinkpulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+/* the label reads to screen readers while the dots animate */
+.thinking .tlabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* Reduced motion: a static line instead of animation. The global kill switch
+   in global.css would only freeze the dots mid-pulse at 25% opacity, which
+   reads as broken, so the dots leave and the label shows as quiet status. */
+@media (prefers-reduced-motion: reduce) {
+  .thinking .tdots {
+    display: none;
+  }
+  .thinking .tlabel {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    color: var(--dim);
+  }
+}
+
 .dock {
   position: sticky;
   bottom: 0;
