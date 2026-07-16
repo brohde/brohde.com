@@ -8,12 +8,17 @@
 # `nodejs_compat` is declared so any node: builtin the SDK reaches for is available in
 # production, matching the local `wrangler pages dev` run used to validate this.
 #
-# Secrets/bindings are NOT declared here (they carry values/ids): ANTHROPIC_API_KEY (and
-# later TURNSTILE_SECRET) are Pages secrets set in the dashboard; the CHAT_RL KV namespace
-# binding is added in the dashboard (or as a [[kv_namespaces]] block once its id exists).
-# ANTHROPIC_BASE_URL (AI Gateway) is a plain env var, dashboard or here, when wired.
+# Secrets are NOT declared here (they carry values): ANTHROPIC_API_KEY (and later
+# TURNSTILE_SECRET) are Pages secrets set in the dashboard. ANTHROPIC_BASE_URL
+# (AI Gateway) is a plain env var, dashboard or here, when wired.
 
 name = "brohde-com"
 pages_build_output_dir = "dist"
 compatibility_date = "2025-05-01"
 compatibility_flags = ["nodejs_compat"]
+
+# Per-IP rate-limit store for /api/chat (namespace created 2026-07-15 via
+# `wrangler kv namespace create CHAT_RL`; the id is a resource handle, not a secret).
+[[kv_namespaces]]
+binding = "CHAT_RL"
+id = "c3579b8f38784acfb7acad6fa651b5f2"
