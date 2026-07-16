@@ -721,6 +721,13 @@ function mount(container: HTMLElement): SceneHandle {
       container.classList.add("live"); // fades the facade sky out
       update(); // starts the runner (visibility and reduced motion permitting)
       requestAnimationFrame(applyAlpha);
+      /* rendering opportunities can be starved right after a client-side
+         navigation (view-transition cover, backgrounded tabs), and opacity
+         is set exactly once: a wall-clock net so the tide can never be left
+         invisible. On the happy path this re-sets the same value, a no-op
+         that does not restart the fade. Found on rendered validation: the
+         /about round-trip remount landed with the canvas stuck at 0. */
+      window.setTimeout(applyAlpha, 600);
     });
   });
 
