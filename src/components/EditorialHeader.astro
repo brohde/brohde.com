@@ -6,10 +6,12 @@
  * then "Founder, Eight Angle" (the old two-sentence title is fully replaced;
  * only the founder credit stays), then the #79 companies line exactly
  * "Prev: Gong · Twilio · Facebook + Google (contract)" with Facebook and
- * Google linking to their internal case studies. One affordance per link
- * type: external links carry the ↗ marker, internal ones don't, so "leaves
- * the site" is always legible.
- * External-entry ↗ markers are never underlined, label only (#68).
+ * Google linking to their internal case studies. Interim state (Brian's
+ * 2026-07-15 review): NO ↗ markers on header links for now, external or
+ * internal; the ledger keeps its ↗ convention (#68), header only. If the
+ * markers come back, restore "one affordance per link type" here.
+ * "(contract)" is deliberately quieter: one size step down, dim ink
+ * (.cnote, ratios checked >=4.5:1 on both grounds).
  * The wordmark caret is the page's resting cursor (#63).
  * .bseq marks blocks the boot sequence reveals in order (#36/#64).
  */
@@ -30,28 +32,22 @@ import { LINKS, COMPANIES, logHref } from "@/lib/site";
   }
   <p class="cco bseq">
     Founder,{" "}
-    <a href={COMPANIES.eightAngle} target="_blank" rel="noopener"
-      >Eight Angle<span class="ext" aria-hidden="true">&#8599;</span></a
+    <a href={COMPANIES.eightAngle} target="_blank" rel="noopener">Eight Angle</a
     >
   </p>
   <p class="cco bseq">
     <span class="d">Prev:</span>{" "}
-    <a href={COMPANIES.gong} target="_blank" rel="noopener"
-      >Gong<span class="ext" aria-hidden="true">&#8599;</span></a
-    >{" "}
+    <a href={COMPANIES.gong} target="_blank" rel="noopener">Gong</a>{" "}
     <span class="d">·</span>{" "}
-    <a href={COMPANIES.twilio} target="_blank" rel="noopener"
-      >Twilio<span class="ext" aria-hidden="true">&#8599;</span></a
-    >{" "}
+    <a href={COMPANIES.twilio} target="_blank" rel="noopener">Twilio</a>{" "}
     <span class="d">·</span>{" "}
     <a href={logHref("facebook-newsroom")}>Facebook</a> +{" "}
-    <a href={logHref("google-android-for-work")}>Google</a> (contract)
+    <a href={logHref("google-android-for-work")}>Google</a>{" "}
+    <span class="cnote">(contract)</span>
   </p>
   <ul class="cprofiles bseq" aria-label="Profiles and resume">
     <li>
-      <a href={LINKS.linkedin} target="_blank" rel="noopener"
-        >LinkedIn<span class="ext" aria-hidden="true">&#8599;</span></a
-      >
+      <a href={LINKS.linkedin} target="_blank" rel="noopener">LinkedIn</a>
     </li>
     <li><a href={LINKS.resume}>Resume</a></li>
     <li>
@@ -60,8 +56,7 @@ import { LINKS, COMPANIES, logHref } from "@/lib/site";
         target="_blank"
         rel="noopener"
         title={LINKS.xHandle}
-        aria-label={`X, ${LINKS.xHandle}`}
-        >X<span class="ext" aria-hidden="true">&#8599;</span></a
+        aria-label={`X, ${LINKS.xHandle}`}>X</a
       >
     </li>
   </ul>
