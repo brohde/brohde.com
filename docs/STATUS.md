@@ -23,11 +23,19 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 - Site: Astro 5 + Tailwind v4 static at repo root; `npm run dev` (localhost:4321), `npm run build` = `astro check && astro build` → `dist/`. Full build reference: **`docs/ENGINEERING.md`** (merged f199195, verified against source).
 - Content: 5 real case studies render on the site (validated on rendered HTML after the content-store staleness fix, see ENGINEERING.md §2); `brohde-com-build` stubbed `draft: true`; `twilio-hackpack-v4` is an `external:` entry.
-- Chat POC: real Haiku 4.5 at localhost:8787 (`cd poc/chat && npm start`), dev CORS for the Astro site; key in gitignored `poc/chat/.env` (expires 2026-08-14).
+- Chat POC: real Haiku 4.5 at localhost:8787 (`cd poc/chat && npm start`), dev CORS for the Astro site; key in gitignored `poc/chat/.env` (expires 2026-08-14). **Production port lives at `functions/api/chat.ts` (POST /api/chat, #81)** — live once Brian's ANTHROPIC_API_KEY Pages secret + a redeploy land; prompt/facts bundle regenerates from `poc/chat/*.md` on every build.
 
 ## Agent board (this session)
 
-Also in flight: **production chat build (opus, worktree)** per #73 — `functions/api/chat.ts` porting the frozen POC, Turnstile + rate limiting, eval-over-HTTP acceptance; server-side only (client bridge landed with the interaction merge). And: **aurora theme changes (fable design-director, fresh context)** per #74 — theme travels the source, dramatic ground recolor (Facebook blue), full-sky glass lightened; handoff doc `docs/design/lab/aurora-handoff.md` is the saved context from the retired designer.
+In flight:
+- **OPTION C BUILD (fable frontend-engineer, worktree a45e93ca…)** — **C1 COMPLETE (26873bb in worktree: editorial homepage + slab, Circular shipped for real per #78, header per #80, Lighthouse 100/0/0, 13/13 keyboard pass; five delivery decisions accepted by lead)**. Now in **C2** (chat-expands-slab morph #69) with the production `/api/chat` client contract relayed (turnstileToken seam later, no widget yet; merge main into the worktree before chat work). Then C3 (article pages) → C4 (polish/audits). Lead merges + validates rendered at the end.
+
+Done this stretch:
+- **Production chat build (opus) — DONE, merged 4825d0c** per #73/#81: `functions/api/chat.ts` (POC port, parity proven via eval-http: 35/38 = the POC's identical 35/38, all stale labels), build-time prompt codegen from `poc/chat/*.md`, `wrangler.toml` (nodejs_compat), Turnstile graceful-skip, per-IP rate limiting. **KV `CHAT_RL` created + bound (ef0fbe1, #83).** GO-LIVE: waiting only on Brian's `ANTHROPIC_API_KEY` Pages secret + one redeploy after it (any push redeploys). TURNSTILE_SECRET must stay unset until the client sends tokens. Until the key exists, `/api/chat` returns the friendly 503; the deployed site's chat UI still uses the stub, so nothing user-visible breaks. #49 audit still gates public launch.
+- **Aurora theme changes (fable design-director) — DONE, committed f653063, artifact republished (same URL, label theme-owns-the-scene)**: theme travels the source + recolors ground/glass on the 2.6s clock; full sky ghosts through lighter glass (capped 0.28); worst contrast 4.7:1 AA+; perf 0.77ms/tick vs 4ms budget. 4 taste flags await Brian (COMMS batch 51); `aurora-handoff.md` update deferred until his review.
+- Sentence-case sweep (copywriter) — merged earlier; ENGINEERING.md reconciliation + styleguide .lbl wrap — merged earlier.
+
+**Standing rule #82: the Fable lead NEVER drives Chrome — browser automation always via a Sonnet/Opus subagent.**
 
 1. **Interaction cluster — DONE, merged 343663d, pushed (deploying to pages.dev)**: cursor #63 (tradeoffs logged #75), boot entry-only + no-blank-first-frame #64/#62, 140ms wipe (named transition kinds, slab morph #69 slots in later), hover unification, hello tour #68, dev chat bridge #54 (live replies on localhost:4321 against the POC; stub elsewhere). Follow-ups: styleguide `.cbtn` specimens need the `.lbl` wrap; ENGINEERING.md §3 reconciliation (agent dispatched).
 2. **Perf (opus) — DONE, merged bab2a76**: inline critical CSS + cache headers + binding facade contract (#70); Lighthouse mobile Perf 100/TBT 0/CLS 0, validated on built dist. Its HIGH finding (boot = ~1.3s blank screen; prompt is `.bseq`-hidden so hello types invisibly) routed to the interaction agent as part of its #64 boot work.
@@ -35,14 +43,12 @@ Also in flight: **production chat build (opus, worktree)** per #73 — `function
 4. **Demo 04 refinements — DONE, committed 8971c33, aurora artifact republished**: contain-fit, phone background fallback (whisper cap), per-page brand palettes (eight angle teal + logo source, newsroom Facebook blue, android Google quartet). Contrast all AA+ (worst 4.6:1), perf well inside budget. Taste flags await Brian in COMMS batch: gutter presents landscape sources small; chat stays golden hour under every theme; android drops the rose blob; phone fallback near-invisible on light ground by design.
 5. **Cloudflare Pages setup — DONE**: https://brohde-com.pages.dev live, auto-deploys on push to `main`. Follow-ups: custom domain (needs registrar answer), PostHog env var later, 2 cosmetic `z` deprecation hints in content.config.ts.
 
-**Only the interaction worktree remains to merge.** Lead reviews commits, merges, validates on the RENDERED surface (standing rule: agent reports are claims, not evidence), then ENGINEERING.md reconciliation.
-
 ## Next actions
 
-1. Merge the interaction worktree when it lands; validate rendered (localhost + pages.dev after push); republish artifacts at their existing URLs.
-3. ENGINEERING.md reconciliation once interaction merges (its §3 gap flags become stale).
-4. **Option C implementation phase (#67/#68/#69)** — the next numbered phase, planned per #56 (phased, agent-reviewable): slab architecture, Circular on designed surfaces (GATED on Lineto license), designed article pages, chat-expands-slab with the elegant both-way transition. **Model policy: #72** (Fable re-greenlit for the remaining window, quality first, per the #50 split: Fable core engineering + taste-critical design, Opus general, Sonnet content/audits; don't burn Fable on rote work).
-5. Then **#59 aurora + tide integration** (per-page themes, matrix-style per-character animation) and **chat production wiring** (Worker + AI Gateway + Turnstile + per-IP rate limits) behind the #49 security-audit launch gate.
+1. **Chat go-live**: Brian sets `ANTHROPIC_API_KEY` (Pages → Settings → Variables and secrets, Secret, Production+Preview) → next push/redeploy activates it → validate `/api/chat` on brohde-com.pages.dev via curl (subagent for any browser check, #82). Turnstile + AI Gateway wiring later; #49 audit before chat is surfaced publicly.
+2. **Option C phases**: review C2 (morph #69) when the agent reports; then C3/C4; merge at the end, validate rendered, update ENGINEERING.md for the C architecture.
+3. Brian reviews the aurora artifact's 4 new taste flags (COMMS batch 51) → then lead updates `aurora-handoff.md` to trail the file.
+4. Then **#59/#74 aurora + tide site integration** (per-page themes as full-scene identities) after C lands.
 
 ## v2 / backlog (parked, Brian-approved ideas)
 
@@ -55,7 +61,7 @@ Also in flight: **production chat build (opus, worktree)** per #73 — `function
 
 - **Brian's C-lab questions**: ~~lowercase vs sentence case~~ ANSWERED: sentence case (#76, sweep in flight); still open: always-dark slab on light ground OK?; does "build.log" stay the archive's public name?
 - Title line: Brian weighing "from training the model to shipping the app" clause + "AI Engineer" in metadata only (batch 46); copywriter exploration offered, not yet ordered
-- LL Circular web license: confirm/purchase with Lineto before production ships it (#20; gates Option C's editorial type)
+- ~~LL Circular web license~~ CONFIRMED (#78): C build ships Circular self-hosted on editorial surfaces
 - Where is brohde.com registered? (Not on his Cloudflare account; needed for the domain cutover. Pages ships on a pages.dev URL meanwhile)
 - Editorial before public deploy: pre-date tension (retrospective passages inside pre-dated articles; studio recommends a dated postscript block convention); Eight Angle unconfirmed numbers (pricing, 47-class vs 49-pose, decoy examples); ATG client sign-off + "Workers vs Pages" naming + SiteGround figure; Gold Coast pending Dragan's consent
 - Resume command behavior (print link vs open PDF in new tab — code currently opens same tab, output text claims new tab)

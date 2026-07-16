@@ -1,0 +1,21 @@
+{
+  // Cloudflare Pages Functions run in the Workers runtime, not the browser/Astro DOM
+  // environment, so they are typechecked separately from `astro check` (which uses the
+  // DOM-oriented Astro strict config and would clash with the Workers globals). Wrangler /
+  // Cloudflare bundle this code with esbuild (types stripped, not checked), so this config
+  // exists purely for local `tsc --noEmit -p functions` verification and editor support.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "types": ["@cloudflare/workers-types"],
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["**/*.ts"]
+}

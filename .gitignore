@@ -19,6 +19,16 @@ dist/
 .env.production
 .env.*.local
 
+# cloudflare pages function local secrets (real API key lives here; NEVER commit)
+.dev.vars
+.dev.vars.*
+
+# generated: chat system prompt bundled from poc/chat/ at build (see scripts/build-chat-prompt.mjs)
+functions/api/_chat-prompt.generated.ts
+
+# ephemeral eval working output (HTTP parity harness)
+poc/chat/eval-http-transcript.md
+
 # os / editor
 .DS_Store
 *.log

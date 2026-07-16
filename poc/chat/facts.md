@@ -4,7 +4,7 @@ Curated by Brian. Edit freely; the server reloads this at boot. If a fact is not
 
 ## Identity
 
-- Brian Rohde. Full-stack engineer in San Francisco.
+- Brian Rohde. AI Product Engineer in San Francisco. Full-stack: he ships end to end, from training the model to shipping the app.
 - Studied at DePaul University. (The school is public; graduation year and any dates around his education stay behind the deny-list.)
 - Speaks Spanish and Portuguese (Brazil) with working proficiency, alongside native English.
 - Ships AI products end to end: model, app, and the infrastructure underneath.
