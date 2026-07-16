@@ -53,8 +53,8 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 ## Agent board (2026-07-16)
 
-- **D1 design-director (fable)**: builds `docs/design/lab/shell-d1.html` ONLY (new file; no other edits, no commits). Lead reads, verifies, commits, publishes as a NEW artifact. Validation ports 4380-4389.
-- **B1 frontend-engineer (fable, isolated worktree)**: ports the frozen lab scene to a production module (facade pattern, #114 placement parameterization, homepage ambient placement first). BARRED from chat send/reply UI code paths. Commits on its worktree branch; lead merges. Ports 4360-4369.
+- ~~D1 design-director (fable)~~ **DONE, published (#122)**: `docs/design/lab/shell-d1.html`, artifact https://claude.ai/code/artifact/60e68001-5885-4d42-8dc1-8f0fb1532330 — AWAITING BRIAN (11 veto-able calls in section 04, phone-scene flag, the 4.98:1 glass trade).
+- **B1 frontend-engineer (fable, isolated worktree)**: **DELIVERED, awaiting lead merge review** — branch `worktree-agent-ad57af9a8d28f62da` (tip 8faaa58): scene module (engine/sources/live.css/scene.css/Scene.astro) + idle hook + homepage ambient. Perf on dist: Lighthouse mobile TBT 0/CLS 0/Perf 99 (pre-B1 dist also scores 99 on this machine today: parity), desktop 100; ticks worst-case max 4.40ms under parallel-agent load, 61/61 under budget quiet. Contrast worst 4.81 night dim. Two real defects found+fixed in validation (remount fade, hidden-tab boot). Unverified by automation: hidden→visible resume (cover at merge validation). Its dist is served on port 4360 for merge-time checks.
 - ~~Loading-indicator frontend-engineer (fable, isolated worktree)~~ **DONE, merged (#118)**: thinking dots in the reply slot, same-node swap (zero shift), reduced-motion static label, 8/8 rendered checks. Lead corrected its `#theme-announce` dead-region flag (alive: theme.ts creates it).
 - All three: browser validation ONLY via Sonnet subagents (#82 extends to Fable agents); no "terminal" in copy or naming (#116); zero em dashes in user-visible copy (#18).
 
