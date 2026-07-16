@@ -29,12 +29,13 @@ Deploy target: Cloudflare Pages. Build command `npm run build`, output directory
 | `astro.config.mjs`             | Astro config: static output, sitemap (excludes /chat, /styleguide), prefetch, Tailwind v4 vite plugin                                            |
 | `src/content.config.ts`        | Content collections: `articles` schema (title, description, date, draft, external)                                                               |
 | `src/content/articles/`        | One folder per article (`<slug>/index.md`)                                                                                                       |
-| `src/pages/`                   | Routes: `/` (terminal home), `/about`, `/chat` (stub), `/styleguide`, `/log/[...slug]`, `/404`, `/rss.xml`                                       |
-| `src/layouts/BaseLayout.astro` | HTML shell: head, SEO, theme-color, ClientRouter, boot gate, analytics, terminal mount                                                           |
-| `src/components/`              | `SEO`, `Analytics` (PostHog), `TerminalHeader`, `Prompt` (+ autocomplete), `CommandMenu`, `ArticleLog`, `Topbar`                                 |
-| `src/scripts/terminal.ts`      | Command router, autocomplete (#48), prompt history (#44), boot sequence (#36/#41)                                                                |
-| `src/styles/global.css`        | Tailwind import, design tokens (both grounds, #40), base + View-Transition rules                                                                 |
-| `src/styles/terminal.css`      | Terminal UI component classes (ported from the prototypes)                                                                                       |
+| `src/pages/`                   | Routes: `/` (editorial home + the slab, #67), `/about`, `/chat` (stub), `/styleguide`, `/log/[...slug]`, `/404`, `/rss.xml`                      |
+| `src/layouts/BaseLayout.astro` | HTML shell: head, SEO, theme-color, font preloads, ClientRouter, boot gate, analytics, terminal mount                                            |
+| `src/components/`              | `SEO`, `Analytics` (PostHog), `EditorialHeader`, `Slab`, `Prompt` (+ autocomplete), `CommandMenu`, `ArticleLog` (ledger), `Topbar`               |
+| `src/scripts/terminal.ts`      | Command router, autocomplete (#48), prompt history (#44), boot sequence (#36/#64), roving cursor (#63), wipe (#64)                               |
+| `src/styles/global.css`        | Tailwind import, design tokens (both grounds, #40), Circular @font-face (#20), base + View-Transition rules                                      |
+| `src/styles/terminal.css`      | Component classes for option C (#67): editorial identity, the slab (scoped night tokens), ledger, chat screens                                   |
+| `src/assets/fonts/`            | LL Circular Pro woff2 subsets (Book/Medium/Bold, licensed #20), hashed into `/_astro/` at build                                                  |
 | `src/lib/site.ts`              | Site constants: metadata, social links, company links, log helpers                                                                               |
 | `public/`                      | `_headers` (CSP + security), `robots.txt`, `favicon.svg`, `og-default.svg`, `resume.pdf`                                                         |
 | `PLAN.md`                      | Original project brief from Brian                                                                                                                |

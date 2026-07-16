@@ -16,11 +16,77 @@
    (ported from docs/design/lab/aurora-terminal.html)
    ========================================================================== */
 
+/* ----------------------------------------------------------------------------
+   Editorial face (#67 option C, license #20 CONFIRMED 2026-07-15): LL Circular
+   Pro, self-hosted (CSP font-src 'self'), subset to latin basic + latin-1 +
+   quotes/ellipsis/arrows, three weights only (Book 400, Medium 500, Bold 700,
+   ~88 KB woff2 total). Referenced relatively so Vite emits them hashed into
+   /_astro/ (immutable cache); BaseLayout preloads Book + Bold.
+
+   Perf contract (#70): font-display: swap + the metric-tuned "Circular
+   Fallback" below (Arial size-adjust'd per weight, overrides divided by
+   size-adjust, fontaine method) keep the swap CLS-free and nothing here
+   render-blocks. Mono stays system-stack everywhere the terminal is real; we
+   never load a mono webfont.
+   ------------------------------------------------------------------------- */
+@font-face {
+  font-family: "Circular";
+  src: url("../assets/fonts/circular-book.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Circular";
+  src: url("../assets/fonts/circular-medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Circular";
+  src: url("../assets/fonts/circular-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+/* Metric-tuned fallback: Arial advances scaled to Circular's per weight
+   (measured from the shipped subsets), so the swap does not reflow. */
+@font-face {
+  font-family: "Circular Fallback";
+  src: local("Arial");
+  font-weight: 400;
+  size-adjust: 100.85%;
+  ascent-override: 98.86%;
+  descent-override: 26.57%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Circular Fallback";
+  src: local("Arial");
+  font-weight: 500;
+  size-adjust: 102.61%;
+  ascent-override: 97.16%;
+  descent-override: 26.12%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Circular Fallback";
+  src: local("Arial");
+  font-weight: 700;
+  size-adjust: 104.05%;
+  ascent-override: 95.82%;
+  descent-override: 25.76%;
+  line-gap-override: 0%;
+}
+
 :root {
-  /* type stacks: system only, no webfonts (font discipline, E6) */
+  /* mono stays system-only (font discipline, E6); the editorial face is the
+     one webfont the site ships (#67/#20) */
   --font-mono:
     ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Mono", monospace;
   --font-sans: system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-edit: "Circular", "Circular Fallback", var(--font-sans);
 
   /* --- night ground is the default (dark) --- */
   --ground: #0e1512;
@@ -77,6 +143,7 @@
 
   --font-mono: var(--font-mono);
   --font-sans: var(--font-sans);
+  --font-edit: var(--font-edit);
 
   --default-font-family: var(--font-mono);
 }

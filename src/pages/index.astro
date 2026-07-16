@@ -1,8 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import TerminalHeader from "@/components/TerminalHeader.astro";
-import CommandMenu from "@/components/CommandMenu.astro";
-import Prompt from "@/components/Prompt.astro";
+import EditorialHeader from "@/components/EditorialHeader.astro";
+import Slab from "@/components/Slab.astro";
 import ArticleLog from "@/components/ArticleLog.astro";
 import { SITE, LINKS, COMPANIES } from "@/lib/site";
 
@@ -11,7 +10,7 @@ const person = {
   "@type": "Person",
   name: SITE.author,
   url: SITE.url,
-  jobTitle: "Full-stack engineer",
+  jobTitle: "AI Product Engineer",
   email: `mailto:${SITE.email}`,
   address: {
     "@type": "PostalAddress",
@@ -41,24 +40,15 @@ const website = {
 <BaseLayout ogType="profile" jsonLd={[person, website]}>
   <section class="screen" id="scr-home" data-screen="home" tabindex="-1">
     <div class="wrap homepad">
-      <TerminalHeader />
+      <EditorialHeader />
 
       <main id="main">
-        <CommandMenu boot />
-
-        <Prompt id="home" boot />
-        <p class="cmt bseq">
-          # questions open a chat screen <span aria-hidden="true">·</span> help lists
-          commands
-        </p>
-        <p class="cmt hint bseq" id="hint-top" aria-live="polite"></p>
-
+        <Slab promptId="home" />
         <ArticleLog boot />
-        <p class="cmt hint" id="hint-log" aria-live="polite"></p>
       </main>
 
       <footer class="status bseq">
-        status: open to full time roles + freelance
+        Status: open to full time roles + freelance
       </footer>
       <p class="cmt proto bseq"># brohde.com</p>
     </div>

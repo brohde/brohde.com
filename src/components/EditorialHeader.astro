@@ -1,0 +1,68 @@
+---
+/**
+ * Editorial identity header (#67 treatment C, sentence case #76).
+ * Compact on purpose: the slab below is the page's distinctive object.
+ * Copy per #77/#80 final: role line "AI Product Engineer · San Francisco",
+ * then "Founder, Eight Angle" (the old two-sentence title is fully replaced;
+ * only the founder credit stays), then the #79 companies line exactly
+ * "Prev: Gong · Twilio · Facebook + Google (contract)" with Facebook and
+ * Google linking to their internal case studies. One affordance per link
+ * type: external links carry the ↗ marker, internal ones don't, so "leaves
+ * the site" is always legible.
+ * External-entry ↗ markers are never underlined, label only (#68).
+ * The wordmark caret is the page's resting cursor (#63).
+ * .bseq marks blocks the boot sequence reveals in order (#36/#64).
+ */
+import { LINKS, COMPANIES, logHref } from "@/lib/site";
+---
+
+<header class="cid">
+  <h1 class="wordmark bseq">
+    Brian Rohde<span class="caret" aria-hidden="true"></span>
+  </h1>
+  <p class="crole bseq">
+    AI Product Engineer <span class="d">·</span> San Francisco
+  </p>
+  {
+    /* explicit {" "} spacers: Astro strips whitespace-only text nodes between
+      elements, which would fuse "Founder," to the link and eat the middot
+      gaps */
+  }
+  <p class="cco bseq">
+    Founder,{" "}
+    <a href={COMPANIES.eightAngle} target="_blank" rel="noopener"
+      >Eight Angle<span class="ext" aria-hidden="true">&#8599;</span></a
+    >
+  </p>
+  <p class="cco bseq">
+    <span class="d">Prev:</span>{" "}
+    <a href={COMPANIES.gong} target="_blank" rel="noopener"
+      >Gong<span class="ext" aria-hidden="true">&#8599;</span></a
+    >{" "}
+    <span class="d">·</span>{" "}
+    <a href={COMPANIES.twilio} target="_blank" rel="noopener"
+      >Twilio<span class="ext" aria-hidden="true">&#8599;</span></a
+    >{" "}
+    <span class="d">·</span>{" "}
+    <a href={logHref("facebook-newsroom")}>Facebook</a> +{" "}
+    <a href={logHref("google-android-for-work")}>Google</a> (contract)
+  </p>
+  <ul class="cprofiles bseq" aria-label="Profiles and resume">
+    <li>
+      <a href={LINKS.linkedin} target="_blank" rel="noopener"
+        >LinkedIn<span class="ext" aria-hidden="true">&#8599;</span></a
+      >
+    </li>
+    <li><a href={LINKS.resume}>Resume</a></li>
+    <li>
+      <a
+        href={LINKS.x}
+        target="_blank"
+        rel="noopener"
+        title={LINKS.xHandle}
+        aria-label={`X, ${LINKS.xHandle}`}
+        >X<span class="ext" aria-hidden="true">&#8599;</span></a
+      >
+    </li>
+  </ul>
+</header>
