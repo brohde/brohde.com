@@ -47,7 +47,11 @@ const keys = ["home", "help", "clear"];
           # Type help for commands <span aria-hidden="true">·</span> esc returns home
         </p>
       </div>
-      <div class="sr" aria-live="polite" id="announce"></div>
+      {
+        /* no live region here: terminal.ts owns the single polite announcer
+          (created lazily on document.body), so chat output and the #116
+          thinking state can never double-announce */
+      }
 
       <div class="dock">
         <nav class="keybar" aria-label="Commands">

@@ -323,13 +323,15 @@ function echo(t: string) {
   scrollChatBottom();
 }
 
-function out(html: string) {
+function out(html: string, slot?: HTMLElement | null) {
   const log = chatlog();
   if (!log) return;
-  const d = document.createElement("div");
+  // given a slot (the in-flight thinking line, #116), reuse its position so
+  // the output lands where the visitor is already looking
+  const d = slot?.isConnected ? slot : document.createElement("div");
   d.className = "out";
   d.innerHTML = html; // static strings only, never user input
-  log.appendChild(d);
+  if (!d.parentElement) log.appendChild(d);
   announce(d.textContent ?? "");
   scrollChatBottom();
 }
@@ -408,12 +410,15 @@ const SLUG_HREF: Record<string, string> = {
 const MD_LINK =
   /\[([^\]\n]{1,80})\]\(\/(about|work|eight-angle|contact|resume)\)/g;
 
-/** Model prose -> DOM. Text nodes only, plus allowlisted links; never HTML. */
-function renderReply(text: string) {
+/** Model prose -> DOM. Text nodes only, plus allowlisted links; never HTML.
+    Given a slot (the in-flight thinking line, #116), the reply fills that
+    same element in place: content swaps, the box never moves. */
+function renderReply(text: string, slot?: HTMLElement | null) {
   const log = chatlog();
   if (!log) return;
-  const d = document.createElement("div");
+  const d = slot?.isConnected ? slot : document.createElement("div");
   d.className = "reply";
+  d.replaceChildren();
   let last = 0;
   for (const m of text.matchAll(MD_LINK)) {
     d.appendChild(document.createTextNode(text.slice(last, m.index)));
@@ -435,9 +440,38 @@ function renderReply(text: string) {
     last = m.index + m[0].length;
   }
   d.appendChild(document.createTextNode(text.slice(last)));
-  log.appendChild(d);
+  if (!d.parentElement) log.appendChild(d);
   announce(text);
   scrollChatBottom();
+}
+
+/* The waiting state (#116): an assistant-style thinking line, shown for model
+   round trips only; deterministic commands render synchronously and never
+   pass through here. It is built inside the same .reply box the answer will
+   fill, so arrival is a content swap, never a box swap: zero layout shift.
+   The pulsing dots are aria-hidden decoration animated purely in CSS, so the
+   live region never sees animation frames; the waiting state announces
+   exactly once through the polite announcer. Under reduced motion the dots
+   give way to the static label (rules in terminal.css). */
+function thinking(): HTMLElement | null {
+  const log = chatlog();
+  if (!log) return null;
+  const d = document.createElement("div");
+  d.className = "reply thinking";
+  const dots = document.createElement("span");
+  dots.className = "tdots";
+  dots.setAttribute("aria-hidden", "true");
+  for (let i = 0; i < 3; i++) {
+    dots.appendChild(document.createElement("span"));
+  }
+  const label = document.createElement("span");
+  label.className = "tlabel";
+  label.textContent = "Thinking…";
+  d.append(dots, label);
+  log.appendChild(d);
+  announce("Thinking…");
+  scrollChatBottom();
+  return d;
 }
 
 function openSlug(slug: string) {
@@ -449,12 +483,7 @@ function openSlug(slug: string) {
 
 async function askLive(q: string) {
   echo(q);
-  const log = chatlog();
-  const wait = document.createElement("div");
-  wait.className = "cmt";
-  wait.textContent = "…";
-  log?.appendChild(wait);
-  scrollChatBottom();
+  const wait = thinking();
   try {
     const res = await fetch(CHAT_URL, {
       method: "POST",
@@ -471,15 +500,18 @@ async function askLive(q: string) {
       cost?: number;
       error?: string;
     };
-    wait.remove();
     if (!res.ok || d.error) {
       // server-sent error bodies ({error}) render verbatim: 400 validation,
       // 429 rate limit (friendly body), 502/503 offline text with the email.
       // renderReply builds text nodes only, so the body is inert.
-      renderReply(d.error || "Something went wrong. Try again in a moment.");
+      renderReply(
+        d.error || "Something went wrong. Try again in a moment.",
+        wait
+      );
       return;
     }
-    if (d.text) renderReply(d.text);
+    if (d.text) renderReply(d.text, wait);
+    else wait?.remove(); // open_page with no prose: nothing fills the slot
     llmHistory.push(
       { role: "user", content: q },
       { role: "assistant", content: d.text || `(opened ${d.open_page})` }
@@ -497,8 +529,9 @@ async function askLive(q: string) {
       window.setTimeout(() => openSlug(slug), 700);
     }
   } catch {
-    wait.remove();
-    out(OFFLINE_HTML);
+    // network-level failure or the 15s timeout: the offline output takes the
+    // thinking line's place
+    out(OFFLINE_HTML, wait);
   }
 }
 
