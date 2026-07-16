@@ -788,13 +788,49 @@
   }
 
   /* ---------- stage 4: the composed scene. tide canvas under the aurora layers,
-     glass on top; three placements. the glass pours stronger than stage 1
-     (0.78 night, 0.80 light) because a picture now lives under it ---------- */
+     glass on top; three placements. the glass is composed from two parts: the
+     tint (--glass-rgb) belongs to the page theme, the pour (--glass-a) belongs
+     to the placement. gutter and hero keep the strong pour (0.78 night, 0.80
+     light) because the picture lives beside or above the text; full sky
+     lightens the pour so the picture ghosts through behind the terminal, and
+     the script caps the tide strength there so every ink still clears AA at
+     the worst overlap. the no-backdrop-filter fallback never lightens:
+     without blur, text over raw tide is a legibility gamble ---------- */
   #stage4 {
-    --glass: rgba(8, 13, 10, 0.78);
+    --glass-rgb: 8, 13, 10;
+    --glass-a: 0.78;
+    --glass: rgba(var(--glass-rgb), var(--glass-a));
+    --glass-solid: rgba(var(--glass-rgb), 0.94);
+    --well: rgba(var(--glass-rgb), 0.55);
+    /* stage 4's night secondary rides one step lighter than demo 01's:
+       the full-sky glass pours lighter here, and #8fa79a cannot hold 4.5:1
+       over a warm chat sky through 34% transmission. #a2b8ab clears the
+       worst overlap at 4.7:1 and stays clearly quieter than the body ink */
+    --t-dim: #a2b8ab;
   }
   #stage4.lite {
-    --glass: rgba(252, 252, 250, 0.8);
+    --glass-rgb: 252, 252, 250;
+    --glass-a: 0.8;
+    --glass: rgba(var(--glass-rgb), var(--glass-a));
+    --glass-solid: rgba(var(--glass-rgb), 0.88);
+    --well: rgba(var(--glass-rgb), 0.72);
+    --t-tag: #7c440c;
+  }
+  #stage4[data-placement="sky"] {
+    --glass-a: 0.66;
+  }
+  #stage4.lite[data-placement="sky"] {
+    --glass-a: 0.74;
+  }
+  /* a theme change recolors the stage floor, the glass and the well on the
+     same 2.6s clock the sky crossfade runs on. the class is worn only for
+     the duration of the change, so the ground toggle and placement switches
+     stay instant */
+  #stage4.theming,
+  #stage4.theming .term,
+  #stage4.theming .prompt,
+  #stage4.theming .stagetag {
+    transition: background-color 2600ms ease;
   }
   #stage4 canvas {
     position: absolute;
@@ -826,11 +862,13 @@
       visibility 0s;
   }
 
-  /* page themes: each retints the sky here and the tide peak in script,
-     together. blob 4, the rose anchor, is deliberately not overridden: it is
-     the continuity thread across every page. the android theme is the one
-     exception, trading the rose for the full google quartet, re-weighted
-     between the cold home state and the warm chat state */
+  /* page themes: each owns the sky here, the tide peak in script, and the
+     ground below (further down), together: one identity per page. blob 4,
+     the rose anchor, is deliberately not overridden: it is the continuity
+     thread across every page. the android theme is the one exception,
+     trading the rose for the full google quartet, re-weighted between the
+     cold home state and the warm chat state, and poured a little stronger
+     in the cold sky because its ground stays neutral */
   #stage4 .skyslot[data-sky="eight"] {
     --home1: rgba(64, 196, 176, 0.5);
     --home2: rgba(133, 214, 192, 0.4);
@@ -848,10 +886,10 @@
     --chat3: rgba(255, 138, 101, 0.3);
   }
   #stage4 .skyslot[data-sky="android"] {
-    --home1: rgba(66, 133, 244, 0.5);
-    --home2: rgba(91, 185, 116, 0.44);
-    --home3: rgba(251, 188, 5, 0.18);
-    --home4: rgba(234, 67, 53, 0.14);
+    --home1: rgba(66, 133, 244, 0.56);
+    --home2: rgba(91, 185, 116, 0.5);
+    --home3: rgba(251, 188, 5, 0.2);
+    --home4: rgba(234, 67, 53, 0.16);
     --chat1: rgba(251, 188, 5, 0.5);
     --chat2: rgba(234, 67, 53, 0.38);
     --chat3: rgba(66, 133, 244, 0.2);
@@ -874,14 +912,48 @@
     --chat3: rgba(224, 116, 82, 0.28);
   }
   #stage4.lite .skyslot[data-sky="android"] {
-    --home1: rgba(26, 115, 232, 0.4);
-    --home2: rgba(24, 128, 56, 0.36);
-    --home3: rgba(234, 158, 7, 0.16);
-    --home4: rgba(217, 48, 37, 0.12);
+    --home1: rgba(26, 115, 232, 0.44);
+    --home2: rgba(24, 128, 56, 0.4);
+    --home3: rgba(234, 158, 7, 0.18);
+    --home4: rgba(217, 48, 37, 0.14);
     --chat1: rgba(234, 158, 7, 0.4);
     --chat2: rgba(217, 48, 37, 0.3);
     --chat3: rgba(26, 115, 232, 0.18);
     --chat4: rgba(24, 128, 56, 0.14);
+  }
+
+  /* theme grounds: in production a page's palette and its ground are one
+     identity, so the theme owns the stage floor and the glass tint too.
+     eight angle goes teal-black night and the brand cream by day; newsroom
+     goes a deep facebook-blue night and blue-cast paper; android keeps a
+     neutral graphite ground on purpose: four brand hues on one floor read
+     as a toy box, so the quartet sky carries the color instead, poured a
+     little stronger. specificity note: these sit after the .lite blocks so
+     the night themed values beat the plain lite ground, and the .lite
+     themed values beat both */
+  #stage4[data-theme="eight"] {
+    --sg: #0a1716;
+    --glass-rgb: 6, 15, 14;
+  }
+  #stage4.lite[data-theme="eight"] {
+    --sg: #f6f3ee;
+    --glass-rgb: 250, 246, 240;
+  }
+  #stage4[data-theme="news"] {
+    --sg: #0c1b36;
+    --glass-rgb: 6, 13, 26;
+  }
+  #stage4.lite[data-theme="news"] {
+    --sg: #f2f6fd;
+    --glass-rgb: 245, 248, 253;
+  }
+  #stage4[data-theme="android"] {
+    --sg: #101216;
+    --glass-rgb: 10, 12, 16;
+  }
+  #stage4.lite[data-theme="android"] {
+    --sg: #f6f7f9;
+    --glass-rgb: 248, 249, 251;
   }
 
   #stage4 .term {
@@ -915,9 +987,14 @@
     gap: 0 10px;
     margin: 6px 0;
   }
+  /* the tag plate takes the theme's glass tint so it never sits green on a
+     blue night; alphas re-measured against the worst tide cell below */
+  #stage4 .stagetag {
+    background: rgba(var(--glass-rgb), 0.85);
+  }
   #stage4.lite .stagetag {
     color: #3f5348;
-    background: rgba(252, 252, 250, 0.88);
+    background: rgba(var(--glass-rgb), 0.9);
   }
   @media (max-width: 700px) {
     /* no gutter on phones: the tide becomes the full page background instead.
@@ -975,6 +1052,12 @@
     }
     #stage4 .skyslot,
     #stage4 .skyslot.on {
+      transition: none;
+    }
+    #stage4.theming,
+    #stage4.theming .term,
+    #stage4.theming .prompt,
+    #stage4.theming .stagetag {
       transition: none;
     }
     .caret {
@@ -1554,9 +1637,13 @@
             page (the Eight Angle logo mark and the pose for Eight Angle, f and
             G stand in for the Facebook and Google articles) and every source
             exits into pure tide before the next one forms. New here: a page
-            theme control retints the sky and the tide peaks per page, on the
-            same crossfade the view toggle uses to warm the scene from cold to
-            gold.
+            theme is one identity. One press crossfades the sky, eases the
+            ground and the glass to the theme&rsquo;s own colors, retints the
+            tide peaks, and travels the mark itself through pure tide, all on
+            the clock the view toggle uses to warm the scene from cold to
+            gold. And full sky now pours its glass lighter, so the picture
+            ghosts through behind the terminal text instead of vanishing under
+            it.
           </p>
         </div>
       </header>
@@ -1656,11 +1743,11 @@
             id="intensity4"
             min="0"
             max="100"
-            value="12"
+            value="26"
             step="2"
             aria-describedby="intensity4-out"
           />
-          <output id="intensity4-out" for="intensity4">whisper</output>
+          <output id="intensity4-out" for="intensity4">subtle</output>
         </span>
         <span class="sep" aria-hidden="true">&middot;</span>
         <button
@@ -1698,6 +1785,7 @@
         id="stage4"
         data-state="home"
         data-placement="sky"
+        data-theme="default"
       >
         <canvas id="canvas4" aria-hidden="true"></canvas>
         <div class="skyslot on" data-sky="default" aria-hidden="true">
@@ -1832,11 +1920,20 @@
         <strong
           >Three placements, one worry: busyness against terminal text.</strong
         >
-        Full sky runs at whisper by default: image weight low, the whole canvas
-        held near a third of full strength (dark-on-light texture carries more
-        edge contrast, so the light ground needs the deeper cut), and the glass
-        panel is the only surface text ever sits on; it is the most atmospheric
-        and the most dangerous, so it gets the strongest restraint cap. Gutter
+        Full sky used to hide its own picture: the glass poured at 78% and the
+        tide sat at a whisper, so the terminal read as a solid card floating on
+        atmosphere. Brian called it: the picture behind the window was
+        invisible. So full sky now trades in both directions at once. The
+        glass lightens to 66% on night and 74% on light (dark-on-light texture
+        carries more edge contrast, so the light ground keeps the heavier
+        pour), the default strength rises from whisper to subtle, and in
+        exchange the script caps full-sky strength at a murmur: push the
+        slider past it and the output reads sky cap. The pairing is measured,
+        not felt: the cap is priced so that every ink still clears AA at the
+        worst overlap through the lighter glass, and the glass panel remains
+        the only surface text ever sits on. Without backdrop-filter support
+        the glass falls back to near solid: no blur means no safe ghosting,
+        so that one browser tier keeps the poured look. Gutter
         confines the tide to the right of the text column at full voice, where
         the presence planes fly: clean ground behind the column, and the canvas
         edge fades in with a mask so there is no seam. On phones the gutter has
@@ -1855,10 +1952,11 @@
         <strong>gutter wins for the homepage</strong> (the sky keeps the
         weather, the picture gets a stage, the text keeps a calm column), the
         <strong>hero band wins for article pages</strong> with each
-        article&rsquo;s own source, and full sky stays a whisper-only option for
+        article&rsquo;s own source, and full sky stays the capped option for
         moments Brian wants maximum atmosphere. Each placement picks its own
-        default strength when selected; the slider stays live so any placement
-        can be pushed to any strength.
+        default strength when selected; the slider stays live everywhere, and
+        the two capped modes are exactly the two where the tide lives behind
+        the whole page: full sky, and the phone background fallback.
       </p>
       <p class="demo-note">
         <strong>Sources are contained, never cropped.</strong> Brian&rsquo;s
@@ -1881,76 +1979,103 @@
         real brand assets can swap in later pending a trademark-use check. A
         source never swaps, it travels: the luminance envelope eases the picture
         back into pure rolling tide over 1.4s, the tide holds alone for 0.9s,
-        then the next picture forms out of the same tide over 1.4s. Press any
-        source button to watch one full cycle, or set cycle to auto and it
-        rotates through all five with a 4.6s dwell. Reduced motion skips the
-        theater: source and state changes render a settled still instantly.
+        then the next picture forms out of the same tide over 1.4s. The page
+        theme buttons drive this same travel, because a page&rsquo;s palette
+        and its mark are one identity: the old mark dissolves while the old
+        sky does, the tide rolls bare through the middle of the crossfade,
+        and the new mark forms just as the new sky settles, the last thing to
+        arrive. The source row stays live as a manual override for
+        auditioning any picture against any sky (the pose stays reachable
+        there). Press any source button to watch one full cycle, or set cycle
+        to auto and it rotates through all five with a 4.6s dwell. Reduced
+        motion skips the theater: source, theme and state changes render a
+        settled still instantly.
       </p>
       <p class="demo-note">
-        <strong>Page themes: the sky belongs to the page.</strong>
-        Brian&rsquo;s confirmed goal is a color theme per page, so the theme
-        control retints the sky and the tide peak together: eight angle runs
-        the brand teal family sampled from eightangle.com (mark #3FA491 on
-        cream), newsroom runs the Facebook blue family (#1877F2: luminous blues
-        peak on night, deeper blues on light), android for work runs the full
-        Google quartet re-weighted by state (blue and green lead the cold home
-        sky, yellow and red lead the warm chat sky, so it never reads as all
-        four at once). The mechanics are the home-to-chat trick doubled: the
-        sky lives in two stacked slots, the incoming slot carries the new
-        palette as scoped custom properties and crossfades in over 2.6s, while
-        the tide&rsquo;s peak bucket lerps to the theme&rsquo;s peak on the
-        same clock. The rose anchor blob is never overridden: it is the
-        continuity thread that keeps every page one family (android alone
-        trades it for the quartet, flagged for Brian). Chat stays golden hour
-        everywhere by design: page identity lives in the reading state, and the
-        warm chat sky just takes the theme&rsquo;s cast, so moving between
-        pages never changes what talking feels like.
+        <strong>Page themes: the whole scene belongs to the page.</strong>
+        Brian&rsquo;s confirmed goal is a color theme per page, and his second
+        pass sharpened it: retinting the sky over the same green-black ground
+        was too polite. So a theme now owns the ground it stands on. Eight
+        angle turns the floor teal-black at night and the brand cream
+        #F6F3EE by day, the same cream the live site sits on. Newsroom goes a
+        deep Facebook-blue night (#0C1B36) and blue-cast paper (#F2F6FD), so
+        the page reads blue before a single blob drifts past. Android for
+        work deliberately keeps a neutral graphite floor (#101216 night,
+        #F6F7F9 light): four brand hues on one ground read as a toy box, so
+        the neutral floor lets the Google quartet in the sky carry the color,
+        and the cold home sky pours a little stronger to compensate. The
+        glass and the input well take each theme&rsquo;s tint too, so the
+        terminal never sits green on a blue night. Mechanics: the sky lives
+        in two stacked slots and crossfades over 2.6s; the ground, glass and
+        well ease their colors on the same clock under a class the stage
+        wears only for the ride; the tide&rsquo;s peak bucket lerps to the
+        theme&rsquo;s peak in step; and the mark travels through pure tide as
+        described above. One press, one scene change. The rose anchor blob is
+        never overridden: it is the continuity thread that keeps every page
+        one family (android alone trades it for the quartet, flagged for
+        Brian). Chat stays golden hour everywhere by design: page identity
+        lives in the reading state, and the warm chat sky just takes the
+        theme&rsquo;s cast, so moving between pages never changes what
+        talking feels like. Ground toggles and placement switches stay
+        instant on purpose: the text inks snap with the ground, so the floor
+        snaps with them.
       </p>
       <p class="demo-note">
         <strong
           >Contrast, measured at the worst overlap, all four themes, both
           grounds.</strong
         >
-        The glass pours stronger than demo 01 (78% night, 80% light; the
-        no-backdrop-filter fallbacks are stronger still) because a picture
-        lives under it. The audit now sweeps every theme, both states, and six
+        The audit got two new axes this round: the themed grounds and glass
+        tints, and the two glass pours (the poured 78/80% that gutter and
+        hero keep, and the lighter 66/74% full-sky pour with its strength
+        cap). It still sweeps every theme, both grounds, both states, and six
         backdrop candidates per combination: the peak glyph and the dense ink
-        mass, each with all four blobs stacked at center alpha, each bare (a
-        bare peak with no blob overhead is a real frame, and on night it turns
-        out to be the worst one), plus blobs alone and bare ground, all under
-        the glass. Worst case across everything: secondary ink #8FA79A at
-        4.6:1 on the night glass over a bare mint peak in the default home
-        state; every other ink on night clears 4.7:1 up to headline #F2F7F3 at
-        11.0:1 or better. The most saturated palette is android for work
-        (full-strength Google hues): its night worst is 4.9:1 home and 4.7:1
-        chat on the same secondary ink, headline 11.1:1 or better, mint accent
-        7.8:1 or better, amber tag 6.9:1 in chat. On the light glass the
-        darkest spot rules and the themes barely move it: ink #14211A at
-        11.7:1, secondary #3F5348 at 5.8:1, green accent #086148 at 5.3:1,
-        brown tag #8A4D0F at 4.7:1, identical for android and within 0.1 for
-        the rest. Everything AA or better, body inks AAA, on both grounds, in
-        both states, under every theme.
+        mass, each with all four blobs stacked at center alpha, each bare,
+        plus blobs alone and bare ground, all under the glass. The lighter
+        sky glass moved the worst frame: it is no longer the bare night peak
+        but the warm chat peak with the full blob stack overhead, seen
+        through 34% transmission. Two inks had to move to hold the line, and
+        both are scoped to this stage. The night secondary lifts one step,
+        #8FA79A to #A2B8AB, because the old value bottomed out at 3.9:1 under
+        the newsroom chat sky; it now reads 4.7:1 there, 4.9:1 under the
+        default and eight angle skies, 5.5:1 under android, and 5.7:1 at the
+        old worst spot. The light chat tag deepens from #8A4D0F to #7C440C,
+        because the eight angle cream glass shaved the old brown to a 4.5:1
+        edge; it now clears 5.3:1 at its worst. Everything else holds
+        without touching: on night, body ink #D6E5DC at 7.6:1 or better,
+        headline #F2F7F3 at 9.2:1 or better, mint accent (also the focus
+        ring) at 6.5:1 or better, amber tag at 5.7:1 or better in chat; on
+        light, ink #14211A at 11.2:1 or better, secondary #3F5348 at 5.5:1
+        or better, green accent #086148 at 5.0:1 or better. The corner tag
+        plate now takes the theme&rsquo;s glass tint and measures 6.6:1 or
+        better everywhere. Worst case across every theme, ground, state,
+        pour and backdrop: 4.7:1. Everything AA or better, body inks AAA.
       </p>
       <p class="demo-note">
         <strong>Cost, measured.</strong> Same 9fps cadence and cell grid as
         demo 02; the additions are one envelope multiply per cell, four color
-        strings per tick, and now the theme peak lerp, a handful of float ops
-        per tick, not per cell. The theme crossfade itself is free where it
-        counts: the sky swap is compositor opacity on the two slots, exactly
-        like the home/chat morph. Re-measured in headless Chrome, full sky at
-        full strength (1034&times;618 canvas, about 2,400 cells) through a
-        deliberately busy minute: a source travel to the logo, four page theme
-        crossfades, the state recolor, a ground toggle and two placement
-        switches. Across repeated runs at dpr 1 and dpr 2: 0.8 to 1.5ms
-        average per tick, p95 1.1 to 2.3ms, worst single tick observed 2.6ms
-        on a resize-adjacent frame. Budget was 4ms: averages sit between a
-        fifth and a third of it, and the worst tick anyone saw still fits
-        inside it. All five sources are sampled once
-        per resize, not per tick. Pause, offscreen and hidden-tab behavior come
-        from the shared runner; the motion button parks the blobs and the tide
-        together. Production wiring is the same story as demos 01 and 02:
-        placement, theme and source are per-page (a class, a palette, an
-        asset), state follows the route.
+        strings per tick, and the theme peak lerp, a handful of float ops per
+        tick, not per cell. A theme change now does three things at once and
+        none of them touch the tick: the sky swap is compositor opacity on
+        the two slots, the ground and glass recolor is one background-color
+        ease on solid rectangles (the backdrop blur under the glass is
+        already recomputing every frame regardless, because the scene under
+        it never stops moving), and the mark travel is the same envelope the
+        source buttons drive. Re-measured in headless Chrome on the
+        1034&times;618 full-sky canvas (about 2,400 cells, slider pinned at
+        100) through a deliberately busy 22 seconds: four theme changes each
+        carrying a ground ease and a mark travel, one manual source travel, a
+        state recolor, a ground toggle and two placement switches. At dpr 1:
+        0.73ms average per tick, p95 0.9ms, worst 1.2ms over 157 ticks. At
+        dpr 2: 0.77ms average, p95 1.1ms, worst 1.4ms. Budget is 4ms: the
+        worst tick uses about a third of it. Zero runtime errors in every
+        run, and the same scenario under forced reduced motion runs zero
+        ticks: every change lands as a settled still. All five sources are
+        sampled once per resize, not per tick. Pause, offscreen and
+        hidden-tab behavior come from the shared runner; the motion button
+        parks the blobs and the tide together. Production wiring is the same
+        story as demos 01 and 02: placement, theme, ground and source are
+        per-page (a class, a palette, an asset), state follows the route.
       </p>
     </div>
   </section>
@@ -2768,8 +2893,9 @@
       var idleT = 0;
       var mix = 0,
         target = 0; /* state tint: 0 home, 1 chat */
-      var intensity = 0.12;
+      var intensity = 0.26;
       var bgCap = false; /* gutter fell back to page background: hold whisper */
+      var skyCap = false; /* full sky rides lighter glass: hold a murmur */
       var themeFrom = PEAKS.default; /* peak endpoints for the theme travel */
       var themeTo = PEAKS.default;
       var tmix = 1; /* theme tint travel: 1 arrived */
@@ -2995,10 +3121,16 @@
         if (listeners.change) listeners.change();
       }
 
-      /* effective strength: the background fallback holds the field at
-       whisper no matter where the slider sits */
+      /* effective strength: two capped modes, both places where the tide
+       lives behind the whole page. the phone background fallback holds
+       whisper; full sky holds a murmur (0.28), because its glass is poured
+       lighter and the worst-overlap AA numbers are measured at exactly
+       this pairing: lighter glass buys visibility, the cap pays for it */
       function eff() {
-        return bgCap ? Math.min(intensity, 0.12) : intensity;
+        var v = intensity;
+        if (bgCap) v = Math.min(v, 0.12);
+        if (skyCap) v = Math.min(v, 0.28);
+        return v;
       }
       /* whisper also dims the whole field so it can sit behind a page;
        the curve bottoms out near a third of full strength because
@@ -3044,6 +3176,13 @@
         },
         capped: function () {
           return bgCap;
+        },
+        setSkyCap: function (v) {
+          skyCap = v;
+          applyAlpha();
+        },
+        skyCapped: function () {
+          return skyCap;
         },
         /* theme travel reroutes gracefully mid-flight: freeze the current
          interpolated peaks as the new starting point, then head for the
@@ -3120,13 +3259,15 @@
       glyph4.setIntensity(v / 100);
       out4.textContent = glyph4.capped()
         ? "whisper cap"
-        : v <= 16
-          ? "whisper"
-          : v < 40
-            ? "subtle"
-            : v < 70
-              ? "balanced"
-              : "strong";
+        : glyph4.skyCapped() && v > 28
+          ? "sky cap"
+          : v <= 16
+            ? "whisper"
+            : v < 40
+              ? "subtle"
+              : v < 70
+                ? "balanced"
+                : "strong";
       if (!glyph4Demo.running) glyph4.staticFrame();
     }
     slider4.addEventListener("input", syncSlider4);
@@ -3136,16 +3277,16 @@
      the script holds the field at whisper regardless of the slider */
     var mqNarrow = window.matchMedia("(max-width: 700px)");
     function syncBgFallback() {
-      glyph4.setBgCap(
-        mqNarrow.matches && stage4.getAttribute("data-placement") === "gutter"
-      );
+      var p = stage4.getAttribute("data-placement");
+      glyph4.setBgCap(mqNarrow.matches && p === "gutter");
+      glyph4.setSkyCap(p === "sky");
       syncSlider4();
     }
     if (mqNarrow.addEventListener) {
       mqNarrow.addEventListener("change", syncBgFallback);
     }
 
-    var PLACE_DEFAULT = { sky: 12, gutter: 70, hero: 60 };
+    var PLACE_DEFAULT = { sky: 26, gutter: 70, hero: 60 };
     var plBtns = {
       sky: $("#pl-sky"),
       gutter: $("#pl-gutter"),
@@ -3163,7 +3304,7 @@
       else glyph4.staticFrame();
       live.textContent =
         p === "sky"
-          ? "placement: full sky at whisper strength"
+          ? "placement: full sky; the glass lightens so the tide ghosts through, and strength is capped at a murmur"
           : p === "gutter"
             ? "placement: right gutter beside the text column; on narrow screens the tide becomes the page background at whisper"
             : "placement: hero band above the content";
@@ -3204,9 +3345,14 @@
       btnCycle4.setAttribute("aria-pressed", String(cycling4));
     });
 
-    /* page theme: the incoming sky slot carries the new palette (scoped
-     custom properties in the css) and crossfades in on the same 2.6s clock
-     the home/chat swap uses; the tide peak lerps along inside glyph4 */
+    /* page theme: one press changes the whole scene. the incoming sky slot
+     carries the new palette (scoped custom properties in the css) and
+     crossfades in on the same 2.6s clock the home/chat swap uses; the tide
+     peak lerps along inside glyph4; the ground and glass ease their colors
+     under a temporary .theming class on the same clock; and the mark itself
+     travels through the source envelope, out through pure tide while the
+     old sky dissolves, forming again as the new sky settles. the source
+     row below stays live as a manual override for auditioning */
     var themeBtns4 = {
       default: $("#th4-default"),
       eight: $("#th4-eight"),
@@ -3221,6 +3367,13 @@
       news: "newsroom, the facebook blue family",
       android: "android for work, the google quartet",
     };
+    /* each theme carries its page's mark: the tide draws what the page is */
+    var THEME_SOURCE = { default: "eight", eight: "logo", news: "f", android: "g" };
+    var themeFadeT = 0;
+    function snapThemeFade() {
+      clearTimeout(themeFadeT);
+      stage4.classList.remove("theming");
+    }
     function setTheme4(name) {
       if (name === theme4) return;
       theme4 = name;
@@ -3229,12 +3382,23 @@
       next.setAttribute("data-sky", name);
       skySlots4[on].classList.remove("on");
       next.classList.add("on");
+      /* ground + glass ride the same clock; the class comes off after the
+       ride so ground toggles and placement switches stay instant */
+      stage4.classList.add("theming");
+      clearTimeout(themeFadeT);
+      themeFadeT = setTimeout(function () {
+        stage4.classList.remove("theming");
+      }, 2700);
+      stage4.setAttribute("data-theme", name);
       glyph4.setTheme(name);
+      glyph4.request(THEME_SOURCE[name], REDUCED || !glyph4Demo.running);
       for (var k in themeBtns4)
         themeBtns4[k].setAttribute("aria-pressed", String(k === name));
       if (!glyph4Demo.running) glyph4.staticFrame();
       live.textContent =
-        "page theme: " + THEME_WORDS[name] + ", sky and tide retint together";
+        "page theme: " +
+        THEME_WORDS[name] +
+        "; sky, ground and tide retint together and the mark travels with them";
     }
     Object.keys(themeBtns4).forEach(function (k) {
       themeBtns4[k].addEventListener("click", function () {
@@ -3276,6 +3440,9 @@
 
     function applyGround(isLite, announce) {
       groundLite = isLite;
+      /* a mid-flight theme fade must not slow the ground swap: text inks
+       snap with the .lite class, so the floor has to snap with them */
+      snapThemeFade();
       stage1.classList.toggle("lite", isLite);
       stage2El.classList.toggle("lite", isLite);
       stage4.classList.toggle("lite", isLite);
