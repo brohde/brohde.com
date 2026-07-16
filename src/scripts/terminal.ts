@@ -3,7 +3,7 @@
  *
  * One bundled module drives every interactive terminal behavior:
  *   - deterministic command router (work/about/resume/contact/help/home/clear
- *     + /slash aliases + free-form -> chat stub), ported from build-log-v3.html
+ *     + /slash aliases + free-form -> live chat), ported from build-log-v3.html
  *   - command autocomplete at the prompt (#48)
  *   - shell-style prompt history (#44)
  *   - the boot sequence (#36; #64: site entry only, never on internal navs)
@@ -78,9 +78,11 @@ const RESUME_HTML =
   'Resume    <a href="/resume.pdf">resume.pdf</a>\n' +
   '<span class="c"># Opens the PDF</span>';
 
-const STUB_HTML =
-  "The live model is coming soon.\n" +
-  '<span class="c"># Chat runs on Claude Haiku when the site ships. For now, type help, or email brian@brohde.com.</span>';
+/* shown only when the chat backend is unreachable at the network level
+   (server-sent errors render their own body verbatim) */
+const OFFLINE_HTML =
+  "The chat is offline right now.\n" +
+  '<span class="c"># Email <a href="mailto:brian@brohde.com">brian@brohde.com</a> and ask him directly.</span>';
 
 /* ---------------------------------------------------------------- state ---- */
 
@@ -369,24 +371,26 @@ function toConsole(cmd: string, html: string, viaKb: boolean) {
   }
 }
 
-function askStub(q: string) {
-  echo(q);
-  out(STUB_HTML);
-}
-
-/* ----------------------------------------------- dev chat bridge (POC) ---- */
-/* On localhost, free-form questions go to the real model through the local
- * POC server (poc/chat, http://localhost:8787) instead of the stub:
- * POST /chat {message, history} -> {text, open_page, usage, cost}.
+/* -------------------------------------------------------- chat bridge ---- */
+/* Free-form questions go to the live model. In production/preview that is
+ * the Pages Function: POST /api/chat {message (1-500), history (last 8)} ->
+ * {text, open_page, usage, cost}; errors are {error} bodies rendered
+ * verbatim (400 validation, 429 rate limit, 502/503 upstream, all
+ * sentence-cased server-side). On localhost the request goes to the local
+ * POC server instead (poc/chat, http://localhost:8787), which speaks the
+ * same shape; `wrangler pages dev dist` (port 8788) exercises the real
+ * Function locally when parity matters.
+ *
  * Markdown links restricted to the five allowlisted slugs render as real
  * internal links (#54); everything else stays plain text. open_page triggers
- * real navigation through the deterministic layer. A dim comment line shows
- * usage and cost per reply. Any failure (POC down, timeout, non-localhost)
- * falls back to the stub. Production wiring (Worker + AI Gateway +
- * Turnstile) comes later, behind the #49 security gate.
+ * real navigation through the deterministic layer. The usage/cost comment
+ * line is a dev nicety: localhost only, never shown to visitors. Network-
+ * level failure (backend unreachable) falls back to OFFLINE_HTML.
+ * Lazy by contract (#70): nothing here runs, connects, or loads before the
+ * visitor actually asks something.
  */
-const POC_URL = "http://localhost:8787/chat";
 const IS_LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
+const CHAT_URL = IS_LOCAL ? "http://localhost:8787/chat" : "/api/chat";
 
 /** rolling model conversation (distinct from the prompt's command history) */
 const llmHistory: { role: "user" | "assistant"; content: string }[] = [];
@@ -452,11 +456,13 @@ async function askLive(q: string) {
   log?.appendChild(wait);
   scrollChatBottom();
   try {
-    const res = await fetch(POC_URL, {
+    const res = await fetch(CHAT_URL, {
       method: "POST",
       headers: { "content-type": "application/json" },
+      // Turnstile seam (#49): when the widget activates, add its token here
+      // as `turnstileToken` alongside message/history. Nothing else changes.
       body: JSON.stringify({ message: q, history: llmHistory.slice(-8) }),
-      signal: AbortSignal.timeout(10_000),
+      signal: AbortSignal.timeout(15_000),
     });
     const d = (await res.json()) as {
       text?: string;
@@ -465,14 +471,21 @@ async function askLive(q: string) {
       cost?: number;
       error?: string;
     };
-    if (!res.ok || d.error) throw new Error(d.error || String(res.status));
     wait.remove();
+    if (!res.ok || d.error) {
+      // server-sent error bodies ({error}) render verbatim: 400 validation,
+      // 429 rate limit (friendly body), 502/503 offline text with the email.
+      // renderReply builds text nodes only, so the body is inert.
+      renderReply(d.error || "Something went wrong. Try again in a moment.");
+      return;
+    }
     if (d.text) renderReply(d.text);
     llmHistory.push(
       { role: "user", content: q },
       { role: "assistant", content: d.text || `(opened ${d.open_page})` }
     );
-    if (d.usage) {
+    if (d.usage && IS_LOCAL) {
+      // dev-only telemetry line; visitors never see cost figures
       line(
         "cmt",
         `# ${d.usage.input} in · ${d.usage.output} out · $${(d.cost ?? 0).toFixed(4)}`
@@ -485,14 +498,12 @@ async function askLive(q: string) {
     }
   } catch {
     wait.remove();
-    out(STUB_HTML);
-    line("cmt", "# Local model unreachable · stub reply");
+    out(OFFLINE_HTML);
   }
 }
 
 function ask(q: string) {
-  if (IS_LOCAL) void askLive(q);
-  else askStub(q);
+  void askLive(q);
 }
 
 function toChat(q: string, viaKb: boolean) {
@@ -534,6 +545,16 @@ function run(raw: string, viaKb: boolean) {
     else hint("# Nothing to clear here");
     return;
   }
+  if (cmd === "chat") {
+    // open (expand into) the chat itself; never send "chat" as a question
+    if (currentScreen() === "chat") {
+      byId("in-chat")?.focus({ preventScroll: true });
+    } else {
+      if (viaKb) pendingFocus = "in-chat";
+      navigate("/chat");
+    }
+    return;
+  }
   if (cmd === "hello" || cmd === "hi" || cmd === "hey") {
     toConsole(v, HELLO_HTML, viaKb);
     return;
@@ -551,7 +572,7 @@ function run(raw: string, viaKb: boolean) {
     return;
   }
 
-  // free-form question: the chat stub (live model deferred)
+  // free-form question: the live chat (expands the slab, #69)
   toChat(v, viaKb);
 }
 
@@ -983,17 +1004,23 @@ function setupOnce() {
     }
   });
 
-  // Route transitions (#64): drop the wipe as soon as an internal navigation
-  // starts, and hold the router's loader so the cover stays down for at
-  // least WIPE_HOLD_MS before the swap can land. Applies to every direction
+  // Route transitions (#64, #69), resolved per navigation. Wipe: drop the
+  // cover as soon as an internal navigation starts and hold the router's
+  // loader so it stays down for at least WIPE_HOLD_MS before the swap can
+  // land. Morph: NO cover (it would hide the slab morphing); stamp the
+  // html[data-vt] hook the morph CSS keys on. Applies to every direction
   // (links, commands, Escape, back/forward all flow through the router).
   document.addEventListener("astro:before-preparation", (e) => {
-    if (resolveTransition() !== "wipe") return;
+    clearTimeout(vtTimer);
+    const prep = e instanceof TransitionBeforePreparationEvent ? e : null;
+    navKind = resolveTransition(prep?.from ?? undefined, prep?.to ?? undefined);
+    stampMorph(navKind === "morph");
+    if (navKind !== "wipe") return;
     dropWipe();
-    if (e instanceof TransitionBeforePreparationEvent) {
+    if (prep) {
       const started = Date.now();
-      const load = e.loader;
-      e.loader = async () => {
+      const load = prep.loader;
+      prep.loader = async () => {
         await load();
         const left = WIPE_HOLD_MS - (Date.now() - started);
         if (left > 0) await new Promise((r) => setTimeout(r, left));
@@ -1001,9 +1028,24 @@ function setupOnce() {
     }
   });
 
+  // Astro's swap replaces the root element's attributes with the new page's,
+  // which would drop data-vt before the transition's animations are set up
+  // (that happens at ready-time, AFTER the swap). Re-stamp it here, then
+  // clear once the morph has finished so a stale hook can never restyle a
+  // later navigation.
+  document.addEventListener("astro:after-swap", () => {
+    if (navKind === "morph") stampMorph(true);
+  });
+
   // Lift the wipe only after the new page is rendered and initialized, so
   // the destination is visually complete the moment it appears.
-  document.addEventListener("astro:page-load", liftWipe);
+  document.addEventListener("astro:page-load", () => {
+    liftWipe();
+    if (navKind === "morph") {
+      clearTimeout(vtTimer);
+      vtTimer = window.setTimeout(() => stampMorph(false), MORPH_MS + 140);
+    }
+  });
 
   // Boot plays on SITE ENTRY ONLY (#64): the pre-paint gate in BaseLayout
   // sets html.boot on genuine full loads of the homepage, and Astro never

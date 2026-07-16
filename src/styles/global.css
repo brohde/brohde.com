@@ -240,13 +240,18 @@ html[data-vt="morph"]::view-transition-new(slab) {
   animation-duration: 360ms;
   animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
 }
-/* the slab interiors cross-fade edge to edge while the box interpolates */
+/* Snapshots stay 1:1 and anchor to the slab's top-left corner while the box
+   interpolates: the title bar holds still as the screen physically extends
+   (and retracts), instead of the interiors zoom-stretching. The box crops
+   whichever snapshot is larger than it mid-flight. */
 html[data-vt="morph"]::view-transition-old(slab),
 html[data-vt="morph"]::view-transition-new(slab) {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  object-fit: none;
+  object-position: top left;
 }
 /* the editorial page fades around the morphing slab instead of hard-cutting */
 html[data-vt="morph"]::view-transition-old(root) {

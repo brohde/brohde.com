@@ -13,8 +13,8 @@ const keys = ["home", "help", "clear"];
 ---
 
 <BaseLayout
-  title="chat"
-  description="Ask about Brian Rohde's work. Live chat is coming soon."
+  title="Chat"
+  description="Ask about Brian Rohde's work. Answers come from a live model."
   noindex={true}
 >
   <section
@@ -39,12 +39,11 @@ const keys = ["home", "help", "clear"];
       <div class="chatlog" id="chatlog">
         {/* on localhost terminal.ts swaps this line for the live-POC note */}
         <p class="cmt" id="chat-note">
-          # The live model (Claude Haiku) ships with the site. This is a
-          preview.
+          # Ask about Brian's work <span aria-hidden="true">·</span> answers come
+          from a live model
         </p>
         <p class="cmt">
-          # Type help for commands <span aria-hidden="true">·</span> esc
-          returns home
+          # Type help for commands <span aria-hidden="true">·</span> esc returns home
         </p>
       </div>
       <div class="sr" aria-live="polite" id="announce"></div>
