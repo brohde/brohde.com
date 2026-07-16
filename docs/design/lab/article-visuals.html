@@ -1,0 +1,668 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Article visuals · the C world imagery system</title>
+
+<!--
+  DESIGN LAB · article imagery system for the Option C "phosphor slab" world (#67).
+  Self-contained: no network requests, no external fonts, no external images.
+  Every figure here is inline SVG/HTML or a CSS-drawn stand-in.
+
+  TYPE NOTE: the editorial face is LL Circular (#78). This lab has no webfonts, so
+  a system geometric-sans stand-in fills in for Circular below. On the real site
+  the ".edit" runs stay in Circular Book/Medium/Bold. Mono is the system mono
+  stack, exactly as it ships.
+
+  COLOR NOTE: token values are copied verbatim from src/styles/global.css and
+  src/styles/terminal.css so this lab matches the built pages 1:1.
+-->
+
+<style>
+  :root {
+    --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Mono", monospace;
+    /* Circular stand-in (see TYPE NOTE) */
+    --font-edit: -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+
+    /* the always-night phosphor slab material (#0b110e family), theme-independent */
+    --p-bg: #0b110e;
+    --p-line: #33523f;
+    --p-mint: #7ee787;
+    --p-dim: #8fa79a;
+    --p-ink: #d6e5dc;
+    --p-bright: #f2f7f3;
+    --p-glow: 0 0 26px rgba(126, 231, 135, 0.1);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: #10100e;
+    color: #d6d6cf;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  img { max-width: 100%; }
+
+  /* ---- doc scaffolding (neutral, outside the two grounds) ---- */
+  .doc { max-width: 1180px; margin: 0 auto; padding: 40px 22px 80px; }
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #7ee787;
+    margin: 0 0 10px;
+  }
+  .doc h1 {
+    font-family: var(--font-edit);
+    font-weight: 800;
+    font-size: clamp(26px, 4.4vw, 40px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #f4f5f0;
+    margin: 0 0 14px;
+  }
+  .lede {
+    font-family: var(--font-edit);
+    font-size: 17px;
+    line-height: 1.6;
+    color: #c3ccc4;
+    max-width: 68ch;
+    margin: 0 0 12px;
+  }
+  .lede b { color: #eef2ec; font-weight: 700; }
+  .rule { height: 1px; background: #2a2f2a; border: 0; margin: 34px 0; }
+  .sect-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8fa79a;
+    margin: 0 0 4px;
+  }
+  .sect-note {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: #7f867e;
+    max-width: 74ch;
+    margin: 0 0 22px;
+  }
+
+  /* ---- the three-material legend ---- */
+  .legend { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 26px 0 8px; }
+  @media (max-width: 720px) { .legend { grid-template-columns: 1fr; } }
+  .mat {
+    border: 1px solid #2a2f2a;
+    border-radius: 12px;
+    padding: 16px 16px 18px;
+    background: #15151280;
+  }
+  .mat .swatch { height: 46px; border-radius: 8px; margin-bottom: 12px; position: relative; overflow: hidden; }
+  .mat h3 { font-family: var(--font-edit); font-weight: 700; font-size: 15px; margin: 0 0 4px; color: #edf1ea; }
+  .mat p { margin: 0; font-family: var(--font-mono); font-size: 12px; color: #8b918a; line-height: 1.55; }
+  .sw-screen { background: #0b110e; border: 1px solid #33523f; box-shadow: 0 0 22px rgba(126,231,135,0.14) inset; }
+  .sw-screen::after {
+    content: "scrape → gate → dedup"; position: absolute; inset: 0;
+    display: flex; align-items: center; padding-left: 12px;
+    font-family: var(--font-mono); font-size: 11px; color: #7ee787; opacity: 0.9;
+  }
+  .sw-paper { background: linear-gradient(90deg,#fbfbf8 50%, #0e1512 50%); border: 1px solid #4a4f48; }
+  .sw-lift { background: #12201a; border: 1px solid #2e4a3c; }
+  .sw-lift::after {
+    content: "92.2%"; position: absolute; inset: 0;
+    display: flex; align-items: center; padding-left: 12px;
+    font-family: var(--font-mono); font-size: 18px; color: #7ee787;
+  }
+
+  /* ============================================================
+     THE TWO GROUNDS (forced tokens, mirroring styleguide.astro)
+     ============================================================ */
+  .grounds { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 900px) { .grounds { grid-template-columns: 1fr; } }
+
+  .ground {
+    border-radius: 16px;
+    padding: 26px 24px 30px;
+    overflow: hidden;
+    background: var(--ground);
+    color: var(--ink);
+    border: 1px solid #2a2f2a;
+  }
+  .g-night {
+    --ground:#0e1512; --ink:#d6e5dc; --bright:#f2f7f3; --dim:#8fa79a;
+    --accent:#7ee787; --on-accent:#0e1512; --line:#2e4a3c; --line-strong:#33523f; --well:#12201a;
+  }
+  .g-light {
+    --ground:#fbfbf8; --ink:#14211a; --bright:#14211a; --dim:#3f5348;
+    --accent:#086148; --on-accent:#fbfbf8; --line:#dae0d6; --line-strong:#c7d0c4; --well:#f1f2ec;
+  }
+  .ground-tag {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--dim);
+    margin: 0 0 18px; display: flex; justify-content: space-between; align-items: baseline;
+  }
+
+  /* ---- article context (compact real header, so figures sit in situ) ---- */
+  .atop {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    min-height: 44px; border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono); font-size: 12.5px; margin: 0 0 18px;
+  }
+  .homechip {
+    display: inline-flex; align-items: center; min-height: 32px; padding: 0 11px;
+    background: #0b110e; color: #7ee787; border: 1px solid #33523f; border-radius: 7px;
+    font-family: var(--font-mono); font-size: 12.5px; text-decoration: none;
+    box-shadow: 0 0 14px rgba(126,231,135,0.14);
+  }
+  .homechip .br { color: #8fa79a; }
+  .tbl { color: var(--dim); }
+
+  .tideband {
+    position: relative; height: 96px; border-radius: 10px; margin: 0 0 20px;
+    overflow: hidden; background: #0b110e; border: 1px solid #33523f;
+    box-shadow: 0 0 30px rgba(126,231,135,0.1);
+  }
+  .tideband::before {
+    content: "d8 x3 k9 ▓ 4w rq ░ 2h z2 ot ▒ ex tw wx lc 7x 4p zg kk n6 0r 7z qe tb y6 m y7 am f7 0u vt 14 ce 3i 39 ov nb wy gm 1c ow ry c5 2f pe vs 6s o1 qf 8z ho 3e uk kq db ew ▓ wm 5t 6w 7b ky g9 qn l 04 bf cn qx wa";
+    position: absolute; inset: -8px; font-family: var(--font-mono); font-size: 14px;
+    line-height: 1.5; letter-spacing: 4px; color: #7ee787; opacity: 0.22;
+    overflow: hidden; word-break: break-all; user-select: none;
+  }
+  .adate { font-family: var(--font-mono); font-size: 12px; color: var(--dim); margin: 0 0 8px; }
+  .atitle {
+    font-family: var(--font-edit); font-weight: 700; font-size: clamp(22px, 3.4vw, 27px);
+    line-height: 1.14; letter-spacing: -0.02em; color: var(--bright); margin: 0 0 16px; text-wrap: balance;
+  }
+  .astats { display: flex; flex-wrap: wrap; gap: 9px; margin: 0 0 8px; }
+  .astat { flex: 1 1 120px; border: 1px solid var(--line); background: var(--well); border-radius: 8px; padding: 9px 12px 11px; }
+  .astat .n { display: block; font-family: var(--font-mono); font-size: 19px; color: var(--accent); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .astat .l { display: block; font-family: var(--font-edit); font-size: 12px; color: var(--dim); margin-top: 2px; }
+
+  .prose-p { font-family: var(--font-edit); font-size: 15.5px; line-height: 1.7; color: var(--ink); max-width: 62ch; margin: 20px 0; }
+  .prose-h { font-family: var(--font-edit); font-weight: 700; font-size: 18px; letter-spacing: -0.015em; color: var(--bright); margin: 26px 0 4px; }
+
+  /* ============================================================
+     FIGURE SYSTEM
+     ============================================================ */
+  figure { margin: 22px 0; }
+  figcaption { margin-top: 10px; max-width: 62ch; }
+  .fig-mark { font-family: var(--font-mono); font-size: 12px; color: var(--dim); }
+  .fig-cap { font-family: var(--font-edit); font-size: 13.5px; line-height: 1.55; color: var(--dim); }
+  .fig-cap b { color: var(--ink); font-weight: 600; }
+  .fig-prov { font-family: var(--font-mono); font-size: 11.5px; color: var(--dim); margin-top: 3px; }
+
+  /* MATERIAL 1 · the phosphor screen object (diagrams). Always night. */
+  .slab {
+    position: relative; background: var(--p-bg); border: 1px solid var(--p-line);
+    border-radius: 10px; box-shadow: 0 0 22px rgba(126,231,135,0.1);
+    padding: 0; overflow: hidden; color-scheme: dark;
+  }
+  .slab::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: 10px;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.2) 0 1px, transparent 1px 3px);
+    opacity: 0.4;
+  }
+  .slab-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 9px 14px; border-bottom: 1px solid var(--p-line);
+    font-family: var(--font-mono); font-size: 11.5px; color: var(--p-dim); position: relative; z-index: 1;
+  }
+  .slab-head .dot { color: var(--p-mint); }
+  .slab-body { padding: 18px 16px; position: relative; z-index: 1; }
+
+  /* the pipeline flow: chevron-linked phosphor nodes, horizontal → wraps to vertical */
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 6px 4px; }
+  .node {
+    flex: 1 1 128px; min-width: 118px; border: 1px solid var(--p-line); border-radius: 8px;
+    background: #0e1712; padding: 9px 11px 10px;
+  }
+  .node .k { font-family: var(--font-mono); font-size: 10px; color: var(--p-dim); }
+  .node .t { font-family: var(--font-mono); font-size: 13px; color: var(--p-mint); margin: 2px 0 0; letter-spacing: -0.01em; }
+  .node .s { font-family: var(--font-mono); font-size: 10.5px; color: var(--p-dim); line-height: 1.4; margin-top: 3px; }
+  .chev { display: flex; align-items: center; justify-content: center; flex: 0 0 16px; color: var(--p-line); }
+  .chev::before { content: "→"; font-family: var(--font-mono); font-size: 13px; color: var(--p-mint); opacity: 0.75; }
+  .flow-foot { font-family: var(--font-mono); font-size: 11px; color: var(--p-dim); margin-top: 12px; }
+  .flow-foot b { color: var(--p-mint); font-weight: 400; }
+  @media (max-width: 620px) {
+    .flow { flex-direction: column; align-items: stretch; }
+    .node { flex: 1 1 auto; }
+    .chev { flex: 0 0 16px; }
+    .chev::before { content: "↓"; }
+  }
+
+  /* shared-package diagram (fig.2): two sources converge on one node */
+  .converge { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; align-items: start; }
+  .cbox { border: 1px solid var(--p-line); border-radius: 8px; background: #0e1712; padding: 10px 12px; }
+  .cbox .t { font-family: var(--font-mono); font-size: 12.5px; color: var(--p-ink); }
+  .cbox .s { font-family: var(--font-mono); font-size: 10.5px; color: var(--p-dim); margin-top: 2px; }
+  .cmid { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; color: var(--p-mint); font-family: var(--font-mono); font-size: 14px; }
+  .cshared { grid-column: 1 / -1; border: 1px solid var(--p-mint); border-radius: 8px; background: #0f1a13; padding: 11px 13px; box-shadow: 0 0 18px rgba(126,231,135,0.12); }
+  .cshared .t { font-family: var(--font-mono); font-size: 13px; color: var(--p-mint); }
+  .cshared .s { font-family: var(--font-mono); font-size: 10.5px; color: var(--p-dim); margin-top: 2px; }
+
+  /* MATERIAL 3 · the lifted data card (paper surface, mono accent numbers) */
+  .lifted { border: 1px solid var(--line); background: var(--well); border-radius: 10px; padding: 16px 18px 18px; }
+  .lifted .cap {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--dim); margin: 0 0 12px;
+    display: flex; justify-content: space-between; gap: 10px;
+  }
+  .drow { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: baseline; padding: 7px 0; border-top: 1px solid var(--line); }
+  .drow:first-of-type { border-top: 0; }
+  .drow .lab { font-family: var(--font-edit); font-size: 13.5px; color: var(--ink); }
+  .drow .val { font-family: var(--font-mono); font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .drow .val .from { color: var(--dim); }
+  .drow .val .arw { color: var(--dim); padding: 0 4px; }
+  .drow .val .to { color: var(--accent); }
+  .dfoot { font-family: var(--font-edit); font-size: 12.5px; color: var(--dim); margin-top: 12px; line-height: 1.5; }
+  .dfoot .neg { font-family: var(--font-mono); color: var(--ink); }
+
+  /* MATERIAL 2 · the editorial plate (screenshot mount). Follows theme. */
+  .plate {
+    border: 1px solid var(--line); background: var(--well); border-radius: 12px;
+    padding: 10px; /* the matte mount */
+  }
+  .plate .shot {
+    display: block; width: 100%; border-radius: 7px; overflow: hidden;
+    border: 1px solid var(--line);
+    aspect-ratio: 16 / 10; /* reserves layout: CLS 0 */
+  }
+  /* the night-ground calm: bright captures get reined in so they don't glare on the dark page.
+     Applied ONLY in the night ground (the .g-night scope). Light ground leaves shots untouched. */
+  .g-night .plate .shot.bright { filter: brightness(0.9) contrast(0.96) saturate(0.97); }
+  .plate.portrait { max-width: 300px; }
+  .plate.portrait .shot { aspect-ratio: 9 / 16; }
+
+  /* faux captures (stand-ins only; real assets come from Brian) */
+  .stub-note {
+    font-family: var(--font-mono); font-size: 10.5px; color: var(--dim);
+    border: 1px dashed var(--line); border-radius: 5px; padding: 3px 7px; display: inline-block; margin-top: 8px;
+  }
+  .shot svg { display: block; width: 100%; height: 100%; }
+
+  a.plainlink { color: #7ee787; }
+</style>
+
+<div class="doc">
+  <p class="kicker">Design lab · brohde.com</p>
+  <h1>Article visuals for the C world</h1>
+  <p class="lede">
+    The Option C page already speaks two materials: <b>paper</b> (Circular, follows the visitor's
+    light or night ground) and <b>screen</b> (the always-night phosphor slab: the tide band, the
+    [home] chips, code fences). Article imagery adds no third language. Every figure declares which
+    material it belongs to, so a diagram, a screenshot, and a metric all feel authored by one hand.
+  </p>
+  <p class="lede">
+    <b>The rule that decides every figure:</b> a diagram is the machine explaining itself, so it is a
+    <b>screen</b> object (phosphor mono, drawn in-house as inline SVG/HTML). A screenshot or archival
+    still is evidence the writer is showing you, so it is a <b>paper</b> object, mounted on an
+    editorial plate. A handful of numbers that carry the argument use the <b>lifted card</b> the stat
+    band already established: paper surface, mono phosphor numerals. No charts unless data genuinely
+    needs a shape.
+  </p>
+
+  <div class="legend">
+    <div class="mat">
+      <div class="swatch sw-screen"></div>
+      <h3>Screen · diagrams</h3>
+      <p>Always night: #0b110e ground, #33523f rule, #7ee787 phosphor, faint glow + scanline. Mono
+        labels. Same material as the tide band and code fences. Identical in both grounds.</p>
+    </div>
+    <div class="mat">
+      <div class="swatch sw-paper"></div>
+      <h3>Paper · plates</h3>
+      <p>Screenshots and stills. Matte --well mount, hairline --line frame, no drop shadow. Follows
+        the theme. Bright shots get reined in on the night ground so they never glare.</p>
+    </div>
+    <div class="mat">
+      <div class="swatch sw-lift"></div>
+      <h3>Lifted · the numbers</h3>
+      <p>Paper surface, mono --accent numerals, tabular figures. The stat-band pattern, scaled up for
+        before/after deltas and ledgers. Follows the theme.</p>
+    </div>
+  </div>
+
+  <hr class="rule" />
+
+  <!-- ===================== SHOWPIECE: the diagram language, full width, night ===================== -->
+  <p class="sect-label">01 · Diagram language: the phosphor screen object</p>
+  <p class="sect-note">
+    Shown full width in the night ground (a diagram is theme-independent: it renders identically on
+    the light page). Real content from eight-angle-ml. Every label is a real text node, so the diagram
+    is crawlable and selectable; the whole figure carries role="img" + an aria description for LLM
+    readers, with the human caption in the figcaption. Horizontal flow at reading width, wraps to a
+    vertical stack below ~620px and on mobile.
+  </p>
+
+  <div class="ground g-night" style="border-radius:16px">
+    <figure>
+      <div class="slab" role="img"
+        aria-label="The Eight Angle machine-learning pipeline as seven stages: image scrape, quality gates, perceptual-hash dedup, MediaPipe audit gallery, 39 geometric features via the YogaPoseKit package, an Extra-Trees classifier trained on 2,332 samples across 47 classes, and a Core ML export running at about 20 frames per second on device.">
+        <div class="slab-head">
+          <span># eight-angle · ml pipeline</span>
+          <span class="dot">● built in-house</span>
+        </div>
+        <div class="slab-body">
+          <div class="flow">
+            <div class="node"><span class="k">01</span><p class="t">Scrape</p><p class="s">Bing + DuckDuckGo, no API keys</p></div>
+            <span class="chev" aria-hidden="true"></span>
+            <div class="node"><span class="k">02</span><p class="t">Quality gates</p><p class="s">600px min, ratio under 3:1, 10KB to 20MB</p></div>
+            <span class="chev" aria-hidden="true"></span>
+            <div class="node"><span class="k">03</span><p class="t">Dedup</p><p class="s">perceptual hash vs the set</p></div>
+            <span class="chev" aria-hidden="true"></span>
+            <div class="node"><span class="k">04</span><p class="t">Audit gallery</p><p class="s">MediaPipe score, accept / reject</p></div>
+            <span class="chev" aria-hidden="true"></span>
+            <div class="node"><span class="k">05</span><p class="t">39 features</p><p class="s">view-invariant, YogaPoseKit</p></div>
+            <span class="chev" aria-hidden="true"></span>
+            <div class="node"><span class="k">06</span><p class="t">Extra-Trees</p><p class="s">2,332 samples · 47 classes · calibrated</p></div>
+            <span class="chev" aria-hidden="true"></span>
+            <div class="node"><span class="k">07</span><p class="t">Core ML</p><p class="s">~20fps, on device</p></div>
+          </div>
+          <p class="flow-foot"># every candidate passes the audit gate before training · <b>nothing enters the set ungated</b></p>
+        </div>
+      </div>
+      <figcaption>
+        <span class="fig-mark">fig. 1</span>
+        <span class="fig-cap"> · <b>The on-device pipeline, end to end.</b> Data collection through Core ML export. Placed directly under the "The ML pipeline" heading, where the article walks each stage.</span>
+      </figcaption>
+    </figure>
+
+    <figure style="max-width:520px">
+      <div class="slab" role="img"
+        aria-label="A diagram showing the iOS app and the training CLI both importing one shared Swift package, YogaPoseKit, which owns the feature math, so training and inference run identical code and feature drift is architecturally impossible.">
+        <div class="slab-head">
+          <span># yogaposekit · one feature extractor</span>
+          <span class="dot">● built in-house</span>
+        </div>
+        <div class="slab-body">
+          <div class="converge">
+            <div class="cbox"><p class="t">iOS app</p><p class="s">runs at inference</p></div>
+            <div class="cbox"><p class="t">Training CLI</p><p class="s">runs at train time</p></div>
+            <div class="cmid" aria-hidden="true">↓ &nbsp; imports &nbsp; ↓</div>
+            <div class="cshared"><p class="t">YogaPoseKit · feature math</p><p class="s">the same Swift package on both sides</p></div>
+          </div>
+          <p class="flow-foot"># feature drift isn't tested against, it's <b>architecturally impossible</b></p>
+        </div>
+      </div>
+      <figcaption>
+        <span class="fig-mark">fig. 2</span>
+        <span class="fig-cap"> · <b>One extractor, both sides.</b> Sits in the feature-extraction paragraph. A list becomes a claim you can see.</span>
+      </figcaption>
+    </figure>
+  </div>
+
+  <hr class="rule" />
+
+  <!-- ===================== GROUND COMPARISON: plates + lifted card, night vs light ===================== -->
+  <p class="sect-label">02 · Ground behavior: plates and numbers, night vs light</p>
+  <p class="sect-note">
+    The same three figures in both grounds. The screen objects above look identical in each; these
+    three follow the theme. Watch the bright capture (fig. 5): on the night ground it is reined in and
+    sits in a matte well so it reads as a lit screen on a dark desk, not a hole punched in the page.
+    On the real site the visitor sees only one ground (their system preference); both are shown here
+    for review.
+  </p>
+
+  <div class="grounds">
+    <!-- ---------------- NIGHT ---------------- -->
+    <section class="ground g-night">
+      <p class="ground-tag"><span>Night ground</span><span>prefers-color-scheme: dark</span></p>
+
+      <div class="atop">
+        <a class="homechip" href="#" onclick="return false"><span class="br">[</span>home<span class="br">]</span></a>
+        <span class="tbl">brohde.com/log</span>
+      </div>
+      <div class="tideband" aria-hidden="true"></div>
+      <p class="adate">[2026-02-12]</p>
+      <h2 class="atitle">Eight Angle: I built a 47-class yoga pose classifier that runs entirely on the phone</h2>
+      <div class="astats">
+        <div class="astat"><span class="n">47</span><span class="l">pose classes, on-device</span></div>
+        <div class="astat"><span class="n">92.2%</span><span class="l">cross-validated accuracy</span></div>
+        <div class="astat"><span class="n">~20fps</span><span class="l">live inference on the phone</span></div>
+      </div>
+
+      <p class="prose-h">The migration decision</p>
+      <p class="prose-p">I ran a controlled evaluation against MediaPipe on the same 1,603 images, and the detection rate told the whole story.</p>
+
+      <figure>
+        <div class="lifted">
+          <p class="cap"><span>Vision → MediaPipe</span><span>same 1,603 images</span></p>
+          <div class="drow"><span class="lab">Body detected in training set</span><span class="val"><span class="from">71.2%</span><span class="arw">→</span><span class="to">97.4%</span></span></div>
+          <div class="drow"><span class="lab">Classification accuracy</span><span class="val"><span class="from">89.6%</span><span class="arw">→</span><span class="to">93.4%</span></span></div>
+          <div class="drow"><span class="lab">Variance</span><span class="val"><span class="from">±1.8%</span><span class="arw">→</span><span class="to">±1.2%</span></span></div>
+          <div class="drow"><span class="lab">Landmarks, mapped to the 19-joint schema</span><span class="val"><span class="to">33</span></span></div>
+          <p class="dfoot">Documented honestly: headstand accuracy <span class="neg">dropped 12.2%</span>, traced to five images that were real edge cases Vision had never detected at all.</p>
+        </div>
+        <figcaption>
+          <span class="fig-mark">fig. 3</span>
+          <span class="fig-cap"> · <b>The migration deltas.</b> A lifted card, not a chart: the point is four numbers and a swap. In-house, built from the article's own figures.</span>
+        </figcaption>
+      </figure>
+
+      <p class="prose-h">The iOS engineering</p>
+      <figure>
+        <div class="plate portrait">
+          <div class="shot">
+            <!-- STAND-IN for Brian's real in-app capture -->
+            <svg viewBox="0 0 270 480" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stand-in for a real screenshot: the Eight Angle app watching a practice, a green skeleton overlay on the pose with a locked-pose confidence chip.">
+              <rect width="270" height="480" fill="#0c0f0d"/>
+              <rect width="270" height="480" fill="url(#gv)"/>
+              <defs><radialGradient id="gv" cx="50%" cy="38%" r="70%"><stop offset="0%" stop-color="#16211b"/><stop offset="100%" stop-color="#0a0d0b"/></radialGradient></defs>
+              <!-- warrior II skeleton -->
+              <g stroke="#7ee787" stroke-width="3" fill="none" stroke-linecap="round">
+                <circle cx="135" cy="150" r="15" stroke-width="3"/>
+                <path d="M135 165 L135 250"/>
+                <path d="M135 185 L70 200 M135 185 L200 200"/>
+                <path d="M135 250 L95 355 L92 430 M135 250 L182 350 L212 415"/>
+              </g>
+              <g fill="#7ee787"><circle cx="70" cy="200" r="4"/><circle cx="200" cy="200" r="4"/><circle cx="92" cy="430" r="4"/><circle cx="212" cy="415" r="4"/><circle cx="135" cy="250" r="4"/></g>
+              <rect x="16" y="405" width="150" height="30" rx="8" fill="#0b110e" stroke="#33523f"/>
+              <text x="28" y="424" font-family="ui-monospace, Menlo, monospace" font-size="13" fill="#7ee787">Warrior II · 99%</text>
+              <rect x="16" y="446" width="238" height="6" rx="3" fill="#12201a"/>
+              <rect x="16" y="446" width="150" height="6" rx="3" fill="#33523f"/>
+            </svg>
+          </div>
+        </div>
+        <figcaption>
+          <span class="fig-mark">fig. 4</span>
+          <span class="fig-cap"> · <b>The app, locked on a pose.</b> Bare capture on an editorial plate, no device chrome (the real phosphor slab is the only screen on this site). iOS portrait, so the plate holds 9:16.</span>
+          <span class="stub-note">stand-in · real capture needed from Brian</span>
+        </figcaption>
+      </figure>
+
+      <p class="prose-p">Eight Angle also ships as a real, bright product surface. Here is how one of those sits on the night page:</p>
+      <figure>
+        <div class="plate">
+          <div class="shot bright">
+            <!-- STAND-IN for a bright marketing / App Store capture -->
+            <svg viewBox="0 0 480 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stand-in for a bright product screenshot: the Eight Angle marketing page with a headline and a phone image, shown to demonstrate how a bright capture is reined in on the night ground.">
+              <rect width="480" height="300" fill="#f5f3ee"/>
+              <rect x="0" y="0" width="480" height="52" fill="#ffffff"/>
+              <circle cx="26" cy="26" r="8" fill="#0e6b4e"/>
+              <text x="44" y="31" font-family="-apple-system, system-ui, sans-serif" font-size="14" font-weight="700" fill="#14211a">Eight Angle</text>
+              <text x="360" y="31" font-family="-apple-system, system-ui, sans-serif" font-size="12" fill="#3f5348">Download</text>
+              <text x="30" y="120" font-family="-apple-system, system-ui, sans-serif" font-size="30" font-weight="800" fill="#14211a">Know every pose.</text>
+              <text x="30" y="150" font-family="-apple-system, system-ui, sans-serif" font-size="14" fill="#3f5348">On-device. Private. Real time.</text>
+              <rect x="30" y="175" width="130" height="38" rx="19" fill="#0e6b4e"/>
+              <text x="55" y="199" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="700" fill="#f5f3ee">Get the app</text>
+              <rect x="330" y="70" width="120" height="210" rx="18" fill="#0c0f0d"/>
+              <rect x="338" y="82" width="104" height="186" rx="10" fill="#16211b"/>
+              <circle cx="390" cy="150" r="26" fill="none" stroke="#7ee787" stroke-width="3"/>
+            </svg>
+          </div>
+        </div>
+        <figcaption>
+          <span class="fig-mark">fig. 5</span>
+          <span class="fig-cap"> · <b>A bright product capture, reined in.</b> On the night ground a brightness / contrast filter and the matte well keep a white UI calm. Compare the light ground at right, where the filter is off.</span>
+          <span class="stub-note">stand-in · real capture needed from Brian</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------- LIGHT ---------------- -->
+    <section class="ground g-light">
+      <p class="ground-tag"><span>Light ground</span><span>prefers-color-scheme: light</span></p>
+
+      <div class="atop">
+        <a class="homechip" href="#" onclick="return false"><span class="br">[</span>home<span class="br">]</span></a>
+        <span class="tbl">brohde.com/log</span>
+      </div>
+      <div class="tideband" aria-hidden="true"></div>
+      <p class="adate">[2026-02-12]</p>
+      <h2 class="atitle">Eight Angle: I built a 47-class yoga pose classifier that runs entirely on the phone</h2>
+      <div class="astats">
+        <div class="astat"><span class="n">47</span><span class="l">pose classes, on-device</span></div>
+        <div class="astat"><span class="n">92.2%</span><span class="l">cross-validated accuracy</span></div>
+        <div class="astat"><span class="n">~20fps</span><span class="l">live inference on the phone</span></div>
+      </div>
+
+      <p class="prose-h">The migration decision</p>
+      <p class="prose-p">I ran a controlled evaluation against MediaPipe on the same 1,603 images, and the detection rate told the whole story.</p>
+
+      <figure>
+        <div class="lifted">
+          <p class="cap"><span>Vision → MediaPipe</span><span>same 1,603 images</span></p>
+          <div class="drow"><span class="lab">Body detected in training set</span><span class="val"><span class="from">71.2%</span><span class="arw">→</span><span class="to">97.4%</span></span></div>
+          <div class="drow"><span class="lab">Classification accuracy</span><span class="val"><span class="from">89.6%</span><span class="arw">→</span><span class="to">93.4%</span></span></div>
+          <div class="drow"><span class="lab">Variance</span><span class="val"><span class="from">±1.8%</span><span class="arw">→</span><span class="to">±1.2%</span></span></div>
+          <div class="drow"><span class="lab">Landmarks, mapped to the 19-joint schema</span><span class="val"><span class="to">33</span></span></div>
+          <p class="dfoot">Documented honestly: headstand accuracy <span class="neg">dropped 12.2%</span>, traced to five images that were real edge cases Vision had never detected at all.</p>
+        </div>
+        <figcaption>
+          <span class="fig-mark">fig. 3</span>
+          <span class="fig-cap"> · <b>The migration deltas.</b> On paper the mono accent goes deep green (#086148); the numerals stay the one non-editorial voice in the reading column.</span>
+        </figcaption>
+      </figure>
+
+      <p class="prose-h">The iOS engineering</p>
+      <figure>
+        <div class="plate portrait">
+          <div class="shot">
+            <svg viewBox="0 0 270 480" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stand-in for a real screenshot: the Eight Angle app watching a practice, a green skeleton overlay on the pose with a locked-pose confidence chip.">
+              <rect width="270" height="480" fill="#0c0f0d"/>
+              <rect width="270" height="480" fill="url(#gv2)"/>
+              <defs><radialGradient id="gv2" cx="50%" cy="38%" r="70%"><stop offset="0%" stop-color="#16211b"/><stop offset="100%" stop-color="#0a0d0b"/></radialGradient></defs>
+              <g stroke="#7ee787" stroke-width="3" fill="none" stroke-linecap="round">
+                <circle cx="135" cy="150" r="15" stroke-width="3"/>
+                <path d="M135 165 L135 250"/>
+                <path d="M135 185 L70 200 M135 185 L200 200"/>
+                <path d="M135 250 L95 355 L92 430 M135 250 L182 350 L212 415"/>
+              </g>
+              <g fill="#7ee787"><circle cx="70" cy="200" r="4"/><circle cx="200" cy="200" r="4"/><circle cx="92" cy="430" r="4"/><circle cx="212" cy="415" r="4"/><circle cx="135" cy="250" r="4"/></g>
+              <rect x="16" y="405" width="150" height="30" rx="8" fill="#0b110e" stroke="#33523f"/>
+              <text x="28" y="424" font-family="ui-monospace, Menlo, monospace" font-size="13" fill="#7ee787">Warrior II · 99%</text>
+              <rect x="16" y="446" width="238" height="6" rx="3" fill="#12201a"/>
+              <rect x="16" y="446" width="150" height="6" rx="3" fill="#33523f"/>
+            </svg>
+          </div>
+        </div>
+        <figcaption>
+          <span class="fig-mark">fig. 4</span>
+          <span class="fig-cap"> · <b>The app, locked on a pose.</b> The dark camera view needs no reining on paper; the hairline plate frame carries it against the off-white ground.</span>
+          <span class="stub-note">stand-in · real capture needed from Brian</span>
+        </figcaption>
+      </figure>
+
+      <p class="prose-p">Eight Angle also ships as a real, bright product surface. Here is how one of those sits on the light page:</p>
+      <figure>
+        <div class="plate">
+          <div class="shot bright">
+            <svg viewBox="0 0 480 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stand-in for a bright product screenshot: the Eight Angle marketing page with a headline and a phone image, shown at full brightness on the light ground.">
+              <rect width="480" height="300" fill="#f5f3ee"/>
+              <rect x="0" y="0" width="480" height="52" fill="#ffffff"/>
+              <circle cx="26" cy="26" r="8" fill="#0e6b4e"/>
+              <text x="44" y="31" font-family="-apple-system, system-ui, sans-serif" font-size="14" font-weight="700" fill="#14211a">Eight Angle</text>
+              <text x="360" y="31" font-family="-apple-system, system-ui, sans-serif" font-size="12" fill="#3f5348">Download</text>
+              <text x="30" y="120" font-family="-apple-system, system-ui, sans-serif" font-size="30" font-weight="800" fill="#14211a">Know every pose.</text>
+              <text x="30" y="150" font-family="-apple-system, system-ui, sans-serif" font-size="14" fill="#3f5348">On-device. Private. Real time.</text>
+              <rect x="30" y="175" width="130" height="38" rx="19" fill="#0e6b4e"/>
+              <text x="55" y="199" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="700" fill="#f5f3ee">Get the app</text>
+              <rect x="330" y="70" width="120" height="210" rx="18" fill="#0c0f0d"/>
+              <rect x="338" y="82" width="104" height="186" rx="10" fill="#16211b"/>
+              <circle cx="390" cy="150" r="26" fill="none" stroke="#7ee787" stroke-width="3"/>
+            </svg>
+          </div>
+        </div>
+        <figcaption>
+          <span class="fig-mark">fig. 5</span>
+          <span class="fig-cap"> · <b>A bright product capture, at full brightness.</b> On paper the filter is off; the capture sits naturally on the off-white ground inside its matte plate.</span>
+          <span class="stub-note">stand-in · real capture needed from Brian</span>
+        </figcaption>
+      </figure>
+    </section>
+  </div>
+
+  <hr class="rule" />
+
+  <!-- ===================== ARCHIVAL PLATE VARIANT ===================== -->
+  <p class="sect-label">03 · Archival plate: for the older big-name pieces</p>
+  <p class="sect-note">
+    Facebook Newsroom (2014) and Android for Work (2015) are archival: the sites are gone. Their
+    evidence is Wayback captures (already on hand as stills). Same editorial plate, plus a mono
+    provenance line in the caption so a capture reads as a dated record, not a live screen. The
+    recommendation for both older pieces is to LEAD with an in-house diagram (safe, free, on-brand) and
+    treat any brand-chrome still as supporting evidence, flagged for provenance comfort.
+  </p>
+
+  <div class="ground g-light" style="border-radius:16px">
+    <figure style="max-width:560px">
+      <div class="plate">
+        <div class="shot bright">
+          <svg viewBox="0 0 480 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Stand-in for a Wayback Machine capture of newsroom.fb.com, shown to demonstrate the archival plate and its provenance caption.">
+            <rect width="480" height="300" fill="#eef0f2"/>
+            <rect x="0" y="0" width="480" height="46" fill="#3b5998"/>
+            <text x="22" y="30" font-family="-apple-system, system-ui, sans-serif" font-size="16" font-weight="700" fill="#ffffff">Newsroom</text>
+            <text x="360" y="29" font-family="-apple-system, system-ui, sans-serif" font-size="11" fill="#dfe3ee">EN · 8 langs</text>
+            <rect x="22" y="66" width="300" height="150" rx="4" fill="#c9ced6"/>
+            <rect x="22" y="230" width="220" height="12" rx="3" fill="#b7bdc7"/>
+            <rect x="22" y="252" width="300" height="10" rx="3" fill="#ccd1d9"/>
+            <rect x="338" y="66" width="120" height="70" rx="4" fill="#d5d9e0"/>
+            <rect x="338" y="146" width="120" height="70" rx="4" fill="#d5d9e0"/>
+          </svg>
+        </div>
+      </div>
+      <figcaption>
+        <span class="fig-mark">fig. 1</span>
+        <span class="fig-cap"> · <b>Newsroom.fb.com, the first responsive site on WordPress VIP.</b> The relaunch as it ran, mid-2014.</span>
+        <span class="fig-prov">source: Internet Archive · captured 2014 · stand-in shown</span>
+      </figcaption>
+    </figure>
+
+    <p class="prose-p" style="max-width:60ch">And the safe, free companion that carries the piece even if brand chrome stays out: a screen-object diagram of the eight-language rollout.</p>
+
+    <figure style="max-width:560px">
+      <div class="slab" role="img" aria-label="A diagram of newsroom.fb.com launching in eight languages, each on its own subdomain: English plus Portuguese, German, Spanish, French, Italian, Japanese and Korean.">
+        <div class="slab-head"><span># newsroom.fb.com · 8 editions</span><span class="dot">● built in-house</span></div>
+        <div class="slab-body">
+          <div class="flow">
+            <div class="node"><span class="k">root</span><p class="t">newsroom.fb.com</p><p class="s">English, original</p></div>
+            <span class="chev" aria-hidden="true"></span>
+            <div class="node"><span class="k">+7</span><p class="t">pt · de · es</p><p class="s">fr · it · ja · ko</p></div>
+          </div>
+          <p class="flow-foot"># one migration, eight editions · <b>each on its own subdomain</b></p>
+        </div>
+      </div>
+      <figcaption>
+        <span class="fig-mark">fig. 2</span>
+        <span class="fig-cap"> · <b>Eight languages, one platform.</b> A list of locales becomes a picture. No brand assets, no provenance questions.</span>
+      </figcaption>
+    </figure>
+  </div>
+
+  <hr class="rule" />
+
+  <p class="sect-label">Notes for the build</p>
+  <p class="sect-note" style="max-width:80ch">
+    Performance (#70): diagrams are inline SVG/HTML, zero JS, real text labels, no webfont (mono is
+    system stack), so they cannot move CLS or block render. Screenshots ship pre-sized (AVIF/WebP with a
+    raster fallback), explicit width/height inside a fixed aspect-ratio box, loading="lazy" +
+    decoding="async" below the fold; the LCP stays the title, never a figure. Accessibility / SEO /
+    LLM: every figure is a semantic figure + figcaption; diagrams carry role="img" and an aria
+    description while their labels remain crawlable text; screenshots get real descriptive alt.
+    Sentence-case captions (#76), no dashes (#18), no "terminal" (#58). Coexistence with the live
+    aurora + tide scene (#59/#74): diagrams share the tide band's exact material, so when the scene
+    recolors the band per page, content figures should hold a canonical mint while only the ambient
+    band re-themes. That call is flagged for Brian below.
+  </p>
+</div>
