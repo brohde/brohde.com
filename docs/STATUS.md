@@ -33,7 +33,7 @@ In flight (all fresh agents, spawned 2026-07-15 evening; lead merges worktrees o
 - **Engineer A (opus, worktree)** — Brian's chrome/copy change orders: unbrand build.log (#88), hint line + textfield + placeholder (#89), (contract) + header arrows + hover restyle (#90), Circular copyright footer (#91).
 - **Engineer B (opus, worktree)** — theme toggle (#92); told to stay OUT of EditorialHeader.astro (engineer A owns it) and keep CSS separable.
 - **Design director (opus, per Brian)** — article visuals: system proposal + per-article plan + ASSET REQUEST LIST for Brian + mockups in NEW file docs/design/lab/article-visuals.html only; no commits (lead reviews/commits).
-- **Doc agent (sonnet)** — aurora-handoff.md updated to trail demo 04 + Brian's approval (#94); no commits.
+- ~~Doc agent (sonnet)~~ **DONE, reviewed + committed 297d94d**: `aurora-handoff.md` now trails the theme-press rework (f653063) and records Brian's approval of its four taste flags (#94). Lead verified the load-bearing claims against `aurora-terminal.html` source (all 16 PEAKS hexes = the file's RGB triplets, PLACE_DEFAULT sky 26, THEME_SOURCE map, 0.12/0.28 caps, 0.66/0.74 sky glass pour, stage-scoped inks `#a2b8ab`/`#7c440c`, themed grounds); zero dashes (#18). The four OLDER demo-04 flags (landscape sources small in gutter, newsroom-blue chat, android rose variant, phone fallback cap ~0.2) survive as "still open (variants, not blockers)" — Brian's "I'm good with this!" answered the THEME flags, not these.
 
 **Brian review surfaces**: localhost:4326 = scratchpad preview of the C4 tip with WORKING chat (POC CORS patched, ebe7365; POC on :8787); https://brohde-com.pages.dev = the same code with the real production chat.
 
