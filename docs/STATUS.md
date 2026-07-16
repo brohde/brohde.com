@@ -1,6 +1,6 @@
 # STATUS — session resume point
 
-_Last updated: 2026-07-15 (session 1, evening). Brian may clear the session; this file + DECISIONS + COMMS-LOG are the complete handoff._
+_Last updated: 2026-07-16 (session 2: PAUSE POINT, direction locked). Brian may clear the session; this file + DECISIONS + COMMS-LOG are the complete handoff._
 
 ## Artifact inventory (published; update via Artifact tool `url` param from any session)
 
@@ -8,7 +8,7 @@ _Last updated: 2026-07-15 (session 1, evening). Brian may clear the session; thi
 | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------- |
 | **Homepage structure lab** (treatments A/B/C + article variants; **C CHOSEN, #67**)             | https://claude.ai/code/artifact/70935e14-01f4-43ed-8223-06946903b26c | `lab/homepage-structure.html`     |
 | **build.log v3 interactive prototype** (interaction reference: boot, commands, alternate screen) | https://claude.ai/code/artifact/7ca6a6c4-df52-477a-b6e6-051b8cd40855 | `lab/build-log-v3.html`           |
-| **Aurora Terminal Lab** (demo 04 composed scene; hero geometry #97 in flight, republish after)   | https://claude.ai/code/artifact/9b0b7ddf-75b3-4e68-bd36-d6b76647bd71 | `lab/aurora-terminal.html`        |
+| **Aurora Terminal Lab** (demo 04 composed scene; **FROZEN as reference spec #106**, #97 hero landed) | https://claude.ai/code/artifact/9b0b7ddf-75b3-4e68-bd36-d6b76647bd71 | `lab/aurora-terminal.html`        |
 | **Article visuals lab** (imagery system: screen/paper/lifted; AWAITING BRIAN + asset list)       | https://claude.ai/code/artifact/82405b82-a35d-4cb1-8cce-d5d0c67e32fd | `lab/article-visuals.html`        |
 | **Chat eval review** (interactive grading; regen via `node poc/chat/make-review.mjs`)           | https://claude.ai/code/artifact/55298a58-d9e4-4952-afdf-951c78adcbd2 | `../../poc/chat/eval-review.html` |
 | Animation Lab (6 ambient demos)                                                                 | https://claude.ai/code/artifact/6b30f13b-9b24-4825-a7b2-7744d0168e38 | `lab/animations.html`             |
@@ -20,7 +20,7 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 ## Where we are
 
-**DEV LINK LIVE: https://brohde-com.pages.dev** (Cloudflare Pages, auto-deploys on push to `main`; validated on the rendered surface). NOTE: the URL is public-but-unlisted; don't circulate until editorial sign-offs below clear. **Phase 1 Astro scaffold COMMITTED and live on localhost:4321.** Chat behavior **signed off 38/38 (#61)** at `poc/chat/`. Direction decided: **Option C "the phosphor slab" (#67)** — terminal as one always-night physical object holding everything interactive, editorial Circular page around it, **chat expands the slab** toward full window and collapses back home with an **elegant designed transition both ways (#69)**. Supporting behaviors: hello = natural-language page tour with underlined links, external ↗ arrows never underlined (#68).
+**DEV LINK LIVE: https://brohde-com.pages.dev** (Cloudflare Pages, auto-deploys on push to `main`; validated on the rendered surface). NOTE: the URL is public-but-unlisted; don't circulate until editorial sign-offs below clear. **Phase 1 Astro scaffold COMMITTED and live on localhost:4321.** Chat behavior **signed off 38/38 (#61)** at `poc/chat/`. Direction decided: **Option C "the phosphor slab" (#67)** — terminal as one always-night physical object holding everything interactive, editorial Circular page around it, ~~chat expands the slab toward full window~~ (**RETIRED #108, 2026-07-16**: chat sends navigate to /chat as a page inside the global shell; designed page transitions replace the expand, #69 superseded). Supporting behaviors: hello = natural-language page tour with underlined links, external ↗ arrows never underlined (#68).
 
 - Site: Astro 5 + Tailwind v4 static at repo root; `npm run dev` (localhost:4321), `npm run build` = `astro check && astro build` → `dist/`. Full build reference: **`docs/ENGINEERING.md`** (merged f199195, verified against source).
 - Content: 5 real case studies render on the site (validated on rendered HTML after the content-store staleness fix, see ENGINEERING.md §2); `brohde-com-build` stubbed `draft: true`; `twilio-hackpack-v4` is an `external:` entry.
@@ -30,7 +30,28 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 **THE C BUILD IS MERGED TO MAIN (6228713) AND DEPLOYED** — C1 slab+editorial home (26873bb), C2 morph + live chat bridge (1b6ff53, #85), C3 article pages (8206723, #86), C4 chrome unification + straight-100s audit pass (76ac001, #87). Brian approved on the rendered preview (#87). The deployed pages.dev chat UI now talks to the production /api/chat. The old C engineer is RETIRED per #95 (no more resuming it).
 
-## READ THIS FIRST (2026-07-15, late evening: Brian asleep; work continued and is PUSHED)
+## READ THIS FIRST (2026-07-16: ALL WORK STREAMS PAUSED — direction locked, phased plan awaiting Brian's sign-off)
+
+**State: clean freeze.** No agents running. Main is pushed and verified live on pages.dev; everything since is docs. Brian paused all streams to lock direction and align.
+
+**Direction locked (Brian, 2026-07-16) — decisions #106-#112:**
+
+- **Demo 04 (aurora + image tide, one scene, three placements) IS the site build direction.** The aurora lab (`lab/aurora-terminal.html`) is FROZEN as the reference spec; the scene ports into production through BaseLayout's reserved facade slot. New design work goes in fresh, smaller artifacts (#106).
+- **Chat is core navigation**: global header on every page — real input at desktop widths, compact control on phones (#107).
+- **Expand-to-full-screen chat is RETIRED** (#108, supersedes #69): a send from the header/homepage navigates to /chat, a normal page with its own theme; designed transitions connect pages (the C2 morph machinery is raw material, not dead code).
+- **Global layout law (#109)**: page content always in the LEFT COLUMN; the right gutter is preserved on EVERY page (homepage, /chat, /about, contact, articles) as the scene's home. Navigation = one persistent scene, pages swap through the left column. Phone widths: scene falls back to the lab's faint background treatment (confirm in D1).
+- **Header nav (#110)**: wordmark (home link) + quiet mono about/contact links, chat right. Wordmark text ("Brian Rohde" per #76 vs "brohde.com") is a design-phase detail.
+- **Per-article theme identity (#111)**: shared night/light grounds; each article carries its own accent tint + tide mark.
+- **Process (#112)**: phase definitions get Brian's sign-off BEFORE any build, including artifacts.
+
+**Next: two workstreams, phases presented in COMMS batch 57 — dispatch ONLY after Brian approves the plan:**
+
+- **Design D1-D4** (new "site shell + interior pages" artifact, fresh design-director per phase): D1 global shell (header + gutter + footer, both themes, desktop + mobile) → D2 article template (per-article identity, #97 hero band, article-visuals materials) → D3 core pages + /chat-as-page + homepage adaptation → D4 transitions demo (persistent scene, left-column swaps).
+- **Build B1-B4** (production port; B1 proposed to start in parallel with D1 since the scene is already approved #94): B1 scene module behind the facade pattern (perf budget on built dist) → B2 global shell + retire the expand morph → B3 article template with per-article identities → B4 core pages + chat page conversion. B2-B4 trail the matching design sign-offs.
+
+**Still awaiting Brian (unchanged from last night, nothing blocked):** article-visuals asset request list (artifact 82405b82; the 3 Eight Angle captures are priority 1), Eight Angle unconfirmed numbers (now load-bearing in fig.3), veto flags #99-#105 (65% underline, three-state toggle, --dim brackets, footer height + safe-area, hero-geometry split), in-body diagram re-theming question (studio: no), night dimming strength (.9 vs .85).
+
+## Previous session notes (2026-07-15, late evening) — historical, superseded by the section above
 
 **Main is pushed and deploying (74f6813). The C build + both engineer branches + the chip fix are all live-bound.** Merged tonight: `feat/review-change-orders` (chrome/copy #88-#91) and `feat/theme-toggle` (#92), BaseLayout conflict resolved by hand, then #101 (chip docks into the footer) on top. Build green, 10 pages, Lighthouse mobile 100/100/100 with TBT 0 / CLS 0 on home, article and /chat (chat SEO 66 = pre-existing `noindex`, by design).
 
@@ -72,10 +93,9 @@ Done this stretch:
 
 ## Next actions
 
-1. **Chat go-live**: Brian sets `ANTHROPIC_API_KEY` (Pages → Settings → Variables and secrets, Secret, Production+Preview) → next push/redeploy activates it → validate `/api/chat` on brohde-com.pages.dev via curl (subagent for any browser check, #82). Turnstile + AI Gateway wiring later; #49 audit before chat is surfaced publicly.
-2. **Option C phases**: C2 reviewed + accepted (#85); review C3 (article pages) when the agent reports, then C4; merge at the end, validate rendered (browser checks via subagent, #82), update ENGINEERING.md for the C architecture.
-3. Brian reviews the aurora artifact's 4 new taste flags (COMMS batch 51) → then lead updates `aurora-handoff.md` to trail the file.
-4. Then **#59/#74 aurora + tide site integration** (per-page themes as full-scene identities) after C lands.
+1. **Brian approves/edits the phased plan** (COMMS batch 57; workstreams D and B in READ THIS FIRST above) → lead dispatches D1 (and B1 if the parallel start is approved).
+2. **Chat go-live** (unchanged): Brian sets `ANTHROPIC_API_KEY` (Pages → Settings → Variables and secrets, Secret, Production+Preview) → next push/redeploy activates it → validate `/api/chat` on brohde-com.pages.dev via curl (subagent for any browser check, #82). Turnstile + AI Gateway wiring later; #49 audit before chat is surfaced publicly.
+3. Custom domain cutover at DreamHost when launch-ready (#93).
 
 ## v2 / backlog (parked, Brian-approved ideas)
 
