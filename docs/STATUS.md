@@ -30,9 +30,9 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 
 **THE C BUILD IS MERGED TO MAIN (6228713) AND DEPLOYED** — C1 slab+editorial home (26873bb), C2 morph + live chat bridge (1b6ff53, #85), C3 article pages (8206723, #86), C4 chrome unification + straight-100s audit pass (76ac001, #87). Brian approved on the rendered preview (#87). The deployed pages.dev chat UI now talks to the production /api/chat. The old C engineer is RETIRED per #95 (no more resuming it).
 
-## READ THIS FIRST (2026-07-16: direction locked #106-#117; D1 + B1 + loading indicator DISPATCHED)
+## READ THIS FIRST (2026-07-16: B1 scene LIVE + approved; D1 published; #125 full-width revision in flight)
 
-**State: plan approved with Brian's edits (batch 58); D1 + B1 Fable agents in flight; the loading indicator is DONE and merged (#118)** (see agent board below). Main is pushed; pages.dev auto-deploys. **Model policy #117: design-director + frontend-engineer now FABLE** (amends #96); if a Fable agent dies on credits like yesterday's two, fall back to Opus and tell Brian.
+**State (midday): the B1 scene module + the #118 thinking indicator are MERGED, PUSHED (73b4bae), verified live on pages.dev, and APPROVED by Brian on the rendered surface (#124: "The scene is looking great", "The chat looks better!").** D1 shell published (artifact 60e68001) and awaiting Brian's review; its #125 full-width revision (max-width wrapper removed, more left spacing) is in flight on a FRESH design-director. **Model policy #117: design-director + frontend-engineer are FABLE** (fall back to Opus and tell Brian if one dies on credits). **Process #123: never dispatch more work to an agent past ~200K tokens; fresh spawns only** (in durable memory).
 
 **Direction locked (Brian, 2026-07-16) — decisions #106-#112:**
 
@@ -54,7 +54,8 @@ All artifacts republish with favicon 🎨 except the eval review (🧪).
 ## Agent board (2026-07-16)
 
 - ~~D1 design-director (fable)~~ **DONE, published (#122)**: `docs/design/lab/shell-d1.html`, artifact https://claude.ai/code/artifact/60e68001-5885-4d42-8dc1-8f0fb1532330 — AWAITING BRIAN (11 veto-able calls in section 04, phone-scene flag, the 4.98:1 glass trade).
-- **B1 frontend-engineer (fable, isolated worktree)**: **DELIVERED, awaiting lead merge review** — branch `worktree-agent-ad57af9a8d28f62da` (tip 8faaa58): scene module (engine/sources/live.css/scene.css/Scene.astro) + idle hook + homepage ambient. Perf on dist: Lighthouse mobile TBT 0/CLS 0/Perf 99 (pre-B1 dist also scores 99 on this machine today: parity), desktop 100; ticks worst-case max 4.40ms under parallel-agent load, 61/61 under budget quiet. Contrast worst 4.81 night dim. Two real defects found+fixed in validation (remount fade, hidden-tab boot). Unverified by automation: hidden→visible resume (cover at merge validation). Its dist is served on port 4360 for merge-time checks.
+- ~~B1 frontend-engineer (fable, isolated worktree)~~ **DONE, MERGED + PUSHED (73b4bae), live on pages.dev, Brian-approved (#124)**: scene module (src/scripts/scene/ + Scene.astro + scene.css) behind the facade pattern, homepage ambient placement, #114/#120 measured-gutter mark. Perf on dist: Lighthouse mobile TBT 0/CLS 0/Perf 99 (= pre-B1 parity on this machine), desktop 100; ticks inside the 4ms budget. Fresh-validator merge check 6/8 hard PASS; both non-passes are environment artifacts (#124: visibility-resume unverifiable in sandbox tabs, one human check closes it; 8787 = #85's intentional localhost bridge). Worktree removed. Merged dist served at localhost:4361 for Brian.
+- **D1-revision design-director (fable, FRESH per #123)**: reworks `shell-d1.html` per #125 (full-width shell, left spacing up, veil re-anchored to the column edge, owns the wide-gutter mark-scale call). Lead republishes at the same artifact URL. Ports 4380-4389.
 - ~~Loading-indicator frontend-engineer (fable, isolated worktree)~~ **DONE, merged (#118)**: thinking dots in the reply slot, same-node swap (zero shift), reduced-motion static label, 8/8 rendered checks. Lead corrected its `#theme-announce` dead-region flag (alive: theme.ts creates it).
 - All three: browser validation ONLY via Sonnet subagents (#82 extends to Fable agents); no "terminal" in copy or naming (#116); zero em dashes in user-visible copy (#18).
 
