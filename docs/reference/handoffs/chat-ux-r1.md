@@ -16,7 +16,7 @@ new `data-scene-theme` bridge, which still fires per page.
 
 ---
 
-## 1. Copy strings — FLAGGED FOR BRIAN'S VETO
+## 1. Copy strings, FLAGGED FOR BRIAN'S VETO
 
 All sentence case, zero em/en dashes, never the word "terminal", destination named in plain
 words. Every string below is client code, not model output.
@@ -81,9 +81,9 @@ client-side:
   about), `eight-angle`, and `work` (not already home); `isExplicitNav(q)` is false.
 - **Instant** (`openSlug`, unchanged behavior) when:
   - the input was an explicit navigation phrasing (`/^(open|go to|goto|take me to|bring me
-    to|navigate to|jump to|show me|visit)\b/i`) — honoring the visitor's clear intent (#143 req 3);
+    to|navigate to|jump to|show me|visit)\b/i`), honoring the visitor's clear intent (#143 req 3);
   - the slug is in-place (`contact`, `resume` print their card) or a same-page scroll
-    (`work` while already home) — there is nothing to redirect to.
+    (`work` while already home): there is nothing to redirect to.
 - Deterministic commands and clicked links never reach this path, so they never count down.
 
 The navigation still goes through the existing `navigate()` (the house 140ms wipe, instant
