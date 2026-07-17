@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>og</title>
+    <style>
+      /* Fonts are injected as base64 data: URIs by render.mjs so this file
+         renders identically on any machine with no network and no
+         system-installed Circular. The two woff2 subsets are the exact assets
+         BaseLayout preloads (src/assets/fonts/circular-{bold,book}.woff2). */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #0e1512;
+      }
+      /* The canvas is the whole 1200x630 frame. A 2x backing store keeps the
+         Circular text crisp; Chrome screenshots the 1200x630 CSS box. */
+      #og {
+        display: block;
+        width: 1200px;
+        height: 630px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="og" width="2400" height="1260"></canvas>
+    <script>
+      /* =====================================================================
+         brohde.com production OG image — 1200x630 raster.
+
+         Reads as the site (decisions #40 night ground, #115 lowercase
+         wordmark, #116 not a "terminal", #18 no em/en dashes):
+           - night ground #0E1512 with a quiet mint bloom
+           - the lowercase "brian rohde" wordmark in Circular Bold (--bright)
+             with the site's phosphor glow, plus the mint block caret (#63)
+           - a one-line sentence-case descriptor in Circular Book (--ink)
+           - the "BR" default mark (src/scripts/scene/sources.ts) rendered as
+             the site's ASCII density tide (RAMP from src/scripts/scene/
+             index.ts), quiet in the right gutter like the live scene (#120)
+
+         Everything is composited in canvas for pixel-exact control and so the
+         only external dependency is the two embedded fonts. Deterministic:
+         no randomness, fixed tide phases, so a re-render is byte-stable.
+         ===================================================================== */
+
+      // Site tokens (night palette, global.css)
+      const GROUND = "#0e1512";
+      const BRIGHT = "#f2f7f3"; // --bright, wordmark
+      const INK = "#d6e5dc"; // --ink, descriptor
+      const MINT = [126, 231, 135]; // --accent #7EE787
+      const MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+
+      // The site's density ramp and mark-sampling constants (verbatim).
+      const RAMP = [" ", ".", "·", ":", "~", "+", "x", "8", "#"];
+      const SRC_W = 480,
+        SRC_H = 300;
+
+      const W = 1200,
+        H = 630,
+        DPR = 2;
+
+      const cv = document.getElementById("og");
+      const ctx = cv.getContext("2d");
+      ctx.scale(DPR, DPR); // draw in CSS px; render at 2x
+
+      /* ---- the "BR" source, ported from sources.ts drawWord/blank ---------- */
+      function drawBR() {
+        const s = document.createElement("canvas");
+        s.width = SRC_W;
+        s.height = SRC_H;
+        const sc = s.getContext("2d");
+        sc.fillStyle = "#ffffff";
+        sc.fillRect(0, 0, SRC_W, SRC_H);
+        sc.fillStyle = "#000000";
+        sc.strokeStyle = "#000000";
+        sc.lineWidth = 26;
+        sc.lineJoin = "round";
+        sc.font = `900 330px ${MONO}`;
+        sc.textAlign = "center";
+        sc.textBaseline = "alphabetic";
+        sc.strokeText("BR", 240, 263);
+        sc.fillText("BR", 240, 263);
+        return s;
+      }
+
+      /* ---- sample the mark into the cell grid, mirroring scene sample() ----- */
+      // Gutter rect: the BR mark lives in the right column like the live scene.
+      // Kept well clear of the 60px safe edges (right edge 1120 => 80px margin).
+      const RECT = { x: 742, y: 150, w: 378, h: 330 };
+      const CELL = 20; // coarse cells survive thumbnailing (no fine hairlines)
+      const cols = Math.ceil(W / CELL);
+      const rows = Math.ceil(H / CELL);
+
+      function sampleBR() {
+        const src = drawBR();
+        const g = document.createElement("canvas");
+        g.width = cols;
+        g.height = rows;
+        const gc = g.getContext("2d", { willReadFrequently: true });
+        gc.fillStyle = "#ffffff";
+        gc.fillRect(0, 0, cols, rows);
+        // contain-fit the 480x300 source into RECT, expressed in cell units
+        const scale = Math.min(RECT.w / SRC_W, RECT.h / SRC_H);
+        const dw = SRC_W * scale,
+          dh = SRC_H * scale;
+        const dx = RECT.x + (RECT.w - dw) / 2;
+        const dy = RECT.y + (RECT.h - dh) / 2;
+        gc.drawImage(
+          src,
+          0,
+          0,
+          SRC_W,
+          SRC_H,
+          dx / CELL,
+          dy / CELL,
+          dw / CELL,
+          dh / CELL,
+        );
+        const data = gc.getImageData(0, 0, cols, rows).data;
+        const lum = new Float32Array(cols * rows);
+        for (let i = 0; i < cols * rows; i++) {
+          const r = data[i * 4],
+            gg = data[i * 4 + 1],
+            b = data[i * 4 + 2];
+          lum[i] = 1 - (0.2126 * r + 0.7152 * gg + 0.0722 * b) / 255;
+        }
+        return lum;
+      }
+
+      /* ---- the tide: RAMP glyphs, mark + fixed drift wave (scene math) ------ */
+      function drawTide() {
+        const lum = sampleBR();
+        const imgW = 0.68; // mark weight (scene: 0.35+0.55*eff); nudged up so
+        const tideW = 0.4; // the BR ink reads as clean letters and the drift
+        //                    stays faint texture, not scatter around the mark
+        //                    (imgW + tideW preserves the scene's 1.08 sum)
+        // Fixed tide phases replace the animation clock => deterministic still.
+        const P = 1.7,
+          Q = 0.9,
+          R = 2.3;
+        // Quiet in the ambient buckets, bright only where the mark's ink is,
+        // so BR reads at a glance and the field stays texture, not noise.
+        const pal = [
+          `rgba(${MINT},0.00)`, // idx 0 (blank)
+          `rgba(${MINT},0.09)`, // idx 1-2  ambient
+          `rgba(${MINT},0.15)`,
+          `rgba(${MINT},0.24)`, // idx 3-4
+          `rgba(${MINT},0.34)`,
+          `rgba(${MINT},0.50)`, // idx 5-6  mark shoulders
+          `rgba(${MINT},0.66)`,
+          `rgba(${MINT},0.86)`, // idx 7-8  mark core
+          `rgba(${MINT},0.98)`,
+        ];
+        ctx.font = `18px ${MONO}`;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        const sinCol = [],
+          sinRow = [];
+        for (let cx = 0; cx < cols; cx++) sinCol[cx] = Math.sin(cx * 0.42 + P);
+        for (let cy = 0; cy < rows; cy++) sinRow[cy] = Math.sin(cy * 0.71 - Q);
+        for (let cy = 0; cy < rows; cy++) {
+          for (let cx = 0; cx < cols; cx++) {
+            const tide =
+              (sinCol[cx] + sinRow[cy] + Math.sin((cx + cy) * 0.27 + R) + 3) / 6;
+            const v = lum[cy * cols + cx] * imgW + tide * tideW;
+            const idx = Math.floor(Math.max(0, Math.min(v, 0.999)) * RAMP.length);
+            if (idx < 1) continue;
+            ctx.fillStyle = pal[idx];
+            ctx.fillText(RAMP[idx], cx * CELL + 2, cy * CELL + 3);
+          }
+        }
+      }
+
+      function draw() {
+        // ground
+        ctx.fillStyle = GROUND;
+        ctx.fillRect(0, 0, W, H);
+
+        // mint bloom top-left behind the wordmark (--glow-field, warmed)
+        let bloom = ctx.createRadialGradient(300, 150, 0, 300, 150, 680);
+        bloom.addColorStop(0, `rgba(${MINT},0.075)`);
+        bloom.addColorStop(0.6, `rgba(${MINT},0.02)`);
+        bloom.addColorStop(1, `rgba(${MINT},0)`);
+        ctx.fillStyle = bloom;
+        ctx.fillRect(0, 0, W, H);
+
+        // soft halo under the gutter mark so the BR mass reads as phosphor
+        let halo = ctx.createRadialGradient(931, 315, 0, 931, 315, 300);
+        halo.addColorStop(0, `rgba(${MINT},0.06)`);
+        halo.addColorStop(1, `rgba(${MINT},0)`);
+        ctx.fillStyle = halo;
+        ctx.fillRect(0, 0, W, H);
+
+        // the tide (ambient field + the BR gutter mark)
+        drawTide();
+
+        // wordmark: Circular Bold, --bright, phosphor glow, lowercase (#115)
+        const WM_X = 90,
+          WM_BASE = 322,
+          WM_SIZE = 100;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "alphabetic";
+        ctx.font = `700 ${WM_SIZE}px Circular, Arial, sans-serif`;
+        // approximate the site's -0.02em tracking by drawing glyph-by-glyph
+        const track = -0.02 * WM_SIZE;
+        const word = "brian rohde";
+        // phosphor glow (global.css --wm-glow), then the crisp face on top
+        ctx.save();
+        ctx.shadowColor = `rgba(${MINT},0.34)`;
+        ctx.shadowBlur = 26;
+        ctx.fillStyle = BRIGHT;
+        let x = WM_X;
+        for (const ch of word) {
+          ctx.fillText(ch, x, WM_BASE);
+          x += ctx.measureText(ch).width + track;
+        }
+        ctx.restore();
+        // re-draw crisp (shadow softens the face); keep a faint tight glow
+        ctx.save();
+        ctx.shadowColor = `rgba(${MINT},0.35)`;
+        ctx.shadowBlur = 3;
+        ctx.fillStyle = BRIGHT;
+        x = WM_X;
+        for (const ch of word) {
+          ctx.fillText(ch, x, WM_BASE);
+          x += ctx.measureText(ch).width + track;
+        }
+        ctx.restore();
+        const wordEnd = x - track; // x advanced past a trailing track unit
+
+        // the mint block caret (#63), a clear gap after the wordmark so it
+        // reads as a cursor, not a trailing letter
+        const carH = WM_SIZE * 0.7;
+        const carW = WM_SIZE * 0.18;
+        const carX = wordEnd + WM_SIZE * 0.2;
+        const carTop = WM_BASE - WM_SIZE * 0.7;
+        ctx.save();
+        ctx.shadowColor = `rgba(${MINT},0.5)`;
+        ctx.shadowBlur = 16;
+        ctx.fillStyle = `rgb(${MINT})`;
+        ctx.fillRect(carX, carTop, carW, carH);
+        ctx.restore();
+
+        // descriptor: Circular Book, --ink; mirrors the homepage intro line
+        // verbatim per #77/#80 (title identity + interpunct)
+        ctx.font = `400 33px Circular, Arial, sans-serif`;
+        ctx.fillStyle = INK;
+        ctx.fillText("AI Product Engineer · San Francisco", 92, 392);
+
+        document.documentElement.setAttribute("data-ready", "1");
+      }
+
+      // Fonts are added via the FontFace API (most deterministic for canvas),
+      // then a single synchronous draw. render.mjs waits on [data-ready].
+      const FONT_BOLD = "__FONT_BOLD__";
+      const FONT_BOOK = "__FONT_BOOK__";
+      const bold = new FontFace("Circular", `url(${FONT_BOLD})`, {
+        weight: "700",
+      });
+      const book = new FontFace("Circular", `url(${FONT_BOOK})`, {
+        weight: "400",
+      });
+      Promise.all([bold.load(), book.load()])
+        .then((faces) => {
+          faces.forEach((f) => document.fonts.add(f));
+          draw();
+        })
+        .catch((err) => {
+          document.documentElement.setAttribute("data-error", String(err));
+        });
+    </script>
+  </body>
+</html>
