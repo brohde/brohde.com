@@ -151,14 +151,19 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
             );
             res.writeHead(200, { "content-type": "application/json", ...CORS });
             res.end(JSON.stringify(out));
-          } catch (err) {
+          } catch {
+            // Do not leak raw upstream/internal error text to the client (audit L4).
             res.writeHead(500, { "content-type": "application/json", ...CORS });
-            res.end(JSON.stringify({ error: String(err.message || err) }));
+            res.end(JSON.stringify({ error: "internal error" }));
           }
         });
         return;
       }
       res.writeHead(404).end();
     })
-    .listen(8787, () => console.log("chat POC → http://localhost:8787"));
+    // Bind to loopback only (audit L4): this dev server holds a real key and must not be
+    // reachable from the LAN. No host arg previously meant Node bound 0.0.0.0.
+    .listen(8787, "127.0.0.1", () =>
+      console.log("chat POC → http://localhost:8787")
+    );
 }
