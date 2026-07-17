@@ -1,0 +1,107 @@
+---
+/**
+ * Profile + resume links as monochrome icons (decision #146). Rendered on the
+ * homepage intro and mirrored in the styleguide specimen, so the SVG path data
+ * lives in exactly one place (a drift guard: the paths are load bearing).
+ *
+ * Grammar: rest DIM, hover/focus ACCENT, matching the site's other quiet
+ * standalone links (.snav, the ledger rows). These are not links in running
+ * text, so G183/#99 does not bind and there is nothing to underline; color
+ * plus a focus-visible ring carries the affordance. currentColor drives every
+ * fill, so the marks read on both grounds and invert cleanly to accent.
+ *
+ * No brand color on the third-party marks (#135 spirit: the phosphor ink
+ * system owns the site identity). This is nominative use, a direct functional
+ * link to Brian's own LinkedIn and X profiles, rendered quietly in mono. The
+ * interim no-arrow rule holds (#68 covers the ledger arrows only; these links
+ * carry none).
+ *
+ * A11y: each link owns a full accessible name via aria-label plus a title
+ * tooltip; the SVGs are aria-hidden decoration (focusable="false" keeps legacy
+ * engines from adding a second tab stop). The 18px mark sits inside a 44x44
+ * target built from padding, not visible chrome, for a comfortable phone tap
+ * that does not bloat the row. Inline SVG with explicit width/height reserves
+ * its box at first paint, so CLS stays 0.
+ *
+ * SHIPPED icon-only (Brian's ask: icons instead of text words). Labeled
+ * variant, for veto, is one span per link:
+ *     <a ...><svg .../><span class="cplabel">LinkedIn</span></a>
+ * with `.cprofiles a { gap: 7px; padding: 0 10px }` and
+ * `.cplabel { font-size: 13px }`. Recommendation is icon-only: the aria-label
+ * and title carry the name for assistive tech and hover, and the row stays
+ * clean. The document glyph is the least self-evident of the three, which is
+ * the one honest cost of dropping the words; its title and aria-label answer
+ * it on hover and to a screen reader.
+ */
+import { LINKS } from "@/lib/site";
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<ul class:list={["cprofiles", className]} aria-label="Profiles and resume">
+  <li>
+    <a
+      href={LINKS.linkedin}
+      target="_blank"
+      rel="noopener"
+      aria-label="LinkedIn"
+      title="LinkedIn"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        width="18"
+        height="18"
+        fill="currentColor"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+        ></path>
+      </svg>
+    </a>
+  </li>
+  <li>
+    <a href={LINKS.resume} aria-label="Resume, PDF" title="Resume (PDF)">
+      <svg
+        viewBox="0 0 24 24"
+        width="18"
+        height="18"
+        fill="currentColor"
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M6 3h7l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm7 0v5h5zM7 12h8v1.6H7zM7 15h8v1.6H7zM7 18h5v1.6H7z"
+        ></path>
+      </svg>
+    </a>
+  </li>
+  <li>
+    <a
+      href={LINKS.x}
+      target="_blank"
+      rel="noopener"
+      aria-label={`X, ${LINKS.xHandle}`}
+      title={`X ${LINKS.xHandle}`}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        width="18"
+        height="18"
+        fill="currentColor"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+        ></path>
+      </svg>
+    </a>
+  </li>
+</ul>

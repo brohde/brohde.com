@@ -3,6 +3,7 @@ title: "Facebook's first WordPress site: rebuilding newsroom.fb.com"
 description: "How I led the redesign and WordPress VIP replatform of Facebook's global newsroom, from legacy migration to launch in seven languages."
 date: 2014-07-01
 draft: false
+theme: news
 ---
 
 In 2014, I led the technical rebuild of Facebook's press site, newsroom.fb.com. I was a front end developer and team lead at Beyond, an SF user experience agency, and Facebook was one of our two biggest clients at the time, alongside Google.
