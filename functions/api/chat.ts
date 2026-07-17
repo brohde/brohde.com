@@ -37,10 +37,6 @@ interface Env {
   // dashboard (or wrangler.toml) once the namespace exists; until then the Function falls
   // back to a best-effort in-isolate counter.
   CHAT_RL?: KVNamespace;
-  // Debug flag (audit L2). When set to any non-empty value, success responses include the
-  // `usage`/`cost` fields for local diagnostics. UNSET in production, so visitors never
-  // receive token counts or internal cost figures. Set via .dev.vars locally if needed.
-  CHAT_DEBUG?: string;
 }
 
 // Request-hardening limits (audit H2). Bound the total body, the message, and each history
@@ -446,21 +442,16 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   try {
     const out = await runChat(env, message, history);
-    // Production responses carry text + open_page only (audit L2). usage/cost are internal
-    // (token sizing + cost figures) and ship only when CHAT_DEBUG is set for local dev,
-    // never to visitors. The client already gated its display on IS_LOCAL, so nothing
-    // user-facing changes.
-    const body: {
-      text: string;
-      open_page: string | null;
-      usage?: ChatResult["usage"];
-      cost?: number;
-    } = { text: out.text, open_page: out.open_page };
-    if (env.CHAT_DEBUG) {
-      body.usage = out.usage;
-      body.cost = out.cost;
-    }
-    return json(body);
+    // usage/cost ship to everyone BY OWNER DECISION (#147, amending audit L2):
+    // per-reply cost is a deliberate transparency feature of the site. The
+    // cost-calibration risk L2 flagged is accepted as residual, bounded by the
+    // H2 request caps, the rate gates, and the H1 hard spend cap.
+    return json({
+      text: out.text,
+      open_page: out.open_page,
+      usage: out.usage,
+      cost: out.cost,
+    });
   } catch {
     // Upstream/SDK failure (timeout, 5xx, rate limit, bad key): friendly fallback, no
     // internals in the response body.
