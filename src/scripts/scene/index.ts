@@ -1005,19 +1005,42 @@ function wireHero(): void {
   });
 }
 
+/* the mount's stage-race pattern (rAF preferred, wall clock guaranteed),
+   module-level for the band: rendered Lighthouse caught the unstaged bind
+   fusing module eval + scene mount + this paint into one ~400ms mobile
+   task (TBT). Staged, the paint runs as its own short task and the .live
+   fade gets a committed opacity 0 to transition from. */
+function heroDefer(fn: () => void, ms: number): void {
+  let done = false;
+  const once = () => {
+    if (done) return;
+    done = true;
+    fn();
+  };
+  requestAnimationFrame(once);
+  window.setTimeout(once, ms);
+}
+
 /** bind (or re-bind) the page's hero band; idempotent per element, called
-    at module init and on every client-side navigation */
+    at module init and on every client-side navigation. The work is staged
+    OFF the caller's task (see heroDefer): a navigation mid-stage simply
+    drops the stale element. */
 export function initHeroBand(): void {
   const el = document.querySelector<HTMLElement>("[data-hero-band]");
   if (el === heroEl && el?.isConnected) return;
   heroEl = el;
   heroCanvas = null;
   if (!el) return;
-  const canvas = document.createElement("canvas");
-  el.appendChild(canvas);
-  heroCanvas = canvas;
-  paintHeroStill(el, canvas);
-  el.classList.add("live");
+  heroDefer(() => {
+    if (heroEl !== el || !el.isConnected) return;
+    const canvas = document.createElement("canvas");
+    el.appendChild(canvas);
+    heroCanvas = canvas;
+    paintHeroStill(el, canvas);
+    heroDefer(() => {
+      if (heroEl === el && el.isConnected) el.classList.add("live");
+    }, 300);
+  }, 300);
   wireHero();
 }
 
