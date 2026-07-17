@@ -1,5 +1,5 @@
 ---
-title: "13 pages, one morning, zero mismatched captions: migrating anthonythomasgalante.com off WordPress"
+title: "Migrating anthonythomasgalante.com off WordPress with Claude Code, in a morning"
 description: "A 13-page WordPress migration with nothing lost, a UI refresh that kept the look, and hosting plus a CMS for $0 a month."
 date: 2026-07-11
 draft: false
@@ -13,7 +13,7 @@ The first move wasn't code. I pointed two exploration agents at the problem in p
 
 ## The call I overruled on day one
 
-The extraction plan Claude proposed first was to parse the database dump directly, since that's the technical system of record. I pushed back before it got built: the site is only 13 pages, and the rendered front end, already resolved through WPBakery and Gutenberg, was clean HTML with the shortcode soup gone. Pulling from the live mirror instead of the raw dump meant skipping an entire shortcode-conversion problem. The database stayed useful for exactly three things the front end couldn't give: the newsletter subscriber list (which then stayed out of the repo entirely, gitignored, never deployed), the mapping from resized image derivatives back to true originals, and a cross-check that nothing the front end showed was missing from the source. One call, made in a few minutes, that saved a redundant conversion layer for the rest of the project. That's the kind of judgment that doesn't delegate.
+The extraction plan Claude proposed first was to parse the database dump directly, since that's the technical system of record. I pushed back before it got built: the site is only 13 pages, and the rendered front end, already resolved through WPBakery and Gutenberg, was clean HTML with the shortcode soup gone. Pulling from the live mirror instead of the raw dump meant skipping an entire shortcode-conversion problem. The database stayed useful for exactly three things the front end couldn't give: the newsletter subscriber list (which then stayed out of the repo entirely, gitignored, never deployed), the mapping from resized image derivatives back to true originals, and a cross-check that nothing the front end showed was missing from the source. One call, made in a few minutes, that saved a redundant conversion layer for the rest of the project.
 
 ## Auditing what nobody asked me to audit
 
@@ -33,7 +33,7 @@ The old site cost about $20 a month for plain WordPress hosting. The new one is 
 
 ## Where the time actually went
 
-The build ran one morning: about five hours at the keyboard, 7:40am to 12:45pm, one sitting with no break longer than fifteen minutes. Roughly four of those hours were the build proper, after an hour of planning and a parallel site-audit up front. That four-hour figure already includes every second spent waiting on the model. Subtract the LLM's own generation and agent-run time and my hands-on share, directing, reviewing, deciding, testing between turns, was about two hours. Three production deploys landed along the way as fixes got verified live. Two shorter sittings followed later, under an hour combined: an evening pass on the session-logging tooling, then a separate day on DNS, mail records, and registrar access ahead of cutover, which turned up the real registrar, DreamHost, not the one everyone assumed. Thirteen pages migrated. I recovered 98 unique media originals out of 320 total attachments in the old library (97 found, 1 confirmed gone for good) and optimized the set 247.7MB → 26.0MB. All of it staged, reviewed, and CMS-ready before the client saw a single deploy.
+The build ran one morning: about five hours at the keyboard, 7:40am to 12:45pm, one sitting with no break longer than fifteen minutes. Roughly four of those hours were the build proper, after an hour of planning and a parallel site-audit up front. That four-hour figure already includes every second spent waiting on the model. Subtract the LLM's own generation and agent-run time, and my hands-on share (directing, reviewing, deciding, testing between turns) was about two hours. Three production deploys landed along the way as fixes got verified live. Two shorter sittings followed later, under an hour combined: an evening pass on the session-logging tooling, then a separate day on DNS, mail records, and registrar access ahead of cutover, which turned up the real registrar, DreamHost, not the one everyone assumed. Thirteen pages migrated. I recovered 98 unique media originals out of 320 total attachments in the old library (97 found, 1 confirmed gone for good) and optimized the set 247.7MB → 26.0MB. All of it staged, reviewed, and CMS-ready before the client saw a single deploy.
 
 ## What actually got delegated
 
