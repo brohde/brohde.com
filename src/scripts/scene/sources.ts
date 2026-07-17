@@ -4,18 +4,37 @@
  * ground + black figure. Sampling inverts, so dark source areas become bright
  * glyphs on the night ground.
  *
- * These are the per-page marks (#111): the 8 is the default/homepage
- * identity, logo = Eight Angle, pose = astavakrasana, f/G = letterform
- * stand-ins for the Facebook Newsroom and Android for Work pages (real brand
- * marks stay pending the #45/#59 trademark check). A production image asset
- * swaps in through this same seam: any drawer that fills the 480x300 frame
- * (e.g. ctx.drawImage(asset, ...)) is a valid source.
+ * These are the per-page marks (#111, identity plan in
+ * docs/reference/editorial-review-r1.md section 2 as amended by Brian):
+ * br = the site default (BR letterform), logo = Eight Angle, pose =
+ * astavakrasana, f = Facebook Newsroom, robot = Android for Work (see the
+ * license note at its drawer), atg = ATG, gccm = Gold Coast, twilio = the
+ * Twilio mark. The 8 and the G letterform stay in the file unused (the 8 as
+ * hero-variant material, the G superseded by the robot per the approved
+ * plan). A production image asset swaps in through this same seam: any
+ * drawer that fills the 480x300 frame (e.g. ctx.drawImage(asset, ...)) is a
+ * valid source.
+ *
+ * The #104 lesson binds every drawer: dead margin in the frame presents the
+ * mark small (the pose's 0.610 ink-to-frame ratio is the known-bad example,
+ * f's 0.840 the good one), so marks trim toward the ink box with roughly an
+ * 8% bottom safe area kept for the future hero band (#103 asset spec).
  */
 
 export const SRC_W = 480;
 export const SRC_H = 300;
 
-export type SourceName = "eight" | "logo" | "pose" | "f" | "g";
+export type SourceName =
+  | "eight"
+  | "logo"
+  | "pose"
+  | "f"
+  | "g"
+  | "br"
+  | "robot"
+  | "gccm"
+  | "atg"
+  | "twilio";
 
 const MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
 
@@ -95,6 +114,102 @@ function drawLetter(sctx: CanvasRenderingContext2D, ch: string, px: number) {
   sctx.fillText(ch, 240, 162);
 }
 
+/* the house letterform treatment at word scale: same stroke-over-fill mass
+   as drawLetter, but on the alphabetic baseline so the ink box lands
+   deterministically against the frame (baseY places the deepest ink at the
+   8% bottom safe line; wide-short words center instead) */
+function drawWord(
+  sctx: CanvasRenderingContext2D,
+  word: string,
+  px: number,
+  baseY: number,
+  stroke: number
+) {
+  blank(sctx);
+  sctx.lineWidth = stroke;
+  sctx.lineJoin = "round";
+  sctx.font = `900 ${px}px ${MONO}`;
+  sctx.textAlign = "center";
+  sctx.textBaseline = "alphabetic";
+  sctx.strokeText(word, 240, baseY);
+  sctx.fillText(word, 240, baseY);
+}
+
+function roundedRect(
+  sctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  wd: number,
+  ht: number,
+  r: number
+) {
+  sctx.beginPath();
+  sctx.moveTo(x + r, y);
+  sctx.arcTo(x + wd, y, x + wd, y + ht, r);
+  sctx.arcTo(x + wd, y + ht, x, y + ht, r);
+  sctx.arcTo(x, y + ht, x, y, r);
+  sctx.arcTo(x, y, x + wd, y, r);
+  sctx.closePath();
+  sctx.fill();
+}
+
+/* the Android robot for the android theme (identity plan, Brian's call):
+   dome head with two antennae and dot eyes, body, arms, legs.
+   LICENSE: the Android robot is reproduced or modified from work created
+   and shared by Google and used according to terms described in the
+   Creative Commons 3.0 Attribution License (per Google's brand guidelines,
+   https://developer.android.com/distribute/marketing-tools/brand-guidelines).
+   A USER-VISIBLE attribution line on the site is still required; placement
+   is a pending copy decision (likely the article footer). */
+function drawRobot(sctx: CanvasRenderingContext2D) {
+  blank(sctx);
+  capsule(sctx, 168, 12, 196, 44, 14); // antennae
+  capsule(sctx, 312, 12, 284, 44, 14);
+  sctx.beginPath(); // dome head
+  sctx.arc(240, 134, 112, Math.PI, 0);
+  sctx.closePath();
+  sctx.fill();
+  sctx.fillStyle = "#FFFFFF"; // dot eyes, punched out of the dome
+  sctx.beginPath();
+  sctx.arc(196, 84, 13, 0, 6.2832);
+  sctx.fill();
+  sctx.beginPath();
+  sctx.arc(284, 84, 13, 0, 6.2832);
+  sctx.fill();
+  sctx.fillStyle = "#000000";
+  roundedRect(sctx, 126, 144, 228, 90, 14); // body
+  capsule(sctx, 88, 169, 88, 211, 54); // arms
+  capsule(sctx, 392, 169, 392, 211, 54);
+  capsule(sctx, 196, 232, 196, 253, 46); // legs
+  capsule(sctx, 284, 232, 284, 253, 46);
+}
+
+/* the Twilio mark for the twilio theme (Brian's explicit call): the red
+   ring with four dots inside, two upper, two lower. MARK ONLY, never the
+   wordmark or any text lockup. No page consumes this theme yet (the twilio
+   piece is an external entry); it lands dormant for future use. */
+function drawTwilio(sctx: CanvasRenderingContext2D) {
+  blank(sctx);
+  sctx.lineWidth = 38;
+  sctx.beginPath();
+  sctx.arc(240, 141, 116, 0, 6.2832);
+  sctx.stroke();
+  /* dots run slightly small vs the real mark's proportions on purpose:
+     at the tide's coarse cell grid, bigger dots merge into two blobs
+     (caught on rendered validation); the extra gap keeps four distinct
+     dots readable at gutter scale */
+  for (const [dx, dy] of [
+    [-47, -47],
+    [47, -47],
+    [-47, 47],
+    [47, 47],
+  ]) {
+    sctx.beginPath();
+    sctx.arc(240 + dx, 141 + dy, 23, 0, 6.2832);
+    sctx.fill();
+  }
+}
+
 export const DRAW: Record<
   SourceName,
   (sctx: CanvasRenderingContext2D) => void
@@ -104,6 +219,11 @@ export const DRAW: Record<
   pose: drawPose,
   f: (sctx) => drawLetter(sctx, "f", 320),
   g: (sctx) => drawLetter(sctx, "G", 280),
+  br: (sctx) => drawWord(sctx, "BR", 330, 263, 26),
+  robot: drawRobot,
+  gccm: (sctx) => drawWord(sctx, "GCCM", 180, 218, 16),
+  atg: (sctx) => drawWord(sctx, "atg", 238, 208, 22),
+  twilio: drawTwilio,
 };
 
 export const SOURCES = Object.keys(DRAW) as SourceName[];
