@@ -5,8 +5,9 @@
  * (SiteHeader.astro) owns the wordmark + resting caret now, so this block
  * carries the settled #77/#79/#80 lines as homepage content: the role line,
  * the founder credit, the companies line (Facebook/Google landing on their
- * case-study proof) and the profile links. Nothing decided in #80 is lost;
- * D3's homepage adaptation may redesign or relocate it.
+ * case-study proof) and the profile links, now rendered as monochrome icons
+ * (#146; markup + glyph paths live in ProfileLinks.astro). Nothing decided in
+ * #80 is lost; D3's homepage adaptation may redesign or relocate it.
  *
  * Interim state (Brian's 2026-07-15 review): NO ↗ markers on these links,
  * external or internal; the ledger keeps its ↗ convention (#68). If the
@@ -15,7 +16,8 @@
  * (.cnote, ratios checked >=4.5:1 on both grounds).
  * .bseq marks blocks the boot sequence reveals in order (#36/#64).
  */
-import { LINKS, COMPANIES, logHref } from "@/lib/site";
+import { COMPANIES, logHref } from "@/lib/site";
+import ProfileLinks from "@/components/ProfileLinks.astro";
 ---
 
 <section class="cid" aria-label="Introduction">
@@ -42,19 +44,5 @@ import { LINKS, COMPANIES, logHref } from "@/lib/site";
     <a href={logHref("google-android-for-work")}>Google</a>{" "}
     <span class="cnote">(contract)</span>
   </p>
-  <ul class="cprofiles bseq" aria-label="Profiles and resume">
-    <li>
-      <a href={LINKS.linkedin} target="_blank" rel="noopener">LinkedIn</a>
-    </li>
-    <li><a href={LINKS.resume}>Resume</a></li>
-    <li>
-      <a
-        href={LINKS.x}
-        target="_blank"
-        rel="noopener"
-        title={LINKS.xHandle}
-        aria-label={`X, ${LINKS.xHandle}`}>X</a
-      >
-    </li>
-  </ul>
+  <ProfileLinks class="bseq" />
 </section>

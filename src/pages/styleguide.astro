@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import ProfileLinks from "@/components/ProfileLinks.astro";
 
 // Specimen page (D4 pattern). Forces both grounds side by side regardless of
 // system scheme, so a token change can be eyeballed in light and dark at once.
@@ -56,10 +57,8 @@ const themes = [
             </div>
 
             <h2 class="sg-h">global header (B2 Phase 1)</h2>
-            {
-              /* static specimen: no ids, no form, no data-cmd, so it can
-                never collide with the real header BaseLayout renders */
-            }
+            {/* static specimen: no ids, no form, no data-cmd, so it can
+                never collide with the real header BaseLayout renders */}
             <div class="shead" style="padding:0">
               <div class="idrow">
                 <p class="wmrow">
@@ -74,7 +73,9 @@ const themes = [
                 </span>
               </div>
               <div class="hchat">
-                <span class="p" aria-hidden="true">$</span>
+                <span class="p" aria-hidden="true">
+                  $
+                </span>
                 <span style="color:#8fa79a;font-size:16px">
                   Ask me anything or type help
                 </span>
@@ -95,14 +96,7 @@ const themes = [
                 <span class="d">·</span> <a href="#">Facebook</a> +{" "}
                 <a href="#">Google</a> <span class="cnote">(contract)</span>
               </p>
-              <ul class="cprofiles">
-                <li>
-                  <a href="#">LinkedIn</a>
-                </li>
-                <li>
-                  <a href="#">Resume</a>
-                </li>
-              </ul>
+              <ProfileLinks />
             </div>
 
             <h2 class="sg-h">the slab (always night, both grounds)</h2>
@@ -154,7 +148,9 @@ const themes = [
                 <span class="lttl">
                   Re-Introducing the Hackpack v4
                   <span class="extmark">
-                    <span class="ext" aria-hidden="true">&#8599;</span>
+                    <span class="ext" aria-hidden="true">
+                      &#8599;
+                    </span>
                     <span class="extdom">twilio.com</span>
                   </span>
                 </span>
