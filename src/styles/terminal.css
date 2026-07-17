@@ -74,34 +74,140 @@
   }
 }
 
-/* -------------------- editorial identity (#67 treatment C) --------------- */
-/* The page around the slab is a designed editorial surface: Circular, the
-   system ground, sentence case (#76). Compact on purpose: the slab is the
-   distinctive object; two heroes on one page recreates the blur C fixes. */
-.cid {
-  padding-top: 40px;
-  font-family: var(--font-edit);
+/* ---------------- global site header (#107/#110/#115/#121, D1) ----------- */
+/* One frame on every page except /chat: identity row (wordmark + quiet mono
+   nav tokens), then the chat input on its own row, at EVERY width (#121).
+   Static, not sticky (D1 call 6); roughly 120px of chrome. Rendered by
+   BaseLayout with its own .wrap, so it obeys the same layout law as page
+   content: centered on scene-less pages, left-anchored on scene pages
+   (#125/#126) where the scene measures the shared .wrap edge (#120). */
+.shead {
+  padding: 14px 0 24px;
+  font-family: var(--font-mono);
 }
-.wordmark {
+.idrow {
+  display: flex;
+  align-items: center;
+  gap: 8px 14px;
+}
+/* h1 on the homepage, p elsewhere: one visual, two roles */
+.wmrow {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+.wm {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-family: var(--font-edit);
   font-weight: 700;
-  font-size: clamp(34px, 7.5vw, 50px);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  font-size: 18px;
+  letter-spacing: -0.02em;
   color: var(--bright);
-  margin: 0 0 14px;
+  text-decoration: none;
+  white-space: nowrap;
 }
-.wordmark .caret {
+.wm .caret {
   width: 0.4em;
   height: 0.78em;
   vertical-align: -0.04em;
-  margin-left: 0.08em;
+  margin-left: 0.12em;
 }
-/* Single-cursor model (#63): the wordmark caret is the page's resting cursor.
-   While the roving cursor or the prompt owns focus (html.cfocus, set by
-   terminal.ts), the wordmark caret yields so exactly one cursor is visible. */
-html.cfocus .wordmark .caret {
+/* Single-cursor model (#63): the header wordmark carries the page's resting
+   cursor now (D1 call 10, one identity everywhere). While the roving cursor
+   or any chat input owns focus (html.cfocus, set by terminal.ts), the
+   wordmark caret yields so exactly one cursor is visible. */
+html.cfocus .wm .caret {
   visibility: hidden;
+}
+/* Nav tokens rest dim, not accent (D1 call 5): standalone nav, not links in
+   running text, so G183's color-only trap does not bind; dim holds 7.19:1
+   night / 7.97:1 light on the ground. Hover/focus go accent + 1px underline,
+   the shipped hover grammar. The contact item is a button through the
+   command router (#107); it wears the same token clothes. .snav-spec is the
+   styleguide's inert specimen of the same look. */
+.snav {
+  display: flex;
+  gap: 0 4px;
+}
+.snav :is(a, button, .snav-spec) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 8px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--dim);
+  text-decoration: none;
+}
+.snav :is(a, button):hover,
+.snav :is(a, button):focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+/* The chat, the machine's mouth on every page (D1 call 1): a strip of the
+   always-night phosphor material, the homechip idiom grown into a real
+   field. Fixed night values on purpose: the measured ratios hold under
+   either page ground (typed #F2F7F3 17.60:1, placeholder #8FA79A 7.41:1,
+   mark #7EE787 12.42:1 on #0B110E). 48px chrome sizing against the homepage
+   surface's 60px hero (D1 call 7); 16px font is the iOS no-zoom floor. The
+   placeholder shows at rest: the header has no boot machinery, only the
+   homepage surface hides its invitation behind the typing sequence. */
+.hchat {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  margin: 8px 0 0;
+  padding: 0 13px;
+  background: #0b110e;
+  border: 1px solid #33523f;
+  border-radius: 8px;
+  box-shadow: 0 0 14px rgba(126, 231, 135, 0.14);
+  color-scheme: dark;
+}
+.hchat .p {
+  color: #7ee787;
+}
+.hchat input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: 0;
+  color: #f2f7f3;
+  font-family: var(--font-mono);
+  font-size: 16px; /* >=16px: never zooms on iOS focus */
+  line-height: 1.4;
+  caret-color: #7ee787;
+  padding: 11px 0;
+}
+.hchat input::placeholder {
+  color: #8fa79a;
+  opacity: 1;
+}
+.hchat input:focus {
+  outline: none;
+}
+.hchat:focus-within {
+  border-color: #7ee787;
+  box-shadow: 0 0 18px rgba(126, 231, 135, 0.24);
+}
+
+/* -------------------- editorial identity (#67 treatment C) --------------- */
+/* The homepage identity block, now CONTENT under the global header (B2
+   Phase 1): Circular, the system ground, sentence case (#76). The wordmark
+   row moved into the header chrome; these are the surviving #80 lines.
+   Compact on purpose: the slab is the distinctive object. */
+.cid {
+  padding-top: 8px;
+  font-family: var(--font-edit);
 }
 .crole {
   font-size: 17.5px;
@@ -624,8 +730,7 @@ html.cfocus .wordmark .caret {
 }
 
 /* ------------------------ the chat screen bits --------------------------- */
-/* [esc] back lives in the expanded slab's head (chat); .tbl is the dim
-   right-hand label shared with the .atop bars. */
+/* [esc] back lives in the expanded slab's head (chat). */
 .backbtn {
   display: inline-flex;
   align-items: center;
@@ -640,10 +745,6 @@ html.cfocus .wordmark .caret {
   text-decoration: none;
 }
 /* hover/focus fill lives in the unified bracket rule above */
-.tbl {
-  color: var(--dim);
-  font-size: 12px;
-}
 
 .chatwrap {
   display: flex;
@@ -885,18 +986,11 @@ html.cfocus .wordmark .caret {
 }
 
 /* ----------------------- article pages (#67 C variant) ------------------- */
+/* B2 Phase 1: the .atop chrome bar ([home] chip + path label) is retired;
+   the global header is the one frame. .homechip survives in the .aend rows
+   and the theme control idiom. */
 .artpad {
   padding-bottom: 40px;
-}
-.atop {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  min-height: 52px;
-  border-bottom: 1px solid var(--line);
-  font-family: var(--font-mono);
-  margin: 0 0 20px;
 }
 /* the way home is a phosphor chip: a small piece of the screen (#67 C) */
 .homechip {
@@ -1086,6 +1180,18 @@ html.boot .bseq.bon {
   }
   #wipe span {
     left: 16px;
+  }
+  /* the header compresses but keeps the SAME two-row arrangement with a
+     real input (#121): only type and gaps step down (D1 phone shell) */
+  .wm {
+    font-size: 16.5px;
+  }
+  .idrow {
+    gap: 8px 6px;
+  }
+  .snav :is(a, button, .snav-spec) {
+    padding: 0 5px;
+    font-size: 12.5px;
   }
 }
 @media (max-width: 360px) {

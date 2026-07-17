@@ -21,16 +21,13 @@ const profilePage = {
 
 <BaseLayout title="About" description={description} jsonLd={profilePage}>
   <section class="screen" id="scr-about" data-screen="about" tabindex="-1">
+    {
+      /* B2 Phase 1: the .atop chrome bar ([home] chip + path label) is
+        retired; the global header is the one frame on every page. The way
+        home is the header wordmark; the .aend chips below keep the
+        end-of-content paths. */
+    }
     <div class="wrap artpad">
-      <div class="atop">
-        <a class="homechip" href="/">
-          <span class="br" aria-hidden="true">[</span>home<span
-            class="br"
-            aria-hidden="true">]</span
-          >
-        </a>
-        <span class="tbl">brohde.com/about</span>
-      </div>
       <main id="main">
         <h1 class="atitle">About</h1>
         <article class="prose" style="margin-top:0">
