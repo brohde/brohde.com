@@ -12,7 +12,7 @@ This is that build.
 
 ## The designs
 
-My client runs Gold Coast Capital Management, a registered investment adviser. He's not a designer and he'd never written CSS, but he had a clear picture of the site he wanted, and ChatGPT gave him a way to render that picture without needing either skill. He came back with a full set: home page plus seven interior pages, each a detailed comp with headlines, stats, fee comparisons, an advisor bio.
+My client runs Gold Coast Capital Management, a registered investment adviser. The site he wanted to replace was running on Squarespace. He's not a designer and he'd never written CSS, but he had a clear picture of the site he wanted, and ChatGPT gave him a way to render that picture without needing either skill. He came back with a full set: home page plus seven interior pages, each a detailed comp with headlines, stats, fee comparisons, an advisor bio.
 
 What struck me wasn't that the designs existed. It's how specific the feedback got once he could see them live. His notes read like an art director's: "put 'life' in the first row." "Reduce the empty space at the top of this section." "The '20+' should be dark blue." He wasn't describing a vibe. He was pointing at pixels. ChatGPT gave a non-technical founder the vocabulary to be exact, and my job was to meet that precision without the site falling apart when he asked for a ninth page.
 
