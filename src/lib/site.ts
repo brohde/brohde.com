@@ -19,7 +19,7 @@ export const SITE = {
   locale: "en_US",
   lang: "en",
   email: "brian@brohde.com",
-  ogImage: "/og-default.svg",
+  ogImage: "/og.png",
 } as const;
 
 /** Profile + resume links shown in the header (#25, #33). */

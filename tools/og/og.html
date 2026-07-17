@@ -242,10 +242,11 @@
         ctx.fillRect(carX, carTop, carW, carH);
         ctx.restore();
 
-        // descriptor: Circular Book, --ink, sentence case (brief), no buzzwords
+        // descriptor: Circular Book, --ink; mirrors the homepage intro line
+        // verbatim per #77/#80 (title identity + interpunct)
         ctx.font = `400 33px Circular, Arial, sans-serif`;
         ctx.fillStyle = INK;
-        ctx.fillText("AI product engineer, San Francisco", 92, 392);
+        ctx.fillText("AI Product Engineer · San Francisco", 92, 392);
 
         document.documentElement.setAttribute("data-ready", "1");
       }
