@@ -7,8 +7,9 @@
  *
  * It is the booting screen (#36/#64): the slab never carries .bseq, so it is
  * fully visible from first paint while "hello" types into its prompt and the
- * editorial page reveals around it. Chat expansion (#69) morphs this same
- * object toward full window (phase C2).
+ * editorial page reveals around it. A send here navigates to /chat, a normal
+ * page carrying the same slab object (#108; the old expand-to-full-window
+ * morph is retired).
  */
 import CommandMenu from "@/components/CommandMenu.astro";
 import Prompt from "@/components/Prompt.astro";
@@ -20,7 +21,7 @@ interface Props {
 const { promptId = "home" } = Astro.props;
 ---
 
-<section class="slab vtslab" aria-label="Chat">
+<section class="slab" aria-label="Chat">
   <div class="slabhead">
     <span>brohde.com · chat</span>
     <span class="ccstat"><span class="dot" aria-hidden="true"></span>ready</span

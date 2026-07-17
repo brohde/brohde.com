@@ -1,13 +1,15 @@
 ---
 /**
  * The log as a ledger (#67 treatment C, unbranded per Brian's 2026-07-15
- * review): unbracketed mono dates in a
- * fixed column, editorial titles, one hairline per row. Newest first, title +
- * pre-date (#2, #3); descriptions live on the article pages, meta, and RSS.
+ * review; restyled per his batch 77 change order): each row is the mono date
+ * with the title beneath it in the editorial body voice (normal weight, body
+ * size), hairline separators BETWEEN rows only, no frame, no label line (the
+ * sr-only heading carries the semantics). Newest first, title + pre-date
+ * (#2, #3); descriptions live on the article pages, meta, and RSS.
  * Each entry is a real link to /log/<id> (or the external URL, marked with a
  * never-underlined ↗, #68) so it is crawlable and keyboard reachable; the
  * terminal controller only enhances, never gates, navigation.
- * With `boot`, the head and each row reveal in order as terminal output.
+ * With `boot`, each row reveals in order as terminal output.
  */
 import { getCollection } from "astro:content";
 import { logHref, isoDate } from "@/lib/site";
@@ -20,13 +22,15 @@ const { boot = false } = Astro.props;
 const posts = (await getCollection("articles", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
+
+/* #141: external entries show their destination domain with the arrow.
+   Derived from the entry's own URL (never hardcoded) so any future
+   external entry gets it for free; leading www. stripped for display. */
+const domainOf = (url: string) => new URL(url).hostname.replace(/^www\./, "");
 ---
 
 <section class="clog" id="log" aria-label="Article log">
   <h2 class="sr">Writing and project log</h2>
-  <div class:list={["loghead", { bseq: boot }]}>
-    <span>log</span><span class="rule" aria-hidden="true"></span>
-  </div>
   {
     posts.map((post) =>
       post.data.external ? (
@@ -39,12 +43,18 @@ const posts = (await getCollection("articles", ({ data }) => !data.draft)).sort(
           <span class="lts">{isoDate(post.data.date)}</span>
           <span class="lttl">
             {post.data.title}
-            <span class="ext" aria-hidden="true">
-              &#8599;
+            {/* #141: arrow + destination domain, one non-wrapping unit, small
+                and lighter than the title; the arrow stays decoration (#68),
+                the domain is real text so AT hears the destination once */}
+            <span class="extmark">
+              <span class="ext" aria-hidden="true">&#8599;</span>
+              <span class="extdom">{domainOf(post.data.external)}</span>
             </span>
             {/* sr suffix instead of an aria-label override, so the accessible
-                name always contains the visible text (speech input) */}
-            <span class="sr"> (external, opens in a new tab)</span>
+                name always contains the visible text (speech input); the
+                visible domain already says "external", so the suffix only
+                adds the new-tab behavior */}
+            <span class="sr"> (opens in a new tab)</span>
           </span>
         </a>
       ) : (

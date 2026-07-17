@@ -6,11 +6,10 @@ import ThemeToggle from "@/components/ThemeToggle.astro";
  * the editorial ground, paired with the theme override control (#92).
  *
  * BaseLayout renders this outside .screen, so it is the page's single
- * contentinfo landmark and is identical across page types. /chat opts out
- * via footer={false}: it is the full-window slab, with no editorial ground.
- * That opt-out is also what removes the theme control from /chat, which is
- * correct by design (the expanded slab is always-night, so the control would
- * visibly do nothing there).
+ * contentinfo landmark and is identical across page types, /chat included
+ * since B2 Phase 2 (#108): every page sits on the editorial ground, so the
+ * theme control always has real work (only the slab interior stays
+ * always-night).
  *
  * The row (#101): copyright left, control right, one flex line. The control
  * used to be a FIXED chip bottom-right, which occluded live body text through

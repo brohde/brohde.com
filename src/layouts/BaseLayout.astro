@@ -72,19 +72,6 @@ interface Props {
   ogType?: "website" | "article" | "profile";
   noindex?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
-  /**
-   * Render the site footer (#91). Default true: every editorial page type
-   * gets the same contentinfo. /chat passes false, being the full-window
-   * slab with no editorial ground under it.
-   */
-  footer?: boolean;
-  /**
-   * Render the global site header (#107/#121, B2 Phase 1). Default true:
-   * one frame on every page. /chat passes false for now: putting the frame
-   * on the current full-window slab would read broken; the Phase 2
-   * conversion of /chat to a normal shell page removes that opt-out.
-   */
-  header?: boolean;
 }
 
 const props = Astro.props;
@@ -197,20 +184,21 @@ const props = Astro.props;
   <body>
     <a href="#main" class="sr">skip to content</a>
     {
-      /* The global header (#107/#110/#115/#121): one frame on every page,
-      rendered here (like the footer) so it can never drift per page. Its
-      .wrap follows the same layout law as page content: centered on
-      scene-less pages, left-anchored on scene pages (#125/#126). */
+      /* The global header (#107/#110/#115/#121): one frame on EVERY page,
+      /chat included since B2 Phase 2 (#108), rendered here (like the
+      footer) so it can never drift per page. Its .wrap follows the same
+      layout law as page content: centered on scene-less pages,
+      left-anchored on scene pages (#125/#126). */
     }
-    {props.header !== false && <SiteHeader />}
+    <SiteHeader />
     <slot />
     {
       /* The footer (#91) carries the theme override control (#92) in its row
-      since #101; it is no longer a fixed overlay mounted here. /chat passing
-      footer={false} is therefore also what correctly removes the control from
-      the always-night slab. */
+      since #101; it is no longer a fixed overlay mounted here. On every
+      page, /chat included (#108): each page sits on the editorial ground,
+      so the control always has something to do. */
     }
-    {props.footer !== false && <SiteFooter />}
+    <SiteFooter />
     <Analytics />
     {
       /*

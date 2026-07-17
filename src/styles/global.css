@@ -270,67 +270,14 @@ a {
 
 /* Instant, terminal-style route swaps under View Transitions (no cross-fade;
    honors "instant transitions" in #24). The 140ms wipe (#64) is a separate
-   cover element timed around this instant swap by terminal.ts. */
+   cover element timed around this instant swap by terminal.ts. It covers
+   EVERY internal navigation: the C2 home <-> chat slab morph retired with
+   the full-window chat (#108); Phase 3 owns any deeper designed
+   transitions. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
-}
-
-/* --------------------- the slab morph, home <-> chat (#69) ---------------- */
-/* The slab carries a persistent view-transition-name (.vtslab, on the home
-   slab and the chat screen). terminal.ts stamps html[data-vt="morph"] for the
-   home <-> chat pair only; every other navigation keeps the slab group inert
-   below so the wipe stays a clean hard cut with no ghost-slab artifacts.
-   During the morph the UA interpolates the group box (the slab physically
-   grows toward full window and collapses back home) while the editorial page
-   cross-fades around it. Reduced motion never stamps the attribute: instant. */
-html:not([data-vt="morph"])::view-transition-group(slab),
-html:not([data-vt="morph"])::view-transition-image-pair(slab),
-html:not([data-vt="morph"])::view-transition-old(slab),
-html:not([data-vt="morph"])::view-transition-new(slab) {
-  animation: none;
-}
-html[data-vt="morph"]::view-transition-group(slab) {
-  animation-duration: 360ms;
-  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
-  z-index: 2;
-}
-html[data-vt="morph"]::view-transition-image-pair(slab),
-html[data-vt="morph"]::view-transition-old(slab),
-html[data-vt="morph"]::view-transition-new(slab) {
-  animation-duration: 360ms;
-  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
-}
-/* Snapshots stay 1:1 and anchor to the slab's top-left corner while the box
-   interpolates: the title bar holds still as the screen physically extends
-   (and retracts), instead of the interiors zoom-stretching. The box crops
-   whichever snapshot is larger than it mid-flight. */
-html[data-vt="morph"]::view-transition-old(slab),
-html[data-vt="morph"]::view-transition-new(slab) {
-  width: auto;
-  height: auto;
-  max-width: none;
-  max-height: none;
-  object-fit: none;
-  object-position: top left;
-}
-/* the editorial page fades around the morphing slab instead of hard-cutting */
-html[data-vt="morph"]::view-transition-old(root) {
-  animation: vt-page-fade-out 240ms ease both;
-}
-html[data-vt="morph"]::view-transition-new(root) {
-  animation: vt-page-fade-in 300ms ease 60ms both;
-}
-@keyframes vt-page-fade-out {
-  to {
-    opacity: 0;
-  }
-}
-@keyframes vt-page-fade-in {
-  from {
-    opacity: 0;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
