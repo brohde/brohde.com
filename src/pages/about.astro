@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import Scene from "@/components/Scene.astro";
 import { SITE, LINKS, COMPANIES } from "@/lib/site";
 
 const description =
@@ -20,6 +21,12 @@ const profilePage = {
 ---
 
 <BaseLayout title="About" description={description} jsonLd={profilePage}>
+  {
+    /* interior scene (B2 P3): the persistent gutter scene on the default
+    BR identity (#109/#111); content keeps the left column, the wrap
+    left-anchors at gutter widths via body:has(.scene) (#125/#126). */
+  }
+  <Scene />
   <section class="screen" id="scr-about" data-screen="about" tabindex="-1">
     {
       /* B2 Phase 1: the .atop chrome bar ([home] chip + path label) is

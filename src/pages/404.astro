@@ -1,8 +1,14 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import Scene from "@/components/Scene.astro";
 ---
 
 <BaseLayout title="404" noindex={true}>
+  {
+    /* interior scene (B2 P3): default BR identity, same as /about; a lost
+    page still sits inside the one persistent shell (#109). */
+  }
+  <Scene />
   <section class="screen" data-screen="404" tabindex="-1">
     {
       /* B2 Phase 1: .atop chrome retired; the global header is the frame.
