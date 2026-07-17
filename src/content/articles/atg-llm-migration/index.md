@@ -3,6 +3,7 @@ title: "Migrating anthonythomasgalante.com off WordPress with Claude Code, in a 
 description: "A 13-page WordPress migration with nothing lost, a UI refresh that kept the look, and hosting plus a CMS for $0 a month."
 date: 2026-07-11
 draft: false
+theme: atg
 ---
 
 Anthony Thomas Galante is a New York fashion designer. His site was running WordPress on SiteGround, about $20 a month, 13 pages built up over years of WPBakery shortcodes and Gutenberg blocks. He wanted it off WordPress, onto something free, still looking like his brand, and editable by him without calling a developer every time he adds a lookbook. I ran the whole migration through Claude Code, myself as the only human in the loop. Here's what that actually looked like, not the highlight reel.

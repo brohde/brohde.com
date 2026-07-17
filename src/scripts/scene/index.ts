@@ -217,9 +217,11 @@ const PEAKS: Record<ThemeName, Record<GroundKey, number[][]>> = {
 
 /* each theme carries its page's mark: the tide draws what the page is
    (#74/#111). The site default is the BR letterform; the 8 and the G
-   letterform stay drawable but unmapped (see sources.ts). Per-article
-   theme wiring on article pages is B3's job; twilio is dormant until its
-   piece gains an interior page. */
+   letterform stay drawable but unmapped (see sources.ts). Article pages
+   declare their theme in frontmatter (content.config.ts) and stamp it on
+   the [data-screen] section; the terminal.ts bridge travels the persisted
+   scene there on navigation. twilio is wired to the Signal pong piece,
+   which is draft: no public page consumes it until the draft flips. */
 const THEME_SOURCE: Record<ThemeName, SourceName> = {
   default: "br",
   eight: "logo",
@@ -230,7 +232,10 @@ const THEME_SOURCE: Record<ThemeName, SourceName> = {
   twilio: "twilio",
 };
 
-function isThemeName(v: string | undefined): v is ThemeName {
+/** exported for the terminal.ts bridge: pages stamp data-scene-theme on
+    their fresh [data-screen] section (the persisted scene node keeps the
+    OLD page's dataset, so it can never be the source of truth) */
+export function isThemeName(v: string | undefined): v is ThemeName {
   return !!v && v in PEAKS;
 }
 
@@ -879,6 +884,166 @@ function mount(container: HTMLElement): SceneHandle {
   };
 }
 
+/* ------------------------------------------------------- hero band still --
+   The article hero band (#97/#103): HeroBand.astro server-renders the band
+   and its glyph facade; this paints the live layer, a SETTLED STILL of the
+   page's mark contain-fit in the band (symbol centered, max height, never
+   cropped). Deliberately not animated and not a second engine: one paint at
+   idle, repaints only on resize/ground flips, zero tick cost, so the scene
+   keeps the whole 4ms budget. The motion spec (#139) owns whether this
+   still ever learns to move. The band is per-page DOM (no persist), so a
+   navigation rebinds a fresh element; the observers below are module-level
+   and wired once. */
+
+const HERO_INTENSITY = 0.6; // the lab's hero default strength (PLACE_DEFAULT)
+
+let heroEl: HTMLElement | null = null;
+let heroCanvas: HTMLCanvasElement | null = null;
+let heroWired = false;
+
+function paintHeroStill(el: HTMLElement, canvas: HTMLCanvasElement): void {
+  const r = el.getBoundingClientRect();
+  if (r.width === 0 || r.height === 0) return;
+  const theme: ThemeName = isThemeName(el.dataset.heroTheme)
+    ? el.dataset.heroTheme
+    : "default";
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.max(1, Math.round(r.width * dpr));
+  canvas.height = Math.max(1, Math.round(r.height * dpr));
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cols = Math.ceil(r.width / CW);
+  const rows = Math.ceil(r.height / CH);
+
+  /* sample the mark: contain-fit into the band, mapped to the cell grid
+     (the mount's sample(), inlined for the band's own geometry; a band is
+     ~1.2k cells, far under CELL_CAP, so no cell scaling is needed) */
+  const hi = document.createElement("canvas");
+  hi.width = SRC_W;
+  hi.height = SRC_H;
+  const hictx = hi.getContext("2d");
+  if (!hictx) return;
+  DRAW[THEME_SOURCE[theme]](hictx);
+  const grid = document.createElement("canvas");
+  grid.width = cols;
+  grid.height = rows;
+  const gctx = grid.getContext("2d", { willReadFrequently: true });
+  if (!gctx) return;
+  const scale = Math.min(r.width / SRC_W, r.height / SRC_H);
+  const dw = SRC_W * scale;
+  const dh = SRC_H * scale;
+  const dx = (r.width - dw) / 2;
+  const dy = (r.height - dh) / 2;
+  gctx.fillStyle = "#FFFFFF";
+  gctx.fillRect(0, 0, cols, rows);
+  gctx.drawImage(hi, 0, 0, SRC_W, SRC_H, dx / CW, dy / CH, dw / CW, dh / CH);
+  const data = gctx.getImageData(0, 0, cols, rows).data;
+
+  /* one settled frame of the tide formula (fixed clock, the same instant
+     the scene's reduced-motion still uses), band strength from the lab */
+  const gkey: GroundKey = isLite() ? "lite" : "night";
+  const inks = INKS[gkey].home;
+  const pal = inks.map(
+    (c) => "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + c[3] + ")"
+  );
+  const pk = PEAKS[theme][gkey][0];
+  pal.push("rgb(" + pk[0] + "," + pk[1] + "," + pk[2] + ")");
+  const imgW = 0.35 + 0.55 * HERO_INTENSITY;
+  const tideW = 1.08 - imgW;
+  const t = 52000;
+  ctx.clearRect(0, 0, r.width, r.height);
+  ctx.font = `${FONT_PX}px ui-monospace, "SF Mono", Menlo, Consolas, monospace`;
+  ctx.textBaseline = "top";
+  let lastBucket = -1;
+  for (let cy = 0; cy < rows; cy++) {
+    for (let cx = 0; cx < cols; cx++) {
+      const i = cy * cols + cx;
+      const l =
+        1 -
+        (0.2126 * data[i * 4] +
+          0.7152 * data[i * 4 + 1] +
+          0.0722 * data[i * 4 + 2]) /
+          255;
+      const tide =
+        (Math.sin(cx * 0.42 + t * 0.0004) +
+          Math.sin(cy * 0.71 - t * 0.00029) +
+          Math.sin((cx + cy) * 0.27 + t * 0.00019) +
+          3) /
+        6;
+      const v = l * imgW + tide * tideW;
+      const idx = Math.floor(clamp(v, 0, 0.999) * RAMP.length);
+      if (idx < 1) continue;
+      const bucket = idx < 3 ? 0 : idx < 5 ? 1 : idx < 7 ? 2 : 3;
+      if (bucket !== lastBucket) {
+        ctx.fillStyle = pal[bucket];
+        lastBucket = bucket;
+      }
+      ctx.fillText(RAMP[idx], cx * CW + 2, cy * CH + 3);
+    }
+  }
+}
+
+function wireHero(): void {
+  if (heroWired) return;
+  heroWired = true;
+  const repaint = () => {
+    if (heroEl?.isConnected && heroCanvas) paintHeroStill(heroEl, heroCanvas);
+  };
+  let hto = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(hto);
+    hto = window.setTimeout(repaint, 180);
+  });
+  matchMedia("(prefers-color-scheme: light)").addEventListener(
+    "change",
+    repaint
+  );
+  new MutationObserver(repaint).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+}
+
+/* the mount's stage-race pattern (rAF preferred, wall clock guaranteed),
+   module-level for the band: rendered Lighthouse caught the unstaged bind
+   fusing module eval + scene mount + this paint into one ~400ms mobile
+   task (TBT). Staged, the paint runs as its own short task and the .live
+   fade gets a committed opacity 0 to transition from. */
+function heroDefer(fn: () => void, ms: number): void {
+  let done = false;
+  const once = () => {
+    if (done) return;
+    done = true;
+    fn();
+  };
+  requestAnimationFrame(once);
+  window.setTimeout(once, ms);
+}
+
+/** bind (or re-bind) the page's hero band; idempotent per element, called
+    at module init and on every client-side navigation. The work is staged
+    OFF the caller's task (see heroDefer): a navigation mid-stage simply
+    drops the stale element. */
+export function initHeroBand(): void {
+  const el = document.querySelector<HTMLElement>("[data-hero-band]");
+  if (el === heroEl && el?.isConnected) return;
+  heroEl = el;
+  heroCanvas = null;
+  if (!el) return;
+  heroDefer(() => {
+    if (heroEl !== el || !el.isConnected) return;
+    const canvas = document.createElement("canvas");
+    el.appendChild(canvas);
+    heroCanvas = canvas;
+    paintHeroStill(el, canvas);
+    heroDefer(() => {
+      if (heroEl === el && el.isConnected) el.classList.add("live");
+    }, 300);
+  }, 300);
+  wireHero();
+}
+
 /* ----------------------------------------------------------- module init -- */
 
 /** live-layer styles, adopted once on the persistent document (survives
@@ -933,5 +1098,11 @@ export function initScene(): SceneHandle | null {
 const w = window as unknown as { __sceneInit?: boolean };
 if (!w.__sceneInit) {
   w.__sceneInit = true;
-  document.addEventListener("astro:page-load", () => initScene());
+  document.addEventListener("astro:page-load", () => {
+    initScene();
+    initHeroBand();
+  });
+  /* the module arrives at idle, after the importing page already loaded:
+     bind that page's hero band now rather than waiting for the next nav */
+  initHeroBand();
 }

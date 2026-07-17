@@ -36,11 +36,15 @@
    Ground resolution (#92): sky palettes and pour follow the site theme
    through the same three-block pattern global.css uses (system media query
    default, :root[data-theme] override wins in both directions). The pour
-   derives from var(--ground), so future per-page ground identities (#74,
-   B3) re-pour automatically. Themed sky palettes (eight/news/android plus
-   the new atg/goldcoast/twilio identities, .skyslot[data-sky] blocks in
-   the lab) stay deferred to B3, landing with the first themed page; only
-   the default sky ships today.
+   derives from var(--ground), so future per-page ground identities (#74)
+   re-pour automatically. Themed sky palettes: the three the FROZEN lab
+   designed (eight/news/android) ship below as container-scoped var blocks
+   (lab values verbatim), so a fresh load of a themed page paints its own
+   sky from the first frame; live.css carries the same values slot-scoped
+   for the crossfade. The atg/goldcoast/twilio identities have NO designed
+   sky palettes (the lab predates them): they ride the default sky, with
+   the tide peak + mark carrying the identity (#111), until a design round
+   supplies skies.
 
    Keep in sync with src/scripts/scene/index.ts: --scene-content-w (760px,
    the no-column-found fallback) and MIN_GUTTER.
@@ -104,11 +108,138 @@
   --sc-pour: color-mix(in srgb, var(--ground) 80%, transparent);
 }
 
+/* ------------------------- themed skies (#111, B3) ------------------------
+   Container-scoped so the SERVER-RENDERED facade paints the page's own sky
+   on a fresh load (no default-sky flash). Values verbatim from the FROZEN
+   lab (.skyslot[data-sky] blocks): eight and news override blobs 1-3 and
+   keep the rose anchor (blob 4, the continuity thread); android trades the
+   rose for the full Google quartet. The live crossfade uses the SLOT-scoped
+   copies in src/scripts/scene/live.css, which beat these container values
+   so an outgoing sky keeps its own palette mid-travel. Same four-block
+   ground resolution as above. */
+.scene[data-scene-theme="eight"] {
+  --sc-h1: rgba(64, 196, 176, 0.5);
+  --sc-h2: rgba(133, 214, 192, 0.4);
+  --sc-h3: rgba(52, 150, 166, 0.32);
+  --sc-c1: rgba(244, 196, 102, 0.5);
+  --sc-c2: rgba(228, 204, 150, 0.4);
+  --sc-c3: rgba(224, 122, 84, 0.3);
+}
+.scene[data-scene-theme="news"] {
+  --sc-h1: rgba(45, 140, 255, 0.55);
+  --sc-h2: rgba(106, 169, 255, 0.42);
+  --sc-h3: rgba(20, 90, 200, 0.34);
+  --sc-c1: rgba(255, 192, 90, 0.5);
+  --sc-c2: rgba(240, 213, 132, 0.4);
+  --sc-c3: rgba(255, 138, 101, 0.3);
+}
+.scene[data-scene-theme="android"] {
+  --sc-h1: rgba(66, 133, 244, 0.56);
+  --sc-h2: rgba(91, 185, 116, 0.5);
+  --sc-h3: rgba(251, 188, 5, 0.2);
+  --sc-h4: rgba(234, 67, 53, 0.16);
+  --sc-c1: rgba(251, 188, 5, 0.5);
+  --sc-c2: rgba(234, 67, 53, 0.38);
+  --sc-c3: rgba(66, 133, 244, 0.2);
+  --sc-c4: rgba(91, 185, 116, 0.16);
+}
+@media (prefers-color-scheme: light) {
+  .scene[data-scene-theme="eight"] {
+    --sc-h1: rgba(63, 164, 145, 0.42);
+    --sc-h2: rgba(15, 118, 110, 0.34);
+    --sc-h3: rgba(2, 132, 155, 0.26);
+    --sc-c1: rgba(191, 138, 38, 0.42);
+    --sc-c2: rgba(180, 156, 120, 0.36);
+    --sc-c3: rgba(198, 93, 58, 0.28);
+  }
+  .scene[data-scene-theme="news"] {
+    --sc-h1: rgba(24, 119, 242, 0.4);
+    --sc-h2: rgba(21, 80, 190, 0.32);
+    --sc-h3: rgba(58, 113, 255, 0.26);
+    --sc-c1: rgba(217, 150, 32, 0.42);
+    --sc-c2: rgba(212, 183, 88, 0.36);
+    --sc-c3: rgba(224, 116, 82, 0.28);
+  }
+  .scene[data-scene-theme="android"] {
+    --sc-h1: rgba(26, 115, 232, 0.44);
+    --sc-h2: rgba(24, 128, 56, 0.4);
+    --sc-h3: rgba(234, 158, 7, 0.18);
+    --sc-h4: rgba(217, 48, 37, 0.14);
+    --sc-c1: rgba(234, 158, 7, 0.4);
+    --sc-c2: rgba(217, 48, 37, 0.3);
+    --sc-c3: rgba(26, 115, 232, 0.18);
+    --sc-c4: rgba(24, 128, 56, 0.14);
+  }
+}
+:root[data-theme="dark"] .scene[data-scene-theme="eight"] {
+  --sc-h1: rgba(64, 196, 176, 0.5);
+  --sc-h2: rgba(133, 214, 192, 0.4);
+  --sc-h3: rgba(52, 150, 166, 0.32);
+  --sc-c1: rgba(244, 196, 102, 0.5);
+  --sc-c2: rgba(228, 204, 150, 0.4);
+  --sc-c3: rgba(224, 122, 84, 0.3);
+}
+:root[data-theme="dark"] .scene[data-scene-theme="news"] {
+  --sc-h1: rgba(45, 140, 255, 0.55);
+  --sc-h2: rgba(106, 169, 255, 0.42);
+  --sc-h3: rgba(20, 90, 200, 0.34);
+  --sc-c1: rgba(255, 192, 90, 0.5);
+  --sc-c2: rgba(240, 213, 132, 0.4);
+  --sc-c3: rgba(255, 138, 101, 0.3);
+}
+:root[data-theme="dark"] .scene[data-scene-theme="android"] {
+  --sc-h1: rgba(66, 133, 244, 0.56);
+  --sc-h2: rgba(91, 185, 116, 0.5);
+  --sc-h3: rgba(251, 188, 5, 0.2);
+  --sc-h4: rgba(234, 67, 53, 0.16);
+  --sc-c1: rgba(251, 188, 5, 0.5);
+  --sc-c2: rgba(234, 67, 53, 0.38);
+  --sc-c3: rgba(66, 133, 244, 0.2);
+  --sc-c4: rgba(91, 185, 116, 0.16);
+}
+:root[data-theme="light"] .scene[data-scene-theme="eight"] {
+  --sc-h1: rgba(63, 164, 145, 0.42);
+  --sc-h2: rgba(15, 118, 110, 0.34);
+  --sc-h3: rgba(2, 132, 155, 0.26);
+  --sc-c1: rgba(191, 138, 38, 0.42);
+  --sc-c2: rgba(180, 156, 120, 0.36);
+  --sc-c3: rgba(198, 93, 58, 0.28);
+}
+:root[data-theme="light"] .scene[data-scene-theme="news"] {
+  --sc-h1: rgba(24, 119, 242, 0.4);
+  --sc-h2: rgba(21, 80, 190, 0.32);
+  --sc-h3: rgba(58, 113, 255, 0.26);
+  --sc-c1: rgba(217, 150, 32, 0.42);
+  --sc-c2: rgba(212, 183, 88, 0.36);
+  --sc-c3: rgba(224, 116, 82, 0.28);
+}
+:root[data-theme="light"] .scene[data-scene-theme="android"] {
+  --sc-h1: rgba(26, 115, 232, 0.44);
+  --sc-h2: rgba(24, 128, 56, 0.4);
+  --sc-h3: rgba(234, 158, 7, 0.18);
+  --sc-h4: rgba(217, 48, 37, 0.14);
+  --sc-c1: rgba(234, 158, 7, 0.4);
+  --sc-c2: rgba(217, 48, 37, 0.3);
+  --sc-c3: rgba(26, 115, 232, 0.18);
+  --sc-c4: rgba(24, 128, 56, 0.14);
+}
+
 /* --------------------------- the static facade ---------------------------
    A no-script stand-in for the resting home sky (#70): the four blobs at
    their keyframe-0 positions as radial gradients (blob 4 at its resting 40%
    opacity). The live sky's drift keyframes start from these same positions,
    so the crossfade when the module arrives reads as the sky waking up. */
+/* Phase 2 fence-gap fix: the facade must paint the STATE the server
+   declared, not always the cold home sky. On /chat the element-level remap
+   below swaps the home slots for the golden-hour set, so a fresh load shows
+   golden hour ~1-2s before the live module even arrives. (The themed blocks
+   above do the same job for page THEME identities.) */
+.scene[data-scene-state="chat"] .scn-static {
+  --sc-h1: var(--sc-c1);
+  --sc-h2: var(--sc-c2);
+  --sc-h3: var(--sc-c3);
+  --sc-h4: var(--sc-c4);
+}
 .scn-static {
   position: absolute;
   inset: 0;

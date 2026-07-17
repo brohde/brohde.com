@@ -1051,23 +1051,45 @@ html.cfocus .wm .caret {
   color: #0b110e;
 }
 
-/* glyph tide hero band (#59): shipped as its static facade per the #70
-   contract (server-rendered glyph text, fixed night + mint in both grounds);
-   the live tide takes this slot over in its own phase with per-page palette
-   and image source. Layout reserved up front: no shift when it arrives. */
-.tideband {
+/* article hero band (#97/#103): the tide's hero placement as a document
+   object at the top of the article, replacing the old boxed tideband. The
+   reference frame is a SCREEN, not the document (#103): the band takes 30%
+   of the screen the article opens on (--screen, the #103 token; svh so
+   mobile URL bars do not resize it), the page ground bleeds up over it
+   from the 20% line (the mask at 20/30 = 66.7% of the band kills the
+   bottom edge, so no rectangle reads), and the body's top edge lands at
+   27.5% of the screen via the negative bottom margin (0.30 - 0.275; every
+   mark's ink clears 26.6%, the #103 measurement). The band sits on the
+   page ground and follows it; its ink pair (--hb-night / --hb-lite,
+   inline from HeroBand.astro) is the article theme's tide peak. Facade =
+   the server glyph field on ::before; the live layer is a settled STILL
+   of the article's mark painted into the canvas at idle by the scene
+   chunk (initHeroBand). No animation: the motion spec (#139) gates it. */
+.heroband {
+  --screen: max(640px, 100svh);
+  --hb-ink: var(--hb-night, #7ee787);
   position: relative;
-  height: 150px;
-  border-radius: 10px;
-  margin: 0 0 26px;
+  height: calc(var(--screen) * 0.3);
+  margin: 0 0 calc(var(--screen) * -0.025);
   overflow: hidden;
-  background: #0b110e;
-  border: 1px solid #33523f;
-  box-shadow: 0 0 30px rgba(126, 231, 135, 0.1);
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 66.7%, transparent);
+  mask-image: linear-gradient(to bottom, #000 66.7%, transparent);
+}
+@media (prefers-color-scheme: light) {
+  .heroband {
+    --hb-ink: var(--hb-lite, #086148);
+  }
+}
+:root[data-theme="dark"] .heroband {
+  --hb-ink: var(--hb-night, #7ee787);
+}
+:root[data-theme="light"] .heroband {
+  --hb-ink: var(--hb-lite, #086148);
 }
 /* the glyph field is pseudo-element CONTENT (from --glyphs, set inline by
-   TideBand.astro): a pure texture, never document text */
-.tideband::before {
+   HeroBand.astro): a pure texture, never document text */
+.heroband::before {
   content: var(--glyphs, "");
   position: absolute;
   inset: -8px;
@@ -1075,11 +1097,34 @@ html.cfocus .wm .caret {
   font-size: 15px;
   line-height: 1.5;
   letter-spacing: 4px;
-  color: #7ee787;
-  opacity: 0.22;
+  color: var(--hb-ink);
+  opacity: 0.2;
   overflow: hidden;
   user-select: none;
   word-break: break-all;
+  transition: opacity 400ms ease;
+}
+.heroband canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+/* facade handoff: the still fades in over the field, the field yields */
+.heroband.live::before {
+  opacity: 0;
+}
+.heroband.live canvas {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .heroband::before,
+  .heroband canvas {
+    transition: none;
+  }
 }
 
 .adate {
@@ -1137,6 +1182,69 @@ html.cfocus .wm .caret {
   margin-top: 36px;
   padding-top: 12px;
   font-family: var(--font-mono);
+}
+
+/* required third-party license credit (today: the Android robot, CC BY 3.0
+   per Google's brand guidelines), rendered by the article template when the
+   page's identity needs it. Quiet by design: metadata, not body copy. */
+.attrib {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--dim);
+  max-width: 62ch;
+  margin: 14px 0 0;
+}
+
+/* ------------------- article figures (article-visuals lab) ---------------- */
+/* The material rule: a screenshot or archival still is evidence the writer
+   is showing you, so it is a PAPER object on an editorial plate that follows
+   the visitor's ground; diagrams are screen objects (the .prose pre idiom);
+   argument-carrying numbers use the lifted card (.astats idiom). Markdown
+   authors write <figure> + image + <figcaption>; the paragraph Astro wraps
+   the image in becomes the plate (matte well mount, hairline, no shadow),
+   and the caption sits outside it on the page ground. <figure
+   class="portrait"> narrows the plate for phone captures. */
+.prose figure {
+  margin: 26px 0;
+}
+.prose figure > p:has(img) {
+  margin: 0;
+  border: 1px solid var(--line);
+  background: var(--well);
+  border-radius: 12px;
+  padding: 10px;
+}
+.prose figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+}
+.prose figure.portrait > p:has(img) {
+  max-width: 300px;
+}
+.prose figcaption {
+  margin-top: 10px;
+  max-width: 62ch;
+  font-family: var(--font-edit);
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--dim);
+}
+/* the night-ground calm: bright captures reined in so they never glare on
+   the dark page; the light ground leaves shots untouched (lab rule). */
+@media (prefers-color-scheme: dark) {
+  .prose figure img {
+    filter: brightness(0.9) contrast(0.96) saturate(0.97);
+  }
+}
+:root[data-theme="light"] .prose figure img {
+  filter: none;
+}
+:root[data-theme="dark"] .prose figure img {
+  filter: brightness(0.9) contrast(0.96) saturate(0.97);
 }
 
 /* page title style shared by styleguide/404 (editorial voice) */

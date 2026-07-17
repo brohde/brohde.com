@@ -24,6 +24,21 @@ const articles = defineCollection({
     // External log entries (Brian's writing published elsewhere). When set,
     // the homepage log links out to this URL and no article page is generated.
     external: z.string().url().optional(),
+    // Per-article scene identity (#111, wired B3): the theme names the sky
+    // palette + tide peak + mark the article page mounts (see the PEAKS and
+    // THEME_SOURCE tables in src/scripts/scene/index.ts). Omit for the site
+    // default (the BR letterform).
+    theme: z
+      .enum([
+        "default",
+        "eight",
+        "news",
+        "android",
+        "atg",
+        "goldcoast",
+        "twilio",
+      ])
+      .default("default"),
     // Lifted stat band under the title (#67 C article variant): the ONLY
     // designed home for standout numbers besides terminal excerpts; inline
     // numbers stay in the body face (VOICE.md: numbers persuade, they should

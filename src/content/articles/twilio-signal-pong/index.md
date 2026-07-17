@@ -3,6 +3,7 @@ title: "Twilio SIGNAL: building Signal pong, a multiplayer game for the conferen
 description: "How I designed and built Signal pong, a multiplayer game and device to showcase Twilio's products on the conference floor."
 date: 2018-10-25
 draft: true
+theme: twilio
 ---
 
 Most of what I did at Twilio was the website: the company's first CMS, a design system, the marketing pages behind it. This project was the exception. For Twilio's customer conference, I designed and built a multiplayer game and a device to show off what Twilio's products could do. It's called Signal pong.
