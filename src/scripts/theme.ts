@@ -12,12 +12,11 @@
  * override never flashes on a hard load; global.css's :root[data-theme]
  * blocks make the attribute win over prefers-color-scheme in both directions.
  *
- * THE VIEW-TRANSITIONS TRAP (same one data-vt hits, see terminal.ts): Astro's
- * ClientRouter swap replaces the root element's attributes with the incoming
- * page's server HTML, which carries no data-theme. Without the
- * astro:after-swap re-stamp below the override would silently revert to
- * system on EVERY internal navigation, including the home <-> chat morph.
- * after-swap fires before the new page paints, so the re-stamp is flash-free.
+ * THE VIEW-TRANSITIONS TRAP: Astro's ClientRouter swap replaces the root
+ * element's attributes with the incoming page's server HTML, which carries
+ * no data-theme. Without the astro:after-swap re-stamp below the override
+ * would silently revert to system on EVERY internal navigation. after-swap
+ * fires before the new page paints, so the re-stamp is flash-free.
  *
  * <meta name="theme-color"> ships as two static media-scoped tags (#40) that
  * only know the system preference; while an override is active, syncMeta
@@ -141,8 +140,7 @@ function setupOnce() {
   });
 
   // Astro replaces root attributes (and <head>) on swap; re-stamp before the
-  // new page paints so the override survives every internal navigation,
-  // the home <-> chat morph included.
+  // new page paints so the override survives every internal navigation.
   document.addEventListener("astro:after-swap", () => apply(stored()));
 
   // the swap also removed the live region with the old <body>

@@ -141,57 +141,31 @@ function hint(msg: string) {
   }, 2600);
 }
 
-/* ---------------------------------------- route transitions (#64, #69) ---- */
+/* ------------------------------------------ route transitions (#64) ------- */
 /* Named transition kinds, resolved per navigation:
  *
- * "wipe" (#64), the default for internal navigations: a ground-colored cover
- * with a resting block caret drops before the old page changes, the swap
- * happens underneath (the underlying view transition is animation:none in
+ * "wipe" (#64), for EVERY internal navigation: a ground-colored cover with a
+ * resting block caret drops before the old page changes, the swap happens
+ * underneath (the underlying view transition is animation:none in
  * global.css), and the cover lifts ~50ms after the new page has rendered, so
- * the destination is always visually complete when it appears.
+ * the destination is always visually complete when it appears. Home <-> chat
+ * is no exception anymore: the C2 slab morph retired with the full-window
+ * chat (#108); /chat is a normal page and rides the house wipe. Deeper
+ * designed transitions are Phase 3 work.
  *
- * "morph" (#69), home <-> chat only: the slab expands toward full window on
- * chat engagement and collapses back home, both directions elegant, never a
- * hard cut. Mechanism: the slab carries a persistent view-transition-name
- * (.vtslab, on the home slab and the chat screen); this layer stamps
- * html[data-vt="morph"], which global.css uses to re-time the UA's group
- * interpolation and cross-fade the editorial root around it. The wipe's
- * opaque cover MUST NOT drop for this kind: it would hide the morph. The
- * attribute is re-stamped after the swap (Astro replaces root attributes)
- * so it is present when the transition's animations are set up, and cleared
- * once the morph has finished.
- *
- * "instant" under reduced motion: no cover, no held loader, no morph (the
- * data-vt attribute is never stamped, so every VT animation stays none).
+ * "instant" under reduced motion: no cover, no held loader.
  */
-type TransitionKind = "wipe" | "instant" | "morph";
+type TransitionKind = "wipe" | "instant";
 
 const WIPE_HOLD_MS = 140; // cover time before the swap may land
 const WIPE_LIFT_MS = 50; // settle time after the new page renders
-const MORPH_MS = 360; // keep in sync with the [data-vt="morph"] CSS timings
 
 let wipeEl: HTMLElement | null = null;
 let wipeTimer = 0; // one handle for pending lift AND failsafe: a new drop cancels both
 let navKind: TransitionKind = "instant"; // kind of the navigation in flight
-let vtTimer = 0; // pending data-vt cleanup; a new navigation cancels it
 
-/** the home <-> chat pair morphs; everything else wipes (instant under RM) */
-function resolveTransition(from?: URL, to?: URL): TransitionKind {
-  if (RM()) return "instant";
-  if (from && to) {
-    const a = from.pathname;
-    const b = to.pathname;
-    if ((a === "/" && b === "/chat") || (a === "/chat" && b === "/")) {
-      return "morph";
-    }
-  }
-  return "wipe";
-}
-
-function stampMorph(on: boolean) {
-  const root = document.documentElement;
-  if (on) root.setAttribute("data-vt", "morph");
-  else root.removeAttribute("data-vt");
+function resolveTransition(): TransitionKind {
+  return RM() ? "instant" : "wipe";
 }
 
 function wipe(): HTMLElement {
@@ -579,7 +553,7 @@ function run(raw: string, viaKb: boolean) {
     return;
   }
   if (cmd === "chat") {
-    // open (expand into) the chat itself; never send "chat" as a question
+    // open the chat page itself; never send "chat" as a question
     if (currentScreen() === "chat") {
       byId("in-chat")?.focus({ preventScroll: true });
     } else {
@@ -605,7 +579,8 @@ function run(raw: string, viaKb: boolean) {
     return;
   }
 
-  // free-form question: the live chat (expands the slab, #69)
+  // free-form question: the live chat on /chat, or in place when already
+  // there (#108)
   toChat(v, viaKb);
 }
 
@@ -1041,19 +1016,16 @@ function setupOnce() {
     }
   });
 
-  // Route transitions (#64, #69), resolved per navigation. Wipe: drop the
-  // cover as soon as an internal navigation starts and hold the router's
-  // loader so it stays down for at least WIPE_HOLD_MS before the swap can
-  // land. Morph: NO cover (it would hide the slab morphing); stamp the
-  // html[data-vt] hook the morph CSS keys on. Applies to every direction
-  // (links, commands, Escape, back/forward all flow through the router).
+  // Route transitions (#64), resolved per navigation. Wipe: drop the cover
+  // as soon as an internal navigation starts and hold the router's loader so
+  // it stays down for at least WIPE_HOLD_MS before the swap can land.
+  // Applies to every direction (links, commands, Escape, back/forward all
+  // flow through the router).
   document.addEventListener("astro:before-preparation", (e) => {
-    clearTimeout(vtTimer);
-    const prep = e instanceof TransitionBeforePreparationEvent ? e : null;
-    navKind = resolveTransition(prep?.from ?? undefined, prep?.to ?? undefined);
-    stampMorph(navKind === "morph");
+    navKind = resolveTransition();
     if (navKind !== "wipe") return;
     dropWipe();
+    const prep = e instanceof TransitionBeforePreparationEvent ? e : null;
     if (prep) {
       const started = Date.now();
       const load = prep.loader;
@@ -1065,23 +1037,10 @@ function setupOnce() {
     }
   });
 
-  // Astro's swap replaces the root element's attributes with the new page's,
-  // which would drop data-vt before the transition's animations are set up
-  // (that happens at ready-time, AFTER the swap). Re-stamp it here, then
-  // clear once the morph has finished so a stale hook can never restyle a
-  // later navigation.
-  document.addEventListener("astro:after-swap", () => {
-    if (navKind === "morph") stampMorph(true);
-  });
-
   // Lift the wipe only after the new page is rendered and initialized, so
   // the destination is visually complete the moment it appears.
   document.addEventListener("astro:page-load", () => {
     liftWipe();
-    if (navKind === "morph") {
-      clearTimeout(vtTimer);
-      vtTimer = window.setTimeout(() => stampMorph(false), MORPH_MS + 140);
-    }
   });
 
   // Boot plays on SITE ENTRY ONLY (#64): the pre-paint gate in BaseLayout
@@ -1107,6 +1066,20 @@ function setupOnce() {
   // import the module re-binds itself across client-side navigations, so
   // this fires the import exactly once per full page lifetime.
   let sceneRequested = false;
+  let sceneMod: typeof import("@/scripts/scene") | null = null;
+  // Scene state follows the page (#108): /chat is golden hour, everything
+  // else is the home sky. The scene element carries transition:persist, so
+  // on client-side navigations the OLD page's DOM (dataset included)
+  // survives the swap; the consumer stamps the arriving page's state through
+  // the handle API. initScene() is idempotent: it returns the live handle,
+  // re-binds a fresh facade, or tears down when the page has none (in which
+  // case there is nothing to stamp). No-op until the module has loaded; the
+  // first mount reads its state from the server-rendered dataset.
+  const syncSceneState = () => {
+    sceneMod
+      ?.initScene()
+      ?.setState(currentScreen() === "chat" ? "chat" : "home");
+  };
   const requestScene = () => {
     if (sceneRequested || !document.querySelector("[data-scene]")) return;
     sceneRequested = true;
@@ -1115,10 +1088,16 @@ function setupOnce() {
         ? (cb) => requestIdleCallback(cb, { timeout: 2500 })
         : (cb) => window.setTimeout(cb, 1500);
     idle(() => {
-      void import("@/scripts/scene").then((m) => m.initScene());
+      void import("@/scripts/scene").then((m) => {
+        sceneMod = m;
+        // covers a navigation that landed between request and load: the
+        // persisted facade's dataset may be a page behind by now
+        syncSceneState();
+      });
     });
   };
   document.addEventListener("astro:page-load", requestScene);
+  document.addEventListener("astro:page-load", syncSceneState);
 }
 
 const w = window as unknown as { __terminalInit?: boolean };

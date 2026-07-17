@@ -75,8 +75,9 @@
 }
 
 /* ---------------- global site header (#107/#110/#115/#121, D1) ----------- */
-/* One frame on every page except /chat: identity row (wordmark + quiet mono
-   nav tokens), then the chat input on its own row, at EVERY width (#121).
+/* One frame on EVERY page, /chat included (#108, B2 Phase 2): identity row
+   (wordmark + quiet mono nav tokens), then the chat input on its own row,
+   at EVERY width (#121).
    Static, not sticky (D1 call 6); roughly 120px of chrome. Rendered by
    BaseLayout with its own .wrap, so it obeys the same layout law as page
    content: centered on scene-less pages, left-anchored on scene pages
@@ -295,16 +296,15 @@ html.cfocus .wm .caret {
 }
 
 /* Unified fill treatment for EVERY bracket-style interactive element:
-   command menu + keybar (.cbtn), back button (.backbtn), theme control
-   (.themectl, folded in with #101 when it docked into the footer and its
-   local copy of this rule became a duplicate). On hover and focus-visible the
-   label fills with the accent and flips to ground-colored text; the brackets
-   stay put (prototype treatment from build-log-v3.html).
+   command menu + keybar (.cbtn), theme control (.themectl, folded in with
+   #101 when it docked into the footer and its local copy of this rule
+   became a duplicate; the old chat screen's .backbtn retired with the
+   full-window takeover, #108). On hover and focus-visible the label fills
+   with the accent and flips to ground-colored text; the brackets stay put
+   (prototype treatment from build-log-v3.html).
    One rule so they can never drift. */
 .cbtn:hover .lbl,
 .cbtn:focus-visible .lbl,
-.backbtn:hover .lbl,
-.backbtn:focus-visible .lbl,
 .themectl:hover .lbl,
 .themectl:focus-visible .lbl {
   background: var(--accent);
@@ -593,73 +593,85 @@ html.cfocus .wm .caret {
   margin: 2px 0 0;
 }
 
-/* The morphing slab identity (#69): applied to the ONE live slab per page
-   (home + chat screen), never to styleguide specimens: view-transition-names
-   must be unique per document or the whole transition aborts. */
-.vtslab {
-  view-transition-name: slab;
+/* ---------------- /chat: the surface as a page in the shell (#108) -------- */
+/* B2 Phase 2: the full-window takeover is RETIRED. /chat sits in the global
+   shell like every page: header above, footer below, the conversation in
+   the left column with the right gutter kept for the scene (#109). The
+   surface is the SAME always-night slab object as the homepage (#67),
+   grown tall: the slab fills the first viewport, the thread scrolls the
+   document, and the composer dock stays stuck to the viewport bottom while
+   the slab extends past it (the Claude/ChatGPT arrangement, #116).
+   Golden hour (#74) is this page's voice: the scene mounts in its chat
+   state, and the slab's decorative halo + glow field warm to amber to
+   match. Interior inks stay the one phosphor material (mint accent, night
+   ground), so every measured slab ratio holds unchanged. */
+.chatpad {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-bottom: 36px;
 }
-
-/* --------------- the expanded slab: the chat screen (#69) ----------------- */
-/* The alternate screen made physical: on /chat the slab IS the window. Same
-   material (night scope, scanlines, glow), no card chrome. Content scrolls
-   the document; the head stays pinned as the way back (#24). */
-.slab-full {
-  margin-top: 0;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  overflow: visible; /* the card clips its radius; the screen must scroll */
+.chatpad main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
-.slab-full:focus-within {
-  box-shadow: none;
+.slab-chat {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-top: 10px;
+  /* the sticky dock needs the document as its scrolling ancestor, so this
+     card cannot clip (overflow:hidden breaks position:sticky inside); the
+     pseudo layers carry the radius themselves instead */
+  overflow: visible;
+  /* the homepage slab's halo, warmed to the golden-hour identity */
+  box-shadow:
+    0 0 34px rgba(255, 170, 51, 0.12),
+    0 14px 34px rgba(0, 0, 0, 0.28);
 }
-.slab-full .slabhead {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: color-mix(in srgb, var(--ground) 90%, transparent);
-  backdrop-filter: blur(6px);
+.slab-chat::before,
+.slab-chat::after {
+  border-radius: 12px;
 }
-@supports not (background: color-mix(in srgb, red 50%, blue)) {
-  .slab-full .slabhead {
-    background: var(--ground);
-  }
+.slab-chat::before {
+  background: radial-gradient(
+    420px 190px at 14% 0%,
+    rgba(255, 170, 51, 0.08),
+    transparent 70%
+  );
 }
-.slab-full .ccstat {
-  gap: 12px;
+.slab-chat:focus-within {
+  box-shadow:
+    0 0 34px rgba(255, 170, 51, 0.2),
+    0 14px 34px rgba(0, 0, 0, 0.28);
+}
+.chatbody {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 /* ------------------------- the log as a ledger (#67) --------------------- */
-/* A work record a client can audit: unbracketed mono dates in a fixed
-   column, editorial titles, one hairline per row. */
+/* A work record a client can audit. Restyled per Brian's batch 77 change
+   order: the mono date sits ABOVE the title, the title is the editorial
+   body voice (normal weight, body size, matching the homepage's .cco
+   editorial copy), hairline separators BETWEEN rows only (no top/bottom
+   frame), and the old "log" label line is gone (the section's sr-only
+   heading carries the semantics). Rows stay borderless standalone links:
+   hover/focus color is the affordance, per the nav-token argument (these
+   are not links in running text, so G183/#99 does not bind). */
 .clog {
   margin-top: 48px;
 }
-.loghead {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--dim);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  margin: 0 0 10px;
-}
-.loghead .rule {
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-}
 .lentry {
   display: grid;
-  grid-template-columns: 108px 1fr;
-  gap: 4px 16px;
-  align-items: baseline;
+  grid-template-columns: 1fr;
+  gap: 2px;
   padding: 14px 2px;
-  border-bottom: 1px solid var(--line);
   text-decoration: none;
 }
-.lentry:first-of-type {
+.lentry + .lentry {
   border-top: 1px solid var(--line);
 }
 .lts {
@@ -671,19 +683,35 @@ html.cfocus .wm .caret {
 }
 .lttl {
   font-family: var(--font-edit);
-  font-weight: 500;
-  font-size: 18.5px;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
+  font-weight: 400;
+  font-size: 15.5px;
+  line-height: 1.5;
   color: var(--bright);
 }
 .lentry:hover .lttl,
 .lentry:focus-visible .lttl {
   color: var(--accent);
 }
-.lttl .ext {
+/* #141: external entries carry their destination domain with the arrow,
+   small and lighter than the title, never underlined (#68: inline-block
+   keeps underlines out). One non-wrapping unit so a narrow viewport wraps
+   "arrow + domain" to the next line together, never splits them. The dim
+   ink stays dim on row hover on purpose: destination is metadata, the
+   title carries the hover voice. */
+.lttl .extmark {
+  display: inline-block;
+  white-space: nowrap;
+  text-decoration: none;
   font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--dim);
   margin-left: 6px;
+}
+.lttl .extmark .ext {
+  margin-left: 0;
+}
+.extdom {
+  margin-left: 4px;
 }
 
 /* --------------------------- site footer (#91) --------------------------- */
@@ -691,8 +719,8 @@ html.cfocus .wm .caret {
    chrome sitting inside the homepage wrap. This is a real site footer: it
    renders from BaseLayout OUTSIDE .screen, so it is never nested in a
    section and therefore always maps to the one contentinfo landmark, the
-   same on every editorial page type. /chat opts out (footer={false}): it is
-   the full-window slab and has no editorial ground to sit on.
+   same on every page, /chat included (#108: the chat page sits on the
+   editorial ground like every other page).
    Editorial face on the editorial ground. Dim ink holds 7.19:1 (night) and
    7.97:1 (light) against the ground, past the 4.5:1 AA floor. Static and
    server rendered above the fold boundary of nothing, so CLS stays 0. */
@@ -730,27 +758,6 @@ html.cfocus .wm .caret {
 }
 
 /* ------------------------ the chat screen bits --------------------------- */
-/* [esc] back lives in the expanded slab's head (chat). */
-.backbtn {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  background: none;
-  border: 0;
-  padding: 0 10px;
-  margin-left: -10px;
-  cursor: pointer;
-  color: var(--accent);
-  font: inherit;
-  text-decoration: none;
-}
-/* hover/focus fill lives in the unified bracket rule above */
-
-.chatwrap {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
 .chatlog {
   padding: 16px 0 8px;
 }
@@ -1164,13 +1171,7 @@ html.boot .bseq.bon {
 }
 
 /* ------------------------------ small screens ---------------------------- */
-@media (max-width: 560px) {
-  /* the ledger collapses to stacked date + title */
-  .lentry {
-    grid-template-columns: 1fr;
-    gap: 2px;
-  }
-}
+/* (the ledger is stacked date + title at every width since batch 77) */
 @media (max-width: 480px) {
   body {
     font-size: 13px;

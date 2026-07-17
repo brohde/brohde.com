@@ -1,13 +1,21 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import Scene from "@/components/Scene.astro";
 import Prompt from "@/components/Prompt.astro";
 
 /**
- * The chat screen = the EXPANDED slab (#67/#69): the same always-night
- * phosphor object from the homepage, grown to the full window. It shares the
- * slab's view-transition-name (.vtslab), so home <-> chat morphs the one
- * physical object in both directions; the slab head doubles as the pinned
- * way back (#24). Copy sentence-cased per #76.
+ * /chat, a normal page in the global shell (#108, B2 Phase 2; the old
+ * full-window takeover is retired). The frame is the same as every other
+ * page: global header above, footer below, the conversation in the LEFT
+ * COLUMN (#109) with the right gutter kept for the scene.
+ *
+ * The surface itself is the homepage's pattern (#67): the one always-night
+ * chat slab sitting on the editorial ground. It mimics Claude/ChatGPT
+ * (#116): conversation above, composer dock pinned at the viewport bottom
+ * while the thread grows. The page's theme identity (#108) is golden hour
+ * (#74): the scene mounts in its chat state and the slab's halo warms to
+ * match; the interior keeps the one phosphor material. Copy sentence-cased
+ * per #76.
  */
 const keys = ["home", "help", "clear"];
 ---
@@ -16,66 +24,68 @@ const keys = ["home", "help", "clear"];
   title="Chat"
   description="Ask about Brian Rohde's work. Answers come from a live model."
   noindex={true}
-  footer={false}
-  header={false}
 >
-  <section
-    class="screen slab slab-full vtslab"
-    id="scr-chat"
-    data-screen="chat"
-    tabindex="-1"
-  >
-    <header class="slabhead">
-      <span>brohde.com · chat</span>
-      <span class="ccstat">
-        <a class="backbtn" href="/" data-cmd="home">
-          <span class="br" aria-hidden="true">[</span><span class="lbl"
-            >esc</span
-          ><span class="br" aria-hidden="true">]</span>&nbsp;back
-        </a>
-        <span class="dot" aria-hidden="true"></span>ready
-      </span>
-    </header>
-    <main id="main" class="wrap chatwrap">
-      <h1 class="sr">Chat</h1>
-      <div class="chatlog" id="chatlog">
-        {/* on localhost terminal.ts swaps this line for the live-POC note */}
-        <p class="cmt" id="chat-note">
-          # Ask about Brian's work <span aria-hidden="true">·</span> answers come
-          from a live model
-        </p>
-        <p class="cmt">
-          # Type help for commands <span aria-hidden="true">·</span> esc returns home
-        </p>
-      </div>
-      {
-        /* no live region here: terminal.ts owns the single polite announcer
-          (created lazily on document.body), so chat output and the #116
-          thinking state can never double-announce */
-      }
+  {
+    /* the scene in its golden-hour chat state (#74/#108). Theme + mark stay
+    the defaults until B3 wires per-page identities (#111). Carrying the
+    scene also puts this page on the full-width shell automatically
+    (body:has(.scene), #125/#126). */
+  }
+  <Scene state="chat" />
+  <section class="screen" id="scr-chat" data-screen="chat" tabindex="-1">
+    <div class="wrap chatpad">
+      <main id="main">
+        <h1 class="sr">Chat</h1>
+        <section class="slab slab-chat" aria-label="Chat">
+          <header class="slabhead">
+            <span>brohde.com · chat</span>
+            <span class="ccstat">
+              <span class="dot" aria-hidden="true"></span>ready
+            </span>
+          </header>
+          <div class="slabbody chatbody">
+            <div class="chatlog" id="chatlog">
+              {/* on localhost terminal.ts swaps this line for the live-POC note */}
+              <p class="cmt" id="chat-note">
+                # Ask about Brian's work <span aria-hidden="true">·</span> answers
+                come from a live model
+              </p>
+              <p class="cmt">
+                # Type help for commands <span aria-hidden="true">·</span> esc
+                returns home
+              </p>
+            </div>
+            {
+              /* no live region here: terminal.ts owns the single polite
+              announcer (created lazily on document.body), so chat output and
+              the #116 thinking state can never double-announce */
+            }
 
-      <div class="dock">
-        <nav class="keybar" aria-label="Commands">
-          {
-            keys.map((cmd) => (
-              <button type="button" class="cbtn" data-cmd={cmd}>
-                <span class="br" aria-hidden="true">
-                  [
-                </span>
-                <span class="lbl">{cmd}</span>
-                <span class="br" aria-hidden="true">
-                  ]
-                </span>
-              </button>
-            ))
-          }
-        </nav>
-        {
-          /* no placeholder/label overrides: the chat prompt inherits the
-            "ask me anything" invitation copy (#65) */
-        }
-        <Prompt id="chat" />
-      </div>
-    </main>
+            <div class="dock">
+              <nav class="keybar" aria-label="Commands">
+                {
+                  keys.map((cmd) => (
+                    <button type="button" class="cbtn" data-cmd={cmd}>
+                      <span class="br" aria-hidden="true">
+                        [
+                      </span>
+                      <span class="lbl">{cmd}</span>
+                      <span class="br" aria-hidden="true">
+                        ]
+                      </span>
+                    </button>
+                  ))
+                }
+              </nav>
+              {
+                /* no placeholder/label overrides: the chat prompt inherits the
+                "ask me anything" invitation copy (#65) */
+              }
+              <Prompt id="chat" />
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
   </section>
 </BaseLayout>

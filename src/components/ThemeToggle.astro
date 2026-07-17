@@ -16,9 +16,10 @@
  * less discoverable than top chrome, but the site has no shared site-wide
  * header to dock into.
  *
- * Because the footer is what carries it, /chat (footer={false}) simply has no
- * control, which is the behavior #92 wanted there anyway. No hiding rule is
- * needed: the node is never rendered.
+ * The footer (and so this control) renders on every page, /chat included
+ * since B2 Phase 2 (#108): the chat page sits on the editorial ground now,
+ * so the control has real work there; only the slab interior stays
+ * always-night.
  *
  * This component carries markup + style only, no <script>: theme.ts is
  * imported by BaseLayout's single hydration point alongside terminal.ts, per
@@ -36,8 +37,8 @@
  * Material: the control recolors the PAGE, so it sits on the page ground in
  * the bracket-control idiom; it is never phosphor (#67: phosphor is the
  * machine's material, and the machine ignores this control). The hover fill
- * comes from the unified bracket rule in terminal.css, shared with .cbtn and
- * .backbtn, so the three can never drift.
+ * comes from the unified bracket rule in terminal.css, shared with .cbtn,
+ * so the two can never drift.
  *
  * Copy: bracket-label tokens stay lowercase (#76); no dashes (#18); never
  * the t-word in visitor-facing copy (#58).
