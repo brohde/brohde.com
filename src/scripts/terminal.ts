@@ -911,11 +911,13 @@ function setupOnce() {
   });
 
   // single-cursor bookkeeping (#63): html.cfocus hides the wordmark caret
-  // while the cursor group or a prompt input owns focus; the roving tab stop
+  // while the cursor group or a chat input owns focus; the roving tab stop
   // follows focus (clicks included) so Tab re-enters where the cursor left.
+  // The global header's input (.hchat, B2 Phase 1) joins the same model so
+  // typing there never shows two carets.
   document.addEventListener("focusin", (e) => {
     const t = e.target as HTMLElement;
-    const live = !!t.matches?.(".prompt input") || isRove(t);
+    const live = !!t.matches?.(".prompt input, .hchat input") || isRove(t);
     document.documentElement.classList.toggle("cfocus", live);
     if (isRove(t)) {
       setRoveStop(t);
@@ -953,8 +955,10 @@ function setupOnce() {
         return;
       }
       // single-cursor model (#63): the first Escape parks the cursor back on
-      // the wordmark (blur); from rest, Escape leaves non-home screens.
-      if (t && (t.matches?.(".prompt input") || isRove(t))) {
+      // the wordmark (blur); from rest, Escape leaves non-home screens. The
+      // header input (.hchat) blurs first too, so Escape mid-question never
+      // throws typed text away by navigating.
+      if (t && (t.matches?.(".prompt input, .hchat input") || isRove(t))) {
         e.preventDefault();
         t.blur();
         return;

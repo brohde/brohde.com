@@ -47,22 +47,12 @@ const articleLd = {
   jsonLd={articleLd}
 >
   <section class="screen" data-screen="log" tabindex="-1">
+    {
+      /* B2 Phase 1: the .atop chrome bar is retired; the global header is
+        the one frame on every page. The .aend chips keep their no-aria-label
+        convention: the visible command word IS the accessible name. */
+    }
     <div class="wrap artpad">
-      <div class="atop">
-        {
-          /* no aria-label overrides on the chips: the visible command word IS
-            the accessible name (brackets are aria-hidden), so speech-input
-            users can say what they see */
-        }
-        <a class="homechip" href="/">
-          <span class="br" aria-hidden="true">[</span>home<span
-            class="br"
-            aria-hidden="true">]</span
-          >
-        </a>
-        <span class="tbl">brohde.com/log</span>
-      </div>
-
       <TideBand seed={post.id} />
 
       <main id="main">

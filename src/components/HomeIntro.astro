@@ -1,27 +1,24 @@
 ---
 /**
- * Editorial identity header (#67 treatment C, sentence case #76).
- * Compact on purpose: the slab below is the page's distinctive object.
- * Copy per #77/#80 final: role line "AI Product Engineer · San Francisco",
- * then "Founder, Eight Angle" (the old two-sentence title is fully replaced;
- * only the founder credit stays), then the #79 companies line exactly
- * "Prev: Gong · Twilio · Facebook + Google (contract)" with Facebook and
- * Google linking to their internal case studies. Interim state (Brian's
- * 2026-07-15 review): NO ↗ markers on header links for now, external or
- * internal; the ledger keeps its ↗ convention (#68), header only. If the
+ * Homepage identity block: the surviving CONTENT of the retired
+ * EditorialHeader (B2 Phase 1 chrome unification). The global header
+ * (SiteHeader.astro) owns the wordmark + resting caret now, so this block
+ * carries the settled #77/#79/#80 lines as homepage content: the role line,
+ * the founder credit, the companies line (Facebook/Google landing on their
+ * case-study proof) and the profile links. Nothing decided in #80 is lost;
+ * D3's homepage adaptation may redesign or relocate it.
+ *
+ * Interim state (Brian's 2026-07-15 review): NO ↗ markers on these links,
+ * external or internal; the ledger keeps its ↗ convention (#68). If the
  * markers come back, restore "one affordance per link type" here.
  * "(contract)" is deliberately quieter: one size step down, dim ink
  * (.cnote, ratios checked >=4.5:1 on both grounds).
- * The wordmark caret is the page's resting cursor (#63).
  * .bseq marks blocks the boot sequence reveals in order (#36/#64).
  */
 import { LINKS, COMPANIES, logHref } from "@/lib/site";
 ---
 
-<header class="cid">
-  <h1 class="wordmark bseq">
-    Brian Rohde<span class="caret" aria-hidden="true"></span>
-  </h1>
+<section class="cid" aria-label="Introduction">
   <p class="crole bseq">
     AI Product Engineer <span class="d">·</span> San Francisco
   </p>
@@ -60,4 +57,4 @@ import { LINKS, COMPANIES, logHref } from "@/lib/site";
       >
     </li>
   </ul>
-</header>
+</section>

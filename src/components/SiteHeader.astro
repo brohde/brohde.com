@@ -1,0 +1,80 @@
+---
+/**
+ * The global site header (#107/#110/#115/#121), built from the D1 shell spec
+ * (docs/design/lab/shell-d1.html): ONE frame on every page. Two rows at every
+ * width, phones included (#121, no compact control):
+ *   row 1  identity: the wordmark "brian rohde" (lowercase, #115) linking
+ *          home, carrying the resting caret (#63), with the quiet mono
+ *          about/contact tokens beside it (rest dim, hover accent: D1 call 5);
+ *   row 2  the chat input on its own row, a real field.
+ *
+ * The input is the machine's material (D1 call 1): always-night phosphor,
+ * the homechip idiom grown into a field, fixed night values so its measured
+ * ratios hold under either page ground. 48px against the homepage surface's
+ * 60px on purpose (D1 call 7: chrome sizing, not hero sizing). The header is
+ * static, not sticky (D1 call 6: the reachability trade is logged for D3).
+ *
+ * Send behavior (#108): the form carries data-screen-form, so terminal.ts's
+ * one delegated submit handler routes the value through the one command
+ * router. Free-form questions navigate to /chat and auto-ask on arrival (the
+ * existing pendingAfter carry from the homepage surface, C2/#85): the visitor
+ * lands seeing their question echoed and the reply arriving. Typed commands
+ * (help, about, work...) run exactly as they do at the home prompt.
+ * action="/chat" is only the no-JS fallback so a raw submit never reloads the
+ * current page with ?q=; script always prevents it.
+ *
+ * The contact nav item is a button through the same router (#107, chat is
+ * core navigation): it opens the chat's contact card, the site's one contact
+ * surface. Swap to a mailto if Brian vetoes.
+ *
+ * BaseLayout renders this on every page except /chat (header={false} there
+ * until the Phase 2 conversion). On the homepage the wordmark row is the
+ * page's h1: the retired EditorialHeader's h1 moved here with the chrome
+ * (HomeIntro.astro keeps the rest of the #80 identity lines). The rows carry
+ * .bseq so the homepage boot reveals the header with the page (#36: the
+ * first frame stays the surface alone).
+ */
+const isHome = Astro.url.pathname === "/";
+---
+
+<header class="shead">
+  <div class="wrap">
+    <div class="idrow bseq">
+      {
+        isHome ? (
+          <h1 class="wmrow">
+            <a class="wm" href="/">
+              brian rohde<span class="caret" aria-hidden="true" />
+            </a>
+          </h1>
+        ) : (
+          <p class="wmrow">
+            <a class="wm" href="/">
+              brian rohde<span class="caret" aria-hidden="true" />
+            </a>
+          </p>
+        )
+      }
+      <nav class="snav" aria-label="Site">
+        <a href="/about">about</a>
+        <button type="button" data-cmd="contact">contact</button>
+      </nav>
+    </div>
+    <form class="hchat bseq" action="/chat" data-screen-form>
+      <label class="sr" for="in-site">Ask me anything or type help</label>
+      <span class="p" aria-hidden="true">$</span>
+      <input
+        id="in-site"
+        name="q"
+        type="text"
+        autocomplete="off"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+        maxlength="240"
+        placeholder="Ask me anything or type help"
+        enterkeyhint="send"
+      />
+    </form>
+  </div>
+</header>

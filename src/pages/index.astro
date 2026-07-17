@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import EditorialHeader from "@/components/EditorialHeader.astro";
+import HomeIntro from "@/components/HomeIntro.astro";
 import Scene from "@/components/Scene.astro";
 import Slab from "@/components/Slab.astro";
 import ArticleLog from "@/components/ArticleLog.astro";
@@ -46,9 +46,8 @@ const website = {
   <Scene />
   <section class="screen" id="scr-home" data-screen="home" tabindex="-1">
     <div class="wrap homepad">
-      <EditorialHeader />
-
       <main id="main">
+        <HomeIntro />
         <Slab promptId="home" />
         <ArticleLog boot />
       </main>

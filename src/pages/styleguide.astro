@@ -27,15 +27,6 @@ const themes = [
 <BaseLayout title="styleguide" noindex={true}>
   <section class="screen" data-screen="styleguide" tabindex="-1">
     <main id="main" class="wrap aboutpad">
-      <div class="atop">
-        <a class="homechip" href="/">
-          <span class="br" aria-hidden="true">[</span>home<span
-            class="br"
-            aria-hidden="true">]</span
-          >
-        </a>
-        <span class="tbl">styleguide</span>
-      </div>
       <h1 class="arttitle">styleguide</h1>
       <p class="cmt">
         # design tokens + component specimens, forced into both grounds (#40).
@@ -64,12 +55,34 @@ const themes = [
               ))}
             </div>
 
+            <h2 class="sg-h">global header (B2 Phase 1)</h2>
+            {
+              /* static specimen: no ids, no form, no data-cmd, so it can
+                never collide with the real header BaseLayout renders */
+            }
+            <div class="shead" style="padding:0">
+              <div class="idrow">
+                <p class="wmrow">
+                  <span class="wm">
+                    brian rohde
+                    <span class="caret" aria-hidden="true" />
+                  </span>
+                </p>
+                <span class="snav">
+                  <span class="snav-spec">about</span>
+                  <span class="snav-spec">contact</span>
+                </span>
+              </div>
+              <div class="hchat">
+                <span class="p" aria-hidden="true">$</span>
+                <span style="color:#8fa79a;font-size:16px">
+                  Ask me anything or type help
+                </span>
+              </div>
+            </div>
+
             <h2 class="sg-h">editorial identity</h2>
             <div class="cid" style="padding-top:0">
-              <p class="wordmark" style="margin-bottom:10px">
-                Brian Rohde
-                <span class="caret" aria-hidden="true" />
-              </p>
               <p class="crole">
                 AI Product Engineer <span class="d">·</span> San Francisco
               </p>
