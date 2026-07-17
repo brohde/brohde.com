@@ -27,8 +27,12 @@
  * core navigation): it opens the chat's contact card, the site's one contact
  * surface. Swap to a mailto if Brian vetoes.
  *
- * BaseLayout renders this on every page except /chat (header={false} there
- * until the Phase 2 conversion). On the homepage the wordmark row is the
+ * On /chat itself (a normal shell page since B2 Phase 2, #108) a send from
+ * this input submits straight into the conversation on the page: the same
+ * router resolves currentScreen() === "chat" and asks in place instead of
+ * navigating.
+ *
+ * BaseLayout renders this on EVERY page. On the homepage the wordmark row is the
  * page's h1: the retired EditorialHeader's h1 moved here with the chrome
  * (HomeIntro.astro keeps the rest of the #80 identity lines). The rows carry
  * .bseq so the homepage boot reveals the header with the page (#36: the
