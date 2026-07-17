@@ -158,6 +158,6 @@ Done this stretch:
 - Where is brohde.com registered? (Not on his Cloudflare account; needed for the domain cutover. Pages ships on a pages.dev URL meanwhile)
 - Editorial before public deploy: pre-date tension (retrospective passages inside pre-dated articles; studio recommends a dated postscript block convention); Eight Angle unconfirmed numbers (pricing, 47-class vs 49-pose, decoy examples); ATG client sign-off + "Workers vs Pages" naming + SiteGround figure; Gold Coast pending Dragan's consent
 - Resume command behavior (print link vs open PDF in new tab — code currently opens same tab, output text claims new tab)
-- Boot: fake caret during the auto-type? (input deliberately unfocused, so none shows today)
+- ~~Boot: fake caret during the auto-type?~~ MOOT: the boot prescription family is withdrawn (#139); the studio's motion pass owns the question
 - Raster OG image before launch (SVG placeholder today); PostHog key as a Pages env var
 - Earlier open items: writing samples for VOICE, Substack canonical, travel placement, resume format

@@ -13,7 +13,7 @@ Article pipeline for brohde.com. Homepage lists title + publish date (descriptio
 | 5 | Google Android for Work (2016) retrospective | Project deep dive (agency work via Beyond) | Old case study + resume; Google internal CMS, Closure/AngularJS | ~2016 era or retrospective | Idea |
 | 6 | Thought leadership: how I use AI / tips & strategies | Series | Resume is rich here: parallel Claude Code agents w/ git worktrees, layered instruction files + 70+ architecture docs, MCP (Linear, PostHog), Pastel feedback loops | ongoing | Idea |
 | 7 | Gong: LLM-powered website translation workflow | Work story | Resume — publicly showcased in a Gong+Sanity webinar | ~2024–2025 | Idea |
-| 8 | Twilio: shipping twilio.com/ja, localization at scale | Work story | Resume — first localized Twilio site, 100+ pages, 6 locales | ~2020–2021 | Idea |
+| 8 | Twilio: shipping the first global website + unified CMS | Work story | Owner correction #140 (2026-07-17): bio framing is "the company's first global website and unified CMS"; the rollout included the first localized site twilio.com/ja, 100+ pages, 6 locales (resume) | ~2020–2021 | Idea |
 | 9 | Building an LLM chat interface into a static portfolio (costs, guardrails, comparing Claude vs open-source) | Meta / AI series | `docs/reference/chat-feasibility.md`; would document the site's own build | post-launch | Idea (depends on chat greenlight) |
 | 10 | Real-time presence on a static Astro site with Cloudflare Durable Objects | Meta / AI series | Same brief, presence section | post-launch | Idea (depends on presence greenlight) |
 
