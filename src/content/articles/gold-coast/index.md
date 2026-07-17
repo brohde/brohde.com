@@ -3,6 +3,7 @@ title: "He designed his site in ChatGPT. I took it from Squarespace to Astro, LL
 description: "A wealth management client designed his own site in ChatGPT, pixel by pixel; I built it in Astro and used Pastel to turn his 435 review comments into a real, accessible site."
 date: 2026-06-30
 draft: false
+theme: goldcoast
 ---
 
 A client showed up with eight finished page designs. He'd made every one of them himself, in ChatGPT, without touching a design tool or a line of code. He knew exactly what he wanted: navy and gold, a specific line break in a specific sentence, the "VS" in a fee comparison rendered in white, not navy. My job was to turn eight PNGs into a real website: fast, accessible, and built on a system he could keep editing after I was gone.

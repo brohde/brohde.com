@@ -3,6 +3,7 @@ title: "Android for Work: building Google's marketing site in Closure, no jQuery
 description: "How I built Google's Android for Work marketing site front end entirely inside Google's internal CMS, JavaScript libraries, and code standards."
 date: 2015-09-01
 draft: false
+theme: android
 ---
 
 In 2015, I built the marketing site for Android for Work, Google's mobile management product for separating work and personal data on Android devices, aimed at enterprise IT. I was a front end developer and team lead at Beyond, an SF user experience agency, and Google was one of our two biggest clients at the time, alongside Facebook.

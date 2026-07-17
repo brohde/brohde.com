@@ -1,15 +1,28 @@
 ---
 import { getCollection, render } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import TideBand from "@/components/TideBand.astro";
+import HeroBand from "@/components/HeroBand.astro";
+import Scene from "@/components/Scene.astro";
 import { SITE, logHref, logStamp, isoDate } from "@/lib/site";
 
 /**
  * Article page, #67 C variant: editorial reading surface (Circular via
  * .prose/.atitle) on the system ground; every terminal moment is a piece of
- * the phosphor screen (the homechips, the tide band facade, pre excerpts).
- * SEO/JSON-LD/RSS behavior unchanged from the previous layout; internal
- * navigation keeps the wipe (#64).
+ * the phosphor screen (the homechips, the hero band, pre excerpts).
+ * SEO/JSON-LD/RSS behavior unchanged; internal navigation keeps the wipe
+ * (the designed persistent-scene transition is gated on the motion spec,
+ * #139).
+ *
+ * Interior scene (B2 P3/B3): every article mounts the one persistent scene
+ * (#109: content left, right gutter preserved) wearing the article's OWN
+ * identity (#111): theme from frontmatter picks the sky, tide peak, and
+ * mark (see PEAKS/THEME_SOURCE in src/scripts/scene/index.ts). The section
+ * below also stamps data-scene-theme for the terminal.ts bridge: the scene
+ * DOM carries transition:persist, so on client-side navigations the OLD
+ * page's node survives and props alone cannot flip identity; the bridge
+ * reads the stamp from this fresh, non-persisted element and travels the
+ * scene there. The hero band (#97/#103) presents the same identity's mark
+ * large at the top of the article.
  */
 export async function getStaticPaths() {
   // External entries live off-site: no page is generated for them.
@@ -22,7 +35,7 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
-const { title, description, date, stats } = post.data;
+const { title, description, date, stats, theme } = post.data;
 
 const canonical = new URL(logHref(post.id), SITE.url).href;
 
@@ -46,14 +59,20 @@ const articleLd = {
   ogType="article"
   jsonLd={articleLd}
 >
-  <section class="screen" data-screen="log" tabindex="-1">
+  <Scene theme={theme} />
+  <section
+    class="screen"
+    data-screen="log"
+    data-scene-theme={theme}
+    tabindex="-1"
+  >
     {
       /* B2 Phase 1: the .atop chrome bar is retired; the global header is
         the one frame on every page. The .aend chips keep their no-aria-label
         convention: the visible command word IS the accessible name. */
     }
     <div class="wrap artpad">
-      <TideBand seed={post.id} />
+      <HeroBand seed={post.id} theme={theme} />
 
       <main id="main">
         <article>
@@ -96,6 +115,22 @@ const articleLd = {
             >
           </a>
         </footer>
+        {
+          /* The Android robot in this page's scene is CC BY 3.0 (Google
+            brand guidelines); the user-visible attribution the license
+            requires rides the theme wiring, so it can never detach from
+            the identity it credits (#135 follow-up). */
+        }
+        {
+          theme === "android" && (
+            <p class="attrib">
+              The Android robot in this page's background is reproduced or
+              modified from work created and shared by Google and used
+              according to terms described in the Creative Commons 3.0
+              Attribution License.
+            </p>
+          )
+        }
       </main>
     </div>
   </section>

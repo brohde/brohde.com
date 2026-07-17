@@ -1076,9 +1076,19 @@ function setupOnce() {
   // case there is nothing to stamp). No-op until the module has loaded; the
   // first mount reads its state from the server-rendered dataset.
   const syncSceneState = () => {
-    sceneMod
-      ?.initScene()
-      ?.setState(currentScreen() === "chat" ? "chat" : "home");
+    if (!sceneMod) return;
+    const handle = sceneMod.initScene();
+    if (!handle) return;
+    handle.setState(currentScreen() === "chat" ? "chat" : "home");
+    // Per-page identity (#111, B3): the arriving page stamps its theme on
+    // the fresh [data-screen] section (article pages, from frontmatter);
+    // no stamp = the site default. Read from that fresh element, never
+    // from [data-scene]: the persisted scene node still carries the OLD
+    // page's dataset. setTheme no-ops when equal and travels the sky,
+    // peak, and mark together when it changes (snap under reduced motion).
+    const stamp = document.querySelector<HTMLElement>("[data-screen]")?.dataset
+      .sceneTheme;
+    handle.setTheme(sceneMod.isThemeName(stamp) ? stamp : "default");
   };
   const requestScene = () => {
     if (sceneRequested || !document.querySelector("[data-scene]")) return;

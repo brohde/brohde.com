@@ -16,11 +16,18 @@
  *
  * Per-page identity (#111) is parameterized here and read by the module:
  *   placement: "ambient" now; hero (#97/#103) and chat placements later.
- *   theme:     sky palette + tide peak + mark travel identity. Themed sky
- *              CSS lands with B3, which also owns wiring these themes onto
- *              article pages.
- *   mark:      the tide's source figure. Homepage/site identity: the BR
- *              letterform (#111 identity plan).
+ *   theme:     sky palette + tide peak + mark travel identity. Wired on
+ *              article pages from frontmatter (B3); themed sky CSS ships
+ *              in scene.css (facade) + live.css (slot-scoped crossfade)
+ *              for the three lab-designed skies, default sky otherwise.
+ *              Client-side navigations travel the PERSISTED scene through
+ *              the terminal.ts bridge (this element's dataset is the old
+ *              page's); the [data-screen] section carries the fresh stamp.
+ *   mark:      the tide's source figure. OMIT to ride the theme's own mark
+ *              (THEME_SOURCE in the module; default theme = the BR
+ *              letterform, #111 identity plan): the attribute only renders
+ *              when a page explicitly overrides, because the module's
+ *              mount treats a valid data-scene-mark as the stronger word.
  *   state:     home (cold sky) or chat (golden hour).
  */
 interface Props {
@@ -49,7 +56,7 @@ interface Props {
 const {
   placement = "ambient",
   theme = "default",
-  mark = "br",
+  mark,
   state = "home",
 } = Astro.props;
 ---
