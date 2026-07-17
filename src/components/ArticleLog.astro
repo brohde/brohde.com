@@ -40,7 +40,9 @@ const domainOf = (url: string) => new URL(url).hostname.replace(/^www\./, "");
           target="_blank"
           rel="noopener"
         >
-          <span class="lts">{isoDate(post.data.date)}</span>
+          <time class="lts" datetime={isoDate(post.data.date)}>
+            {isoDate(post.data.date)}
+          </time>
           <span class="lttl">
             {post.data.title}
             {/* #141: arrow + destination domain, one non-wrapping unit, small
@@ -59,7 +61,9 @@ const domainOf = (url: string) => new URL(url).hostname.replace(/^www\./, "");
         </a>
       ) : (
         <a class:list={["lentry", { bseq: boot }]} href={logHref(post.id)}>
-          <span class="lts">{isoDate(post.data.date)}</span>
+          <time class="lts" datetime={isoDate(post.data.date)}>
+            {isoDate(post.data.date)}
+          </time>
           <span class="lttl">{post.data.title}</span>
         </a>
       )

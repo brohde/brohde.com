@@ -27,6 +27,15 @@ export default defineConfig({
       // Keep internal / preview surfaces out of the sitemap.
       filter: (page) =>
         !page.includes("/styleguide") && !page.includes("/chat"),
+      // Sitemap URLs must agree with the canonical tags, which strip the
+      // trailing slash everywhere except the root (SEO.astro).
+      serialize: (item) => {
+        const u = new URL(item.url);
+        if (u.pathname !== "/") {
+          item.url = item.url.replace(/\/$/, "");
+        }
+        return item;
+      },
     }),
   ],
   vite: {
