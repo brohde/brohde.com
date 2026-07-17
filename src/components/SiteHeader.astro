@@ -39,9 +39,18 @@
  * first frame stays the surface alone).
  */
 const isHome = Astro.url.pathname === "/";
+
+/* Header chat-input dedup (#145): the homepage slab and the /chat composer
+   already carry a chat input, so the header's chat row is hidden on those two
+   pages and shown on every other page. Server-render the correct state here so
+   the row's presence is right at first paint (zero CLS); terminal.ts re-stamps
+   data-hchat on every navigation in case the header is ever persisted. The
+   identity row stays on every page. */
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const ownsInput = path === "/" || path === "/chat";
 ---
 
-<header class="shead">
+<header class="shead" data-hchat={ownsInput ? "off" : "on"}>
   <div class="wrap">
     <div class="idrow bseq">
       {

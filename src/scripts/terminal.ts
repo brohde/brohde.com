@@ -8,6 +8,9 @@
  *   - shell-style prompt history (#44)
  *   - the boot sequence (#36; #64: site entry only, never on internal navs)
  *   - the roving page cursor (#63) and the terminal wipe transition (#64)
+ *   - the redirect countdown for model-chosen navigation (#143), the /chat
+ *     conversation persistence via sessionStorage (#144), and the header
+ *     chat-input dedup on pages that carry their own input (#145)
  *
  * View-Transitions safety (E5): all listeners are delegated on `document` and
  * attached exactly once; nothing is bound to a specific node at module scope.
@@ -94,6 +97,43 @@ let pendingFocus: string | null = null;
 const ac = { open: false, items: [] as Cmd[], sel: -1, promptId: "" };
 let bootCancel: (() => void) | null = null;
 
+/* -------------------------------------------------- redirect countdown ---- */
+/* #143: when the model answers a QUESTION by choosing an open_page
+   navigation, we do not redirect instantly. The reply flow announces it in
+   the house voice ("Let me take you to the about page.") with a REAL inline
+   link, then a cancellable countdown. Cancel three ways: Escape, the visible
+   stay control, or simply starting to type the next message. Explicit
+   "open X"-style asks and in-place slugs skip the countdown (redirectDest /
+   isExplicitNav). */
+const REDIRECT_SECONDS = 5; // Generous enough that a keyboard or switch user
+// can reach a cancel path before it fires. The three cancel mechanisms also
+// satisfy WCAG 2.2.1 by letting the visitor turn the limit off entirely.
+// Brian can shorten this in one place.
+let redirect: {
+  timer: number;
+  tail: HTMLElement; // the countdown + stay control, removed on cancel
+  input: HTMLInputElement | null; // where focus returns after a click-cancel
+} | null = null;
+
+/* --------------------------------------------- conversation persistence --- */
+/* #144: the /chat thread survives same-tab navigation, Back, and a full
+   refresh. The display transcript AND the model-facing history serialize to
+   sessionStorage: per-tab, cleared on tab close, and NOT localStorage, so a
+   genuinely fresh tab always starts pristine. `transcript` is authoritative
+   within a live tab (module state outlives client-side navigations);
+   sessionStorage is the backup that survives a full reload. */
+type Entry =
+  | { t: "echo"; s: string }
+  | { t: "reply"; s: string }
+  | { t: "out"; s: string }
+  | { t: "cmt"; c: string; s: string }
+  | { t: "redirect"; href: string; name: string };
+const transcript: Entry[] = [];
+const STORE_KEY = "brohde.chat.v1";
+const MAX_ENTRIES = 60; // display lines kept (~30 exchanges)
+const MAX_LLM = 12; // model-history entries stored; the send slices to 8, so a
+// rehydrated history is never larger than a live session would already send.
+
 /* --------------------------------------------------------------- helpers --- */
 
 const RM = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -103,6 +143,21 @@ function currentScreen(): string {
   return (
     document.querySelector("[data-screen]")?.getAttribute("data-screen") ?? ""
   );
+}
+
+/* Header chat-input dedup (#145): the header's chat row is hidden on the two
+   pages that carry their own input (the homepage slab and the /chat composer)
+   and shown on every other page. SiteHeader server-renders the correct state
+   per page (data-hchat), and we re-stamp it during the swap so a header that
+   is ever persisted across navigations can never carry a stale state. Stamped
+   before paint (astro:after-swap) so the row's presence never shifts layout
+   after the page is visible: zero CLS. The identity row is untouched. */
+function syncHeaderChat() {
+  const header = document.querySelector<HTMLElement>(".shead");
+  if (!header) return;
+  const p = location.pathname;
+  const ownsInput = p === "/" || p === "/chat" || p === "/chat/";
+  header.dataset.hchat = ownsInput ? "off" : "on";
 }
 
 function visibleInput(): HTMLInputElement | null {
@@ -272,17 +327,24 @@ function scrollChatBottom() {
   }
 }
 
-function line(cls: string, text?: string) {
+/* The `replay` flag (#144) means "this line is being rebuilt from the stored
+   transcript on a /chat rehydrate": build the DOM, but do not re-record it,
+   do not re-announce it, and do not scroll per line (rehydrate scrolls once
+   at the end). Live calls omit it and therefore record + announce as before. */
+function line(cls: string, text?: string, replay = false) {
   const log = chatlog();
   if (!log) return;
   const d = document.createElement("div");
   d.className = cls;
   if (text !== undefined) d.textContent = text;
   log.appendChild(d);
-  scrollChatBottom();
+  if (!replay) {
+    record({ t: "cmt", c: cls, s: text ?? "" });
+    scrollChatBottom();
+  }
 }
 
-function echo(t: string) {
+function echo(t: string, replay = false) {
   const log = chatlog();
   if (!log) return;
   const d = document.createElement("div");
@@ -294,10 +356,13 @@ function echo(t: string) {
   d.appendChild(p);
   d.appendChild(document.createTextNode(t));
   log.appendChild(d);
-  scrollChatBottom();
+  if (!replay) {
+    record({ t: "echo", s: t });
+    scrollChatBottom();
+  }
 }
 
-function out(html: string, slot?: HTMLElement | null) {
+function out(html: string, slot?: HTMLElement | null, replay = false) {
   const log = chatlog();
   if (!log) return;
   // given a slot (the in-flight thinking line, #116), reuse its position so
@@ -306,8 +371,11 @@ function out(html: string, slot?: HTMLElement | null) {
   d.className = "out";
   d.innerHTML = html; // static strings only, never user input
   if (!d.parentElement) log.appendChild(d);
-  announce(d.textContent ?? "");
-  scrollChatBottom();
+  if (!replay) {
+    record({ t: "out", s: html });
+    announce(d.textContent ?? "");
+    scrollChatBottom();
+  }
 }
 
 function clearChat() {
@@ -315,7 +383,114 @@ function clearChat() {
   if (!log) return;
   log.innerHTML = "";
   llmHistory.length = 0; // clear wipes the model's context too
-  line("cmt", "# Cleared");
+  purgeChat(); // #144: and the persisted session, so a cleared chat stays cleared
+  line("cmt", "# Cleared", true); // shown, deliberately not stored
+}
+
+/* -------------------------------------------- persistence + rehydrate ----- */
+/* #144. Save on every recorded line; rehydrate the /chat page from module
+   memory first (a live tab) or sessionStorage (a cold load / refresh). */
+
+function saveChat() {
+  try {
+    if (transcript.length > MAX_ENTRIES) {
+      transcript.splice(0, transcript.length - MAX_ENTRIES);
+    }
+    const l = llmHistory.slice(-MAX_LLM);
+    sessionStorage.setItem(STORE_KEY, JSON.stringify({ v: 1, t: transcript, l }));
+  } catch {
+    /* private mode / quota: persistence is a nicety, never a hard dependency */
+  }
+}
+
+function record(e: Entry) {
+  transcript.push(e);
+  saveChat();
+}
+
+function purgeChat() {
+  transcript.length = 0;
+  try {
+    sessionStorage.removeItem(STORE_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+/* Coerce a stored history into exactly what the hardened server accepts
+   (validateHistory, audit H2/M2 on main): {role: user|assistant, content:
+   non-empty string <= 2000 chars}, strictly alternating roles. Anything that
+   would trip the server's 400 is dropped here, so a rehydrated history can
+   never be rejected on the next send. */
+function coerceHistory(raw: unknown): { role: "user" | "assistant"; content: string }[] {
+  if (!Array.isArray(raw)) return [];
+  const out: { role: "user" | "assistant"; content: string }[] = [];
+  let prev: string | null = null;
+  for (const e of raw) {
+    if (!e || typeof e !== "object") continue;
+    const role = (e as { role?: unknown }).role;
+    const raw2 = (e as { content?: unknown }).content;
+    if (role !== "user" && role !== "assistant") continue;
+    if (typeof raw2 !== "string" || raw2.length === 0) continue;
+    if (role === prev) continue; // server requires strict alternation
+    const content = raw2.length > 2000 ? raw2.slice(0, 2000) : raw2;
+    out.push({ role, content });
+    prev = role;
+  }
+  return out;
+}
+
+/* Known-good `out` bodies and redirect destinations: on replay we only trust
+   values we ourselves ever produce. A tampered store falls back to inert text
+   (out) or a plain label (redirect), never innerHTML or a live href. */
+const OUT_ALLOW = new Set([
+  HELP_HTML,
+  HELLO_HTML,
+  CONTACT_HTML,
+  RESUME_HTML,
+  OFFLINE_HTML,
+]);
+const REDIRECT_HREFS = new Set(["/about", "/log/eight-angle-ml", "/#log"]);
+
+function renderEntry(e: Entry) {
+  if (e.t === "echo") echo(e.s, true);
+  else if (e.t === "reply") renderReply(e.s, null, true);
+  else if (e.t === "out")
+    OUT_ALLOW.has(e.s) ? out(e.s, null, true) : line("out", e.s, true);
+  else if (e.t === "cmt") line(e.c, e.s, true);
+  else if (e.t === "redirect")
+    renderRedirect(e.href, e.name, null, false); // settled: link only, no ticker
+}
+
+function rehydrateChat() {
+  if (currentScreen() !== "chat") return;
+  const log = chatlog();
+  if (!log) return;
+  // module memory wins within a tab (survives client-side navigations); fall
+  // back to sessionStorage on a cold load / refresh.
+  if (transcript.length === 0) {
+    let raw: string | null = null;
+    try {
+      raw = sessionStorage.getItem(STORE_KEY);
+    } catch {
+      /* storage blocked: nothing to restore */
+    }
+    if (raw) {
+      try {
+        const p = JSON.parse(raw) as { v?: number; t?: unknown; l?: unknown };
+        if (p && p.v === 1 && Array.isArray(p.t)) {
+          transcript.push(...(p.t as Entry[]));
+          llmHistory.length = 0;
+          llmHistory.push(...coerceHistory(p.l));
+        }
+      } catch {
+        /* corrupt blob: start pristine */
+      }
+    }
+  }
+  if (!transcript.length) return;
+  for (const e of transcript) renderEntry(e);
+  scrollChatBottom();
 }
 
 /* ------------------------------------------------------------ navigation -- */
@@ -387,7 +562,7 @@ const MD_LINK =
 /** Model prose -> DOM. Text nodes only, plus allowlisted links; never HTML.
     Given a slot (the in-flight thinking line, #116), the reply fills that
     same element in place: content swaps, the box never moves. */
-function renderReply(text: string, slot?: HTMLElement | null) {
+function renderReply(text: string, slot?: HTMLElement | null, replay = false) {
   const log = chatlog();
   if (!log) return;
   const d = slot?.isConnected ? slot : document.createElement("div");
@@ -415,8 +590,11 @@ function renderReply(text: string, slot?: HTMLElement | null) {
   }
   d.appendChild(document.createTextNode(text.slice(last)));
   if (!d.parentElement) log.appendChild(d);
-  announce(text);
-  scrollChatBottom();
+  if (!replay) {
+    record({ t: "reply", s: text });
+    announce(text);
+    scrollChatBottom();
+  }
 }
 
 /* The waiting state (#116): an assistant-style thinking line, shown for model
@@ -455,6 +633,151 @@ function openSlug(slug: string) {
   else if (slug in SLUG_HREF) navigate(SLUG_HREF[slug]);
 }
 
+/* ------------------------------------------------- redirect countdown ----- */
+
+/* Which open_page slugs are a genuine navigation to ANOTHER page (so a
+   countdown makes sense), vs an in-place output (contact/resume) or a
+   same-page scroll. Returns the real destination href + a plain-words name,
+   or null to fall back to openSlug's instant behavior. */
+function redirectDest(slug: string): { href: string; name: string } | null {
+  const screen = currentScreen();
+  if (slug === "about" && screen !== "about")
+    return { href: "/about", name: "the about page" };
+  if (slug === "eight-angle")
+    return { href: "/log/eight-angle-ml", name: "the Eight Angle article" };
+  if (slug === "work" && screen !== "home")
+    return { href: "/#log", name: "the work log" };
+  return null;
+}
+
+/* An input the visitor phrased as an explicit navigation ("open the eight
+   angle article", "take me to about") is honored instantly, no countdown
+   (#143 req 3): the countdown only guards a QUESTION the model chose to
+   answer by navigating away. */
+const EXPLICIT_NAV =
+  /^\s*(open|go to|goto|take me to|bring me to|navigate to|jump to|show me|visit)\b/i;
+function isExplicitNav(q: string): boolean {
+  return EXPLICIT_NAV.test(q);
+}
+
+/* Build the announcement line in the reply flow. Always: "Let me take you to
+   <link>." with the destination a REAL inline anchor (kept on cancel, so the
+   visitor can still click through). When `live`, append the ticking countdown
+   + the stay control and return their nodes; on replay (settled history)
+   render the link only. */
+function renderRedirect(
+  href: string,
+  name: string,
+  slot: HTMLElement | null,
+  live: boolean
+): { count: HTMLElement; tail: HTMLElement } | null {
+  const log = chatlog();
+  if (!log) return null;
+  const box = slot?.isConnected ? slot : document.createElement("div");
+  box.className = "reply redirect";
+  box.replaceChildren();
+  box.appendChild(document.createTextNode("Let me take you to "));
+  if (REDIRECT_HREFS.has(href)) {
+    const a = document.createElement("a");
+    a.href = href;
+    a.textContent = name;
+    box.appendChild(a);
+  } else {
+    box.appendChild(document.createTextNode(name)); // untrusted stored href
+  }
+  box.appendChild(document.createTextNode("."));
+
+  let refs: { count: HTMLElement; tail: HTMLElement } | null = null;
+  if (live) {
+    const tail = document.createElement("span");
+    tail.className = "rdx-tail";
+    // the ticking clock is decorative: screen readers hear the one announce
+    // in startRedirect, never per tick (#143 req 4)
+    const clock = document.createElement("span");
+    clock.className = "rdx-clock";
+    clock.setAttribute("aria-hidden", "true");
+    clock.appendChild(document.createTextNode(" Heading there in "));
+    const count = document.createElement("span");
+    count.className = "rdx-count";
+    count.textContent = String(REDIRECT_SECONDS);
+    clock.appendChild(count);
+    clock.appendChild(document.createTextNode("s. "));
+    tail.appendChild(clock);
+    const stay = document.createElement("button");
+    stay.type = "button";
+    stay.className = "rdx-stay";
+    stay.textContent = "Stay here";
+    stay.addEventListener("click", () => cancelRedirect("stay"));
+    tail.appendChild(stay);
+    box.appendChild(tail);
+    refs = { count, tail };
+  }
+  if (!box.parentElement) log.appendChild(box);
+  return refs;
+}
+
+/* Start the cancellable countdown toward `href`. Reuses the thinking slot
+   when it is free (no prose already fills it) so the #118 same-slot swap
+   survives; records the announcement so it persists (settled) across Back and
+   refresh (#144). */
+function startRedirect(href: string, name: string, slot: HTMLElement | null) {
+  cancelRedirect("nav"); // clear any prior countdown silently
+  const refs = renderRedirect(href, name, slot, true);
+  record({ t: "redirect", href, name });
+  scrollChatBottom();
+  if (!refs) {
+    navigate(href);
+    return;
+  }
+  // keep focus on whatever input the send came from (#143 req 2)
+  const active = document.activeElement as HTMLElement | null;
+  const input =
+    active && active.matches?.(".prompt input, .hchat input")
+      ? (active as HTMLInputElement)
+      : (byId("in-chat") as HTMLInputElement | null);
+
+  announce(
+    `Taking you to ${name} in a few seconds. Press escape, or select stay here, to stay.`
+  );
+
+  let remaining = REDIRECT_SECONDS;
+  const timer = window.setInterval(() => {
+    remaining -= 1;
+    if (remaining <= 0) {
+      commitRedirect(href);
+      return;
+    }
+    refs.count.textContent = String(remaining);
+  }, 1000);
+  redirect = { timer, tail: refs.tail, input };
+}
+
+function commitRedirect(href: string) {
+  if (redirect) {
+    clearInterval(redirect.timer);
+    redirect = null;
+  }
+  navigate(href); // the normal 140ms wipe (instant under reduced motion)
+}
+
+/* All cancel paths (#143 req 2) route here: Escape, the stay control, and
+   start-typing. The announcement line and its inline link REMAIN (only the
+   ticker + stay control are removed) so the visitor can still click through.
+   Focus returns to the input it came from; it never leaves. A "nav" cancel
+   (leaving the page) just stops the timer. */
+function cancelRedirect(reason: "escape" | "stay" | "type" | "nav") {
+  const r = redirect;
+  if (!r) return;
+  redirect = null;
+  clearInterval(r.timer);
+  if (reason === "nav") return; // the page is leaving; nothing to preserve
+  r.tail.remove();
+  announce("Staying here.");
+  if (r.input && document.activeElement !== r.input) {
+    r.input.focus({ preventScroll: true });
+  }
+}
+
 async function askLive(q: string) {
   echo(q);
   const wait = thinking();
@@ -484,12 +807,13 @@ async function askLive(q: string) {
       );
       return;
     }
+    const hasProse = !!d.text;
     if (d.text) renderReply(d.text, wait);
-    else wait?.remove(); // open_page with no prose: nothing fills the slot
     llmHistory.push(
       { role: "user", content: q },
       { role: "assistant", content: d.text || `(opened ${d.open_page})` }
     );
+    saveChat(); // #144: persist the updated model history alongside the transcript
     if (d.usage && IS_LOCAL) {
       // dev-only telemetry line; visitors never see cost figures
       line(
@@ -498,9 +822,22 @@ async function askLive(q: string) {
       );
     }
     if (d.open_page) {
-      line("cmt", `# Opening ${d.open_page}…`);
       const slug = d.open_page;
-      window.setTimeout(() => openSlug(slug), 700);
+      const dest = redirectDest(slug);
+      if (dest && !isExplicitNav(q)) {
+        // the model answered a QUESTION by navigating away (#143): announce it
+        // with a cancellable countdown instead of an instant redirect. Reuse
+        // the thinking slot only when no prose already fills it, so the #118
+        // same-slot swap survives.
+        startRedirect(dest.href, dest.name, hasProse ? null : (wait ?? null));
+      } else {
+        // an explicit "open X" ask, or an in-place slug (contact/resume/work
+        // while home): go now, no countdown (#143 req 3)
+        if (!hasProse) wait?.remove();
+        openSlug(slug);
+      }
+    } else if (!hasProse) {
+      wait?.remove(); // no prose and no navigation: drop the empty thinking slot
     }
   } catch {
     // network-level failure or the 15s timeout: the offline output takes the
@@ -819,6 +1156,16 @@ function initPage() {
     if (note) note.textContent = "# Live model via the local POC";
   }
 
+  // #144: restore the /chat thread (module memory first, else sessionStorage)
+  // BEFORE running any pending send, so a carried question lands beneath the
+  // restored conversation. Recompute the roving tab stop now the log is built,
+  // since rehydrated replies add their own inline links to the cursor order.
+  if (currentScreen() === "chat") {
+    rehydrateChat();
+    const r = roveEls();
+    if (r.length) setRoveStop(r[0], r);
+  }
+
   if (after) after();
   if (focusId) {
     const el = byId(focusId) as HTMLElement | null;
@@ -911,6 +1258,11 @@ function setupOnce() {
   // input: refresh autocomplete for the active prompt
   document.addEventListener("input", (e) => {
     const input = e.target as HTMLElement;
+    // #143 req 2: a visitor typing their next message has chosen to stay.
+    // Cancel the countdown but let the keystroke through (no preventDefault).
+    if (redirect && input.matches?.(".prompt input, .hchat input")) {
+      cancelRedirect("type");
+    }
     if (input.matches?.(".prompt input")) {
       refreshAC(input as HTMLInputElement);
       histIndex = history.length;
@@ -924,6 +1276,14 @@ function setupOnce() {
     const t = e.target as HTMLElement;
 
     if (e.key === "Escape") {
+      // #143 req 2: while a redirect countdown is running, Escape cancels it
+      // and stays put. It takes priority over the blur/leave behavior below so
+      // focus never leaves the input the visitor is in.
+      if (redirect) {
+        e.preventDefault();
+        cancelRedirect("escape");
+        return;
+      }
       if (ac.open) {
         e.preventDefault();
         closeAC();
@@ -1054,6 +1414,16 @@ function setupOnce() {
 
   // stop a running boot if we navigate away mid-sequence
   document.addEventListener("astro:before-swap", cancelBoot);
+
+  // #143: a navigation away during a countdown cancels it silently; the timer
+  // must never fire after the visitor has already left /chat (also closes the
+  // back-button loop: the destination push happened, nothing re-triggers).
+  document.addEventListener("astro:before-swap", () => cancelRedirect("nav"));
+
+  // #145: stamp the header's chat-input visibility during the swap (before
+  // paint, under the wipe cover) and again on page-load as a safety net.
+  document.addEventListener("astro:after-swap", syncHeaderChat);
+  document.addEventListener("astro:page-load", syncHeaderChat);
 
   // per-page setup, on initial load and every VT navigation
   document.addEventListener("astro:page-load", initPage);

@@ -200,6 +200,14 @@ html.cfocus .wm .caret {
   border-color: #7ee787;
   box-shadow: 0 0 18px rgba(126, 231, 135, 0.24);
 }
+/* Header chat-input dedup (#145): hidden on pages that carry their own input
+   (homepage slab, /chat composer), stamped by data-hchat (server + the
+   terminal.ts bridge). display:none drops the row and its top margin, so the
+   header is exactly the identity row on those pages, no reserved space, no
+   CLS. The identity row is never affected. */
+.shead[data-hchat="off"] .hchat {
+  display: none;
+}
 
 /* -------------------- editorial identity (#67 treatment C) --------------- */
 /* The homepage identity block, now CONTENT under the global header (B2
@@ -800,6 +808,34 @@ html.cfocus .wm .caret {
   background: none;
   border: 0;
   padding: 0;
+  font: inherit;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* --------------------- redirect countdown (#143) ------------------------- */
+/* A model-chosen open_page navigation announces itself in the reply flow with
+   a real inline link, then a cancellable countdown. The announcement is a
+   normal .reply line (rail + sans, so it reads as the assistant's voice); the
+   .rdx-tail carries the ticking seconds and the stay control. The ticks are
+   plain text updated by script, never a CSS animation, so reduced motion needs
+   no special case here: the tail is just static text that a cancel path stops.
+   The clock is aria-hidden; the single spoken announcement lives in the
+   script's polite region. */
+.redirect .rdx-clock {
+  color: var(--dim);
+}
+.redirect .rdx-count {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.redirect .rdx-stay {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
   font: inherit;
   color: var(--accent);
   text-decoration: underline;
