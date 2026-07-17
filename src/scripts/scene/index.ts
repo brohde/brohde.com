@@ -38,8 +38,9 @@
  * via MutationObserver + matchMedia, so it survives astro:after-swap
  * re-stamps. The page THEME identity (sky palette + tide peak + mark,
  * data-scene-theme) is per-page and parameterized; the homepage is
- * "default" (the 8). setTheme() ports the lab's two-slot sky crossfade +
- * peak lerp + mark travel; the themed sky palettes land in scene.css when
+ * "default" (the BR letterform, #111). setTheme() ports the lab's two-slot
+ * sky crossfade + peak lerp + mark travel; themed sky palettes land in
+ * scene.css when
  * the first themed page ships (B3), keeping unused bytes off the critical
  * CSS until then. Page GROUND identities (#74) are :root token work owned
  * by B3, not this module.
@@ -68,7 +69,14 @@ import {
 
 type GroundKey = "night" | "lite";
 type SceneState = "home" | "chat";
-type ThemeName = "default" | "eight" | "news" | "android";
+type ThemeName =
+  | "default"
+  | "eight"
+  | "news"
+  | "android"
+  | "atg"
+  | "goldcoast"
+  | "twilio";
 type PlacementName = "ambient";
 
 /* ------------------------------------------------------------- constants -- */
@@ -123,7 +131,11 @@ const INKS: Record<GroundKey, Record<SceneState, number[][]>> = {
 };
 
 /* the peak bucket is the page theme's voice: [home, chat] per ground,
-   matching the sky palettes (lab values, verbatim, all four themes) */
+   matching the sky palettes (lab values verbatim for the original four;
+   atg/goldcoast/twilio added per the #111 identity plan, contrast-checked
+   against both grounds: worst combo 5.44:1, above the existing floor of
+   4.84:1 = android lite/home). Chat peaks stay in the golden-hour amber
+   family under every theme, the house rule the lab set. */
 const PEAKS: Record<ThemeName, Record<GroundKey, number[][]>> = {
   default: {
     night: [
@@ -165,14 +177,57 @@ const PEAKS: Record<ThemeName, Record<GroundKey, number[][]>> = {
       [154, 98, 7],
     ],
   },
+  /* ATG's warm monochrome identity: bone on night, umber on light */
+  atg: {
+    night: [
+      [224, 210, 189],
+      [240, 196, 130],
+    ],
+    lite: [
+      [97, 78, 55],
+      [130, 82, 24],
+    ],
+  },
+  /* Gold Coast gold, deepened on the light ground for contrast */
+  goldcoast: {
+    night: [
+      [233, 186, 64],
+      [248, 196, 92],
+    ],
+    lite: [
+      [136, 92, 6],
+      [140, 84, 14],
+    ],
+  },
+  /* Twilio red: the brand red lifts slightly on night (the literal
+     #F22F46 measures 4.64:1 there, under the 4.84 floor) and deepens on
+     light. DORMANT: no page consumes this theme yet (the twilio piece is
+     an external entry with no interior page). */
+  twilio: {
+    night: [
+      [246, 78, 94],
+      [244, 186, 105],
+    ],
+    lite: [
+      [186, 18, 42],
+      [136, 78, 18],
+    ],
+  },
 };
 
-/* each theme carries its page's mark: the tide draws what the page is (#74) */
+/* each theme carries its page's mark: the tide draws what the page is
+   (#74/#111). The site default is the BR letterform; the 8 and the G
+   letterform stay drawable but unmapped (see sources.ts). Per-article
+   theme wiring on article pages is B3's job; twilio is dormant until its
+   piece gains an interior page. */
 const THEME_SOURCE: Record<ThemeName, SourceName> = {
-  default: "eight",
+  default: "br",
   eight: "logo",
   news: "f",
-  android: "g",
+  android: "robot",
+  atg: "atg",
+  goldcoast: "gccm",
+  twilio: "twilio",
 };
 
 function isThemeName(v: string | undefined): v is ThemeName {

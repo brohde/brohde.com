@@ -37,9 +37,10 @@
    through the same three-block pattern global.css uses (system media query
    default, :root[data-theme] override wins in both directions). The pour
    derives from var(--ground), so future per-page ground identities (#74,
-   B3) re-pour automatically. Themed sky palettes (eight/news/android,
-   .skyslot[data-sky] blocks in the lab) land with the first themed page
-   (B3); only the default sky ships in B1.
+   B3) re-pour automatically. Themed sky palettes (eight/news/android plus
+   the new atg/goldcoast/twilio identities, .skyslot[data-sky] blocks in
+   the lab) stay deferred to B3, landing with the first themed page; only
+   the default sky ships today.
 
    Keep in sync with src/scripts/scene/index.ts: --scene-content-w (760px,
    the no-column-found fallback) and MIN_GUTTER.
