@@ -1,5 +1,5 @@
 ---
-title: "My client designed his site in ChatGPT. Here's what it took to ship it."
+title: "He designed his site in ChatGPT. I took it from Squarespace to Astro, LLM in the loop."
 description: "A wealth management client designed his own site in ChatGPT, pixel by pixel; I built it in Astro and used Pastel to turn his 435 review comments into a real, accessible site."
 date: 2026-06-30
 draft: false
@@ -13,11 +13,11 @@ This is that build.
 
 My client runs Gold Coast Capital Management, a registered investment adviser. He's not a designer and he'd never written CSS, but he had a clear picture of the site he wanted, and ChatGPT gave him a way to render that picture without needing either skill. He came back with a full set: home page plus seven interior pages, each a detailed comp with headlines, stats, fee comparisons, an advisor bio.
 
-What struck me wasn't that the designs existed. It's how specific the feedback got once he could see them built. Once we had a live build in front of him, his notes read like an art director's: "put 'life' in the first row." "Reduce the empty space at the top of this section." "The '20+' should be dark blue." He wasn't describing a vibe. He was pointing at pixels. ChatGPT gave a non-technical founder the vocabulary to be exact, and my job was to meet that exactness without letting the site fall apart the moment he asked for a ninth page.
+What struck me wasn't that the designs existed. It's how specific the feedback got once he could see them live. His notes read like an art director's: "put 'life' in the first row." "Reduce the empty space at the top of this section." "The '20+' should be dark blue." He wasn't describing a vibe. He was pointing at pixels. ChatGPT gave a non-technical founder the vocabulary to be exact, and my job was to meet that precision without the site falling apart when he asked for a ninth page.
 
 ## Building the system, not the pages
 
-Seven interior pages built independently, each chasing pixel-perfect fidelity to its own PNG, is how you end up with seven slightly different definitions of "navy" and a codebase nobody can maintain. So before I touched a single interior page, I ran a read-only pass over all seven designs in parallel, mapping every block in every comp to a shared set of tokens and components: one navy-and-gold palette, one type scale, one button component, one icon-badge shape. Only where a design genuinely needed something new (a fee-comparison band, a "how custody works" flow diagram) did it get flagged for a real decision, made once, signed off visually, then reused everywhere it recurred instead of rebuilt page by page.
+Seven interior pages built independently, each chasing pixel-perfect fidelity to its own PNG, is how you end up with seven slightly different definitions of "navy" and a codebase nobody can maintain. So before I touched a single interior page, I ran a read-only pass over all seven designs in parallel. I mapped every block in every comp to a shared set of tokens and components: one navy-and-gold palette, one type scale, one button component, one icon-badge shape. Only where a design genuinely needed something new (a fee-comparison band, a "how custody works" flow diagram) did it get flagged for a real decision, made once, signed off visually, then reused everywhere it recurred instead of rebuilt page by page.
 
 Everything else got assembled from what already existed. That discipline is the difference between a site that looks consistent because someone kept it that way and a site that looks consistent by accident, for now.
 
@@ -35,7 +35,7 @@ Two examples show why a person still has to sit in that loop.
 
 The fee comparison section has a "VS" badge in white text on a gold background, a contrast ratio of roughly 2.7 to 1, which fails WCAG AA. The textbook fix is to darken it to navy, and that's what I built first. My client didn't like it: he wanted the white "VS" from his original design. Because the badge is decorative and marked `aria-hidden` (it doesn't carry information a screen reader needs to convey), I reverted it to white at his request. Neither the "always fix contrast failures" rule nor "always defer to the client's exact pixels" rule is right on its own. Knowing which one applies to a decorative badge, and which wouldn't apply to actual body text, is the part an automated check or a rule-following contractor won't get right by default.
 
-The second is line wrapping. His designs dictated exact breaks: "move 'not' to the second row." The literal move, a hard `<br>` at that word, holds on the exact screen size in the mockup and breaks the moment someone opens the site on a different phone; it also fights screen readers by inserting breaks mid-sentence. What actually shipped: I counted the line count in his design and set container widths so the real, responsive text wraps to match at the sizes people actually use, reserving literal breaks only for the handful of cases where he was dictating an exact mobile layout, using a break that disappears above phone width so desktop wraps naturally. Same visual result he asked for. It also survives a resize.
+The second is line wrapping. His designs dictated exact breaks: "move 'not' to the second row." The literal move, a hard `<br>` at that word, holds on the exact screen size in the mockup and breaks the moment someone opens the site on a different phone; it also fights screen readers by inserting breaks mid-sentence. What actually shipped: I matched the line count in his design and set container widths so the real, responsive text wraps to match at the sizes people actually use. For the handful of cases where he was dictating an exact mobile layout, I kept a literal break, one that disappears above phone width so desktop wraps naturally. Same visual result he asked for. It also survives a resize.
 
 ## The result
 
