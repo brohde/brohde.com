@@ -448,4 +448,18 @@ Running log of Brian ↔ Claude exchanges and delegated sub-agent work. Newest e
 
 **Claude (reply + dispatch, #146):** located them (HomeIntro's .cprofiles list), dispatched a small Opus engineer: currentColor mono inline SVGs (no brand colors), quiet-link hover/focus, full a11y names + 44px targets, icon-only vs labeled as its flagged recommendation.
 
+**Claude (chat hardening MERGED):** all code-side audit must-fixes live (H2 bounds, M1 in-isolate gate, M2 shape enforcement, L2/L3/L4/L5, H1 seam), #61 freeze held byte-identical, full curl matrix green on wrangler dev. Keyed eval parity closed by construction + stub e2e (agent sandbox could not read the key; the lead's own attempt was classifier-blocked and not worked around); Brian's one-command keyed confirmation is in the handoff.
+
+**Brian (batch 86, 2026-07-17):** "The usage/cost is kind of cool to show to everyone. Why not?"
+
+**Claude (reply + #147):** explained L2's rationale (cost-calibration telemetry), assessed the residual risk as small under the new bounds + pending spend cap, agreed it fits the site's craft, flipped the server (7a2a70b) and relayed the client display to the chat-UX engineer.
+
+**Brian (batch 87, 2026-07-17):** stepping away; "take everything as far as possible according to the specs we discussed already."
+
+**Claude (ack):** running autonomously within settled specs: merge in-flight branches as they report (interior pages, chat-UX cluster, profile icons), docs current, no Brian-gated item touched; a full seo-a11y sweep queued after the big merges land.
+
+**Brian (batch 88, 2026-07-17):** "Actual restore the debug change I just asked for."
+
+**Claude (reply + #148):** read as a reversal (actually, restore the debug gating): reverted the server (d548ce6, L2 stands, usage/cost debug-only), countermanded the chat-UX engineer before any client work happened, interpretation stated plainly with the one-revert path back if the opposite was meant.
+
 **Claude (chat feasibility, per Brian's ask):** wrote `docs/reference/chat-feasibility.md`. Headlines: ~$0.002/reply on Claude Haiku 4.5 with prompt caching (~500 replies/$); Cloudflare Workers AI free tier covers ~15-20 replies/day at $0 (open-source Llama, lower quality); recommend Cloudflare AI Gateway to swap/compare providers (the "learn different LLMs" goal); "perfect chat" via deterministic command layer (work/about/resume answered without the LLM, which also keeps projects/about discoverable per Brian's usability note) + facts-file grounding + eval set + Turnstile/rate limits/spend cap; SEO preserved by hybrid architecture (static site canonical, terminal as hero layer). Presence ideas delivered (9), top picks: online counter + terminal `who` command + visitors as live constellation nodes (or CV detections), all on one Cloudflare Durable Object at ~zero cost. Status: exploration, awaiting Brian's greenlight.
