@@ -40,3 +40,17 @@ CORRECTED at zone build (the external dig inventory above was incomplete; the as
 ## Rollback
 
 DreamHost keeps the old zone; pointing nameservers back at ns1/2/3.dreamhost.com restores the pre-cutover state entirely.
+
+## Completion record (2026-07-18, #176)
+
+The 2026-07-17 nameserver save at DreamHost never reached the com registry: the browser assist clicked Save and verified the form values survived a page reload, but that is form state, not registry state, and the change did not take. Brian clicked Save himself on 2026-07-18 and the registry flipped to alec + robin within minutes. Verification for registrar changes happens at the TLD registry (dig NS domain @a.gtld-servers.net +norecurse), never at the form.
+
+Completed sequence and evidence:
+
+- Registry delegation: alec.ns.cloudflare.com + robin.ns.cloudflare.com at a.gtld-servers.net
+- Mail through the new zone: all 11 records exact vs the inventory above (2 MX, SPF, verify TXT, DMARC, 3 DKIM CNAMEs, 3 SRV), queried against alec directly
+- Zone: Active (pending banner cleared on the third "Check nameservers now" click)
+- Pages custom domains: brohde.com and www.brohde.com attached to the brohde-com project, proxied CNAMEs to brohde-com.pages.dev
+- Site: HTTP/2 200 on https://brohde.com and https://www.brohde.com, homepage title served, cert CN=brohde.com valid 2026-07-18 to 2026-10-16, HSTS present
+
+Still open (Brian's calls): optional send + receive test through brian@brohde.com; delete vs keep the vestigial local/mysql A rows (rec: delete after a quiet week); AI Crawl Control robots.txt training block ON vs OFF (rec: consider OFF given the LLM-readability goal).

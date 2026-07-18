@@ -1,6 +1,6 @@
 # STATUS — session resume point
 
-_Last updated: 2026-07-17. **PHASE 3 IS MERGED AND DEPLOYED (#170)**: tide transitions, /chat top composer with newest-at-top, homepage Option A (masthead + flow chat bar, slab GONE), via Beyond. The #165 interaction polish (seven eases) rode right behind it. Chat is publicly live behind the capped gateway (#159). A retitle wave landed same-day: gold-coast (#166), atg twice (#167 -> #168), eight-angle (#169). Brian's veto pass on the new frontend is THE open review; the design-director award-readiness audit (#165) runs next. Main = 01f33ba + docs commits._
+_Last updated: 2026-07-18. **THE SITE IS LIVE AT https://brohde.com (#176)**: domain cutover complete, zone active on Cloudflare, apex + www attached to the Pages project, cert valid, all 11 Migadu mail records verified through the new zone (runbook + completion record: `docs/reference/brohde-com-dns-cutover.md`). Phase 4 (Brian's veto-pass edits) is merged, validated 13/13, and deployed with the homepage riders (#173/#174). Phase 3 + the retitle wave (#166-#169) landed before it. The award-readiness audit stays STOPPED (#172), relaunch only on Brian's word. Open from the cutover: Brian's optional test email, vestigial local/mysql A rows, AI crawl training block ON vs OFF._
 
 ## Artifact inventory (published; update via Artifact tool `url` param from any session)
 
@@ -139,7 +139,7 @@ Done this stretch:
 3. **Eight Angle expansion IN FLIGHT (#136)**; Signal pong draft MERGED (a0ff730) awaiting Brian's read + 6 answers. B-roll: Brian trims clips on iPhone (duplicate-per-segment), AirDrops them, lead concatenates/encodes with ffmpeg (25 MiB Pages limit).
 4. **Awaiting Brian**: docs-audit quick-wins go + structural picks (index, STATUS split, scene doc, single-source model policy); ATG + Gold Coast consent; Eight Angle unconfirmed ML numbers + the 3 priority-1 captures (also gating article images); Android-robot attribution placement rides B3. (Fable credits RESTORED, #133.)
 5. **Chat go-live, gate now CONCRETE (#49 executed)**: audit verdict NO-GO until must-fixes land. Sequence: hardening branch merges (H2/M1/L-series, in flight) → BRIAN: create the Cloudflare AI Gateway with a hard spend cap + set `ANTHROPIC_BASE_URL` and `ANTHROPIC_API_KEY` in Pages (exact click-path in `docs/reference/handoffs/chat-hardening.md` when it lands) → decide Turnstile-at-launch vs rate-limit-only (H3) → redeploy → curl-validate `/api/chat` on pages.dev (subagent for browser checks, #82) → surface chat publicly.
-6. Custom domain cutover at DreamHost when launch-ready (#93).
+6. ~~Custom domain cutover at DreamHost when launch-ready (#93)~~ **DONE (#175/#176, 2026-07-18): https://brohde.com live**, record + open riders in `docs/reference/brohde-com-dns-cutover.md`.
 
 ## v2 / backlog (parked, Brian-approved ideas)
 
@@ -176,7 +176,7 @@ Done this stretch:
 - **Brian's C-lab questions**: ~~lowercase vs sentence case~~ ANSWERED: sentence case (#76, sweep in flight); still open: always-dark slab on light ground OK?; does "build.log" stay the archive's public name?
 - Title line: Brian weighing "from training the model to shipping the app" clause + "AI Engineer" in metadata only (batch 46); copywriter exploration offered, not yet ordered
 - ~~LL Circular web license~~ CONFIRMED (#78): C build ships Circular self-hosted on editorial surfaces
-- Where is brohde.com registered? (Not on his Cloudflare account; needed for the domain cutover. Pages ships on a pages.dev URL meanwhile)
+- ~~Where is brohde.com registered?~~ ANSWERED: DreamHost (registrar stays there; DNS now on Cloudflare, cutover complete #176)
 - Editorial before public deploy: pre-date tension (retrospective passages inside pre-dated articles; studio recommends a dated postscript block convention); Eight Angle unconfirmed numbers (pricing, 47-class vs 49-pose, decoy examples); ATG client sign-off + "Workers vs Pages" naming + SiteGround figure; Gold Coast pending Dragan's consent
 - Resume command behavior (print link vs open PDF in new tab — code currently opens same tab, output text claims new tab)
 - ~~Boot: fake caret during the auto-type?~~ MOOT: the boot prescription family is withdrawn (#139); the studio's motion pass owns the question
