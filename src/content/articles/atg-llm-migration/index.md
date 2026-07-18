@@ -1,6 +1,6 @@
 ---
-title: "A one-morning migration: how I moved a $20-a-month WordPress site to Astro and Keystatic for $0"
-description: "A 13-page WordPress migration run through Claude Code: nothing lost, a UI refresh that kept the look, and hosting plus a CMS for $0 a month."
+title: "A one-morning migration: how I upgraded a $20-a-month WordPress site and moved it to free hosting"
+description: "A 13-page WordPress-to-Astro migration run through Claude Code: nothing lost, a UI refresh that kept the look, and hosting plus a Keystatic CMS for $0 a month."
 date: 2026-07-11
 draft: false
 theme: atg
