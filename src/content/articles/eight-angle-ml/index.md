@@ -1,5 +1,5 @@
 ---
-title: "Eight Angle: a yoga practice tracker I built solo, from the on-device pose model to the App Store"
+title: "Eight Angle: a yoga practice tracker iOS app I built solo, from branding to a custom ML model to App Store growth"
 description: "How I built Eight Angle solo: an iOS yoga practice tracker that logs your poses on-device as you flow, plus the brand, App Store growth, and analytics behind it."
 date: 2026-02-12
 draft: false
