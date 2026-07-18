@@ -218,11 +218,24 @@ html.cfocus .wm .caret {
   padding-top: 8px;
   font-family: var(--font-edit);
 }
+/* The role line is a flex row so the profile icons sit on it after "San
+   Francisco" (#151). align-items:center vertically centers the icons' 44px
+   tap targets against the 17.5px text; column-gap sets the breathing room
+   around the middot that separates the text from the icon group. */
 .crole {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 5px;
   font-size: 17.5px;
   line-height: 1.55;
   color: var(--ink);
   margin: 0 0 4px;
+}
+/* The role text kept as one inline unit so the flex row never splits the
+   phrase across items; it also carries the readable wrap the old paragraph
+   had (the container is now a flex row, so the cap lives here). */
+.crole-txt {
   max-width: 40ch;
   text-wrap: pretty;
 }
@@ -265,31 +278,34 @@ html.cfocus .wm .caret {
 .cco a:focus-visible {
   text-decoration-color: var(--accent);
 }
-/* Profile links as monochrome icons (#146): the row is icons, not words, so it
-   leaves the .cco underline grammar above and joins the quiet standalone-link
-   grammar (.snav, ledger rows): rest DIM, hover/focus ACCENT, driven through
+/* Profile links as monochrome icons (#146), now inline on the role line right
+   after "San Francisco" (#151): the row is icons, not words, so it leaves the
+   .cco underline grammar above and joins the quiet standalone-link grammar
+   (.snav, ledger rows): rest DIM, hover/focus ACCENT, driven through
    currentColor on the SVG fills. Not links in running text, so G183/#99 does
    not bind and there is nothing to underline; the color shift plus a
    focus-visible ring carry the affordance. Each 18px mark sits centered in a
-   44x44 target made of padding, no visible chrome, so a phone tap is
-   comfortable without bloating the row (the icons take less width than the old
-   words, so the row gets tighter, not heavier). Marks stay mono in both
-   grounds and invert cleanly to accent (#135 spirit: the phosphor ink system
-   owns the identity, third-party marks read quietly). */
+   30x44 target made of padding, no visible chrome: >=24px wide and >=44px tall
+   clears the WCAG 2.5.8 target-size minimum outright, and the 2px gap keeps
+   adjacent marks from crowding. The box is tighter than the old airy 44x44 so
+   the three icons read as one snug cluster on the line. margin:0 because the
+   row now sits inside the flex .crole, not as its own block. Marks stay mono in
+   both grounds and invert cleanly to accent (#135 spirit: the phosphor ink
+   system owns the identity, third-party marks read quietly). */
 .cprofiles {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0 4px;
-  margin: 8px 0 0;
+  gap: 0 2px;
+  margin: 0;
   padding: 0;
 }
 .cprofiles a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
+  min-width: 30px;
   min-height: 44px;
   color: var(--dim);
   border-radius: 8px;

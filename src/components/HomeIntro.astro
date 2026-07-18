@@ -3,38 +3,50 @@
  * Homepage identity block: the surviving CONTENT of the retired
  * EditorialHeader (B2 Phase 1 chrome unification). The global header
  * (SiteHeader.astro) owns the wordmark + resting caret now, so this block
- * carries the settled #77/#79/#80 lines as homepage content: the role line,
- * the founder credit, the companies line (Facebook/Google landing on their
- * case-study proof) and the profile links, now rendered as monochrome icons
- * (#146; markup + glyph paths live in ProfileLinks.astro). Nothing decided in
- * #80 is lost; D3's homepage adaptation may redesign or relocate it.
+ * carries the settled #77/#79/#80 lines as homepage content: the role line
+ * (which now also carries the profile icons inline, #151), the founder
+ * credit, and the companies line (Facebook/Google landing on their
+ * case-study proof). The profile links render as monochrome icons (#146;
+ * markup + glyph paths live in ProfileLinks.astro). Nothing decided in #80
+ * is lost; D3's homepage adaptation may redesign or relocate it.
  *
  * Interim state (Brian's 2026-07-15 review): NO ↗ markers on these links,
  * external or internal; the ledger keeps its ↗ convention (#68). If the
  * markers come back, restore "one affordance per link type" here.
  * "(contract)" is deliberately quieter: one size step down, dim ink
  * (.cnote, ratios checked >=4.5:1 on both grounds).
- * .bseq marks blocks the boot sequence reveals in order (#36/#64).
  */
 import { COMPANIES, logHref } from "@/lib/site";
 import ProfileLinks from "@/components/ProfileLinks.astro";
 ---
 
 <section class="cid" aria-label="Introduction">
-  <p class="crole bseq">
-    AI Product Engineer <span class="d">·</span> San Francisco
-  </p>
+  {
+    /* The role line is a flex row (a <div>, not a <p>) so the ProfileLinks
+      <ul> can sit on it after "San Francisco" (#151): a <ul> is not valid
+      inside a <p>. The role text stays one inline unit in .crole-txt so the
+      flex row never splits the phrase across items; a matching middot
+      (decorative, aria-hidden) separates it from the icon group, which keeps
+      its own group label. */
+  }
+  <div class="crole">
+    <span class="crole-txt">
+      AI Product Engineer <span class="d">·</span> San Francisco
+    </span>
+    <span class="d" aria-hidden="true">·</span>
+    <ProfileLinks />
+  </div>
   {
     /* explicit {" "} spacers: Astro strips whitespace-only text nodes between
       elements, which would fuse "Founder," to the link and eat the middot
       gaps */
   }
-  <p class="cco bseq">
+  <p class="cco">
     Founder,{" "}
     <a href={COMPANIES.eightAngle} target="_blank" rel="noopener">Eight Angle</a
     >
   </p>
-  <p class="cco bseq">
+  <p class="cco">
     <span class="d">Prev:</span>{" "}
     <a href={COMPANIES.gong} target="_blank" rel="noopener">Gong</a>{" "}
     <span class="d">·</span>{" "}
@@ -44,5 +56,4 @@ import ProfileLinks from "@/components/ProfileLinks.astro";
     <a href={logHref("google-android-for-work")}>Google</a>{" "}
     <span class="cnote">(contract)</span>
   </p>
-  <ProfileLinks class="bseq" />
 </section>
