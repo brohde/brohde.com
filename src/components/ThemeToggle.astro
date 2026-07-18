@@ -55,16 +55,16 @@
 
 <style>
   /* In flow in the footer row: no position, no z-index, no opaque background
-     to hide anything behind (#101). The border keeps it reading as a control
-     rather than as more footer text, which is what the copyright beside it
-     already is. */
+     to hide anything behind (#101). Borderless on Brian's call: the brackets
+     are the control affordance, same as .cbtn; a box around them double-marks
+     the control and forks the bracket grammar. Padding stays for the 44px
+     target. */
   .themectl {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
     padding: 0 10px;
-    border: 1px solid var(--line);
-    border-radius: 7px;
+    border: 0;
     background: none;
     color: var(--dim); /* the brackets */
     font-family: var(--font-mono);
