@@ -1,13 +1,14 @@
 ---
 /**
- * The chat input row: ONE material, two placements (#160 + the
- * chat-surfaces-r1 coherence rule). The global header renders it on every
- * page (hidden on the homepage, the live composer on /chat, the
- * jump-to-chat affordance elsewhere); the homepage renders it as the flow
- * chat bar in the reading column, the slab's successor. Extracted here so
- * the two can never drift: same night phosphor strip, same $ sigil, same
- * placeholder, same [send] chip. Prominence comes from position and
- * stickiness only, never a restyle.
+ * The chat input row: ONE material, three placements (#160 + the
+ * chat-surfaces-r1 coherence rule). The global header renders it as the
+ * jump-to-chat affordance on interior pages (hidden on the homepage and
+ * /chat, which carry their own input); the homepage renders it as the flow
+ * chat bar in the reading column; /chat docks it INTO the phosphor panel as
+ * the panel's top edge (Phase 4B, class "chatcomposer"). Extracted here so
+ * the placements can never drift: same night phosphor strip, same $ sigil,
+ * same placeholder, same [send] chip. Prominence comes from position and
+ * seating only (docked / sticky), never a restyle.
  *
  * Send behavior (#108): the form carries data-screen-form, so terminal.ts's
  * one delegated submit handler routes the value through the one command
@@ -25,12 +26,16 @@
  * is correct.
  */
 interface Props {
-  /** unique input id per placement, e.g. "in-site" (header), "in-home" */
+  /** unique input id per placement, e.g. "in-site" (header), "in-home", "in-chat" */
   inputId: string;
-  /** extra form class, e.g. "flowchat" for the homepage placement */
+  /** extra form class, e.g. "flowchat" (home) or "chatcomposer" (docked /chat) */
   class?: string;
+  /** id of the transcript this composer controls (the docked /chat placement,
+      where the log is server-rendered on the same page, so the reference is
+      never dangling) */
+  ariaControls?: string;
 }
-const { inputId, class: cls } = Astro.props;
+const { inputId, class: cls, ariaControls } = Astro.props;
 ---
 
 <form class:list={["hchat", cls]} action="/chat" data-screen-form>
@@ -47,6 +52,7 @@ const { inputId, class: cls } = Astro.props;
     maxlength="240"
     placeholder="Ask me anything or type help"
     enterkeyhint="send"
+    aria-controls={ariaControls}
   />
   <button type="submit" class="cbtn send" aria-label="Send">
     <span class="br" aria-hidden="true">[</span><span class="lbl">send</span><span

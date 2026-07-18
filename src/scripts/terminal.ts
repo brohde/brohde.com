@@ -8,6 +8,9 @@
  *   - the redirect countdown for model-chosen navigation (#143), the /chat
  *     conversation persistence via sessionStorage (#144), and the header
  *     chat-input dedup on pages that carry their own input (#145)
+ *   - Phase 4: the docked /chat composer's pinned-stuck detection (4B), the
+ *     uniform thinking pulse before deterministic responses + the send motion
+ *     for new turns (4C), and contact as a typed LLM moment (4C)
  *
  * Command autocomplete (#48) and prompt history recall (#44) RETIRED with
  * the homepage slab (#160): they were gated to the slab's .prompt input,
@@ -83,6 +86,26 @@ const OFFLINE_HTML =
 
 let pendingAfter: (() => void) | null = null;
 let pendingFocus: string | null = null;
+/* Phase 4C: pendingAfter can carry a scripted CONTACT EMULATION (type the
+   question, then run the deterministic contact turn) rather than a plain
+   send; the flag lets initPage tell them apart. */
+let pendingEmulate = false;
+
+/* the /chat composer's input id (docked in the panel, Phase 4B): pendingFocus
+   targets it after a navigation lands on /chat, and it is the redirect
+   countdown's focus fallback. The header input (#in-site) is the composer
+   only on interior pages now (a jump-to-chat affordance), never targeted
+   here. */
+const CHAT_INPUT = "in-chat";
+
+/* Phase 4C motion timings (Brian veto knobs). */
+const PULSE_MS = 450; // brief thinking pulse before a deterministic response
+const TYPE_MS = 35; // per-character speed of the contact typing emulation
+const CONTACT_Q = "How do I contact Brian?"; // the emulated contact question
+
+function prefersReducedMotion(): boolean {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
 
 /* -------------------------------------------------- redirect countdown ---- */
 /* #143: when the model answers a QUESTION by choosing an open_page
@@ -131,32 +154,41 @@ function currentScreen(): string {
   );
 }
 
-/* Header chat-input dedup (#145, amended by #153 UNIFY): only the homepage
-   hides the header's chat row (the slab is home's input). On /chat the row
-   IS the composer: un-hidden, sticky via data-screen="chat" (terminal.css),
-   with the transcript growing newest first beneath it. SiteHeader
-   server-renders the correct state per page, and we re-stamp it during the
-   swap because the header is a persisted node that would otherwise carry a
-   stale state. Stamped before paint (astro:after-swap) so nothing shifts
-   layout after the page is visible: zero CLS. The identity row is
-   untouched. */
+/* Header per-page state on the persisted node (#145/#150, amended by Phase 4).
+   The header hides its chat input row on the pages that carry their own chat
+   input: the homepage (flow chat bar) and /chat (Phase 4B: the composer is
+   docked into the panel, so the header row is dropped there too). Interior
+   pages keep the header input as a jump-to-chat affordance. data-screen drives
+   the homepage's large wordmark identity (Phase 4A) and nothing sticky on
+   /chat anymore (Phase 4B: /chat is the standard interior header). SiteHeader
+   server-renders the correct state per page; we re-stamp it during the swap
+   because the header is a persisted node that would otherwise carry a stale
+   state. Stamped before paint (astro:after-swap) so nothing shifts layout
+   after the page is visible: zero CLS. */
 function syncHeaderChat() {
   const header = document.querySelector<HTMLElement>(".shead");
   if (!header) return;
   const p = location.pathname.replace(/\/+$/, "") || "/";
+  const onHome = p === "/";
   const onChat = p === "/chat";
-  header.dataset.hchat = p === "/" ? "off" : "on";
-  header.dataset.screen = onChat ? "chat" : p === "/" ? "home" : "page";
-  // chat-top-spec Q5: programmatically tie the composer to its transcript,
-  // but only while the log exists so the reference is never dangling.
-  const composer = byId("in-site");
-  if (composer) {
-    if (onChat && chatlog()) composer.setAttribute("aria-controls", "chatlog");
-    else composer.removeAttribute("aria-controls");
+  header.dataset.hchat = onHome || onChat ? "off" : "on";
+  header.dataset.screen = onChat ? "chat" : onHome ? "home" : "page";
+  // Phase 4A: the wordmark is the homepage's h1 and a <p> everywhere else.
+  // The header is a persisted node, so the server tag can be a page behind
+  // after a client-side navigation; correct it here, before paint (zero CLS:
+  // h1 and p share identical .wmrow styling). Move the <a class="wm"> intact
+  // into the new wrapper so the caret element itself is never rebuilt.
+  const row = header.querySelector<HTMLElement>(".wmrow");
+  const wantTag = onHome ? "H1" : "P";
+  if (row && row.tagName !== wantTag) {
+    const el = document.createElement(wantTag.toLowerCase());
+    el.className = row.className;
+    while (row.firstChild) el.appendChild(row.firstChild);
+    row.replaceWith(el);
   }
-  // #160: no tag surgery for the wordmark across the persisted swap. It is
-  // ALWAYS a <p> (home's h1 is the body masthead); data-screen="home" hides
-  // it there via CSS, stamped above before paint.
+  // The /chat composer (#in-chat) carries aria-controls="chatlog" straight
+  // from chat.astro (both server-rendered on the same page), so nothing is
+  // wired here; the header input (#in-site) is no longer the /chat composer.
 }
 
 let announcer: HTMLElement | null = null;
@@ -259,16 +291,19 @@ function chatlog(): HTMLElement | null {
    reply, redirect line. The server-rendered intro .cmt lines sink to the
    bottom as the oldest content. beginTurn runs once per user turn (askLive,
    toConsole's run closure); every line builder appends through sink(), so
-   output lands in the active turn, or falls back to the log for stray lines
-   (the "# Cleared" note) and for a stale turn left detached by a
-   navigation. */
+   output lands in the active turn, or falls back to the log for a stale turn
+   left detached by a navigation. */
 let activeTurn: HTMLElement | null = null;
+/* Phase 4C send motion: live turns get the .turn-in entrance (echo lift +
+   reply settle in CSS); turns rebuilt from the stored transcript render
+   settled. rehydrateChat sets this around its replay. */
+let replaying = false;
 
 function beginTurn(): HTMLElement | null {
   const log = chatlog();
   if (!log) return null;
   const t = document.createElement("div");
-  t.className = "turn";
+  t.className = replaying ? "turn" : "turn turn-in";
   log.prepend(t);
   activeTurn = t;
   return t;
@@ -343,11 +378,20 @@ function out(html: string, slot?: HTMLElement | null, replay = false) {
 function clearChat() {
   const log = chatlog();
   if (!log) return;
-  log.innerHTML = "";
-  activeTurn = null; // the note below lands in the log, never a stale turn
+  // Phase 4B: clear returns the panel to its PRISTINE first-visit state, with
+  // NO "# Cleared" note. Drop every conversation turn and reveal the intro
+  // lines again (a rehydrate may have hidden them), so a cleared /chat looks
+  // exactly like arriving fresh. Every user turn begins with beginTurn, so
+  // the only direct log children are the two server intro .cmt lines and the
+  // .turn blocks; removing the turns leaves the pristine intro.
+  for (const t of log.querySelectorAll(":scope > .turn")) t.remove();
+  for (const c of log.querySelectorAll(":scope > .cmt[hidden]"))
+    c.removeAttribute("hidden");
+  activeTurn = null;
   llmHistory.length = 0; // clear wipes the model's context too
   purgeChat(); // #144: and the persisted session, so a cleared chat stays cleared
-  line("cmt", "# Cleared", true); // shown, deliberately not stored
+  scrollToNewest(); // bring the pristine panel back to the top
+  byId("in-chat")?.focus({ preventScroll: true }); // Brian's rider: refocus the input
 }
 
 /* -------------------------------------------- persistence + rehydrate ----- */
@@ -465,10 +509,12 @@ function rehydrateChat() {
   // newest turn on top with natural order kept within each turn. Entries
   // before the first echo (rare) fall through sink() to the log itself.
   activeTurn = null;
+  replaying = true; // rebuilt turns render settled (no send-motion entrance)
   for (const e of transcript) {
     if (e.t === "echo") beginTurn();
     renderEntry(e);
   }
+  replaying = false;
   scrollToNewest();
 }
 
@@ -491,13 +537,15 @@ function toConsole(cmd: string, html: string, viaKb: boolean) {
   const run = () => {
     beginTurn(); // one user turn: the echoed command + its output (#153)
     echo(cmd);
-    out(html);
+    // Phase 4C uniform thinking: a deterministic in-place response shows a
+    // brief pulse before it renders (LLM sends keep the real indicator).
+    pulseThen((slot) => out(html, slot));
   };
   if (currentScreen() === "chat") {
     run();
   } else {
     pendingAfter = run;
-    if (viaKb) pendingFocus = "in-site";
+    if (viaKb) pendingFocus = CHAT_INPUT;
     navigate("/chat");
   }
 }
@@ -715,7 +763,7 @@ function startRedirect(href: string, name: string, slot: HTMLElement | null) {
   const input =
     active && active.matches?.(".hchat input")
       ? (active as HTMLInputElement)
-      : (byId("in-site") as HTMLInputElement | null);
+      : (byId(CHAT_INPUT) as HTMLInputElement | null);
 
   announce(
     `Taking you to ${name} in a few seconds. Press escape, or select stay here, to stay.`
@@ -837,7 +885,82 @@ function toChat(q: string, viaKb: boolean) {
     ask(q);
   } else {
     pendingAfter = () => ask(q);
-    if (viaKb) pendingFocus = "in-site";
+    if (viaKb) pendingFocus = CHAT_INPUT;
+    navigate("/chat");
+  }
+}
+
+/* ------------------------------------------ uniform thinking (Phase 4C) --- */
+/* Deterministic in-place responses get a brief thinking pulse before they
+   render, so every send (LLM or command) feels like the machine is thinking.
+   The pulse reuses the #116 thinking box, so the response lands in the SAME
+   node (zero shift). Reduced motion: no pulse, instant render. Commands that
+   NAVIGATE (about, home, work) never reach here; clicked links stay instant. */
+function pulseThen(render: (slot: HTMLElement | null) => void) {
+  if (prefersReducedMotion()) {
+    render(null);
+    return;
+  }
+  const wait = thinking();
+  window.setTimeout(() => render(wait), PULSE_MS);
+}
+
+/* ------------------------------------- contact as an LLM moment (Phase 4C) - */
+/* sessionStorage may be blocked (private mode); the emulation skips its
+   theater then, like reduced motion, and renders the turn instantly. */
+function storageBlocked(): boolean {
+  try {
+    sessionStorage.getItem(STORE_KEY);
+    return false;
+  } catch {
+    return true;
+  }
+}
+
+/* A fully scripted turn: the echoed line, a brief pulse, then a deterministic
+   response, recorded + announced like any turn. */
+function scriptedTurn(q: string, html: string) {
+  beginTurn();
+  echo(q);
+  pulseThen((slot) => out(html, slot));
+}
+
+/* Clicking the contact nav item (on any page) lands on /chat and types
+   "How do I contact Brian?" into the composer character by character, then
+   auto-submits it as a normal turn whose answer is the deterministic contact
+   card. On /chat it plays in place. Reduced motion or blocked storage: skip
+   the typing theater, render echo + response instantly. Focus ends in the
+   composer. */
+function playContactEmulation() {
+  const input = byId(CHAT_INPUT) as HTMLInputElement | null;
+  const finish = () => {
+    if (input) input.value = "";
+    scriptedTurn(CONTACT_Q, CONTACT_HTML);
+    input?.focus({ preventScroll: true });
+  };
+  if (!input || prefersReducedMotion() || storageBlocked()) {
+    finish();
+    return;
+  }
+  input.focus({ preventScroll: true });
+  let i = 0;
+  const step = () => {
+    i += 1;
+    input.value = CONTACT_Q.slice(0, i);
+    if (i < CONTACT_Q.length) window.setTimeout(step, TYPE_MS);
+    else window.setTimeout(finish, 220); // a beat, then submit
+  };
+  window.setTimeout(step, TYPE_MS);
+}
+
+function contactMoment() {
+  if (currentScreen() === "chat") {
+    playContactEmulation();
+  } else {
+    // ride the pendingAfter mechanism with the emulation flag so initPage
+    // focuses the composer before it types (#153 carry, Phase 4C)
+    pendingAfter = () => playContactEmulation();
+    pendingEmulate = true;
     navigate("/chat");
   }
 }
@@ -872,9 +995,9 @@ function run(raw: string, viaKb: boolean) {
     // open the chat page itself; never send "chat" as a question. The
     // composer is the header input (#153), so that is where focus lands.
     if (currentScreen() === "chat") {
-      byId("in-site")?.focus({ preventScroll: true });
+      byId(CHAT_INPUT)?.focus({ preventScroll: true });
     } else {
-      if (viaKb) pendingFocus = "in-site";
+      if (viaKb) pendingFocus = CHAT_INPUT;
       navigate("/chat");
     }
     return;
@@ -903,6 +1026,32 @@ function run(raw: string, viaKb: boolean) {
 
 /* --------------------------------------------------- per-page init (VT) ---- */
 
+/* Pinned-composer stuck detection (Phase 4B). The composer is
+   position: sticky; top: 0 inside the panel; when it pins to the viewport
+   top a bottom hairline appears so it never reads as a detached strip. There
+   is no cross-browser CSS `:stuck`, so a zero-layout sentinel just above the
+   composer's rest position is watched: once it scrolls above the viewport
+   top, the composer is stuck. Rebuilt per /chat page-load (main is swapped,
+   the nodes are fresh); disconnected when leaving /chat. */
+let pinObserver: IntersectionObserver | null = null;
+function setupPin() {
+  pinObserver?.disconnect();
+  pinObserver = null;
+  if (currentScreen() !== "chat") return;
+  const sentinel = document.querySelector(".pin-sentinel");
+  const composer = document.querySelector<HTMLElement>(".chatcomposer");
+  if (!sentinel || !composer) return;
+  pinObserver = new IntersectionObserver(
+    ([entry]) => {
+      // stuck once the sentinel has scrolled ABOVE the viewport top
+      const stuck = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+      composer.classList.toggle("pinned", stuck);
+    },
+    { threshold: 0 }
+  );
+  pinObserver.observe(sentinel);
+}
+
 function initPage() {
   // roving cursor (#63): the group's tab stop starts at its first element;
   // focus resets to body on swaps, so the resting cursor returns to the
@@ -913,6 +1062,8 @@ function initPage() {
 
   const after = pendingAfter;
   pendingAfter = null;
+  const emulate = pendingEmulate; // Phase 4C: a scripted contact emulation
+  pendingEmulate = false;
   const focusId = pendingFocus;
   pendingFocus = null;
 
@@ -931,8 +1082,15 @@ function initPage() {
     rehydrateChat();
     const r = roveEls();
     if (r.length) setRoveStop(r[0], r);
+    setupPin(); // watch the docked composer for the stuck hairline
+  } else {
+    setupPin(); // disconnects the observer when leaving /chat
   }
 
+  // Phase 4C: a contact emulation owns focus itself (it types into the
+  // composer), so put focus there before it runs; a normal pending send
+  // focuses its input below.
+  if (emulate) byId(CHAT_INPUT)?.focus({ preventScroll: true });
   if (after) after();
   if (focusId) {
     const el = byId(focusId) as HTMLElement | null;
@@ -987,7 +1145,11 @@ function setupOnce() {
     const t = e.target as HTMLElement;
     const btn = t.closest?.<HTMLElement>("button[data-cmd]");
     if (btn && btn.dataset.cmd) {
-      run(btn.dataset.cmd, false);
+      // Phase 4C: clicking any contact affordance (the nav item, an inline
+      // [contact] chip in a reply) is an LLM moment, not the bare command;
+      // typed "contact" still runs the deterministic card directly.
+      if (btn.dataset.cmd === "contact") contactMoment();
+      else run(btn.dataset.cmd, false);
     }
   });
 
