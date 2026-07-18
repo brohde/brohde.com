@@ -12,35 +12,45 @@
  * syncHeaderChat under every swap (the header is a persisted node, #150, so
  * the caret never stops blinking across a navigation and stale state must
  * be corrected before paint):
- *   data-hchat   the input row hides on the homepage only (#145 amended by
- *                #153/#160: home's input is the flow chat bar in the body);
- *   data-screen  "home" hides the wordmark row and right-aligns the nav
- *                (#160: the body masthead is the name and the h1 there;
- *                interior pages keep the wordmark as chrome + home link),
- *                and "chat" makes the header sticky: the input row IS the
- *                /chat composer (#153 UNIFY).
+ *   data-hchat   the input row hides on the pages that carry their own chat
+ *                input: the homepage (flow chat bar) AND /chat (Phase 4B:
+ *                the composer docked into the panel, so the header row is
+ *                dropped there too). Interior pages keep the header input as
+ *                a jump-to-chat affordance;
+ *   data-screen  "home" makes the wordmark the LARGE identity surface (the
+ *                page's h1, Phase 4A) with the nav following it, baseline
+ *                aligned; interior pages and /chat keep the compact 18px
+ *                wordmark as chrome + home link (Phase 4B: /chat reverts to
+ *                the standard interior header, no sticky, no page-ground
+ *                band).
  *
  * The contact nav item is a button through the same router (#107, chat is
- * core navigation): it opens the chat's contact card, the site's one contact
- * surface. Swap to a mailto if Brian vetoes.
+ * core navigation): Phase 4C makes it an LLM moment (lands on /chat and
+ * types "How do I contact Brian?"), see terminal.ts.
  *
- * BaseLayout renders this on EVERY page. The wordmark is always a <p>: the
- * homepage h1 is the body masthead (#160), interior pages carry their own
- * h1 in main.
+ * BaseLayout renders this on EVERY page. The wordmark tag follows the page:
+ * an <h1> on the homepage (its only h1, Phase 4A) and a <p> everywhere else
+ * (interior pages carry their own h1 in main). The server render is correct
+ * on a hard load; syncHeaderChat swaps the tag across the persisted node on
+ * client-side navigations, before paint (zero CLS).
  */
 import ChatBar from "@/components/ChatBar.astro";
 
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
-const ownsInput = path === "/";
-const screen = path === "/chat" ? "chat" : path === "/" ? "home" : "page";
+const isHome = path === "/";
+// /chat now docks the composer into its panel (Phase 4B), so it hides the
+// header input row too, joining the homepage.
+const ownsInput = isHome || path === "/chat";
+const screen = path === "/chat" ? "chat" : isHome ? "home" : "page";
+const Wm = isHome ? "h1" : "p";
 ---
 
 {
   /* transition:persist (#150): the header is the same frame on every page,
   so the node itself survives client-side navigations and the caret is the
   motion system's through-line. Per-page differences (data-hchat,
-  data-screen) are re-stamped by syncHeaderChat on astro:after-swap, before
-  the new frame paints. */
+  data-screen, the wordmark tag) are re-stamped by syncHeaderChat on
+  astro:after-swap, before the new frame paints. */
 }
 <header
   class="shead"
@@ -50,11 +60,11 @@ const screen = path === "/chat" ? "chat" : path === "/" ? "home" : "page";
 >
   <div class="wrap">
     <div class="idrow">
-      <p class="wmrow">
+      <Wm class="wmrow">
         <a class="wm" href="/">
           brian rohde<span class="caret" aria-hidden="true" />
         </a>
-      </p>
+      </Wm>
       <nav class="snav" aria-label="Site">
         <a href="/about">about</a>
         <button type="button" data-cmd="contact">contact</button>

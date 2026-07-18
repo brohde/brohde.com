@@ -7,7 +7,9 @@ import ProfileLinks from "@/components/ProfileLinks.astro";
 // The chat input material (.hchat, ChatBar) renders IDENTICALLY in both
 // panels: it scopes its own fixed night tokens (#67), which is exactly the
 // point. The slab + autocomplete specimens retired with the homepage slab
-// (#160); the masthead + flow chat bar specimen replaced them.
+// (#160). Phase 4A retired the reading-column masthead: the name is the
+// header wordmark rendered large on the homepage (the "global header (home)"
+// specimen below), so the identity block opens on the role line.
 // noindex + excluded from the sitemap.
 
 const swatches = [
@@ -88,13 +90,31 @@ const themes = [
               </div>
             </div>
 
-            <h2 class="sg-h">homepage masthead + editorial identity</h2>
-            {/* #160: the masthead leads the reading column at hero scale;
-                a <p> here so the specimen page adds no stray h1 */}
+            <h2 class="sg-h">global header (home)</h2>
+            {/* Phase 4A: on the homepage the wordmark is the large identity
+                surface (the page h1) with the nav baseline-aligned after it,
+                and no input row (the flow chat bar below is home's input).
+                data-screen="home" drives the large size; a <span> wm here so
+                the specimen adds no stray heading. */}
+            <div class="shead" data-screen="home" style="padding:0">
+              <div class="idrow">
+                <p class="wmrow">
+                  <span class="wm">
+                    brian rohde
+                    <span class="caret" aria-hidden="true" />
+                  </span>
+                </p>
+                <span class="snav">
+                  <span class="snav-spec">about</span>
+                  <span class="snav-spec">contact</span>
+                </span>
+              </div>
+            </div>
+
+            <h2 class="sg-h">homepage editorial identity</h2>
+            {/* Phase 4A: the reading column opens on the role line (the
+                masthead retired; the name is the header wordmark above) */}
             <div class="cid" style="padding-top:0">
-              <p class="masthead" style="margin-bottom:10px">
-                brian rohde<span class="caret" aria-hidden="true" />
-              </p>
               <div class="crole">
                 <span class="crole-txt">
                   AI Product Engineer <span class="d">·</span> San Francisco
@@ -109,8 +129,8 @@ const themes = [
                 <span class="d">Prev:</span> <a href="#">Gong</a>{" "}
                 <span class="d">·</span> <a href="#">Twilio</a>{" "}
                 <span class="d">·</span> <a href="#">Facebook</a> +{" "}
-                <a href="#">Google</a> <span class="cnote">via</span>{" "}
-                <a class="dimlink" href="#">Beyond</a>
+                <a href="#">Google</a>{" "}
+                <span class="cnote">via{" "}<a class="dimlink" href="#">Beyond</a></span>
               </p>
             </div>
 
