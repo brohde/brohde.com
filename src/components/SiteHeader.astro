@@ -48,7 +48,15 @@ const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const ownsInput = path === "/" || path === "/chat";
 ---
 
-<header class="shead" data-hchat={ownsInput ? "off" : "on"}>
+{
+  /* transition:persist (#150): the header is the same frame on every page,
+  so the node itself survives client-side navigations. The wordmark caret
+  literally never stops blinking through a navigation, which makes it the
+  motion system's through-line. Per-page differences (data-hchat, the
+  wordmark's h1-on-home role) are re-stamped by terminal.ts's
+  syncHeaderChat on astro:after-swap, before the new frame paints. */
+}
+<header class="shead" data-hchat={ownsInput ? "off" : "on"} transition:persist="shead">
   <div class="wrap">
     <div class="idrow">
       {

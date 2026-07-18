@@ -3,7 +3,7 @@
    prototypes:
      docs/design/lab/homepage-structure.html  (treatment C: editorial page +
                                                slab + ledger + article variant)
-     docs/design/lab/build-log-v3.html        (prompt, autocomplete, wipe)
+     docs/design/lab/build-log-v3.html        (prompt, autocomplete)
      docs/design/lab/aurora-terminal.html     (two-ground palette)
    Page-level classes reference the semantic tokens in global.css and follow
    the system ground (#40). The slab scopes its own fixed night tokens: it is
@@ -145,6 +145,12 @@ html.cfocus .wm .caret {
   font-size: 13px;
   color: var(--dim);
   text-decoration: none;
+  /* #150 micro-add: the dim-to-accent state change eases instead of
+     snapping, so it reads intentional. The global reduced-motion kill
+     switch collapses this to an instant change. */
+  transition:
+    color 120ms ease,
+    text-decoration-color 120ms ease;
 }
 .snav :is(a, button):hover,
 .snav :is(a, button):focus-visible {
@@ -726,6 +732,7 @@ html.cfocus .wm .caret {
   color: var(--dim);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  transition: color 120ms ease;
 }
 .lttl {
   font-family: var(--font-edit);
@@ -733,10 +740,24 @@ html.cfocus .wm .caret {
   font-size: 15.5px;
   line-height: 1.5;
   color: var(--bright);
+  transition:
+    color 120ms ease,
+    transform 120ms ease;
+}
+/* #150 micro-add: the whole record answers the cursor. The date joins the
+   title's accent, and the title nudges 2px in the reading direction
+   (transform only, compositor-cheap, zero layout). Ties the long list to
+   the single-cursor model (#63); the reduced-motion kill switch makes the
+   change instant, and a static 2px offset on hover is position, not
+   motion. */
+.lentry:hover .lts,
+.lentry:focus-visible .lts {
+  color: var(--accent);
 }
 .lentry:hover .lttl,
 .lentry:focus-visible .lttl {
   color: var(--accent);
+  transform: translateX(2px);
 }
 /* #141: external entries carry their destination domain with the arrow,
    small and lighter than the title, never underlined (#68: inline-block
@@ -1332,26 +1353,9 @@ html.cfocus .wm .caret {
   text-wrap: balance;
 }
 
-/* --------------------------- screen-clear wipe (#64) --------------------- */
-/* The uniform internal-navigation transition, ported from build-log-v3.html:
-   a ground-colored cover with a resting block caret. Timing + lifecycle live
-   in terminal.ts; tokens keep it correct on both grounds. The element sits
-   outside <body> (terminal.ts appends it to <html>) so router swaps never
-   remove it; the global [hidden] rule keeps it display:none at rest. */
-#wipe {
-  position: fixed;
-  inset: 0;
-  z-index: 99;
-  background: var(--ground);
-}
-#wipe span {
-  position: absolute;
-  top: 18px;
-  left: 22px;
-  width: 9px;
-  height: 18px;
-  background: var(--accent);
-}
+/* The screen-clear wipe cover (#64) is RETIRED (#150): navigations must
+   never cover the persistent scene. The reading-column transition lives in
+   global.css (the main view-transition group). */
 
 /* ------------------------------ small screens ---------------------------- */
 /* (the ledger is stacked date + title at every width since batch 77) */
@@ -1361,9 +1365,6 @@ html.cfocus .wm .caret {
   }
   .wrap {
     padding: 0 16px;
-  }
-  #wipe span {
-    left: 16px;
   }
   /* the header compresses but keeps the SAME two-row arrangement with a
      real input (#121): only type and gaps step down (D1 phone shell) */

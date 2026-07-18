@@ -6,10 +6,17 @@
  *     + /slash aliases + free-form -> live chat), ported from build-log-v3.html
  *   - command autocomplete at the prompt (#48)
  *   - shell-style prompt history (#44)
- *   - the roving page cursor (#63) and the terminal wipe transition (#64)
+ *   - the roving page cursor (#63)
  *   - the redirect countdown for model-chosen navigation (#143), the /chat
  *     conversation persistence via sessionStorage (#144), and the header
  *     chat-input dedup on pages that carry their own input (#145)
+ *
+ * Page transitions (#150, "the tide carries you"): this module does NOT drive
+ * them. The one persistent scene ([transition:persist]) keeps drifting through
+ * every navigation, the reading column cross-fade + lift lives entirely in
+ * CSS (the main view-transition group in global.css), and identity travel
+ * rides the scene bridge below (syncSceneState). The old opaque 140ms wipe
+ * cover is retired; nothing may cover the scene during a navigation.
  *
  * View-Transitions safety (E5): all listeners are delegated on `document` and
  * attached exactly once; nothing is bound to a specific node at module scope.
@@ -21,10 +28,7 @@
  * listbox with aria-activedescendant; focus is never trapped; arrow keys act
  * only while a prompt input is focused, so page scrolling is never hijacked.
  */
-import {
-  navigate,
-  TransitionBeforePreparationEvent,
-} from "astro:transitions/client";
+import { navigate } from "astro:transitions/client";
 
 interface Cmd {
   name: string;
@@ -134,7 +138,6 @@ const MAX_LLM = 12; // model-history entries stored; the send slices to 8, so a
 
 /* --------------------------------------------------------------- helpers --- */
 
-const RM = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const byId = (id: string) => document.getElementById(id);
 
 function currentScreen(): string {
@@ -153,9 +156,24 @@ function currentScreen(): string {
 function syncHeaderChat() {
   const header = document.querySelector<HTMLElement>(".shead");
   if (!header) return;
-  const p = location.pathname;
-  const ownsInput = p === "/" || p === "/chat" || p === "/chat/";
+  const p = location.pathname.replace(/\/+$/, "") || "/";
+  const ownsInput = p === "/" || p === "/chat";
   header.dataset.hchat = ownsInput ? "off" : "on";
+  // The header is a persisted node (#150: it holds still through every
+  // navigation so the caret never stops), so per-page server-rendered
+  // differences must be re-stamped here, under the swap, before paint. The
+  // wordmark row is the homepage's h1 and a p everywhere else; the persisted
+  // node carries the OLD page's tag, so rebuild the row's tag to match the
+  // arriving page. Visual output is identical (.wmrow styles the tag away),
+  // so this costs nothing on screen; it keeps the heading semantics honest.
+  const row = header.querySelector<HTMLElement>(".wmrow");
+  const wantTag = p === "/" ? "H1" : "P";
+  if (row && row.tagName !== wantTag) {
+    const next = document.createElement(wantTag);
+    next.className = row.className;
+    while (row.firstChild) next.appendChild(row.firstChild);
+    row.replaceWith(next);
+  }
 }
 
 function visibleInput(): HTMLInputElement | null {
@@ -194,66 +212,14 @@ function hint(msg: string) {
   }, 2600);
 }
 
-/* ------------------------------------------ route transitions (#64) ------- */
-/* Named transition kinds, resolved per navigation:
- *
- * "wipe" (#64), for EVERY internal navigation: a ground-colored cover with a
- * resting block caret drops before the old page changes, the swap happens
- * underneath (the underlying view transition is animation:none in
- * global.css), and the cover lifts ~50ms after the new page has rendered, so
- * the destination is always visually complete when it appears. Home <-> chat
- * is no exception anymore: the C2 slab morph retired with the full-window
- * chat (#108); /chat is a normal page and rides the house wipe. Deeper
- * designed transitions are Phase 3 work.
- *
- * "instant" under reduced motion: no cover, no held loader.
- */
-type TransitionKind = "wipe" | "instant";
-
-const WIPE_HOLD_MS = 140; // cover time before the swap may land
-const WIPE_LIFT_MS = 50; // settle time after the new page renders
-
-let wipeEl: HTMLElement | null = null;
-let wipeTimer = 0; // one handle for pending lift AND failsafe: a new drop cancels both
-let navKind: TransitionKind = "instant"; // kind of the navigation in flight
-
-function resolveTransition(): TransitionKind {
-  return RM() ? "instant" : "wipe";
-}
-
-function wipe(): HTMLElement {
-  if (!wipeEl) {
-    wipeEl = document.createElement("div");
-    wipeEl.id = "wipe";
-    wipeEl.hidden = true;
-    wipeEl.setAttribute("aria-hidden", "true");
-    wipeEl.appendChild(document.createElement("span"));
-    // Attached to <html>, not <body>: the router swaps the body wholesale,
-    // and the cover must survive the swap to bridge old and new page.
-    document.documentElement.appendChild(wipeEl);
-  }
-  return wipeEl;
-}
-
-function dropWipe() {
-  const w = wipe();
-  w.hidden = false;
-  clearTimeout(wipeTimer);
-  // never leave the page covered if a navigation dies midway
-  wipeTimer = window.setTimeout(() => {
-    w.hidden = true;
-  }, 4000);
-}
-
-function liftWipe() {
-  if (!wipeEl || wipeEl.hidden) return;
-  clearTimeout(wipeTimer);
-  // plain timeout, deliberately no rAF: rAF never fires in a hidden or
-  // throttled tab and would leave the cover stuck over the page
-  wipeTimer = window.setTimeout(() => {
-    if (wipeEl) wipeEl.hidden = true;
-  }, WIPE_LIFT_MS);
-}
+/* ------------------------------------------ route transitions (#150) ------ */
+/* Nothing to do in script. The tide carries you: the persistent scene is
+ * never covered, the reading column cross-fade + lift is the CSS-driven
+ * main view-transition group (global.css), and the identity travel is the
+ * scene bridge at the bottom of this file. The old wipe cover (#64) and its
+ * loader hold are retired; navigations resolve as fast as the router can
+ * swap. Reduced motion collapses the column move to an instant swap through
+ * the explicit view-transition override in global.css. */
 
 /* ------------------------------------------------- roving cursor (#63) ---- */
 /* One page cursor: the block caret rests on the wordmark; Tab reaches the
@@ -755,7 +721,7 @@ function commitRedirect(href: string) {
     clearInterval(redirect.timer);
     redirect = null;
   }
-  navigate(href); // the normal 140ms wipe (instant under reduced motion)
+  navigate(href); // the house transition (#150; instant under reduced motion)
 }
 
 /* All cancel paths (#143 req 2) route here: Escape, the stay control, and
@@ -1293,40 +1259,14 @@ function setupOnce() {
     }
   });
 
-  // Route transitions (#64), resolved per navigation. Wipe: drop the cover
-  // as soon as an internal navigation starts and hold the router's loader so
-  // it stays down for at least WIPE_HOLD_MS before the swap can land.
-  // Applies to every direction (links, commands, Escape, back/forward all
-  // flow through the router).
-  document.addEventListener("astro:before-preparation", (e) => {
-    navKind = resolveTransition();
-    if (navKind !== "wipe") return;
-    dropWipe();
-    const prep = e instanceof TransitionBeforePreparationEvent ? e : null;
-    if (prep) {
-      const started = Date.now();
-      const load = prep.loader;
-      prep.loader = async () => {
-        await load();
-        const left = WIPE_HOLD_MS - (Date.now() - started);
-        if (left > 0) await new Promise((r) => setTimeout(r, left));
-      };
-    }
-  });
-
-  // Lift the wipe only after the new page is rendered and initialized, so
-  // the destination is visually complete the moment it appears.
-  document.addEventListener("astro:page-load", () => {
-    liftWipe();
-  });
-
   // #143: a navigation away during a countdown cancels it silently; the timer
   // must never fire after the visitor has already left /chat (also closes the
   // back-button loop: the destination push happened, nothing re-triggers).
   document.addEventListener("astro:before-swap", () => cancelRedirect("nav"));
 
-  // #145: stamp the header's chat-input visibility during the swap (before
-  // paint, under the wipe cover) and again on page-load as a safety net.
+  // #145/#150: stamp the persisted header's per-page state during the swap
+  // (astro:after-swap runs before the new frame paints, so the stamp can
+  // never shift visible layout) and again on page-load as a safety net.
   document.addEventListener("astro:after-swap", syncHeaderChat);
   document.addEventListener("astro:page-load", syncHeaderChat);
 
