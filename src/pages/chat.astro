@@ -1,32 +1,39 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Scene from "@/components/Scene.astro";
+import ChatBar from "@/components/ChatBar.astro";
 
 /**
- * /chat, a normal page in the global shell (#108, B2 Phase 2). The frame is
- * the same as every other page: global header above, footer below, the
- * transcript in the LEFT COLUMN (#109) with the right gutter kept for the
- * scene.
+ * /chat, a normal page in the global shell (#108). The frame is the same as
+ * every other page: standard global header above (Phase 4B: /chat reverts to
+ * the interior header, no sticky band, minus the input row), footer below,
+ * the transcript in the LEFT COLUMN (#109) with the right gutter kept for
+ * the scene.
  *
- * The composer is the HEADER input row (#153, UNIFY; chat-top-spec): the
- * persistent header row is un-hidden here, sticky at the top, and the old
- * bottom dock is retired with nothing in its place. The transcript flows
- * NEWEST FIRST: each send prepends a .turn block directly beneath the
- * composer (terminal.ts beginTurn), so the answer blooms where the visitor
- * is already looking; older turns flow downward and the two intro lines
- * below sink to the very bottom as the oldest content (they hide once a
- * stored thread restores).
+ * Phase 4B: the composer LEAVES the header and docks INTO the phosphor
+ * panel as its top edge, so the input and the transcript read as ONE
+ * continuous night-material object (Brian: the header input felt disjointed
+ * from the response box). It is the same ChatBar material as everywhere else
+ * (one source), seated seamlessly (no border between the input row and the
+ * transcript; the panel's outer border + radius wrap both), and PINNED
+ * (position: sticky; top: 0) within the panel so it stays in view while a
+ * long thread scrolls, releasing when the panel's bottom passes.
  *
- * The panel is the slab screen material (#67) sized to its content
- * (chat-surfaces-r1 Q4: the composer left, so the old fill-the-viewport rule
- * would leave a void), with no title bar or ready dot (machine cosplay #116
- * retired; the phosphor material already reads as a screen). Golden hour
- * (#74) is atmosphere only: the scene mounts in its chat state and the
- * panel's halo warms to amber; every ink stays the one phosphor material.
- * Copy sentence-cased per #76. The [help] [clear] keybar stays: chat
- * controls only the chat provides, never nav the site already carries.
+ * The transcript flows NEWEST FIRST: each send prepends a .turn block
+ * directly beneath the composer (terminal.ts beginTurn), so the answer
+ * blooms where the visitor is already looking; older turns flow downward and
+ * the two intro lines below sink to the bottom as the oldest content (they
+ * hide once a stored thread restores, and return on clear, Phase 4B).
+ *
+ * The panel (slab screen material, #67) gets a min-height that extends it to
+ * ~28px above the viewport bottom on load (Phase 4B), so the object fills the
+ * first view and the footer falls below the fold; long content grows the
+ * panel and the PAGE scrolls (no internal scroll region). No title bar or
+ * ready dot (machine cosplay #116 retired). Golden hour (#74) is atmosphere
+ * only. Copy sentence-cased per #76. Keybar is [clear] only, right-aligned
+ * (Phase 4B): [help] still works typed; [clear] is the one control the site
+ * nav does not otherwise carry.
  */
-const keys = ["help", "clear"];
 ---
 
 <BaseLayout
@@ -46,21 +53,30 @@ const keys = ["help", "clear"];
       <main id="main">
         <h1 class="sr">Chat</h1>
         <section class="slab slab-chat" aria-label="Chat">
+          {
+            /* the pin sentinel: a 0-layout marker terminal.ts watches with an
+            IntersectionObserver to know when the sticky composer is stuck at
+            the viewport top (so it can gain its bottom hairline only then). */
+          }
+          <div class="pin-sentinel" aria-hidden="true"></div>
+          {
+            /* the composer docked as the panel's top edge (Phase 4B): ONE
+            material with the site's chat input, seamless with the transcript
+            below, sticky within the panel. aria-controls ties it to its
+            transcript, server-rendered on this same page. */
+          }
+          <ChatBar
+            inputId="in-chat"
+            class="chatcomposer"
+            ariaControls="chatlog"
+          />
           <div class="slabbody chatbody">
             <nav class="keybar chatcmds" aria-label="Commands">
-              {
-                keys.map((cmd) => (
-                  <button type="button" class="cbtn" data-cmd={cmd}>
-                    <span class="br" aria-hidden="true">
-                      [
-                    </span>
-                    <span class="lbl">{cmd}</span>
-                    <span class="br" aria-hidden="true">
-                      ]
-                    </span>
-                  </button>
-                ))
-              }
+              <button type="button" class="cbtn" data-cmd="clear">
+                <span class="br" aria-hidden="true">[</span>
+                <span class="lbl">clear</span>
+                <span class="br" aria-hidden="true">]</span>
+              </button>
             </nav>
             <div class="chatlog" id="chatlog">
               {/* on localhost terminal.ts swaps this line for the live-POC note */}
@@ -77,8 +93,7 @@ const keys = ["help", "clear"];
               /* no live region here: terminal.ts owns the single polite
               announcer (created lazily on document.body), so chat output and
               the #116 thinking state can never double-announce. It is also
-              what bridges the composer in the banner landmark to this
-              transcript in main (chat-top-spec Q5). */
+              what bridges the composer to this transcript in main. */
             }
           </div>
         </section>
