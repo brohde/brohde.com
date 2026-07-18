@@ -24,9 +24,9 @@ Reader-facing length: ~790 words of prose (the raw body count of ~955 includes t
 
 Current (wrong-framed) title was "Eight Angle: a 47-class yoga pose classifier that runs on-device."
 
-- **PICK (shipped): "Eight Angle: a yoga practice tracker I built solo, from the on-device pose model to the App Store"** — product first ("yoga practice tracker"), founder signal ("solo"), the hard tech correctly subordinated ("on-device pose model"), the full arc ("to the App Store" = shipped + branded + marketed). First person, sentence case, no dashes.
-- Alt B (curiosity/benefit-led, shorter): "Eight Angle: how I turned a phone camera into a yoga practice tracker" — captures the core mechanism in one line; omits the brand/growth arc.
-- Alt C (compact, neutral): "Eight Angle: a solo-built yoga tracker with an on-device pose model at its core" — correctly orders product over tech; least evocative.
+- **PICK (shipped): "Eight Angle: a yoga practice tracker I built solo, from the on-device pose model to the App Store"**, product first ("yoga practice tracker"), founder signal ("solo"), the hard tech correctly subordinated ("on-device pose model"), the full arc ("to the App Store" = shipped + branded + marketed). First person, sentence case, no dashes.
+- Alt B (curiosity/benefit-led, shorter): "Eight Angle: how I turned a phone camera into a yoga practice tracker", captures the core mechanism in one line; omits the brand/growth arc.
+- Alt C (compact, neutral): "Eight Angle: a solo-built yoga tracker with an on-device pose model at its core", correctly orders product over tech; least evocative.
 
 I shipped the pick because the piece now spans the whole funnel and the client reader is buying end-to-end ownership. Brian may swap in B or C.
 
@@ -63,14 +63,14 @@ I shipped the pick because the piece now spans the whole funnel and the client r
 
 Concision mandate + unverified-numbers rule both point the same way. Cut:
 
-1. **The whole `stats` band** (47 / 92.2% / ~20fps) — unconfirmed; see Frontmatter.
+1. **The whole `stats` band** (47 / 92.2% / ~20fps), unconfirmed; see Frontmatter.
 2. **Model-spec numbers**: "39 features" (now "geometric features"), "2,332 samples," "92.2% cross-validated," "~20fps" (now "in real time"), "47 classes" (now "yoga poses"). All on the unverified list; also the "unnecessarily detailed" kind for a client reader.
-3. **The classification-accuracy pair in the migration** (89.6% -> 93.4%) — kept only the detection-rate jump (71.2 -> 97.4) and the honest headstand regression (12.2%), which is the strongest, tightest version of that beat.
-4. **The decoy-classes / "Transition" filtering paragraph** — a genuinely nice UX-aware-ML insight, but inside-baseball for a client and needs setup. Easy to restore as one sentence if Brian wants the "he thinks about false positives, not just accuracy" signal.
-5. **The disciplined-experimentation sprint** (shoulder_angle 79.4->87.1, hip_slope_signed 9->4 misclassifications, the rejected twist feature 92.6->92.3) — all unverified per-pose numbers and the densest "superfluous detail" in the old piece.
-6. **The counterintuitive confidence-threshold result** (0.001 winning) — a second migration nuance; cut for length.
-7. **The 2fps timeline split / memory numbers** (68MB->2MB, 97%), **the sliding-window consensus lock** (0.6s / 99% / 460ms), **the 63ms watchdog timing** — cut; kept only the *shape* of the PiP bug (silent data loss, only outside the debugger, caught by telemetry).
-8. **iCloud sync, iOS 17 version floor** — real but minor product facts; cut for length.
+3. **The classification-accuracy pair in the migration** (89.6% -> 93.4%), kept only the detection-rate jump (71.2 -> 97.4) and the honest headstand regression (12.2%), which is the strongest, tightest version of that beat.
+4. **The decoy-classes / "Transition" filtering paragraph**, a genuinely nice UX-aware-ML insight, but inside-baseball for a client and needs setup. Easy to restore as one sentence if Brian wants the "he thinks about false positives, not just accuracy" signal.
+5. **The disciplined-experimentation sprint** (shoulder_angle 79.4->87.1, hip_slope_signed 9->4 misclassifications, the rejected twist feature 92.6->92.3), all unverified per-pose numbers and the densest "superfluous detail" in the old piece.
+6. **The counterintuitive confidence-threshold result** (0.001 winning), a second migration nuance; cut for length.
+7. **The 2fps timeline split / memory numbers** (68MB->2MB, 97%), **the sliding-window consensus lock** (0.6s / 99% / 460ms), **the 63ms watchdog timing**, cut; kept only the *shape* of the PiP bug (silent data loss, only outside the debugger, caught by telemetry).
+8. **iCloud sync, iOS 17 version floor**, real but minor product facts; cut for length.
 
 Anything here is resurrectable in a sentence or two on Brian's word.
 
@@ -78,9 +78,9 @@ Anything here is resurrectable in a sentence or two on Brian's word.
 
 The prior **live** article had **no** figure slots, so nothing was preserved from it. I **consciously added three** invisible HTML-comment slots (build-safe, no broken `src`, drop-in ready against the `facebook-newsroom` `<figure>` pattern), matching Brian's owed captures (#132):
 
-1. **Live pose overlay** (after the intro) — the skeleton overlay naming a pose mid-practice.
+1. **Live pose overlay** (after the intro), the skeleton overlay naming a pose mid-practice.
 2. **The audit gallery** (in "Recognizing the poses").
-3. **The brand** (in "The brand and the store") — logo and/or marketing-site home page.
+3. **The brand** (in "The brand and the store"), logo and/or marketing-site home page.
 
 Not slotted but available if wanted: the practice-review/timeline screen and the PiP tile in use (the other two of Brian's owed app captures). The expansion draft's fourth idea (practice timeline) folds naturally into the opener if a capture lands.
 
@@ -91,7 +91,7 @@ Not slotted but available if wanted: the practice-review/timeline screen and the
 3. **Any real growth/analytics number you'll publish?** The brand/growth/activation arc is deliberately metric-free (I refuse to invent). One real figure, a funnel conversion, a trial-to-paid rate, installs, a CPA, would sharpen it a lot per your own metric-first voice rule, and would be the only quantified proof outside the (unverified) ML migration.
 4. **Stats band:** dropped because all three were unverified. To restore it, either (a) confirm 47 / 92.2% / ~20fps and I put them back, or (b) I build a confirmed-facts band (e.g. "$39.99/yr," "iOS 17+," "free to record"), though those read like an app-info box, not proof of skill. My recommendation: leave it off until you confirm the ML numbers.
 5. **Platform:** I said "iPhone and iPad." The App Store listing also shows macOS 14 (M1+) and visionOS 1. Add "and Mac and Vision Pro," or keep it to iPhone/iPad?
-6. **"static Astro build on Cloudflare"** — inherited the expansion draft's inference from your resume's "Astro/Cloudflare web platform." Fine to keep; flag if the marketing site is actually SSR or something else.
+6. **"static Astro build on Cloudflare"**, inherited the expansion draft's inference from your resume's "Astro/Cloudflare web platform." Fine to keep; flag if the marketing site is actually SSR or something else.
 7. **The unverified ML numbers still standing in the body** (71.2 / 97.4 / 12.2) are the migration beat #157 told me to keep with its existing hedging. Say the word if you'd rather I soften them to plain language too (e.g. "found a body in only about seven in ten images ... to nearly all of them"); it costs the crispness but removes the last precise unverified figures from reader-facing copy.
 
 ## Validation
