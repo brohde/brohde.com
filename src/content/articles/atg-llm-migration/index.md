@@ -1,6 +1,6 @@
 ---
-title: "Migrating anthonythomasgalante.com off WordPress with Claude Code, in a morning"
-description: "A 13-page WordPress migration with nothing lost, a UI refresh that kept the look, and hosting plus a CMS for $0 a month."
+title: "A one-morning migration: how I moved a $20-a-month WordPress site to Astro and Keystatic for $0"
+description: "A 13-page WordPress migration run through Claude Code: nothing lost, a UI refresh that kept the look, and hosting plus a CMS for $0 a month."
 date: 2026-07-11
 draft: false
 theme: atg
@@ -30,7 +30,7 @@ Same pattern on the collection pages: three structurally different hero treatmen
 
 ## From $20 a month to $0
 
-The old site cost about $20 a month for plain WordPress hosting. The new one is built to run for free. Cloudflare hosts it, deploying straight from the repo. Keystatic Cloud handles the CMS, also free: Anthony signs in with his own email, no GitHub account, no code, and edits collections, lookbooks, and press entries directly. Every save writes a file into the same repo the site builds from, so his content isn't locked inside a CMS vendor's database; if he ever wants to swap the editing tool later, the files underneath are still just files. Hosting and content editing together: $0 a month, once DNS cutover clears the one blocker left, which is registrar access on his end, not the build.
+The old site cost about $20 a month for plain WordPress hosting. The new one is a static Astro build that runs for free. Cloudflare hosts it, deploying straight from the repo. Keystatic Cloud handles the CMS, also free: Anthony signs in with his own email, no GitHub account, no code, and edits collections, lookbooks, and press entries directly. Every save writes a file into the same repo the site builds from, so his content isn't locked inside a CMS vendor's database; if he ever wants to swap the editing tool later, the files underneath are still just files. Hosting and content editing together: $0 a month, once DNS cutover clears the one blocker left, which is registrar access on his end, not the build.
 
 ## Where the time actually went
 
