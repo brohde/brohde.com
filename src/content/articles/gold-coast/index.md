@@ -1,5 +1,5 @@
 ---
-title: "He designed his site in ChatGPT. I took it from Squarespace to Astro, LLM in the loop."
+title: "He designed his site in ChatGPT. I ditched Squarespace for Claude Code, Astro, and Keystatic, and you should too."
 description: "A wealth management client designed his own site in ChatGPT, pixel by pixel; I built it in Astro and used Pastel to turn his 435 review comments into a real, accessible site."
 date: 2026-06-30
 draft: false
@@ -28,7 +28,7 @@ The build itself is Astro 5 and Tailwind v4, with the client's editable copy, st
 
 Once pages were live on a preview build, I put them in front of my client through Pastel, a tool that lets him comment directly on the rendered page instead of a static mockup. He used it heavily: 435 comments across eight pages, almost all from him, pointing at real elements in the real build. I worked them in navigation order, page by page. Each comment got triaged against the actual design system: clear ones got built outright, genuinely ambiguous ones went back to him before I touched any code. Nothing got marked resolved until he'd seen a before-and-after of the exact change.
 
-That loop is the whole story in miniature. He designed with an LLM. I built and iterated with one, reading his comments, proposing changes grounded in the real codebase, not just pixel matching. Pastel closed the distance between what he pointed at and what shipped.
+That loop is the whole story in miniature. He designed in ChatGPT. I built and iterated in Claude Code, reading his comments, proposing changes grounded in the real codebase, not just pixel matching. Pastel closed the distance between what he pointed at and what shipped.
 
 ## Where judgment beat the machine
 
