@@ -8,14 +8,21 @@
 # `nodejs_compat` is declared so any node: builtin the SDK reaches for is available in
 # production, matching the local `wrangler pages dev` run used to validate this.
 #
-# Secrets are NOT declared here (they carry values): ANTHROPIC_API_KEY (and later
-# TURNSTILE_SECRET) are Pages secrets set in the dashboard. ANTHROPIC_BASE_URL
-# (AI Gateway) is a plain env var, dashboard or here, when wired.
+# Secrets are NOT declared here (they carry values): ANTHROPIC_API_KEY and
+# ANTHROPIC_GATEWAY_TOKEN (and later TURNSTILE_SECRET) are Pages secrets set in
+# the dashboard. This project's plain vars are wrangler.toml-managed (the
+# dashboard only accepts secrets), so ANTHROPIC_BASE_URL lives in [vars] below.
 
 name = "brohde-com"
 pages_build_output_dir = "dist"
 compatibility_date = "2025-05-01"
 compatibility_flags = ["nodejs_compat"]
+
+# AI Gateway (authenticated) in front of the Anthropic API: hard $5/month spend
+# cap + analytics + the cf-aig-authorization token requirement. Account id and
+# gateway name are resource handles, not secrets.
+[vars]
+ANTHROPIC_BASE_URL = "https://gateway.ai.cloudflare.com/v1/213f69c43833e169364e81268ec223e8/brohde-chat/anthropic"
 
 # Per-IP rate-limit store for /api/chat (namespace created 2026-07-15 via
 # `wrangler kv namespace create CHAT_RL`; the id is a resource handle, not a secret).
