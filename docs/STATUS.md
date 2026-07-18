@@ -139,6 +139,7 @@ Done this stretch:
 
 ## v2 / backlog (parked, Brian-approved ideas)
 
+- **Matrix identity marks as ASCII art** (Brian, 2026-07-17: "Im interested in seeing the Matrix marks as ASCII art. don't work on this now, just remember."): explore rendering the per-article scene marks (8/f/robot/GCCM/etc.) as ASCII art instead of or alongside the density-tide treatment. Explicitly parked; do not build without his go.
 - **Contact form inside the chat** (Brian: "that would be pretty cool"): chat collects name/email/message conversationally, submits via the production Worker
 - Ephemeral visitor-to-visitor chat (#32, parked)
 - Presence planes with your-plane marker + steering (#43), post-v1
