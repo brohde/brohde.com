@@ -79,7 +79,18 @@ const props = Astro.props;
 <html lang={SITE.lang}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {
+      /* interactive-widget=resizes-content (#153, chat-top-spec Q3): the
+      layout viewport shrinks when the on-screen keyboard opens, so 100dvh,
+      sticky positioning, and scroll offsets all account for it exactly.
+      Global by nature; the site has no bottom-fixed UI (the /chat dock
+      retired with the composer move), so nothing depends on the old
+      overlay behavior. Browsers without the key ignore it. */
+    }
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, interactive-widget=resizes-content"
+    />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link
       rel="alternate"
