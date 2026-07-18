@@ -34,7 +34,7 @@ The feature I'm proudest of is Picture-in-Picture recording: follow a YouTube cl
 
 ## The brand and the store
 
-A model nobody installs is a research project. Everything a stranger sees first, I made: the logo, the marketing site (a static Astro build on Cloudflare), and the App Store listing, which is its own product surface. App Store Optimization is the store's SEO; its title, subtitle, keywords, and screenshots decide who finds a yoga app in search. To turn those searches into installs I run Apple Search Ads: figuring out what people actually type, grouping terms by intent, setting bids, and pushing spend toward what converts. Left alone, the account drifts into paying for the wrong taps, so I tune it on a schedule.
+A model nobody installs is a research project. Everything a stranger sees first, I made: the logo, the [marketing site](https://eightangle.com) (a static Astro build on Cloudflare), and the App Store listing, which is its own product surface. App Store Optimization is the store's SEO; its title, subtitle, keywords, and screenshots decide who finds a yoga app in search. To turn those searches into installs I run Apple Search Ads: figuring out what people actually type, grouping terms by intent, setting bids, and pushing spend toward what converts. Left alone, the account drifts into paying for the wrong taps, so I tune it on a schedule.
 
 <!--
 FIGURE SLOT (asset owed by Brian): the brand.
@@ -49,4 +49,6 @@ I obsessed over that first run. Onboarding is as frictionless as I could make it
 
 ## What made it possible
 
-I built all of it alone: the app, the ML pipeline, the brand and marketing site, the ads, the analytics. The honest how: I run Claude Code in parallel across git worktrees, one agent on the ML pipeline while another works the iOS app, each scoped by its own instructions, with the design decisions written down because that reasoning is what has to survive when AI does more of the typing. It multiplies what I can build. Catching the one place in twelve where it's subtly wrong is still on me.
+I built all of it alone: the app, the ML pipeline, the brand and marketing site, the ads, the analytics. The honest how: I run Claude Code in parallel across git worktrees, one agent on the ML pipeline while another works the iOS app, each scoped by its own instructions, with the design decisions written down because that reasoning is what has to survive when AI does more of the typing. It multiplies what I can build. Catching the places where it's subtly wrong is still on me.
+
+Eight Angle is free on the [App Store](https://apps.apple.com/us/app/eight-angle-yoga-pose-tracker/id6760512056).
