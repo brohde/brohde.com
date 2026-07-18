@@ -1,0 +1,57 @@
+---
+/**
+ * The chat input row: ONE material, two placements (#160 + the
+ * chat-surfaces-r1 coherence rule). The global header renders it on every
+ * page (hidden on the homepage, the live composer on /chat, the
+ * jump-to-chat affordance elsewhere); the homepage renders it as the flow
+ * chat bar in the reading column, the slab's successor. Extracted here so
+ * the two can never drift: same night phosphor strip, same $ sigil, same
+ * placeholder, same [send] chip. Prominence comes from position and
+ * stickiness only, never a restyle.
+ *
+ * Send behavior (#108): the form carries data-screen-form, so terminal.ts's
+ * one delegated submit handler routes the value through the one command
+ * router. Free-form questions navigate to /chat and auto-ask on arrival
+ * (the pendingAfter carry); typed commands (help, about, work...) run
+ * deterministically. On /chat a send submits into the conversation in
+ * place. action="/chat" is only the no-JS fallback so a raw submit never
+ * reloads the current page with ?q=; script always prevents it.
+ *
+ * The [send] chip (chat-surfaces-r1 Q3): the bracket-fill grammar so the
+ * field reads as a composer, not a search box, and phone users get a tap
+ * target for the primary action. type="submit", so it rides the same
+ * delegated submit path as Enter (enterkeyhint labels the key). On pages
+ * where the row is a jump-to-chat affordance the chip reads as "go", which
+ * is correct.
+ */
+interface Props {
+  /** unique input id per placement, e.g. "in-site" (header), "in-home" */
+  inputId: string;
+  /** extra form class, e.g. "flowchat" for the homepage placement */
+  class?: string;
+}
+const { inputId, class: cls } = Astro.props;
+---
+
+<form class:list={["hchat", cls]} action="/chat" data-screen-form>
+  <label class="sr" for={inputId}>Ask me anything or type help</label>
+  <span class="p" aria-hidden="true">$</span>
+  <input
+    id={inputId}
+    name="q"
+    type="text"
+    autocomplete="off"
+    autocapitalize="off"
+    autocorrect="off"
+    spellcheck="false"
+    maxlength="240"
+    placeholder="Ask me anything or type help"
+    enterkeyhint="send"
+  />
+  <button type="submit" class="cbtn send" aria-label="Send">
+    <span class="br" aria-hidden="true">[</span><span class="lbl">send</span><span
+      class="br"
+      aria-hidden="true">]</span
+    >
+  </button>
+</form>

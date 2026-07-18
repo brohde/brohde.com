@@ -4,12 +4,17 @@
  * One bundled module drives every interactive terminal behavior:
  *   - deterministic command router (work/about/resume/contact/help/home/clear
  *     + /slash aliases + free-form -> live chat), ported from build-log-v3.html
- *   - command autocomplete at the prompt (#48)
- *   - shell-style prompt history (#44)
  *   - the roving page cursor (#63)
  *   - the redirect countdown for model-chosen navigation (#143), the /chat
  *     conversation persistence via sessionStorage (#144), and the header
  *     chat-input dedup on pages that carry their own input (#145)
+ *
+ * Command autocomplete (#48) and prompt history recall (#44) RETIRED with
+ * the homepage slab (#160): they were gated to the slab's .prompt input,
+ * which no longer exists anywhere. Every remaining input is the one .hchat
+ * material (the header row + the homepage flow bar), which submits through
+ * the delegated form handler. Revival path if wanted: chat-top-spec.md
+ * Phase B (parity on the .hchat inputs); the machinery is in git history.
  *
  * Page transitions (#150, "the tide carries you"): this module does NOT drive
  * them. The one persistent scene ([transition:persist]) keeps drifting through
@@ -30,25 +35,9 @@
  */
 import { navigate } from "astro:transitions/client";
 
-interface Cmd {
-  name: string;
-  desc: string;
-}
-
 /* Copy case (#76): human-language strings use sentence case; lowercase is
    reserved for literal terminal tokens (typed commands, file-ish names like
    resume.pdf, URLs and emails). */
-const COMMANDS: Cmd[] = [
-  { name: "work", desc: "Browse the log" },
-  { name: "about", desc: "Who I am" },
-  { name: "resume", desc: "resume.pdf" },
-  { name: "contact", desc: "Email + LinkedIn" },
-  { name: "chat", desc: "Ask me anything" },
-  { name: "hello", desc: "A quick tour" },
-  { name: "help", desc: "List commands" },
-  { name: "home", desc: "Back to the log" },
-  { name: "clear", desc: "Wipe this chat" },
-];
 /* static console strings (innerHTML sinks below take only these) */
 const HELP_HTML =
   "Commands\n" +
@@ -92,12 +81,8 @@ const OFFLINE_HTML =
 
 /* ---------------------------------------------------------------- state ---- */
 
-const history: string[] = []; // typed commands, this session
-let histIndex = 0;
 let pendingAfter: (() => void) | null = null;
 let pendingFocus: string | null = null;
-
-const ac = { open: false, items: [] as Cmd[], sel: -1, promptId: "" };
 
 /* -------------------------------------------------- redirect countdown ---- */
 /* #143: when the model answers a QUESTION by choosing an open_page
@@ -169,29 +154,9 @@ function syncHeaderChat() {
     if (onChat && chatlog()) composer.setAttribute("aria-controls", "chatlog");
     else composer.removeAttribute("aria-controls");
   }
-  // The header is a persisted node (#150: it holds still through every
-  // navigation so the caret never stops), so per-page server-rendered
-  // differences must be re-stamped here, under the swap, before paint. The
-  // wordmark row is the homepage's h1 and a p everywhere else; the persisted
-  // node carries the OLD page's tag, so rebuild the row's tag to match the
-  // arriving page. Visual output is identical (.wmrow styles the tag away),
-  // so this costs nothing on screen; it keeps the heading semantics honest.
-  const row = header.querySelector<HTMLElement>(".wmrow");
-  const wantTag = p === "/" ? "H1" : "P";
-  if (row && row.tagName !== wantTag) {
-    const next = document.createElement(wantTag);
-    next.className = row.className;
-    while (row.firstChild) next.appendChild(row.firstChild);
-    row.replaceWith(next);
-  }
-}
-
-function visibleInput(): HTMLInputElement | null {
-  return document.querySelector<HTMLInputElement>(".prompt input");
-}
-
-function promptIdOf(input: HTMLInputElement): string {
-  return input.closest<HTMLElement>("[data-prompt]")?.dataset.prompt ?? "";
+  // #160: no tag surgery for the wordmark across the persisted swap. It is
+  // ALWAYS a <p> (home's h1 is the body masthead); data-screen="home" hides
+  // it there via CSS, stamped above before paint.
 }
 
 let announcer: HTMLElement | null = null;
@@ -278,15 +243,6 @@ function moveRoveEnd(last: boolean) {
   const next = els[last ? els.length - 1 : 0];
   setRoveStop(next, els);
   next.focus();
-}
-
-function setCaretEnd(input: HTMLInputElement) {
-  const n = input.value.length;
-  try {
-    input.setSelectionRange(n, n);
-  } catch {
-    /* some input types disallow selection; ignore */
-  }
 }
 
 /* ------------------------------------------------------------ chat output -- */
@@ -757,7 +713,7 @@ function startRedirect(href: string, name: string, slot: HTMLElement | null) {
   // fallback is the header composer, /chat's input since #153
   const active = document.activeElement as HTMLElement | null;
   const input =
-    active && active.matches?.(".prompt input, .hchat input")
+    active && active.matches?.(".hchat input")
       ? (active as HTMLInputElement)
       : (byId("in-site") as HTMLInputElement | null);
 
@@ -894,9 +850,6 @@ function run(raw: string, viaKb: boolean) {
   const low = v.toLowerCase();
   const cmd = low.startsWith("/") ? low.slice(1) : low;
 
-  if (history[history.length - 1] !== v) history.push(v);
-  histIndex = history.length;
-
   if (cmd === "work") {
     goHomeThen(scrollToLog);
     return;
@@ -948,142 +901,9 @@ function run(raw: string, viaKb: boolean) {
   toChat(v, viaKb);
 }
 
-/* -------------------------------------------------------------- autocomplete */
-
-function matchCommands(raw: string): Cmd[] {
-  if (raw === "/") return COMMANDS.slice();
-  if (raw === "") return [];
-  const q = (raw.startsWith("/") ? raw.slice(1) : raw).toLowerCase();
-  if (q === "") return [];
-  const starts = COMMANDS.filter((c) => c.name.startsWith(q));
-  if (starts.length) return starts;
-  return COMMANDS.filter((c) => c.name.includes(q));
-}
-
-function acContainer(promptId: string) {
-  return byId(`ac-${promptId}`);
-}
-function acList(promptId: string) {
-  return byId(`ac-list-${promptId}`);
-}
-
-function closeAC() {
-  const input = visibleInput();
-  if (ac.promptId) {
-    const c = acContainer(ac.promptId);
-    const l = acList(ac.promptId);
-    if (c) c.hidden = true;
-    if (l) l.innerHTML = "";
-  }
-  if (input) {
-    input.setAttribute("aria-expanded", "false");
-    input.removeAttribute("aria-activedescendant");
-  }
-  ac.open = false;
-  ac.items = [];
-  ac.sel = -1;
-}
-
-function optionId(promptId: string, i: number) {
-  return `ac-${promptId}-opt-${i}`;
-}
-
-function renderAC(input: HTMLInputElement, items: Cmd[]) {
-  const promptId = promptIdOf(input);
-  const container = acContainer(promptId);
-  const list = acList(promptId);
-  if (!container || !list) return;
-
-  ac.open = true;
-  ac.items = items;
-  ac.sel = -1;
-  ac.promptId = promptId;
-
-  list.innerHTML = "";
-  items.forEach((c, i) => {
-    const li = document.createElement("li");
-    li.className = "ac-chip";
-    li.setAttribute("role", "option");
-    li.id = optionId(promptId, i);
-    li.dataset.cmd = c.name;
-    li.setAttribute("aria-selected", "false");
-    const name = document.createElement("span");
-    name.textContent = c.name;
-    const desc = document.createElement("span");
-    desc.className = "ac-desc";
-    desc.textContent = c.desc;
-    li.appendChild(name);
-    li.appendChild(desc);
-    list.appendChild(li);
-  });
-
-  container.hidden = false;
-  input.setAttribute("aria-expanded", "true");
-  input.removeAttribute("aria-activedescendant");
-}
-
-function refreshAC(input: HTMLInputElement) {
-  const items = matchCommands(input.value);
-  if (!items.length) {
-    closeAC();
-    return;
-  }
-  renderAC(input, items);
-}
-
-function updateSel(next: number) {
-  if (!ac.open || !ac.items.length) return;
-  const count = ac.items.length;
-  ac.sel = ((next % count) + count) % count;
-  const input = visibleInput();
-  const list = acList(ac.promptId);
-  if (!list || !input) return;
-  const options = list.querySelectorAll<HTMLElement>(".ac-chip");
-  options.forEach((el, i) => {
-    el.setAttribute("aria-selected", String(i === ac.sel));
-  });
-  const active = options[ac.sel];
-  if (active) {
-    input.setAttribute("aria-activedescendant", active.id);
-    active.scrollIntoView({ block: "nearest" });
-  }
-}
-
-function acceptTop() {
-  if (!ac.open || !ac.items.length) return;
-  const idx = ac.sel >= 0 ? ac.sel : 0;
-  const input = visibleInput();
-  if (!input) return;
-  input.value = ac.items[idx].name;
-  setCaretEnd(input);
-  closeAC();
-}
-
-/* --------------------------------------------------------------- history --- */
-
-function recall(dir: -1 | 1, input: HTMLInputElement) {
-  if (!history.length) return;
-  if (dir === -1) {
-    if (histIndex > 0) histIndex--;
-  } else {
-    if (histIndex < history.length - 1) histIndex++;
-    else {
-      histIndex = history.length;
-      input.value = "";
-      setCaretEnd(input);
-      return;
-    }
-  }
-  input.value = history[histIndex] ?? "";
-  setCaretEnd(input);
-}
-
 /* --------------------------------------------------- per-page init (VT) ---- */
 
 function initPage() {
-  closeAC();
-  histIndex = history.length;
-
   // roving cursor (#63): the group's tab stop starts at its first element;
   // focus resets to body on swaps, so the resting cursor returns to the
   // wordmark (cfocus off) until focus lands somewhere live again.
@@ -1140,11 +960,11 @@ function setupOnce() {
     }
   });
 
-  // Form submit fallback (virtual keyboards / IME that submit without a
-  // keydown Enter). Capture phase + preventDefault so it lands before Astro's
-  // ClientRouter submit handler, which would otherwise hijack the GET form and
-  // navigate to /?q=... Keyboard Enter is handled in keydown below, which
-  // cancels the submit before it ever fires.
+  // THE submit path for every input (both ChatBar placements): Enter fires
+  // the native form submission, the [send] chip is type=submit, and virtual
+  // keyboards / IME land here too. Capture phase + preventDefault so it runs
+  // before Astro's ClientRouter submit handler, which would otherwise hijack
+  // the GET form and navigate to /chat?q=...
   document.addEventListener(
     "submit",
     (e) => {
@@ -1157,36 +977,28 @@ function setupOnce() {
       if (!input) return;
       run(input.value, true);
       input.value = "";
-      closeAC();
     },
     true
   );
 
-  // clicks: autocomplete chips, menu/keybar buttons. Anchors (back link, log
-  // entries) fall through to ClientRouter untouched.
+  // clicks: keybar + nav command buttons. Anchors (log entries, inline chat
+  // links) fall through to ClientRouter untouched.
   document.addEventListener("click", (e) => {
     const t = e.target as HTMLElement;
-    const chip = t.closest?.<HTMLElement>(".ac-chip");
-    if (chip && chip.dataset.cmd) {
-      run(chip.dataset.cmd, false);
-      const input = visibleInput();
-      if (input) input.value = "";
-      return;
-    }
     const btn = t.closest?.<HTMLElement>("button[data-cmd]");
     if (btn && btn.dataset.cmd) {
       run(btn.dataset.cmd, false);
     }
   });
 
-  // single-cursor bookkeeping (#63): html.cfocus hides the wordmark caret
-  // while the cursor group or a chat input owns focus; the roving tab stop
-  // follows focus (clicks included) so Tab re-enters where the cursor left.
-  // The global header's input (.hchat, B2 Phase 1) joins the same model so
-  // typing there never shows two carets.
+  // single-cursor bookkeeping (#63): html.cfocus hides the resting caret
+  // (the header wordmark's, and the homepage masthead's, #160) while the
+  // cursor group or a chat input owns focus; the roving tab stop follows
+  // focus (clicks included) so Tab re-enters where the cursor left. Every
+  // input is the one .hchat material, so one selector covers them all.
   document.addEventListener("focusin", (e) => {
     const t = e.target as HTMLElement;
-    const live = !!t.matches?.(".prompt input, .hchat input") || isRove(t);
+    const live = !!t.matches?.(".hchat input") || isRove(t);
     document.documentElement.classList.toggle("cfocus", live);
     if (isRove(t)) {
       setRoveStop(t);
@@ -1202,23 +1014,18 @@ function setupOnce() {
     }
   });
 
-  // input: refresh autocomplete for the active prompt
+  // input: typing during a redirect countdown is a cancel signal
   document.addEventListener("input", (e) => {
     const input = e.target as HTMLElement;
     // #143 req 2: a visitor typing their next message has chosen to stay.
     // Cancel the countdown but let the keystroke through (no preventDefault).
-    if (redirect && input.matches?.(".prompt input, .hchat input")) {
+    if (redirect && input.matches?.(".hchat input")) {
       cancelRedirect("type");
-    }
-    if (input.matches?.(".prompt input")) {
-      refreshAC(input as HTMLInputElement);
-      histIndex = history.length;
     }
   });
 
-  // keyboard: escape, autocomplete cycling/accept, and prompt history.
-  // Arrow/Tab logic only runs while a prompt input is focused, so page
-  // scrolling is never hijacked (#44).
+  // keyboard: escape + the roving cursor. Arrow logic only runs while a
+  // cursor element already holds focus, so page scrolling is never hijacked.
   document.addEventListener("keydown", (e) => {
     const t = e.target as HTMLElement;
 
@@ -1231,16 +1038,11 @@ function setupOnce() {
         cancelRedirect("escape");
         return;
       }
-      if (ac.open) {
-        e.preventDefault();
-        closeAC();
-        return;
-      }
       // single-cursor model (#63): the first Escape parks the cursor back on
-      // the wordmark (blur); from rest, Escape leaves non-home screens. The
-      // header input (.hchat) blurs first too, so Escape mid-question never
-      // throws typed text away by navigating.
-      if (t && (t.matches?.(".prompt input, .hchat input") || isRove(t))) {
+      // the resting caret (blur); from rest, Escape leaves non-home screens.
+      // An input blurs first too, so Escape mid-question never throws typed
+      // text away by navigating.
+      if (t && (t.matches?.(".hchat input") || isRove(t))) {
         e.preventDefault();
         t.blur();
         return;
@@ -1271,56 +1073,10 @@ function setupOnce() {
       return;
     }
 
-    if (!t?.matches?.(".prompt input")) return;
-    const input = t as HTMLInputElement;
-
-    // Enter runs the highlighted suggestion, or the typed text. preventDefault
-    // here cancels the native form submission, so ClientRouter never sees it.
-    if (e.key === "Enter") {
-      e.preventDefault();
-      if (ac.open && ac.sel >= 0) run(ac.items[ac.sel].name, true);
-      else run(input.value, true);
-      input.value = "";
-      closeAC();
-      return;
-    }
-
-    if (ac.open) {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        updateSel(ac.sel + 1);
-        return;
-      }
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        updateSel(ac.sel <= 0 ? ac.items.length - 1 : ac.sel - 1);
-        return;
-      }
-      if (e.key === "Tab" && !e.shiftKey) {
-        e.preventDefault();
-        acceptTop();
-        return;
-      }
-      if (
-        e.key === "ArrowRight" &&
-        input.selectionStart === input.value.length &&
-        input.selectionEnd === input.value.length
-      ) {
-        e.preventDefault();
-        acceptTop();
-        return;
-      }
-      return;
-    }
-
-    // autocomplete closed: arrows recall command history
-    if (e.key === "ArrowUp") {
-      e.preventDefault();
-      recall(-1, input);
-    } else if (e.key === "ArrowDown") {
-      e.preventDefault();
-      recall(1, input);
-    }
+    // Enter in a chat input rides the NATIVE form submission into the one
+    // delegated submit handler above; no keydown handling is needed (#160:
+    // the .prompt-specific Enter/autocomplete/history block retired with
+    // the slab).
   });
 
   // #143: a navigation away during a countdown cancels it silently; the timer

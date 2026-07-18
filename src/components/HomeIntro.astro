@@ -1,14 +1,13 @@
 ---
 /**
- * Homepage identity block: the surviving CONTENT of the retired
- * EditorialHeader (B2 Phase 1 chrome unification). The global header
- * (SiteHeader.astro) owns the wordmark + resting caret now, so this block
- * carries the settled #77/#79/#80 lines as homepage content: the role line
- * (which now also carries the profile icons inline, #151), the founder
+ * Homepage identity block (#160, homepage restructure Option A): the
+ * masthead leads the reading column at the original C-era hero scale, the
+ * page's h1 and the resting cursor's home (#63; the header wordmark chrome
+ * hides on this page, see SiteHeader). Beneath it the settled #77/#79/#80
+ * lines: the role line (with the profile icons inline, #151), the founder
  * credit, and the companies line (Facebook/Google landing on their
  * case-study proof). The profile links render as monochrome icons (#146;
- * markup + glyph paths live in ProfileLinks.astro). Nothing decided in #80
- * is lost; D3's homepage adaptation may redesign or relocate it.
+ * markup + glyph paths live in ProfileLinks.astro).
  *
  * Interim state (Brian's 2026-07-15 review): NO ↗ markers on these links,
  * external or internal; the ledger keeps its ↗ convention (#68). If the
@@ -21,6 +20,9 @@ import ProfileLinks from "@/components/ProfileLinks.astro";
 ---
 
 <section class="cid" aria-label="Introduction">
+  <h1 class="masthead">
+    brian rohde<span class="caret" aria-hidden="true"></span>
+  </h1>
   {
     /* The role line is a flex row (a <div>, not a <p>) so the ProfileLinks
       <ul> can sit on it after "San Francisco" (#151): a <ul> is not valid
@@ -46,6 +48,15 @@ import ProfileLinks from "@/components/ProfileLinks.astro";
     <a href={COMPANIES.eightAngle} target="_blank" rel="noopener">Eight Angle</a
     >
   </p>
+  {
+    /* #162: "(contract)" replaced by "via Beyond": the agency named and
+      linked (the #21 no-employment-implication honesty now reads as
+      provenance, not a disclaimer). Deliberately QUIET per Brian: "via"
+      wears the old note's dim ink (.cnote) and "Beyond" is a dim
+      underlined link (.dimlink), never accent: the underline carries the
+      affordance (G183), dim measures 7.19:1 night / 7.97:1 light. No
+      arrow (#68 interim rule for these lines holds). */
+  }
   <p class="cco">
     <span class="d">Prev:</span>{" "}
     <a href={COMPANIES.gong} target="_blank" rel="noopener">Gong</a>{" "}
@@ -54,6 +65,9 @@ import ProfileLinks from "@/components/ProfileLinks.astro";
     <span class="d">·</span>{" "}
     <a href={logHref("facebook-newsroom")}>Facebook</a> +{" "}
     <a href={logHref("google-android-for-work")}>Google</a>{" "}
-    <span class="cnote">(contract)</span>
+    <span class="cnote">via</span>{" "}
+    <a class="dimlink" href={COMPANIES.beyond} target="_blank" rel="noopener"
+      >Beyond</a
+    >
   </p>
 </section>

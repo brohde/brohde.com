@@ -1,8 +1,8 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import ChatBar from "@/components/ChatBar.astro";
 import HomeIntro from "@/components/HomeIntro.astro";
 import Scene from "@/components/Scene.astro";
-import Slab from "@/components/Slab.astro";
 import ArticleLog from "@/components/ArticleLog.astro";
 import { SITE, LINKS, COMPANIES } from "@/lib/site";
 
@@ -49,7 +49,16 @@ const website = {
     <div class="wrap homepad">
       <main id="main">
         <HomeIntro />
-        <Slab promptId="home" />
+        {
+          /* The flow chat bar (#160): the slab's successor. The same input
+          material as the header row (ChatBar.astro), condensed, in the
+          reading flow between the identity block and the ledger; a send
+          navigates to /chat with the question carried (pendingAfter). The
+          hint line beneath is the quiet feedback surface (hint() in
+          terminal.ts): command nudges and the one-time cursor hint. */
+        }
+        <ChatBar inputId="in-home" class="flowchat" />
+        <p class="cmt hint" id="hint-top" aria-live="polite"></p>
         <ArticleLog />
       </main>
     </div>

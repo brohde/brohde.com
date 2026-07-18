@@ -161,13 +161,18 @@ html.cfocus .wm .caret {
 }
 /* The chat, the machine's mouth on every page (D1 call 1): a strip of the
    always-night phosphor material, the homechip idiom grown into a real
-   field. Fixed night values on purpose: the measured ratios hold under
-   either page ground (typed #F2F7F3 17.60:1, placeholder #8FA79A 7.41:1,
-   mark #7EE787 12.42:1 on #0B110E). 48px chrome sizing against the homepage
-   surface's 60px hero (D1 call 7); 16px font is the iOS no-zoom floor. The
-   placeholder shows at rest on every surface, header and homepage alike (the
-   old boot typing sequence that hid the homepage invitation is gone, #149). */
+   field, rendered by ChatBar.astro in the header AND as the homepage flow
+   bar (#160): one material, prominence by position only. Fixed night TOKEN
+   SCOPE like the slab, so every child (the $ sigil, the [send] chip and its
+   bracket-fill hover) resolves the measured night values under either page
+   ground (typed #F2F7F3 17.60:1, placeholder #8FA79A 7.41:1, mark #7EE787
+   12.42:1 on #0B110E). 48px chrome sizing (D1 call 7); 16px font is the iOS
+   no-zoom floor. The placeholder shows at rest on every surface (#149). */
 .hchat {
+  --accent: #7ee787;
+  --on-accent: #0b110e;
+  --dim: #8fa79a;
+
   display: flex;
   align-items: center;
   gap: 9px;
@@ -180,8 +185,20 @@ html.cfocus .wm .caret {
   box-shadow: 0 0 14px rgba(126, 231, 135, 0.14);
   color-scheme: dark;
 }
-.hchat .p {
-  color: #7ee787;
+/* the [send] chip (chat-surfaces-r1 Q3): the one bracket-fill control on the
+   input material, so the field reads composer, not search box. .cbtn carries
+   the grammar (accent label, dim brackets, accent fill on hover/focus via
+   the unified rule); this only seats it. */
+.hchat .send {
+  min-width: 44px;
+  justify-content: center;
+  flex: none;
+}
+/* the homepage flow bar (#160): the same strip in the reading flow between
+   the identity block and the ledger; only spacing differs from the header
+   placement, never the material */
+.hchat.flowchat {
+  margin: 28px 0 0;
 }
 .hchat input {
   flex: 1;
@@ -230,15 +247,47 @@ html.cfocus .wm .caret {
   z-index: 40;
   background: var(--ground);
 }
+/* #160: on the homepage the body masthead is the name and the h1, so the
+   header's wordmark chrome hides and the nav tokens hold the top right.
+   Server-stamped and re-stamped under the swap like data-hchat, so the
+   state is correct at every first paint: zero CLS. Interior pages keep the
+   wordmark as chrome and home link. */
+.shead[data-screen="home"] .wmrow {
+  display: none;
+}
+.shead[data-screen="home"] .idrow {
+  justify-content: flex-end;
+}
 
 /* -------------------- editorial identity (#67 treatment C) --------------- */
-/* The homepage identity block, now CONTENT under the global header (B2
-   Phase 1): Circular, the system ground, sentence case (#76). The wordmark
-   row moved into the header chrome; these are the surviving #80 lines.
-   Compact on purpose: the slab is the distinctive object. */
+/* The homepage identity block: Circular, the system ground, sentence case
+   (#76). Led by the masthead (#160): the C-era hero wordmark restored to
+   the reading column at its original scale (recovered values), lowercase
+   per #115, the page's h1 and the resting cursor's home (#63). */
 .cid {
   padding-top: 8px;
   font-family: var(--font-edit);
+}
+.masthead {
+  font-family: var(--font-edit);
+  font-weight: 700;
+  font-size: clamp(34px, 7.5vw, 50px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--bright);
+  margin: 0 0 14px;
+}
+.masthead .caret {
+  width: 0.4em;
+  height: 0.78em;
+  vertical-align: -0.04em;
+  margin-left: 0.08em;
+}
+/* Single-cursor model (#63): while the roving cursor or a chat input owns
+   focus (html.cfocus), the masthead caret yields exactly like the header
+   wordmark's, so one cursor is visible at a time. */
+html.cfocus .masthead .caret {
+  visibility: hidden;
 }
 /* The role line is a flex row so the profile icons sit on it after "San
    Francisco" (#151). align-items:center vertically centers the icons' 44px
@@ -298,6 +347,23 @@ html.cfocus .wm .caret {
 }
 .cco a:hover,
 .cco a:focus-visible {
+  text-decoration-color: var(--accent);
+}
+/* #162: the Beyond credit is a QUIET link: dim ink matching its "via" note,
+   full-strength dim underline as the affordance (non-color, so G183 never
+   binds; dim itself measures 7.19:1 night / 7.97:1 light on the ground,
+   past the 4.5:1 AA floor). Hover and focus step up to the accent per the
+   site's quiet-link grammar (rest dim, engage accent: nav tokens, ledger
+   rows); stepping only to ink is the softer alternative if Brian wants it
+   quieter still. Placed after the .cco hover rules so the rest state wins
+   the same-specificity fight by order. */
+.cco a.dimlink {
+  color: var(--dim);
+  text-decoration-color: var(--dim);
+}
+.cco a.dimlink:hover,
+.cco a.dimlink:focus-visible {
+  color: var(--accent);
   text-decoration-color: var(--accent);
 }
 /* Profile links as monochrome icons (#146), now inline on the role line right
@@ -364,13 +430,13 @@ html.cfocus .wm .caret {
 }
 
 /* Unified fill treatment for EVERY bracket-style interactive element:
-   command menu + keybar (.cbtn), theme control (.themectl, folded in with
+   keybar + [send] chip (.cbtn), theme control (.themectl, folded in with
    #101 when it docked into the footer and its local copy of this rule
    became a duplicate; the old chat screen's .backbtn retired with the
-   full-window takeover, #108). On hover and focus-visible the label fills
-   with the accent and flips to ground-colored text; the brackets stay put
-   (prototype treatment from build-log-v3.html).
-   One rule so they can never drift. */
+   full-window takeover, #108; the slab command menu retired with the slab,
+   #160). On hover and focus-visible the label fills with the accent and
+   flips to ground-colored text; the brackets stay put (prototype treatment
+   from build-log-v3.html). One rule so they can never drift. */
 .cbtn:hover .lbl,
 .cbtn:focus-visible .lbl,
 .themectl:hover .lbl,
@@ -380,13 +446,12 @@ html.cfocus .wm .caret {
   text-decoration: none;
 }
 
-/* ---------------------- command menu + prompt ---------------------------- */
-.menu {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 8px;
-  margin: 8px 0 0;
-}
+/* ---------------------- bracket controls --------------------------------- */
+/* The homepage slab, its command menu, the hero prompt, and the command
+   autocomplete (#48) + prompt history surfaces RETIRED with #160 (the flow
+   chat bar is home's input; the machinery's revival path is chat-top-spec
+   Phase B on the .hchat inputs). .cbtn survives as the bracket-control
+   grammar: the /chat keybar and the [send] chip. */
 .cbtn {
   display: inline-flex;
   align-items: center;
@@ -400,150 +465,21 @@ html.cfocus .wm .caret {
 }
 /* hover/focus fill lives in the unified bracket rule above */
 
-/* the prompt + its autocomplete popover share a positioning context */
-.promptzone {
-  position: relative;
-  margin-top: 6px;
-}
-
-/* Roomier prompt (Brian's 2026-07-15 review, #89b). Height is driven by the
-   input's own padding, not these min-heights, so the step lives there: 13px
-   to 17px per side takes the field from ~52px to ~60px, one 8px move on the
-   4px grid. Deliberate, but not a jump. The min-heights below track it as a
-   floor. Font stays 16px: that is the iOS no-zoom floor and the mono scale is
-   shared with the styleguide specimen. */
-.prompt {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid var(--line-strong);
-  background: var(--well);
-  border-radius: 8px;
-  padding: 2px 14px;
-  min-height: 60px;
-}
-.prompt:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 14px rgba(126, 231, 135, 0.14);
-}
-.iwrap {
-  flex: 1;
-  min-width: 0;
-  position: relative;
-  display: flex;
-  overflow: hidden;
-}
-.prompt input {
-  flex: 1;
-  min-width: 0;
-  background: none;
-  border: 0;
-  color: var(--bright);
-  font-family: var(--font-mono);
-  font-size: 16px; /* >=16px: never zooms on iOS focus */
-  line-height: 1.4;
-  caret-color: var(--accent);
-  padding: 17px 0; /* #89b: the roomier field, see .prompt above */
-}
-.prompt input::placeholder {
-  color: transparent;
-  opacity: 1;
-}
-.prompt input:focus::placeholder {
-  color: var(--dim);
-}
-.prompt input:focus {
-  outline: none;
-}
-.ph {
-  display: none;
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  align-items: center;
-  gap: 2px;
-  pointer-events: none;
-  color: var(--dim);
-  font-size: 16px;
-  white-space: nowrap;
-}
-.prompt input:placeholder-shown:not(:focus) + .ph {
-  display: flex;
-}
-
-/* ------------------- command autocomplete (#48) -------------------------- */
-/* Suggestions render as chips above the prompt. Keyboard: Tab/ArrowRight
-   accept the top match, ArrowUp/Down cycle, Enter runs. Touch: tap a chip. */
-.ac {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(100% + 6px);
-  z-index: 30;
-  border: 1px solid var(--line-strong);
-  background: var(--well);
-  border-radius: 8px;
-  padding: 6px;
-  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.22);
-}
-.ac[hidden] {
-  display: none !important;
-}
-.ac-head {
-  color: var(--dim);
-  font-size: 11px;
-  padding: 2px 4px 6px;
-}
-.ac-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.ac-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 0 10px;
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  background: transparent;
-  color: var(--accent);
-  font: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.ac-chip .ac-desc {
-  color: var(--dim);
-  font-size: 12px;
-}
-.ac-chip:hover,
-.ac-chip[aria-selected="true"] {
-  background: var(--accent);
-  color: var(--on-accent);
-}
-.ac-chip:hover .ac-desc,
-.ac-chip[aria-selected="true"] .ac-desc {
-  color: var(--on-accent);
-}
-
 .hint {
   min-height: 1.4em;
   margin: 6px 0 0;
   transition: opacity 300ms;
 }
 
-/* ------------------ the slab: one always-night object (#67) --------------- */
-/* The terminal is a SCREEN on the page, not the page's paint. Local token
+/* ------------- the slab material: one always-night screen (#67) ----------- */
+/* The screen is an object on the page, not the page's paint. Local token
    override: every child resolves to these fixed night values in both site
    grounds, so the measured night ratios hold everywhere (lab: mint 12.42:1,
    dim 7.41:1, ink 14.63:1 on the slab ground). In light mode it reads as a
    CRT sitting on paper; in night mode, a screen in a dark room, separated by
-   border + halo, never by contrast. Everything interactive lives inside it. */
+   border + halo, never by contrast. Since #160 its one consumer is the
+   /chat transcript panel (.slab-chat below): the homepage slab retired in
+   favor of the masthead + flow chat bar. */
 .slab {
   --ground: #0b110e;
   --ink: #d6e5dc;
@@ -605,60 +541,8 @@ html.cfocus .wm .caret {
     0 0 34px rgba(126, 231, 135, 0.18),
     0 14px 34px rgba(0, 0, 0, 0.28);
 }
-.slabhead {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--line);
-  color: var(--dim);
-  font-size: 11.5px;
-}
-.ccstat {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  display: inline-block;
-}
 .slabbody {
   padding: 10px 14px;
-}
-.slabhello {
-  margin: 0 0 2px;
-  color: var(--ink);
-}
-.slab .menu {
-  margin: 0;
-  padding: 2px 0 4px;
-  gap: 0 8px;
-}
-.slab .promptzone {
-  margin-top: 0;
-}
-/* inside the slab the prompt is part of the screen, not a boxed well */
-.slab .prompt {
-  border: 0;
-  border-top: 1px solid var(--line);
-  background: none;
-  border-radius: 0;
-  padding: 2px 0;
-  min-height: 58px; /* #89b: tracks the base prompt's 8px step */
-}
-.slab .prompt:focus-within {
-  border-color: var(--line);
-  box-shadow: none; /* the slab itself lights up instead */
-}
-.slab .hint {
-  font-size: 12px;
-  color: var(--dim);
-  margin: 2px 0 0;
 }
 
 /* ---------------- /chat: the surface as a page in the shell (#108) -------- */
