@@ -1163,6 +1163,28 @@ html.cfocus .wm .caret {
   }
 }
 
+/* #152: at gutter widths the article's identity mark already lives in the
+   scene's right gutter (Scene.astro), so the band showing it too would be
+   a duplicate. The band itself stays exactly as is (geometry, mask, glyph
+   field texture); only the settled mark still (painted into the canvas by
+   initHeroBand) is suppressed, and the glyph field is held at its resting
+   opacity instead of yielding to a mark that is not there. Gate matches
+   the shell's own gutter breakpoint (body:has(.scene), the .wrap left-anchor
+   rule above) so band and gutter can never disagree about which widths
+   actually show the gutter. Below this width the band keeps the mark, since
+   the gutter falls back to a faint background treatment with no legible
+   mark of its own. Both rules only touch opacity (already transitioned,
+   already none'd under reduced motion above), so crossing the breakpoint
+   costs no layout and no new transition rules. */
+@media (min-width: 1000px) {
+  body:has(.scene) .heroband.live::before {
+    opacity: 0.2;
+  }
+  body:has(.scene) .heroband.live canvas {
+    opacity: 0;
+  }
+}
+
 .adate {
   font-family: var(--font-mono);
   font-size: 12.5px;
