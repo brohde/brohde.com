@@ -202,9 +202,11 @@ html.cfocus .wm .caret {
 }
 /* the homepage flow bar (#160): the same strip in the reading flow between
    the identity block and the ledger; only spacing differs from the header
-   placement, never the material */
+   placement, never the material. Phase 4A spacing (Brian, exact): the gap
+   above the bar is 1.5x the old value (28px -> 42px); the same 42px sits
+   below it, with the hint line living INSIDE that below-gap (see .clog). */
 .hchat.flowchat {
-  margin: 28px 0 0;
+  margin: 42px 0 0;
 }
 .hchat input {
   flex: 1;
@@ -238,62 +240,65 @@ html.cfocus .wm .caret {
 .shead[data-hchat="off"] .hchat {
   display: none;
 }
-/* UNIFY (#153, chat-top-spec): on /chat the header holds the live composer,
-   so it sticks to the top; a top composer that scrolled away with a static
-   header would be unreachable mid-thread. Interior pages keep the static
-   header (their input is a jump-to-chat affordance; D1 call 6 stands there).
-   The page ground backs it so the transcript never shows through while
-   scrolling; z-index clears the transcript panel. This is also the
-   mobile-safe arrangement: a top composer sits above the on-screen keyboard,
-   which always owns the bottom of the visual viewport, so retiring the
-   bottom dock deleted the site's only keyboard-occlusion risk. */
-.shead[data-screen="chat"] {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: var(--ground);
-}
-/* #160: on the homepage the body masthead is the name and the h1, so the
-   header's wordmark chrome hides and the nav tokens hold the top right.
-   Server-stamped and re-stamped under the swap like data-hchat, so the
-   state is correct at every first paint: zero CLS. Interior pages keep the
-   wordmark as chrome and home link. */
-.shead[data-screen="home"] .wmrow {
-  display: none;
-}
+/* Phase 4B: /chat reverts to the STANDARD interior header (Brian disliked
+   the sticky header background band, and the composer that used to live here
+   moved into the panel). Exactly the /about header minus the input row
+   (data-hchat="off" on /chat too): no sticky, no page-ground band, no
+   z-index special casing. Nothing scoped to data-screen="chat" on the
+   header anymore; the composer + its pinning live in the panel (.slab-chat
+   below), which is where the "one joined object" is built. */
+/* Phase 4A: on the homepage the header wordmark is the LARGE identity
+   surface, the page's h1 (the reading-column masthead retired). It renders
+   at the recovered C-era hero scale; the nav tokens (about, contact) follow
+   it on the SAME line, aligned to its bottom baseline. Server-stamped and
+   re-stamped under the swap like data-hchat, so the state is correct at
+   every first paint: zero CLS. Interior pages keep the compact 18px
+   wordmark as chrome + home link. */
 .shead[data-screen="home"] .idrow {
-  justify-content: flex-end;
+  /* baseline so the mono nav sits on the big editorial name's baseline.
+     --nav-baseline-fix is a measured positional correction (mono tokens
+     against a ~50px editorial face can drift): see the value note below. */
+  align-items: baseline;
+  /* the name + links never wrap: at narrow widths the type reduces instead
+     (Brian's change order on Phase 4A item 3), so the row stays one line
+     down to 320px. */
+  flex-wrap: nowrap;
+  gap: 8px 12px;
+}
+.shead[data-screen="home"] .wm {
+  /* Brian's item-1 clamp for the widths where the name + links fit; the cap
+     (50px) holds above ~668px, and it scales down to its 34px floor toward
+     the narrow end. min-height drops because a >=34px line box already
+     clears the 44px tap target on its own. */
+  min-height: 0;
+  font-size: clamp(34px, 7.5vw, 50px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+/* small positional correction so the mono nav baseline meets the editorial
+   name baseline exactly (measured; 0px until the rendered check sets it) */
+.shead[data-screen="home"] .snav {
+  transform: translateY(var(--nav-baseline-fix, 0px));
+}
+/* Change order (Phase 4A item 3): below ~400px the clamp floor (34px) plus
+   the nav no longer share one line, so the wordmark scales further, down to
+   a 24px floor (still clearly the hero, well above the 18px interior mark),
+   keeping name + links on ONE baseline-aligned line to 320px. Reduction
+   starts at this breakpoint; floor + start are the veto knobs. */
+@media (max-width: 400px) {
+  .shead[data-screen="home"] .wm {
+    font-size: clamp(24px, 8.6vw, 34px);
+  }
 }
 
 /* -------------------- editorial identity (#67 treatment C) --------------- */
 /* The homepage identity block: Circular, the system ground, sentence case
-   (#76). Led by the masthead (#160): the C-era hero wordmark restored to
-   the reading column at its original scale (recovered values), lowercase
-   per #115, the page's h1 and the resting cursor's home (#63). */
+   (#76). Phase 4A: the reading-column masthead retired; the name is the
+   header wordmark rendered large (see .shead[data-screen="home"] .wm), so
+   this block opens on the role line. */
 .cid {
   padding-top: 8px;
   font-family: var(--font-edit);
-}
-.masthead {
-  font-family: var(--font-edit);
-  font-weight: 700;
-  font-size: clamp(34px, 7.5vw, 50px);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  color: var(--bright);
-  margin: 0 0 14px;
-}
-.masthead .caret {
-  width: 0.4em;
-  height: 0.78em;
-  vertical-align: -0.04em;
-  margin-left: 0.08em;
-}
-/* Single-cursor model (#63): while the roving cursor or a chat input owns
-   focus (html.cfocus), the masthead caret yields exactly like the header
-   wordmark's, so one cursor is visible at a time. */
-html.cfocus .masthead .caret {
-  visibility: hidden;
 }
 /* The role line is a flex row so the profile icons sit on it after "San
    Francisco" (#151). align-items:center vertically centers the icons' 44px
@@ -569,15 +574,11 @@ html.cfocus .masthead .caret {
   padding: 10px 14px;
 }
 
-/* ---------------- /chat: the surface as a page in the shell (#108) -------- */
-/* The composer lives in the sticky header (#153 UNIFY); what remains here is
-   the TRANSCRIPT, designed as a real surface (chat-surfaces-r1 Q4): the
-   slab screen material (#67) with no title bar or ready dot, sized to its
-   content instead of filling the viewport (the fill rule belonged to the
-   retired bottom dock; without the dock a viewport-tall empty panel is a
-   void). The empty state keeps a comfortable minimum so a fresh /chat reads
-   as an intentional surface; a long conversation is a long panel the
-   document scrolls, with the composer always in view above it.
+/* ---------------- /chat: ONE joined object (#108, Phase 4B) --------------- */
+/* The composer DOCKS into the phosphor panel as its top edge, so the input
+   row and the transcript are one continuous night-material object (Brian:
+   the header input felt disjointed from the response box). The panel's outer
+   border + radius wrap BOTH; there is no seam between them.
    Golden hour (#74/#150) is atmosphere only: the scene mounts in its chat
    state and the decorative halo + glow field warm to amber. Interior inks
    stay the one phosphor material (mint accent, night ground), so every
@@ -591,11 +592,31 @@ html.cfocus .masthead .caret {
 }
 .slab-chat {
   margin-top: 10px;
-  min-height: clamp(280px, 40vh, 420px);
+  /* Phase 4B: the panel extends to ~28px above the viewport bottom on load
+     (footer falls below the fold), then GROWS with the conversation while
+     the PAGE scrolls (no internal scroll region). 120px = the top offset
+     (standard interior header ~82px + this 10px margin) + the 28px breathing
+     gap; measured, tune here if the rendered gap drifts. The vh fallback is
+     for engines without dvh; dvh tracks the on-screen keyboard via
+     interactive-widget=resizes-content. */
+  min-height: calc(100vh - 120px);
+  min-height: calc(100dvh - 120px);
+  /* overflow VISIBLE (the base .slab clips with overflow:hidden): a sticky
+     child cannot pin against the document scroll inside an overflow clip, so
+     the panel must not be a scroll/clip container. The scanline + glow
+     pseudo-elements self-clip to the rounded corners instead (below). */
+  overflow: visible;
   /* the homepage slab's halo, warmed to the golden-hour identity */
   box-shadow:
     0 0 34px rgba(255, 170, 51, 0.12),
     0 14px 34px rgba(0, 0, 0, 0.28);
+}
+/* radius-clip the pseudo-element scanlines + glow now that overflow is
+   visible, so their square corners never poke past the panel's rounded
+   border (same trick .prose pre::after uses) */
+.slab-chat::before,
+.slab-chat::after {
+  border-radius: inherit;
 }
 .slab-chat::before {
   background: radial-gradient(
@@ -609,10 +630,52 @@ html.cfocus .masthead .caret {
     0 0 34px rgba(255, 170, 51, 0.2),
     0 14px 34px rgba(0, 0, 0, 0.28);
 }
-/* the [help] [clear] chat controls: the one command surface the site nav
-   does not duplicate (clear has no other affordance) */
+/* the composer docked as the panel's TOP EDGE: the shared ChatBar material
+   with its own border/radius/shadow/margin stripped so it reads as part of
+   the panel, not a box inside it. It keeps the panel ground (opaque), so
+   while pinned it never lets the transcript show through. Sticky top:0 pins
+   it to the viewport top through a long scroll (the header is not sticky now,
+   so it scrolls away above), releasing when the panel bottom passes. z-index
+   clears the transcript so it scrolls underneath. */
+.slab-chat > .chatcomposer {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin: 0;
+  padding: 0 14px;
+  border: 0;
+  /* a reserved 1px bottom hairline: transparent at rest (no seam), coloured
+     only while stuck (.pinned), so pinning never changes the composer height
+     (zero shift) */
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+/* the panel's own focus-within wake (accent border + warm halo) is the focus
+   affordance; suppress the composer's inherited .hchat focus border/glow so a
+   borderless top strip does not read as a detached box */
+.slab-chat > .chatcomposer:focus-within {
+  border-color: transparent;
+  box-shadow: none;
+}
+/* stuck at the viewport top: the reserved hairline colours in (eased by
+   .hchat's border-color transition; reduced motion makes it instant). Placed
+   after :focus-within so a focused-and-stuck composer still shows the line. */
+.slab-chat > .chatcomposer.pinned {
+  border-bottom-color: var(--line);
+}
+/* the pin sentinel: invisible, layout-neutral (the -1px margin cancels its
+   1px height), sitting where the composer rests so the IntersectionObserver
+   can tell when the composer sticks */
+.pin-sentinel {
+  height: 1px;
+  margin-bottom: -1px;
+}
+/* the [clear] chat control (Phase 4B: [help] removed, still works typed),
+   right-aligned, seated between the docked composer and the transcript */
 .chatcmds {
   margin: 0;
+  justify-content: flex-end;
 }
 /* Turn separation (#153 + chat-surfaces-r1 Q4): the ledger's own hairline
    grammar (.lentry + .lentry), because both are newest-first lists of
@@ -622,6 +685,31 @@ html.cfocus .masthead .caret {
   border-top: 1px solid var(--line);
   padding-top: 16px;
   margin-top: 16px;
+}
+/* Send motion (Phase 4C): on submit the echoed line lifts and settles into
+   the new top turn (~180ms), then the reply fades and settles in beneath
+   (~220ms on the house grammar). Transform + opacity only, on a box the turn
+   already reserves, so CLS is 0. Only LIVE turns carry .turn-in; turns
+   rebuilt from the stored transcript render settled. The global
+   reduced-motion kill switch collapses both to an instant render. */
+.turn-in > .uline {
+  animation: turn-echo-in 180ms ease both;
+}
+.turn-in > .reply,
+.turn-in > .out {
+  animation: turn-reply-in 220ms ease 40ms both;
+}
+@keyframes turn-echo-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes turn-reply-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
 }
 
 /* ------------------------- the log as a ledger (#67) --------------------- */
@@ -633,8 +721,15 @@ html.cfocus .masthead .caret {
    heading carries the semantics). Rows stay borderless standalone links:
    hover/focus color is the affordance, per the nav-token argument (these
    are not links in running text, so G183/#99 does not bind). */
+/* Phase 4A spacing: the below-gap under the flow chat bar is 42px total,
+   measured from the bar's bottom edge to the first ledger entry, with the
+   hint line's reserved height (#hint-top) living INSIDE it: the hint's 6px
+   top margin + its ~17px reserved height + this 19px = ~42px, so the ledger
+   starts right after the 42px (not 42 + the old 48 stacked). Homepage only
+   (ArticleLog renders .clog nowhere else; the styleguide specimen zeroes
+   this inline). Measured value; tune here if the rendered gap drifts. */
 .clog {
-  margin-top: 48px;
+  margin-top: 19px;
 }
 .lentry {
   display: grid;
