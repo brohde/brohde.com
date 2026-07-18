@@ -3,7 +3,7 @@
    prototypes:
      docs/design/lab/homepage-structure.html  (treatment C: editorial page +
                                                slab + ledger + article variant)
-     docs/design/lab/build-log-v3.html        (prompt, autocomplete, wipe)
+     docs/design/lab/build-log-v3.html        (prompt, autocomplete)
      docs/design/lab/aurora-terminal.html     (two-ground palette)
    Page-level classes reference the semantic tokens in global.css and follow
    the system ground (#40). The slab scopes its own fixed night tokens: it is
@@ -145,6 +145,12 @@ html.cfocus .wm .caret {
   font-size: 13px;
   color: var(--dim);
   text-decoration: none;
+  /* #150 micro-add: the dim-to-accent state change eases instead of
+     snapping, so it reads intentional. The global reduced-motion kill
+     switch collapses this to an instant change. */
+  transition:
+    color 120ms ease,
+    text-decoration-color 120ms ease;
 }
 .snav :is(a, button):hover,
 .snav :is(a, button):focus-visible {
@@ -155,13 +161,18 @@ html.cfocus .wm .caret {
 }
 /* The chat, the machine's mouth on every page (D1 call 1): a strip of the
    always-night phosphor material, the homechip idiom grown into a real
-   field. Fixed night values on purpose: the measured ratios hold under
-   either page ground (typed #F2F7F3 17.60:1, placeholder #8FA79A 7.41:1,
-   mark #7EE787 12.42:1 on #0B110E). 48px chrome sizing against the homepage
-   surface's 60px hero (D1 call 7); 16px font is the iOS no-zoom floor. The
-   placeholder shows at rest on every surface, header and homepage alike (the
-   old boot typing sequence that hid the homepage invitation is gone, #149). */
+   field, rendered by ChatBar.astro in the header AND as the homepage flow
+   bar (#160): one material, prominence by position only. Fixed night TOKEN
+   SCOPE like the slab, so every child (the $ sigil, the [send] chip and its
+   bracket-fill hover) resolves the measured night values under either page
+   ground (typed #F2F7F3 17.60:1, placeholder #8FA79A 7.41:1, mark #7EE787
+   12.42:1 on #0B110E). 48px chrome sizing (D1 call 7); 16px font is the iOS
+   no-zoom floor. The placeholder shows at rest on every surface (#149). */
 .hchat {
+  --accent: #7ee787;
+  --on-accent: #0b110e;
+  --dim: #8fa79a;
+
   display: flex;
   align-items: center;
   gap: 9px;
@@ -174,8 +185,20 @@ html.cfocus .wm .caret {
   box-shadow: 0 0 14px rgba(126, 231, 135, 0.14);
   color-scheme: dark;
 }
-.hchat .p {
-  color: #7ee787;
+/* the [send] chip (chat-surfaces-r1 Q3): the one bracket-fill control on the
+   input material, so the field reads composer, not search box. .cbtn carries
+   the grammar (accent label, dim brackets, accent fill on hover/focus via
+   the unified rule); this only seats it. */
+.hchat .send {
+  min-width: 44px;
+  justify-content: center;
+  flex: none;
+}
+/* the homepage flow bar (#160): the same strip in the reading flow between
+   the identity block and the ledger; only spacing differs from the header
+   placement, never the material */
+.hchat.flowchat {
+  margin: 28px 0 0;
 }
 .hchat input {
   flex: 1;
@@ -200,23 +223,71 @@ html.cfocus .wm .caret {
   border-color: #7ee787;
   box-shadow: 0 0 18px rgba(126, 231, 135, 0.24);
 }
-/* Header chat-input dedup (#145): hidden on pages that carry their own input
-   (homepage slab, /chat composer), stamped by data-hchat (server + the
-   terminal.ts bridge). display:none drops the row and its top margin, so the
-   header is exactly the identity row on those pages, no reserved space, no
-   CLS. The identity row is never affected. */
+/* Header chat-input dedup (#145, amended by #153): hidden only on the
+   homepage, whose slab carries its own input; on /chat this row IS the
+   composer. Stamped by data-hchat (server + the terminal.ts bridge).
+   display:none drops the row and its top margin, so the header is exactly
+   the identity row there, no reserved space, no CLS. The identity row is
+   never affected. */
 .shead[data-hchat="off"] .hchat {
   display: none;
 }
+/* UNIFY (#153, chat-top-spec): on /chat the header holds the live composer,
+   so it sticks to the top; a top composer that scrolled away with a static
+   header would be unreachable mid-thread. Interior pages keep the static
+   header (their input is a jump-to-chat affordance; D1 call 6 stands there).
+   The page ground backs it so the transcript never shows through while
+   scrolling; z-index clears the transcript panel. This is also the
+   mobile-safe arrangement: a top composer sits above the on-screen keyboard,
+   which always owns the bottom of the visual viewport, so retiring the
+   bottom dock deleted the site's only keyboard-occlusion risk. */
+.shead[data-screen="chat"] {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--ground);
+}
+/* #160: on the homepage the body masthead is the name and the h1, so the
+   header's wordmark chrome hides and the nav tokens hold the top right.
+   Server-stamped and re-stamped under the swap like data-hchat, so the
+   state is correct at every first paint: zero CLS. Interior pages keep the
+   wordmark as chrome and home link. */
+.shead[data-screen="home"] .wmrow {
+  display: none;
+}
+.shead[data-screen="home"] .idrow {
+  justify-content: flex-end;
+}
 
 /* -------------------- editorial identity (#67 treatment C) --------------- */
-/* The homepage identity block, now CONTENT under the global header (B2
-   Phase 1): Circular, the system ground, sentence case (#76). The wordmark
-   row moved into the header chrome; these are the surviving #80 lines.
-   Compact on purpose: the slab is the distinctive object. */
+/* The homepage identity block: Circular, the system ground, sentence case
+   (#76). Led by the masthead (#160): the C-era hero wordmark restored to
+   the reading column at its original scale (recovered values), lowercase
+   per #115, the page's h1 and the resting cursor's home (#63). */
 .cid {
   padding-top: 8px;
   font-family: var(--font-edit);
+}
+.masthead {
+  font-family: var(--font-edit);
+  font-weight: 700;
+  font-size: clamp(34px, 7.5vw, 50px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--bright);
+  margin: 0 0 14px;
+}
+.masthead .caret {
+  width: 0.4em;
+  height: 0.78em;
+  vertical-align: -0.04em;
+  margin-left: 0.08em;
+}
+/* Single-cursor model (#63): while the roving cursor or a chat input owns
+   focus (html.cfocus), the masthead caret yields exactly like the header
+   wordmark's, so one cursor is visible at a time. */
+html.cfocus .masthead .caret {
+  visibility: hidden;
 }
 /* The role line is a flex row so the profile icons sit on it after "San
    Francisco" (#151). align-items:center vertically centers the icons' 44px
@@ -276,6 +347,23 @@ html.cfocus .wm .caret {
 }
 .cco a:hover,
 .cco a:focus-visible {
+  text-decoration-color: var(--accent);
+}
+/* #162: the Beyond credit is a QUIET link: dim ink matching its "via" note,
+   full-strength dim underline as the affordance (non-color, so G183 never
+   binds; dim itself measures 7.19:1 night / 7.97:1 light on the ground,
+   past the 4.5:1 AA floor). Hover and focus step up to the accent per the
+   site's quiet-link grammar (rest dim, engage accent: nav tokens, ledger
+   rows); stepping only to ink is the softer alternative if Brian wants it
+   quieter still. Placed after the .cco hover rules so the rest state wins
+   the same-specificity fight by order. */
+.cco a.dimlink {
+  color: var(--dim);
+  text-decoration-color: var(--dim);
+}
+.cco a.dimlink:hover,
+.cco a.dimlink:focus-visible {
+  color: var(--accent);
   text-decoration-color: var(--accent);
 }
 /* Profile links as monochrome icons (#146), now inline on the role line right
@@ -342,13 +430,13 @@ html.cfocus .wm .caret {
 }
 
 /* Unified fill treatment for EVERY bracket-style interactive element:
-   command menu + keybar (.cbtn), theme control (.themectl, folded in with
+   keybar + [send] chip (.cbtn), theme control (.themectl, folded in with
    #101 when it docked into the footer and its local copy of this rule
    became a duplicate; the old chat screen's .backbtn retired with the
-   full-window takeover, #108). On hover and focus-visible the label fills
-   with the accent and flips to ground-colored text; the brackets stay put
-   (prototype treatment from build-log-v3.html).
-   One rule so they can never drift. */
+   full-window takeover, #108; the slab command menu retired with the slab,
+   #160). On hover and focus-visible the label fills with the accent and
+   flips to ground-colored text; the brackets stay put (prototype treatment
+   from build-log-v3.html). One rule so they can never drift. */
 .cbtn:hover .lbl,
 .cbtn:focus-visible .lbl,
 .themectl:hover .lbl,
@@ -358,13 +446,12 @@ html.cfocus .wm .caret {
   text-decoration: none;
 }
 
-/* ---------------------- command menu + prompt ---------------------------- */
-.menu {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 8px;
-  margin: 8px 0 0;
-}
+/* ---------------------- bracket controls --------------------------------- */
+/* The homepage slab, its command menu, the hero prompt, and the command
+   autocomplete (#48) + prompt history surfaces RETIRED with #160 (the flow
+   chat bar is home's input; the machinery's revival path is chat-top-spec
+   Phase B on the .hchat inputs). .cbtn survives as the bracket-control
+   grammar: the /chat keybar and the [send] chip. */
 .cbtn {
   display: inline-flex;
   align-items: center;
@@ -378,150 +465,21 @@ html.cfocus .wm .caret {
 }
 /* hover/focus fill lives in the unified bracket rule above */
 
-/* the prompt + its autocomplete popover share a positioning context */
-.promptzone {
-  position: relative;
-  margin-top: 6px;
-}
-
-/* Roomier prompt (Brian's 2026-07-15 review, #89b). Height is driven by the
-   input's own padding, not these min-heights, so the step lives there: 13px
-   to 17px per side takes the field from ~52px to ~60px, one 8px move on the
-   4px grid. Deliberate, but not a jump. The min-heights below track it as a
-   floor. Font stays 16px: that is the iOS no-zoom floor and the mono scale is
-   shared with the styleguide specimen. */
-.prompt {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid var(--line-strong);
-  background: var(--well);
-  border-radius: 8px;
-  padding: 2px 14px;
-  min-height: 60px;
-}
-.prompt:focus-within {
-  border-color: var(--accent);
-  box-shadow: 0 0 14px rgba(126, 231, 135, 0.14);
-}
-.iwrap {
-  flex: 1;
-  min-width: 0;
-  position: relative;
-  display: flex;
-  overflow: hidden;
-}
-.prompt input {
-  flex: 1;
-  min-width: 0;
-  background: none;
-  border: 0;
-  color: var(--bright);
-  font-family: var(--font-mono);
-  font-size: 16px; /* >=16px: never zooms on iOS focus */
-  line-height: 1.4;
-  caret-color: var(--accent);
-  padding: 17px 0; /* #89b: the roomier field, see .prompt above */
-}
-.prompt input::placeholder {
-  color: transparent;
-  opacity: 1;
-}
-.prompt input:focus::placeholder {
-  color: var(--dim);
-}
-.prompt input:focus {
-  outline: none;
-}
-.ph {
-  display: none;
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  align-items: center;
-  gap: 2px;
-  pointer-events: none;
-  color: var(--dim);
-  font-size: 16px;
-  white-space: nowrap;
-}
-.prompt input:placeholder-shown:not(:focus) + .ph {
-  display: flex;
-}
-
-/* ------------------- command autocomplete (#48) -------------------------- */
-/* Suggestions render as chips above the prompt. Keyboard: Tab/ArrowRight
-   accept the top match, ArrowUp/Down cycle, Enter runs. Touch: tap a chip. */
-.ac {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(100% + 6px);
-  z-index: 30;
-  border: 1px solid var(--line-strong);
-  background: var(--well);
-  border-radius: 8px;
-  padding: 6px;
-  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.22);
-}
-.ac[hidden] {
-  display: none !important;
-}
-.ac-head {
-  color: var(--dim);
-  font-size: 11px;
-  padding: 2px 4px 6px;
-}
-.ac-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.ac-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 0 10px;
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  background: transparent;
-  color: var(--accent);
-  font: inherit;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.ac-chip .ac-desc {
-  color: var(--dim);
-  font-size: 12px;
-}
-.ac-chip:hover,
-.ac-chip[aria-selected="true"] {
-  background: var(--accent);
-  color: var(--on-accent);
-}
-.ac-chip:hover .ac-desc,
-.ac-chip[aria-selected="true"] .ac-desc {
-  color: var(--on-accent);
-}
-
 .hint {
   min-height: 1.4em;
   margin: 6px 0 0;
   transition: opacity 300ms;
 }
 
-/* ------------------ the slab: one always-night object (#67) --------------- */
-/* The terminal is a SCREEN on the page, not the page's paint. Local token
+/* ------------- the slab material: one always-night screen (#67) ----------- */
+/* The screen is an object on the page, not the page's paint. Local token
    override: every child resolves to these fixed night values in both site
    grounds, so the measured night ratios hold everywhere (lab: mint 12.42:1,
    dim 7.41:1, ink 14.63:1 on the slab ground). In light mode it reads as a
    CRT sitting on paper; in night mode, a screen in a dark room, separated by
-   border + halo, never by contrast. Everything interactive lives inside it. */
+   border + halo, never by contrast. Since #160 its one consumer is the
+   /chat transcript panel (.slab-chat below): the homepage slab retired in
+   favor of the masthead + flow chat bar. */
 .slab {
   --ground: #0b110e;
   --ink: #d6e5dc;
@@ -583,102 +541,37 @@ html.cfocus .wm .caret {
     0 0 34px rgba(126, 231, 135, 0.18),
     0 14px 34px rgba(0, 0, 0, 0.28);
 }
-.slabhead {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--line);
-  color: var(--dim);
-  font-size: 11.5px;
-}
-.ccstat {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  display: inline-block;
-}
 .slabbody {
   padding: 10px 14px;
 }
-.slabhello {
-  margin: 0 0 2px;
-  color: var(--ink);
-}
-.slab .menu {
-  margin: 0;
-  padding: 2px 0 4px;
-  gap: 0 8px;
-}
-.slab .promptzone {
-  margin-top: 0;
-}
-/* inside the slab the prompt is part of the screen, not a boxed well */
-.slab .prompt {
-  border: 0;
-  border-top: 1px solid var(--line);
-  background: none;
-  border-radius: 0;
-  padding: 2px 0;
-  min-height: 58px; /* #89b: tracks the base prompt's 8px step */
-}
-.slab .prompt:focus-within {
-  border-color: var(--line);
-  box-shadow: none; /* the slab itself lights up instead */
-}
-.slab .hint {
-  font-size: 12px;
-  color: var(--dim);
-  margin: 2px 0 0;
-}
 
 /* ---------------- /chat: the surface as a page in the shell (#108) -------- */
-/* B2 Phase 2: the full-window takeover is RETIRED. /chat sits in the global
-   shell like every page: header above, footer below, the conversation in
-   the left column with the right gutter kept for the scene (#109). The
-   surface is the SAME always-night slab object as the homepage (#67),
-   grown tall: the slab fills the first viewport, the thread scrolls the
-   document, and the composer dock stays stuck to the viewport bottom while
-   the slab extends past it (the Claude/ChatGPT arrangement, #116).
-   Golden hour (#74) is this page's voice: the scene mounts in its chat
-   state, and the slab's decorative halo + glow field warm to amber to
-   match. Interior inks stay the one phosphor material (mint accent, night
-   ground), so every measured slab ratio holds unchanged. */
+/* The composer lives in the sticky header (#153 UNIFY); what remains here is
+   the TRANSCRIPT, designed as a real surface (chat-surfaces-r1 Q4): the
+   slab screen material (#67) with no title bar or ready dot, sized to its
+   content instead of filling the viewport (the fill rule belonged to the
+   retired bottom dock; without the dock a viewport-tall empty panel is a
+   void). The empty state keeps a comfortable minimum so a fresh /chat reads
+   as an intentional surface; a long conversation is a long panel the
+   document scrolls, with the composer always in view above it.
+   Golden hour (#74/#150) is atmosphere only: the scene mounts in its chat
+   state and the decorative halo + glow field warm to amber. Interior inks
+   stay the one phosphor material (mint accent, night ground), so every
+   measured slab ratio holds unchanged and the composer material never
+   forks between pages. */
 .chatpad {
   display: flex;
   flex-direction: column;
   flex: 1;
   padding-bottom: 36px;
 }
-.chatpad main {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
 .slab-chat {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
   margin-top: 10px;
-  /* the sticky dock needs the document as its scrolling ancestor, so this
-     card cannot clip (overflow:hidden breaks position:sticky inside); the
-     pseudo layers carry the radius themselves instead */
-  overflow: visible;
+  min-height: clamp(280px, 40vh, 420px);
   /* the homepage slab's halo, warmed to the golden-hour identity */
   box-shadow:
     0 0 34px rgba(255, 170, 51, 0.12),
     0 14px 34px rgba(0, 0, 0, 0.28);
-}
-.slab-chat::before,
-.slab-chat::after {
-  border-radius: 12px;
 }
 .slab-chat::before {
   background: radial-gradient(
@@ -692,10 +585,19 @@ html.cfocus .wm .caret {
     0 0 34px rgba(255, 170, 51, 0.2),
     0 14px 34px rgba(0, 0, 0, 0.28);
 }
-.chatbody {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+/* the [help] [clear] chat controls: the one command surface the site nav
+   does not duplicate (clear has no other affordance) */
+.chatcmds {
+  margin: 0;
+}
+/* Turn separation (#153 + chat-surfaces-r1 Q4): the ledger's own hairline
+   grammar (.lentry + .lentry), because both are newest-first lists of
+   records. Newest turn first in DOM carries no rule; each older turn below
+   draws one above itself. */
+.turn + .turn {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+  margin-top: 16px;
 }
 
 /* ------------------------- the log as a ledger (#67) --------------------- */
@@ -726,6 +628,7 @@ html.cfocus .wm .caret {
   color: var(--dim);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  transition: color 120ms ease;
 }
 .lttl {
   font-family: var(--font-edit);
@@ -733,10 +636,24 @@ html.cfocus .wm .caret {
   font-size: 15.5px;
   line-height: 1.5;
   color: var(--bright);
+  transition:
+    color 120ms ease,
+    transform 120ms ease;
+}
+/* #150 micro-add: the whole record answers the cursor. The date joins the
+   title's accent, and the title nudges 2px in the reading direction
+   (transform only, compositor-cheap, zero layout). Ties the long list to
+   the single-cursor model (#63); the reduced-motion kill switch makes the
+   change instant, and a static 2px offset on hover is position, not
+   motion. */
+.lentry:hover .lts,
+.lentry:focus-visible .lts {
+  color: var(--accent);
 }
 .lentry:hover .lttl,
 .lentry:focus-visible .lttl {
   color: var(--accent);
+  transform: translateX(2px);
 }
 /* #141: external entries carry their destination domain with the arrow,
    small and lighter than the title, never underlined (#68: inline-block
@@ -949,13 +866,9 @@ html.cfocus .wm .caret {
   }
 }
 
-.dock {
-  position: sticky;
-  bottom: 0;
-  margin-top: auto;
-  background: linear-gradient(to top, var(--ground) 80%, transparent);
-  padding: 6px 0 max(10px, env(safe-area-inset-bottom));
-}
+/* the bottom composer dock is RETIRED (#153: the composer is the sticky
+   header row); its safe-area padding went with it, the footer already
+   handles the bottom inset */
 .keybar {
   display: flex;
   flex-wrap: wrap;
@@ -1332,26 +1245,9 @@ html.cfocus .wm .caret {
   text-wrap: balance;
 }
 
-/* --------------------------- screen-clear wipe (#64) --------------------- */
-/* The uniform internal-navigation transition, ported from build-log-v3.html:
-   a ground-colored cover with a resting block caret. Timing + lifecycle live
-   in terminal.ts; tokens keep it correct on both grounds. The element sits
-   outside <body> (terminal.ts appends it to <html>) so router swaps never
-   remove it; the global [hidden] rule keeps it display:none at rest. */
-#wipe {
-  position: fixed;
-  inset: 0;
-  z-index: 99;
-  background: var(--ground);
-}
-#wipe span {
-  position: absolute;
-  top: 18px;
-  left: 22px;
-  width: 9px;
-  height: 18px;
-  background: var(--accent);
-}
+/* The screen-clear wipe cover (#64) is RETIRED (#150): navigations must
+   never cover the persistent scene. The reading-column transition lives in
+   global.css (the main view-transition group). */
 
 /* ------------------------------ small screens ---------------------------- */
 /* (the ledger is stacked date + title at every width since batch 77) */
@@ -1361,9 +1257,6 @@ html.cfocus .wm .caret {
   }
   .wrap {
     padding: 0 16px;
-  }
-  #wipe span {
-    left: 16px;
   }
   /* the header compresses but keeps the SAME two-row arrangement with a
      real input (#121): only type and gaps step down (D1 phone shell) */

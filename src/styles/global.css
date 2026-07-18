@@ -288,16 +288,65 @@ a.sr:focus {
   outline-offset: -2px;
 }
 
-/* Instant, terminal-style route swaps under View Transitions (no cross-fade;
-   honors "instant transitions" in #24). The 140ms wipe (#64) is a separate
-   cover element timed around this instant swap by terminal.ts. It covers
-   EVERY internal navigation: the C2 home <-> chat slab morph retired with
-   the full-window chat (#108); Phase 3 owns any deeper designed
-   transitions. */
+/* The tide carries you (#150). Navigation never covers the persistent scene:
+   the root swap is instant (no cross-fade, no cover; the one scene keeps
+   drifting straight through it, because a persisted element is live DOM and
+   the new-state capture renders live), and ONLY the reading column moves.
+   Each page's main is its own view-transition group: old content fades and
+   lifts 8px over 160ms, new content fades in and settles down from 8px over
+   220ms after a 40ms beat. Opacity and transform only, on snapshot layers,
+   so nothing reflows and CLS stays 0 by construction. Identity travel (mark
+   dissolve + sky crossfade) is NOT here: it rides the scene's own 2.6s clock
+   through the terminal.ts bridge. The old opaque 140ms wipe (#64) is
+   retired; the header and footer ride the instant root swap (the header is
+   persisted, so it holds perfectly still). */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+}
+
+main {
+  view-transition-name: main;
+}
+/* The group snaps to the arriving page's box instead of morphing between the
+   two layouts, and each snapshot keeps its intrinsic height, so a short page
+   and a long page cross-fade without any stretch. */
+::view-transition-group(main) {
+  animation: none;
+}
+::view-transition-old(main),
+::view-transition-new(main) {
+  height: auto;
+  mix-blend-mode: normal;
+}
+::view-transition-old(main) {
+  animation: vt-main-out 160ms ease both;
+}
+::view-transition-new(main) {
+  animation: vt-main-in 220ms ease 40ms both;
+}
+@keyframes vt-main-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+@keyframes vt-main-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+/* Reduced motion = an instant swap (#150: snap, no travel, no lift). The
+   global kill switch below cannot reach these UA pseudo elements, so the
+   column move gets its own explicit off. With no animations anywhere in the
+   transition, the swap settles in a single frame. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(main),
+  ::view-transition-new(main) {
+    animation: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

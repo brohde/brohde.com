@@ -4,8 +4,10 @@ import ProfileLinks from "@/components/ProfileLinks.astro";
 
 // Specimen page (D4 pattern). Forces both grounds side by side regardless of
 // system scheme, so a token change can be eyeballed in light and dark at once.
-// The slab specimen renders IDENTICALLY in both panels: it scopes its own
-// fixed night tokens (#67), which is exactly the point.
+// The chat input material (.hchat, ChatBar) renders IDENTICALLY in both
+// panels: it scopes its own fixed night tokens (#67), which is exactly the
+// point. The slab + autocomplete specimens retired with the homepage slab
+// (#160); the masthead + flow chat bar specimen replaced them.
 // noindex + excluded from the sitemap.
 
 const swatches = [
@@ -30,8 +32,8 @@ const themes = [
     <main id="main" class="wrap aboutpad">
       <h1 class="arttitle">styleguide</h1>
       <p class="cmt">
-        # design tokens + component specimens in both grounds (#40). The slab
-        is always night (#67). Noindex, out of the sitemap.
+        # design tokens + component specimens in both grounds (#40). The chat
+        input material is always night (#67). Noindex, out of the sitemap.
       </p>
 
       {
@@ -75,14 +77,24 @@ const themes = [
                 <span class="p" aria-hidden="true">
                   $
                 </span>
-                <span style="color:#8fa79a;font-size:16px">
+                <span style="color:#8fa79a;font-size:16px;flex:1">
                   Ask me anything or type help
+                </span>
+                <span class="cbtn send">
+                  <span class="br">[</span>
+                  <span class="lbl">send</span>
+                  <span class="br">]</span>
                 </span>
               </div>
             </div>
 
-            <h2 class="sg-h">editorial identity</h2>
+            <h2 class="sg-h">homepage masthead + editorial identity</h2>
+            {/* #160: the masthead leads the reading column at hero scale;
+                a <p> here so the specimen page adds no stray h1 */}
             <div class="cid" style="padding-top:0">
+              <p class="masthead" style="margin-bottom:10px">
+                brian rohde<span class="caret" aria-hidden="true" />
+              </p>
               <div class="crole">
                 <span class="crole-txt">
                   AI Product Engineer <span class="d">·</span> San Francisco
@@ -97,43 +109,25 @@ const themes = [
                 <span class="d">Prev:</span> <a href="#">Gong</a>{" "}
                 <span class="d">·</span> <a href="#">Twilio</a>{" "}
                 <span class="d">·</span> <a href="#">Facebook</a> +{" "}
-                <a href="#">Google</a> <span class="cnote">(contract)</span>
+                <a href="#">Google</a> <span class="cnote">via</span>{" "}
+                <a class="dimlink" href="#">Beyond</a>
               </p>
             </div>
 
-            <h2 class="sg-h">the slab (always night, both grounds)</h2>
-            <div class="slab" style="margin-top:0">
-              <div class="slabhead">
-                <span>brohde.com · chat</span>
-                <span class="ccstat">
-                  <span class="dot" aria-hidden="true" />
-                  ready
-                </span>
-              </div>
-              <div class="slabbody">
-                <p class="slabhello">
-                  <span class="p">$</span> hello
-                </p>
-                <div class="menu">
-                  {["work", "about", "resume", "contact"].map((c) => (
-                    <span class="cbtn">
-                      <span class="br">[</span>
-                      <span class="lbl">{c}</span>
-                      <span class="br">]</span>
-                    </span>
-                  ))}
-                </div>
-                <div class="promptzone">
-                  <div class="prompt">
-                    <span class="p">$</span>
-                    <span class="iwrap">
-                      <span style="color:var(--dim);font-size:16px">
-                        Ask me anything or type help
-                      </span>
-                    </span>
-                  </div>
-                </div>
-              </div>
+            <h2 class="sg-h">flow chat bar (homepage)</h2>
+            {/* the same .hchat material as the header row, flow placement */}
+            <div class="hchat" style="margin-top:0">
+              <span class="p" aria-hidden="true">
+                $
+              </span>
+              <span style="color:#8fa79a;font-size:16px;flex:1">
+                Ask me anything or type help
+              </span>
+              <span class="cbtn send">
+                <span class="br">[</span>
+                <span class="lbl">send</span>
+                <span class="br">]</span>
+              </span>
             </div>
 
             <h2 class="sg-h">ledger entries</h2>
@@ -158,29 +152,6 @@ const themes = [
                   </span>
                 </span>
               </span>
-            </div>
-
-            <h2 class="sg-h">autocomplete</h2>
-            <div class="promptzone" style="margin-bottom:14px">
-              <div class="ac" style="position:static;margin-bottom:8px">
-                <p class="ac-head">Commands · tab to accept · ↑↓ to cycle</p>
-                <ul class="ac-list">
-                  <li class="ac-chip" aria-selected="true">
-                    <span>work</span>
-                    <span class="ac-desc">Browse the log</span>
-                  </li>
-                  <li class="ac-chip">
-                    <span>about</span>
-                    <span class="ac-desc">Who I am</span>
-                  </li>
-                </ul>
-              </div>
-              <div class="prompt">
-                <span class="p">$</span>
-                <span class="iwrap">
-                  <span style="color:var(--bright);font-size:16px">wor</span>
-                </span>
-              </div>
             </div>
 
             <h2 class="sg-h">prose</h2>

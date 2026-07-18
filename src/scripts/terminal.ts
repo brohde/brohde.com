@@ -4,12 +4,24 @@
  * One bundled module drives every interactive terminal behavior:
  *   - deterministic command router (work/about/resume/contact/help/home/clear
  *     + /slash aliases + free-form -> live chat), ported from build-log-v3.html
- *   - command autocomplete at the prompt (#48)
- *   - shell-style prompt history (#44)
- *   - the roving page cursor (#63) and the terminal wipe transition (#64)
+ *   - the roving page cursor (#63)
  *   - the redirect countdown for model-chosen navigation (#143), the /chat
  *     conversation persistence via sessionStorage (#144), and the header
  *     chat-input dedup on pages that carry their own input (#145)
+ *
+ * Command autocomplete (#48) and prompt history recall (#44) RETIRED with
+ * the homepage slab (#160): they were gated to the slab's .prompt input,
+ * which no longer exists anywhere. Every remaining input is the one .hchat
+ * material (the header row + the homepage flow bar), which submits through
+ * the delegated form handler. Revival path if wanted: chat-top-spec.md
+ * Phase B (parity on the .hchat inputs); the machinery is in git history.
+ *
+ * Page transitions (#150, "the tide carries you"): this module does NOT drive
+ * them. The one persistent scene ([transition:persist]) keeps drifting through
+ * every navigation, the reading column cross-fade + lift lives entirely in
+ * CSS (the main view-transition group in global.css), and identity travel
+ * rides the scene bridge below (syncSceneState). The old opaque 140ms wipe
+ * cover is retired; nothing may cover the scene during a navigation.
  *
  * View-Transitions safety (E5): all listeners are delegated on `document` and
  * attached exactly once; nothing is bound to a specific node at module scope.
@@ -21,30 +33,11 @@
  * listbox with aria-activedescendant; focus is never trapped; arrow keys act
  * only while a prompt input is focused, so page scrolling is never hijacked.
  */
-import {
-  navigate,
-  TransitionBeforePreparationEvent,
-} from "astro:transitions/client";
-
-interface Cmd {
-  name: string;
-  desc: string;
-}
+import { navigate } from "astro:transitions/client";
 
 /* Copy case (#76): human-language strings use sentence case; lowercase is
    reserved for literal terminal tokens (typed commands, file-ish names like
    resume.pdf, URLs and emails). */
-const COMMANDS: Cmd[] = [
-  { name: "work", desc: "Browse the log" },
-  { name: "about", desc: "Who I am" },
-  { name: "resume", desc: "resume.pdf" },
-  { name: "contact", desc: "Email + LinkedIn" },
-  { name: "chat", desc: "Ask me anything" },
-  { name: "hello", desc: "A quick tour" },
-  { name: "help", desc: "List commands" },
-  { name: "home", desc: "Back to the log" },
-  { name: "clear", desc: "Wipe this chat" },
-];
 /* static console strings (innerHTML sinks below take only these) */
 const HELP_HTML =
   "Commands\n" +
@@ -88,12 +81,8 @@ const OFFLINE_HTML =
 
 /* ---------------------------------------------------------------- state ---- */
 
-const history: string[] = []; // typed commands, this session
-let histIndex = 0;
 let pendingAfter: (() => void) | null = null;
 let pendingFocus: string | null = null;
-
-const ac = { open: false, items: [] as Cmd[], sel: -1, promptId: "" };
 
 /* -------------------------------------------------- redirect countdown ---- */
 /* #143: when the model answers a QUESTION by choosing an open_page
@@ -134,7 +123,6 @@ const MAX_LLM = 12; // model-history entries stored; the send slices to 8, so a
 
 /* --------------------------------------------------------------- helpers --- */
 
-const RM = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 const byId = (id: string) => document.getElementById(id);
 
 function currentScreen(): string {
@@ -143,27 +131,32 @@ function currentScreen(): string {
   );
 }
 
-/* Header chat-input dedup (#145): the header's chat row is hidden on the two
-   pages that carry their own input (the homepage slab and the /chat composer)
-   and shown on every other page. SiteHeader server-renders the correct state
-   per page (data-hchat), and we re-stamp it during the swap so a header that
-   is ever persisted across navigations can never carry a stale state. Stamped
-   before paint (astro:after-swap) so the row's presence never shifts layout
-   after the page is visible: zero CLS. The identity row is untouched. */
+/* Header chat-input dedup (#145, amended by #153 UNIFY): only the homepage
+   hides the header's chat row (the slab is home's input). On /chat the row
+   IS the composer: un-hidden, sticky via data-screen="chat" (terminal.css),
+   with the transcript growing newest first beneath it. SiteHeader
+   server-renders the correct state per page, and we re-stamp it during the
+   swap because the header is a persisted node that would otherwise carry a
+   stale state. Stamped before paint (astro:after-swap) so nothing shifts
+   layout after the page is visible: zero CLS. The identity row is
+   untouched. */
 function syncHeaderChat() {
   const header = document.querySelector<HTMLElement>(".shead");
   if (!header) return;
-  const p = location.pathname;
-  const ownsInput = p === "/" || p === "/chat" || p === "/chat/";
-  header.dataset.hchat = ownsInput ? "off" : "on";
-}
-
-function visibleInput(): HTMLInputElement | null {
-  return document.querySelector<HTMLInputElement>(".prompt input");
-}
-
-function promptIdOf(input: HTMLInputElement): string {
-  return input.closest<HTMLElement>("[data-prompt]")?.dataset.prompt ?? "";
+  const p = location.pathname.replace(/\/+$/, "") || "/";
+  const onChat = p === "/chat";
+  header.dataset.hchat = p === "/" ? "off" : "on";
+  header.dataset.screen = onChat ? "chat" : p === "/" ? "home" : "page";
+  // chat-top-spec Q5: programmatically tie the composer to its transcript,
+  // but only while the log exists so the reference is never dangling.
+  const composer = byId("in-site");
+  if (composer) {
+    if (onChat && chatlog()) composer.setAttribute("aria-controls", "chatlog");
+    else composer.removeAttribute("aria-controls");
+  }
+  // #160: no tag surgery for the wordmark across the persisted swap. It is
+  // ALWAYS a <p> (home's h1 is the body masthead); data-screen="home" hides
+  // it there via CSS, stamped above before paint.
 }
 
 let announcer: HTMLElement | null = null;
@@ -194,66 +187,14 @@ function hint(msg: string) {
   }, 2600);
 }
 
-/* ------------------------------------------ route transitions (#64) ------- */
-/* Named transition kinds, resolved per navigation:
- *
- * "wipe" (#64), for EVERY internal navigation: a ground-colored cover with a
- * resting block caret drops before the old page changes, the swap happens
- * underneath (the underlying view transition is animation:none in
- * global.css), and the cover lifts ~50ms after the new page has rendered, so
- * the destination is always visually complete when it appears. Home <-> chat
- * is no exception anymore: the C2 slab morph retired with the full-window
- * chat (#108); /chat is a normal page and rides the house wipe. Deeper
- * designed transitions are Phase 3 work.
- *
- * "instant" under reduced motion: no cover, no held loader.
- */
-type TransitionKind = "wipe" | "instant";
-
-const WIPE_HOLD_MS = 140; // cover time before the swap may land
-const WIPE_LIFT_MS = 50; // settle time after the new page renders
-
-let wipeEl: HTMLElement | null = null;
-let wipeTimer = 0; // one handle for pending lift AND failsafe: a new drop cancels both
-let navKind: TransitionKind = "instant"; // kind of the navigation in flight
-
-function resolveTransition(): TransitionKind {
-  return RM() ? "instant" : "wipe";
-}
-
-function wipe(): HTMLElement {
-  if (!wipeEl) {
-    wipeEl = document.createElement("div");
-    wipeEl.id = "wipe";
-    wipeEl.hidden = true;
-    wipeEl.setAttribute("aria-hidden", "true");
-    wipeEl.appendChild(document.createElement("span"));
-    // Attached to <html>, not <body>: the router swaps the body wholesale,
-    // and the cover must survive the swap to bridge old and new page.
-    document.documentElement.appendChild(wipeEl);
-  }
-  return wipeEl;
-}
-
-function dropWipe() {
-  const w = wipe();
-  w.hidden = false;
-  clearTimeout(wipeTimer);
-  // never leave the page covered if a navigation dies midway
-  wipeTimer = window.setTimeout(() => {
-    w.hidden = true;
-  }, 4000);
-}
-
-function liftWipe() {
-  if (!wipeEl || wipeEl.hidden) return;
-  clearTimeout(wipeTimer);
-  // plain timeout, deliberately no rAF: rAF never fires in a hidden or
-  // throttled tab and would leave the cover stuck over the page
-  wipeTimer = window.setTimeout(() => {
-    if (wipeEl) wipeEl.hidden = true;
-  }, WIPE_LIFT_MS);
-}
+/* ------------------------------------------ route transitions (#150) ------ */
+/* Nothing to do in script. The tide carries you: the persistent scene is
+ * never covered, the reading column cross-fade + lift is the CSS-driven
+ * main view-transition group (global.css), and the identity travel is the
+ * scene bridge at the bottom of this file. The old wipe cover (#64) and its
+ * loader hold are retired; navigations resolve as fast as the router can
+ * swap. Reduced motion collapses the column move to an instant swap through
+ * the explicit view-transition override in global.css. */
 
 /* ------------------------------------------------- roving cursor (#63) ---- */
 /* One page cursor: the block caret rests on the wordmark; Tab reaches the
@@ -304,24 +245,47 @@ function moveRoveEnd(last: boolean) {
   next.focus();
 }
 
-function setCaretEnd(input: HTMLInputElement) {
-  const n = input.value.length;
-  try {
-    input.setSelectionRange(n, n);
-  } catch {
-    /* some input types disallow selection; ignore */
-  }
-}
-
 /* ------------------------------------------------------------ chat output -- */
 
 function chatlog(): HTMLElement | null {
   return byId("chatlog");
 }
 
-function scrollChatBottom() {
+/* Newest-at-top transcript (#153, chat-top-spec Q1). The composer is the
+   sticky header input at the top of /chat, so each user turn PREPENDS a
+   .turn block to the log: DOM order equals visual order equals newest first
+   (never column-reverse, which would split the two and invert within-turn
+   order). Within a turn the flow stays natural: echoed question, thinking,
+   reply, redirect line. The server-rendered intro .cmt lines sink to the
+   bottom as the oldest content. beginTurn runs once per user turn (askLive,
+   toConsole's run closure); every line builder appends through sink(), so
+   output lands in the active turn, or falls back to the log for stray lines
+   (the "# Cleared" note) and for a stale turn left detached by a
+   navigation. */
+let activeTurn: HTMLElement | null = null;
+
+function beginTurn(): HTMLElement | null {
+  const log = chatlog();
+  if (!log) return null;
+  const t = document.createElement("div");
+  t.className = "turn";
+  log.prepend(t);
+  activeTurn = t;
+  return t;
+}
+
+function sink(): HTMLElement | null {
+  if (activeTurn?.isConnected) return activeTurn;
+  return chatlog();
+}
+
+/* The composer sits at the top, the newest turn directly beneath it: after a
+   send the only scroll that can be needed is back UP to the newest turn, and
+   it is instant (no smooth behavior), so it is reduced-motion-safe by
+   construction. */
+function scrollToNewest() {
   if (currentScreen() === "chat") {
-    window.scrollTo(0, document.documentElement.scrollHeight);
+    window.scrollTo({ top: 0 });
   }
 }
 
@@ -330,21 +294,21 @@ function scrollChatBottom() {
    do not re-announce it, and do not scroll per line (rehydrate scrolls once
    at the end). Live calls omit it and therefore record + announce as before. */
 function line(cls: string, text?: string, replay = false) {
-  const log = chatlog();
-  if (!log) return;
+  const host = sink();
+  if (!host) return;
   const d = document.createElement("div");
   d.className = cls;
   if (text !== undefined) d.textContent = text;
-  log.appendChild(d);
+  host.appendChild(d);
   if (!replay) {
     record({ t: "cmt", c: cls, s: text ?? "" });
-    scrollChatBottom();
+    scrollToNewest();
   }
 }
 
 function echo(t: string, replay = false) {
-  const log = chatlog();
-  if (!log) return;
+  const host = sink();
+  if (!host) return;
   const d = document.createElement("div");
   d.className = "uline";
   const p = document.createElement("span");
@@ -353,26 +317,26 @@ function echo(t: string, replay = false) {
   p.textContent = "$ ";
   d.appendChild(p);
   d.appendChild(document.createTextNode(t));
-  log.appendChild(d);
+  host.appendChild(d);
   if (!replay) {
     record({ t: "echo", s: t });
-    scrollChatBottom();
+    scrollToNewest();
   }
 }
 
 function out(html: string, slot?: HTMLElement | null, replay = false) {
-  const log = chatlog();
-  if (!log) return;
+  const host = sink();
+  if (!host) return;
   // given a slot (the in-flight thinking line, #116), reuse its position so
   // the output lands where the visitor is already looking
   const d = slot?.isConnected ? slot : document.createElement("div");
   d.className = "out";
   d.innerHTML = html; // static strings only, never user input
-  if (!d.parentElement) log.appendChild(d);
+  if (!d.parentElement) host.appendChild(d);
   if (!replay) {
     record({ t: "out", s: html });
     announce(d.textContent ?? "");
-    scrollChatBottom();
+    scrollToNewest();
   }
 }
 
@@ -380,6 +344,7 @@ function clearChat() {
   const log = chatlog();
   if (!log) return;
   log.innerHTML = "";
+  activeTurn = null; // the note below lands in the log, never a stale turn
   llmHistory.length = 0; // clear wipes the model's context too
   purgeChat(); // #144: and the persisted session, so a cleared chat stays cleared
   line("cmt", "# Cleared", true); // shown, deliberately not stored
@@ -487,8 +452,24 @@ function rehydrateChat() {
     }
   }
   if (!transcript.length) return;
-  for (const e of transcript) renderEntry(e);
-  scrollChatBottom();
+  // The empty-state intro lines ("ask about Brian's work", "type help") are
+  // redundant once a real conversation exists, and hiding them before the
+  // replay means the prepended turns can never shift them: the restore
+  // builds the thread in one pass with nothing below it moving (CLS 0,
+  // chat-top-spec Q4).
+  for (const el of log.querySelectorAll(":scope > .cmt")) {
+    el.setAttribute("hidden", "");
+  }
+  // Replay regroups by echo boundaries: a new turn begins at each user
+  // message, and beginTurn prepends, so replaying oldest to newest lands the
+  // newest turn on top with natural order kept within each turn. Entries
+  // before the first echo (rare) fall through sink() to the log itself.
+  activeTurn = null;
+  for (const e of transcript) {
+    if (e.t === "echo") beginTurn();
+    renderEntry(e);
+  }
+  scrollToNewest();
 }
 
 /* ------------------------------------------------------------ navigation -- */
@@ -508,6 +489,7 @@ function scrollToLog() {
 
 function toConsole(cmd: string, html: string, viaKb: boolean) {
   const run = () => {
+    beginTurn(); // one user turn: the echoed command + its output (#153)
     echo(cmd);
     out(html);
   };
@@ -515,7 +497,7 @@ function toConsole(cmd: string, html: string, viaKb: boolean) {
     run();
   } else {
     pendingAfter = run;
-    if (viaKb) pendingFocus = "in-chat";
+    if (viaKb) pendingFocus = "in-site";
     navigate("/chat");
   }
 }
@@ -561,8 +543,8 @@ const MD_LINK =
     Given a slot (the in-flight thinking line, #116), the reply fills that
     same element in place: content swaps, the box never moves. */
 function renderReply(text: string, slot?: HTMLElement | null, replay = false) {
-  const log = chatlog();
-  if (!log) return;
+  const host = sink();
+  if (!host) return;
   const d = slot?.isConnected ? slot : document.createElement("div");
   d.className = "reply";
   d.replaceChildren();
@@ -587,11 +569,11 @@ function renderReply(text: string, slot?: HTMLElement | null, replay = false) {
     last = m.index + m[0].length;
   }
   d.appendChild(document.createTextNode(text.slice(last)));
-  if (!d.parentElement) log.appendChild(d);
+  if (!d.parentElement) host.appendChild(d);
   if (!replay) {
     record({ t: "reply", s: text });
     announce(text);
-    scrollChatBottom();
+    scrollToNewest();
   }
 }
 
@@ -604,8 +586,8 @@ function renderReply(text: string, slot?: HTMLElement | null, replay = false) {
    exactly once through the polite announcer. Under reduced motion the dots
    give way to the static label (rules in terminal.css). */
 function thinking(): HTMLElement | null {
-  const log = chatlog();
-  if (!log) return null;
+  const host = sink();
+  if (!host) return null;
   const d = document.createElement("div");
   d.className = "reply thinking";
   const dots = document.createElement("span");
@@ -618,9 +600,9 @@ function thinking(): HTMLElement | null {
   label.className = "tlabel";
   label.textContent = "Thinking…";
   d.append(dots, label);
-  log.appendChild(d);
+  host.appendChild(d);
   announce("Thinking…");
-  scrollChatBottom();
+  scrollToNewest();
   return d;
 }
 
@@ -669,8 +651,8 @@ function renderRedirect(
   slot: HTMLElement | null,
   live: boolean
 ): { count: HTMLElement; tail: HTMLElement } | null {
-  const log = chatlog();
-  if (!log) return null;
+  const host = sink();
+  if (!host) return null;
   const box = slot?.isConnected ? slot : document.createElement("div");
   box.className = "reply redirect";
   box.replaceChildren();
@@ -710,7 +692,7 @@ function renderRedirect(
     box.appendChild(tail);
     refs = { count, tail };
   }
-  if (!box.parentElement) log.appendChild(box);
+  if (!box.parentElement) host.appendChild(box);
   return refs;
 }
 
@@ -722,17 +704,18 @@ function startRedirect(href: string, name: string, slot: HTMLElement | null) {
   cancelRedirect("nav"); // clear any prior countdown silently
   const refs = renderRedirect(href, name, slot, true);
   record({ t: "redirect", href, name });
-  scrollChatBottom();
+  scrollToNewest();
   if (!refs) {
     navigate(href);
     return;
   }
-  // keep focus on whatever input the send came from (#143 req 2)
+  // keep focus on whatever input the send came from (#143 req 2); the
+  // fallback is the header composer, /chat's input since #153
   const active = document.activeElement as HTMLElement | null;
   const input =
-    active && active.matches?.(".prompt input, .hchat input")
+    active && active.matches?.(".hchat input")
       ? (active as HTMLInputElement)
-      : (byId("in-chat") as HTMLInputElement | null);
+      : (byId("in-site") as HTMLInputElement | null);
 
   announce(
     `Taking you to ${name} in a few seconds. Press escape, or select stay here, to stay.`
@@ -755,7 +738,7 @@ function commitRedirect(href: string) {
     clearInterval(redirect.timer);
     redirect = null;
   }
-  navigate(href); // the normal 140ms wipe (instant under reduced motion)
+  navigate(href); // the house transition (#150; instant under reduced motion)
 }
 
 /* All cancel paths (#143 req 2) route here: Escape, the stay control, and
@@ -777,6 +760,7 @@ function cancelRedirect(reason: "escape" | "stay" | "type" | "nav") {
 }
 
 async function askLive(q: string) {
+  beginTurn(); // the newest turn opens at the top of the transcript (#153)
   echo(q);
   const wait = thinking();
   try {
@@ -853,7 +837,7 @@ function toChat(q: string, viaKb: boolean) {
     ask(q);
   } else {
     pendingAfter = () => ask(q);
-    if (viaKb) pendingFocus = "in-chat";
+    if (viaKb) pendingFocus = "in-site";
     navigate("/chat");
   }
 }
@@ -865,9 +849,6 @@ function run(raw: string, viaKb: boolean) {
   if (!v) return;
   const low = v.toLowerCase();
   const cmd = low.startsWith("/") ? low.slice(1) : low;
-
-  if (history[history.length - 1] !== v) history.push(v);
-  histIndex = history.length;
 
   if (cmd === "work") {
     goHomeThen(scrollToLog);
@@ -888,11 +869,12 @@ function run(raw: string, viaKb: boolean) {
     return;
   }
   if (cmd === "chat") {
-    // open the chat page itself; never send "chat" as a question
+    // open the chat page itself; never send "chat" as a question. The
+    // composer is the header input (#153), so that is where focus lands.
     if (currentScreen() === "chat") {
-      byId("in-chat")?.focus({ preventScroll: true });
+      byId("in-site")?.focus({ preventScroll: true });
     } else {
-      if (viaKb) pendingFocus = "in-chat";
+      if (viaKb) pendingFocus = "in-site";
       navigate("/chat");
     }
     return;
@@ -919,142 +901,9 @@ function run(raw: string, viaKb: boolean) {
   toChat(v, viaKb);
 }
 
-/* -------------------------------------------------------------- autocomplete */
-
-function matchCommands(raw: string): Cmd[] {
-  if (raw === "/") return COMMANDS.slice();
-  if (raw === "") return [];
-  const q = (raw.startsWith("/") ? raw.slice(1) : raw).toLowerCase();
-  if (q === "") return [];
-  const starts = COMMANDS.filter((c) => c.name.startsWith(q));
-  if (starts.length) return starts;
-  return COMMANDS.filter((c) => c.name.includes(q));
-}
-
-function acContainer(promptId: string) {
-  return byId(`ac-${promptId}`);
-}
-function acList(promptId: string) {
-  return byId(`ac-list-${promptId}`);
-}
-
-function closeAC() {
-  const input = visibleInput();
-  if (ac.promptId) {
-    const c = acContainer(ac.promptId);
-    const l = acList(ac.promptId);
-    if (c) c.hidden = true;
-    if (l) l.innerHTML = "";
-  }
-  if (input) {
-    input.setAttribute("aria-expanded", "false");
-    input.removeAttribute("aria-activedescendant");
-  }
-  ac.open = false;
-  ac.items = [];
-  ac.sel = -1;
-}
-
-function optionId(promptId: string, i: number) {
-  return `ac-${promptId}-opt-${i}`;
-}
-
-function renderAC(input: HTMLInputElement, items: Cmd[]) {
-  const promptId = promptIdOf(input);
-  const container = acContainer(promptId);
-  const list = acList(promptId);
-  if (!container || !list) return;
-
-  ac.open = true;
-  ac.items = items;
-  ac.sel = -1;
-  ac.promptId = promptId;
-
-  list.innerHTML = "";
-  items.forEach((c, i) => {
-    const li = document.createElement("li");
-    li.className = "ac-chip";
-    li.setAttribute("role", "option");
-    li.id = optionId(promptId, i);
-    li.dataset.cmd = c.name;
-    li.setAttribute("aria-selected", "false");
-    const name = document.createElement("span");
-    name.textContent = c.name;
-    const desc = document.createElement("span");
-    desc.className = "ac-desc";
-    desc.textContent = c.desc;
-    li.appendChild(name);
-    li.appendChild(desc);
-    list.appendChild(li);
-  });
-
-  container.hidden = false;
-  input.setAttribute("aria-expanded", "true");
-  input.removeAttribute("aria-activedescendant");
-}
-
-function refreshAC(input: HTMLInputElement) {
-  const items = matchCommands(input.value);
-  if (!items.length) {
-    closeAC();
-    return;
-  }
-  renderAC(input, items);
-}
-
-function updateSel(next: number) {
-  if (!ac.open || !ac.items.length) return;
-  const count = ac.items.length;
-  ac.sel = ((next % count) + count) % count;
-  const input = visibleInput();
-  const list = acList(ac.promptId);
-  if (!list || !input) return;
-  const options = list.querySelectorAll<HTMLElement>(".ac-chip");
-  options.forEach((el, i) => {
-    el.setAttribute("aria-selected", String(i === ac.sel));
-  });
-  const active = options[ac.sel];
-  if (active) {
-    input.setAttribute("aria-activedescendant", active.id);
-    active.scrollIntoView({ block: "nearest" });
-  }
-}
-
-function acceptTop() {
-  if (!ac.open || !ac.items.length) return;
-  const idx = ac.sel >= 0 ? ac.sel : 0;
-  const input = visibleInput();
-  if (!input) return;
-  input.value = ac.items[idx].name;
-  setCaretEnd(input);
-  closeAC();
-}
-
-/* --------------------------------------------------------------- history --- */
-
-function recall(dir: -1 | 1, input: HTMLInputElement) {
-  if (!history.length) return;
-  if (dir === -1) {
-    if (histIndex > 0) histIndex--;
-  } else {
-    if (histIndex < history.length - 1) histIndex++;
-    else {
-      histIndex = history.length;
-      input.value = "";
-      setCaretEnd(input);
-      return;
-    }
-  }
-  input.value = history[histIndex] ?? "";
-  setCaretEnd(input);
-}
-
 /* --------------------------------------------------- per-page init (VT) ---- */
 
 function initPage() {
-  closeAC();
-  histIndex = history.length;
-
   // roving cursor (#63): the group's tab stop starts at its first element;
   // focus resets to body on swaps, so the resting cursor returns to the
   // wordmark (cfocus off) until focus lands somewhere live again.
@@ -1074,9 +923,10 @@ function initPage() {
   }
 
   // #144: restore the /chat thread (module memory first, else sessionStorage)
-  // BEFORE running any pending send, so a carried question lands beneath the
-  // restored conversation. Recompute the roving tab stop now the log is built,
-  // since rehydrated replies add their own inline links to the cursor order.
+  // BEFORE running any pending send, so a carried question opens the newest
+  // turn above the restored conversation (#153). Recompute the roving tab
+  // stop now the log is built, since rehydrated replies add their own inline
+  // links to the cursor order.
   if (currentScreen() === "chat") {
     rehydrateChat();
     const r = roveEls();
@@ -1110,11 +960,11 @@ function setupOnce() {
     }
   });
 
-  // Form submit fallback (virtual keyboards / IME that submit without a
-  // keydown Enter). Capture phase + preventDefault so it lands before Astro's
-  // ClientRouter submit handler, which would otherwise hijack the GET form and
-  // navigate to /?q=... Keyboard Enter is handled in keydown below, which
-  // cancels the submit before it ever fires.
+  // THE submit path for every input (both ChatBar placements): Enter fires
+  // the native form submission, the [send] chip is type=submit, and virtual
+  // keyboards / IME land here too. Capture phase + preventDefault so it runs
+  // before Astro's ClientRouter submit handler, which would otherwise hijack
+  // the GET form and navigate to /chat?q=...
   document.addEventListener(
     "submit",
     (e) => {
@@ -1127,36 +977,28 @@ function setupOnce() {
       if (!input) return;
       run(input.value, true);
       input.value = "";
-      closeAC();
     },
     true
   );
 
-  // clicks: autocomplete chips, menu/keybar buttons. Anchors (back link, log
-  // entries) fall through to ClientRouter untouched.
+  // clicks: keybar + nav command buttons. Anchors (log entries, inline chat
+  // links) fall through to ClientRouter untouched.
   document.addEventListener("click", (e) => {
     const t = e.target as HTMLElement;
-    const chip = t.closest?.<HTMLElement>(".ac-chip");
-    if (chip && chip.dataset.cmd) {
-      run(chip.dataset.cmd, false);
-      const input = visibleInput();
-      if (input) input.value = "";
-      return;
-    }
     const btn = t.closest?.<HTMLElement>("button[data-cmd]");
     if (btn && btn.dataset.cmd) {
       run(btn.dataset.cmd, false);
     }
   });
 
-  // single-cursor bookkeeping (#63): html.cfocus hides the wordmark caret
-  // while the cursor group or a chat input owns focus; the roving tab stop
-  // follows focus (clicks included) so Tab re-enters where the cursor left.
-  // The global header's input (.hchat, B2 Phase 1) joins the same model so
-  // typing there never shows two carets.
+  // single-cursor bookkeeping (#63): html.cfocus hides the resting caret
+  // (the header wordmark's, and the homepage masthead's, #160) while the
+  // cursor group or a chat input owns focus; the roving tab stop follows
+  // focus (clicks included) so Tab re-enters where the cursor left. Every
+  // input is the one .hchat material, so one selector covers them all.
   document.addEventListener("focusin", (e) => {
     const t = e.target as HTMLElement;
-    const live = !!t.matches?.(".prompt input, .hchat input") || isRove(t);
+    const live = !!t.matches?.(".hchat input") || isRove(t);
     document.documentElement.classList.toggle("cfocus", live);
     if (isRove(t)) {
       setRoveStop(t);
@@ -1172,23 +1014,18 @@ function setupOnce() {
     }
   });
 
-  // input: refresh autocomplete for the active prompt
+  // input: typing during a redirect countdown is a cancel signal
   document.addEventListener("input", (e) => {
     const input = e.target as HTMLElement;
     // #143 req 2: a visitor typing their next message has chosen to stay.
     // Cancel the countdown but let the keystroke through (no preventDefault).
-    if (redirect && input.matches?.(".prompt input, .hchat input")) {
+    if (redirect && input.matches?.(".hchat input")) {
       cancelRedirect("type");
-    }
-    if (input.matches?.(".prompt input")) {
-      refreshAC(input as HTMLInputElement);
-      histIndex = history.length;
     }
   });
 
-  // keyboard: escape, autocomplete cycling/accept, and prompt history.
-  // Arrow/Tab logic only runs while a prompt input is focused, so page
-  // scrolling is never hijacked (#44).
+  // keyboard: escape + the roving cursor. Arrow logic only runs while a
+  // cursor element already holds focus, so page scrolling is never hijacked.
   document.addEventListener("keydown", (e) => {
     const t = e.target as HTMLElement;
 
@@ -1201,16 +1038,11 @@ function setupOnce() {
         cancelRedirect("escape");
         return;
       }
-      if (ac.open) {
-        e.preventDefault();
-        closeAC();
-        return;
-      }
       // single-cursor model (#63): the first Escape parks the cursor back on
-      // the wordmark (blur); from rest, Escape leaves non-home screens. The
-      // header input (.hchat) blurs first too, so Escape mid-question never
-      // throws typed text away by navigating.
-      if (t && (t.matches?.(".prompt input, .hchat input") || isRove(t))) {
+      // the resting caret (blur); from rest, Escape leaves non-home screens.
+      // An input blurs first too, so Escape mid-question never throws typed
+      // text away by navigating.
+      if (t && (t.matches?.(".hchat input") || isRove(t))) {
         e.preventDefault();
         t.blur();
         return;
@@ -1241,83 +1073,10 @@ function setupOnce() {
       return;
     }
 
-    if (!t?.matches?.(".prompt input")) return;
-    const input = t as HTMLInputElement;
-
-    // Enter runs the highlighted suggestion, or the typed text. preventDefault
-    // here cancels the native form submission, so ClientRouter never sees it.
-    if (e.key === "Enter") {
-      e.preventDefault();
-      if (ac.open && ac.sel >= 0) run(ac.items[ac.sel].name, true);
-      else run(input.value, true);
-      input.value = "";
-      closeAC();
-      return;
-    }
-
-    if (ac.open) {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        updateSel(ac.sel + 1);
-        return;
-      }
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        updateSel(ac.sel <= 0 ? ac.items.length - 1 : ac.sel - 1);
-        return;
-      }
-      if (e.key === "Tab" && !e.shiftKey) {
-        e.preventDefault();
-        acceptTop();
-        return;
-      }
-      if (
-        e.key === "ArrowRight" &&
-        input.selectionStart === input.value.length &&
-        input.selectionEnd === input.value.length
-      ) {
-        e.preventDefault();
-        acceptTop();
-        return;
-      }
-      return;
-    }
-
-    // autocomplete closed: arrows recall command history
-    if (e.key === "ArrowUp") {
-      e.preventDefault();
-      recall(-1, input);
-    } else if (e.key === "ArrowDown") {
-      e.preventDefault();
-      recall(1, input);
-    }
-  });
-
-  // Route transitions (#64), resolved per navigation. Wipe: drop the cover
-  // as soon as an internal navigation starts and hold the router's loader so
-  // it stays down for at least WIPE_HOLD_MS before the swap can land.
-  // Applies to every direction (links, commands, Escape, back/forward all
-  // flow through the router).
-  document.addEventListener("astro:before-preparation", (e) => {
-    navKind = resolveTransition();
-    if (navKind !== "wipe") return;
-    dropWipe();
-    const prep = e instanceof TransitionBeforePreparationEvent ? e : null;
-    if (prep) {
-      const started = Date.now();
-      const load = prep.loader;
-      prep.loader = async () => {
-        await load();
-        const left = WIPE_HOLD_MS - (Date.now() - started);
-        if (left > 0) await new Promise((r) => setTimeout(r, left));
-      };
-    }
-  });
-
-  // Lift the wipe only after the new page is rendered and initialized, so
-  // the destination is visually complete the moment it appears.
-  document.addEventListener("astro:page-load", () => {
-    liftWipe();
+    // Enter in a chat input rides the NATIVE form submission into the one
+    // delegated submit handler above; no keydown handling is needed (#160:
+    // the .prompt-specific Enter/autocomplete/history block retired with
+    // the slab).
   });
 
   // #143: a navigation away during a countdown cancels it silently; the timer
@@ -1325,8 +1084,9 @@ function setupOnce() {
   // back-button loop: the destination push happened, nothing re-triggers).
   document.addEventListener("astro:before-swap", () => cancelRedirect("nav"));
 
-  // #145: stamp the header's chat-input visibility during the swap (before
-  // paint, under the wipe cover) and again on page-load as a safety net.
+  // #145/#150: stamp the persisted header's per-page state during the swap
+  // (astro:after-swap runs before the new frame paints, so the stamp can
+  // never shift visible layout) and again on page-load as a safety net.
   document.addEventListener("astro:after-swap", syncHeaderChat);
   document.addEventListener("astro:page-load", syncHeaderChat);
 

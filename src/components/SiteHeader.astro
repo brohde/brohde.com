@@ -6,86 +6,60 @@
  *   row 1  identity: the wordmark "brian rohde" (lowercase, #115) linking
  *          home, carrying the resting caret (#63), with the quiet mono
  *          about/contact tokens beside it (rest dim, hover accent: D1 call 5);
- *   row 2  the chat input on its own row, a real field.
+ *   row 2  the chat input row (ChatBar.astro, the one input material).
  *
- * The input is the machine's material (D1 call 1): always-night phosphor,
- * the homechip idiom grown into a field, fixed night values so its measured
- * ratios hold under either page ground. 48px against the homepage surface's
- * 60px on purpose (D1 call 7: chrome sizing, not hero sizing). The header is
- * static, not sticky (D1 call 6: the reachability trade is logged for D3).
- *
- * Send behavior (#108): the form carries data-screen-form, so terminal.ts's
- * one delegated submit handler routes the value through the one command
- * router. Free-form questions navigate to /chat and auto-ask on arrival (the
- * existing pendingAfter carry from the homepage surface, C2/#85): the visitor
- * lands seeing their question echoed and the reply arriving. Typed commands
- * (help, about, work...) run exactly as they do at the home prompt.
- * action="/chat" is only the no-JS fallback so a raw submit never reloads the
- * current page with ?q=; script always prevents it.
+ * Per-page states, server-stamped here and re-stamped by terminal.ts's
+ * syncHeaderChat under every swap (the header is a persisted node, #150, so
+ * the caret never stops blinking across a navigation and stale state must
+ * be corrected before paint):
+ *   data-hchat   the input row hides on the homepage only (#145 amended by
+ *                #153/#160: home's input is the flow chat bar in the body);
+ *   data-screen  "home" hides the wordmark row and right-aligns the nav
+ *                (#160: the body masthead is the name and the h1 there;
+ *                interior pages keep the wordmark as chrome + home link),
+ *                and "chat" makes the header sticky: the input row IS the
+ *                /chat composer (#153 UNIFY).
  *
  * The contact nav item is a button through the same router (#107, chat is
  * core navigation): it opens the chat's contact card, the site's one contact
  * surface. Swap to a mailto if Brian vetoes.
  *
- * On /chat itself (a normal shell page since B2 Phase 2, #108) a send from
- * this input submits straight into the conversation on the page: the same
- * router resolves currentScreen() === "chat" and asks in place instead of
- * navigating.
- *
- * BaseLayout renders this on EVERY page. On the homepage the wordmark row is the
- * page's h1: the retired EditorialHeader's h1 moved here with the chrome
- * (HomeIntro.astro keeps the rest of the #80 identity lines).
+ * BaseLayout renders this on EVERY page. The wordmark is always a <p>: the
+ * homepage h1 is the body masthead (#160), interior pages carry their own
+ * h1 in main.
  */
-const isHome = Astro.url.pathname === "/";
+import ChatBar from "@/components/ChatBar.astro";
 
-/* Header chat-input dedup (#145): the homepage slab and the /chat composer
-   already carry a chat input, so the header's chat row is hidden on those two
-   pages and shown on every other page. Server-render the correct state here so
-   the row's presence is right at first paint (zero CLS); terminal.ts re-stamps
-   data-hchat on every navigation in case the header is ever persisted. The
-   identity row stays on every page. */
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
-const ownsInput = path === "/" || path === "/chat";
+const ownsInput = path === "/";
+const screen = path === "/chat" ? "chat" : path === "/" ? "home" : "page";
 ---
 
-<header class="shead" data-hchat={ownsInput ? "off" : "on"}>
+{
+  /* transition:persist (#150): the header is the same frame on every page,
+  so the node itself survives client-side navigations and the caret is the
+  motion system's through-line. Per-page differences (data-hchat,
+  data-screen) are re-stamped by syncHeaderChat on astro:after-swap, before
+  the new frame paints. */
+}
+<header
+  class="shead"
+  data-hchat={ownsInput ? "off" : "on"}
+  data-screen={screen}
+  transition:persist="shead"
+>
   <div class="wrap">
     <div class="idrow">
-      {
-        isHome ? (
-          <h1 class="wmrow">
-            <a class="wm" href="/">
-              brian rohde<span class="caret" aria-hidden="true" />
-            </a>
-          </h1>
-        ) : (
-          <p class="wmrow">
-            <a class="wm" href="/">
-              brian rohde<span class="caret" aria-hidden="true" />
-            </a>
-          </p>
-        )
-      }
+      <p class="wmrow">
+        <a class="wm" href="/">
+          brian rohde<span class="caret" aria-hidden="true" />
+        </a>
+      </p>
       <nav class="snav" aria-label="Site">
         <a href="/about">about</a>
         <button type="button" data-cmd="contact">contact</button>
       </nav>
     </div>
-    <form class="hchat" action="/chat" data-screen-form>
-      <label class="sr" for="in-site">Ask me anything or type help</label>
-      <span class="p" aria-hidden="true">$</span>
-      <input
-        id="in-site"
-        name="q"
-        type="text"
-        autocomplete="off"
-        autocapitalize="off"
-        autocorrect="off"
-        spellcheck="false"
-        maxlength="240"
-        placeholder="Ask me anything or type help"
-        enterkeyhint="send"
-      />
-    </form>
+    <ChatBar inputId="in-site" />
   </div>
 </header>

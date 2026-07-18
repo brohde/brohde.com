@@ -1,23 +1,32 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Scene from "@/components/Scene.astro";
-import Prompt from "@/components/Prompt.astro";
 
 /**
- * /chat, a normal page in the global shell (#108, B2 Phase 2; the old
- * full-window takeover is retired). The frame is the same as every other
- * page: global header above, footer below, the conversation in the LEFT
- * COLUMN (#109) with the right gutter kept for the scene.
+ * /chat, a normal page in the global shell (#108, B2 Phase 2). The frame is
+ * the same as every other page: global header above, footer below, the
+ * transcript in the LEFT COLUMN (#109) with the right gutter kept for the
+ * scene.
  *
- * The surface itself is the homepage's pattern (#67): the one always-night
- * chat slab sitting on the editorial ground. It mimics Claude/ChatGPT
- * (#116): conversation above, composer dock pinned at the viewport bottom
- * while the thread grows. The page's theme identity (#108) is golden hour
- * (#74): the scene mounts in its chat state and the slab's halo warms to
- * match; the interior keeps the one phosphor material. Copy sentence-cased
- * per #76.
+ * The composer is the HEADER input row (#153, UNIFY; chat-top-spec): the
+ * persistent header row is un-hidden here, sticky at the top, and the old
+ * bottom dock is retired with nothing in its place. The transcript flows
+ * NEWEST FIRST: each send prepends a .turn block directly beneath the
+ * composer (terminal.ts beginTurn), so the answer blooms where the visitor
+ * is already looking; older turns flow downward and the two intro lines
+ * below sink to the very bottom as the oldest content (they hide once a
+ * stored thread restores).
+ *
+ * The panel is the slab screen material (#67) sized to its content
+ * (chat-surfaces-r1 Q4: the composer left, so the old fill-the-viewport rule
+ * would leave a void), with no title bar or ready dot (machine cosplay #116
+ * retired; the phosphor material already reads as a screen). Golden hour
+ * (#74) is atmosphere only: the scene mounts in its chat state and the
+ * panel's halo warms to amber; every ink stays the one phosphor material.
+ * Copy sentence-cased per #76. The [help] [clear] keybar stays: chat
+ * controls only the chat provides, never nav the site already carries.
  */
-const keys = ["home", "help", "clear"];
+const keys = ["help", "clear"];
 ---
 
 <BaseLayout
@@ -26,9 +35,9 @@ const keys = ["home", "help", "clear"];
   noindex={true}
 >
   {
-    /* the scene in its golden-hour chat state (#74/#108). Theme + mark stay
-    the defaults until B3 wires per-page identities (#111). Carrying the
-    scene also puts this page on the full-width shell automatically
+    /* the scene in its golden-hour chat state (#74/#108) on the default BR
+    identity (#150: /chat always resets to default + golden hour). Carrying
+    the scene also puts this page on the full-width shell automatically
     (body:has(.scene), #125/#126). */
   }
   <Scene state="chat" />
@@ -37,13 +46,22 @@ const keys = ["home", "help", "clear"];
       <main id="main">
         <h1 class="sr">Chat</h1>
         <section class="slab slab-chat" aria-label="Chat">
-          <header class="slabhead">
-            <span>brohde.com · chat</span>
-            <span class="ccstat">
-              <span class="dot" aria-hidden="true"></span>ready
-            </span>
-          </header>
           <div class="slabbody chatbody">
+            <nav class="keybar chatcmds" aria-label="Commands">
+              {
+                keys.map((cmd) => (
+                  <button type="button" class="cbtn" data-cmd={cmd}>
+                    <span class="br" aria-hidden="true">
+                      [
+                    </span>
+                    <span class="lbl">{cmd}</span>
+                    <span class="br" aria-hidden="true">
+                      ]
+                    </span>
+                  </button>
+                ))
+              }
+            </nav>
             <div class="chatlog" id="chatlog">
               {/* on localhost terminal.ts swaps this line for the live-POC note */}
               <p class="cmt" id="chat-note">
@@ -58,31 +76,10 @@ const keys = ["home", "help", "clear"];
             {
               /* no live region here: terminal.ts owns the single polite
               announcer (created lazily on document.body), so chat output and
-              the #116 thinking state can never double-announce */
+              the #116 thinking state can never double-announce. It is also
+              what bridges the composer in the banner landmark to this
+              transcript in main (chat-top-spec Q5). */
             }
-
-            <div class="dock">
-              <nav class="keybar" aria-label="Commands">
-                {
-                  keys.map((cmd) => (
-                    <button type="button" class="cbtn" data-cmd={cmd}>
-                      <span class="br" aria-hidden="true">
-                        [
-                      </span>
-                      <span class="lbl">{cmd}</span>
-                      <span class="br" aria-hidden="true">
-                        ]
-                      </span>
-                    </button>
-                  ))
-                }
-              </nav>
-              {
-                /* no placeholder/label overrides: the chat prompt inherits the
-                "ask me anything" invitation copy (#65) */
-              }
-              <Prompt id="chat" />
-            </div>
           </div>
         </section>
       </main>
