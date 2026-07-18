@@ -184,6 +184,12 @@ html.cfocus .wm .caret {
   border-radius: 8px;
   box-shadow: 0 0 14px rgba(126, 231, 135, 0.14);
   color-scheme: dark;
+  /* #165: the focus wake (accent border, doubled glow) eases instead of
+     snapping; slightly softer than the 120ms color grammar because glow
+     reads as light, not ink. Reduced motion collapses it (global switch). */
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
 }
 /* the [send] chip (chat-surfaces-r1 Q3): the one bracket-fill control on the
    input material, so the field reads composer, not search box. .cbtn carries
@@ -344,6 +350,11 @@ html.cfocus .masthead .caret {
   text-decoration-thickness: 1px;
   text-decoration-color: var(--accent);
   text-decoration-color: color-mix(in srgb, var(--accent) 65%, transparent);
+  /* #165: underline ink-up (and the dimlink's color step) on the 120ms
+     grammar; color is in the list so .dimlink inherits the same ease */
+  transition:
+    color 120ms ease,
+    text-decoration-color 120ms ease;
 }
 .cco a:hover,
 .cco a:focus-visible {
@@ -397,6 +408,7 @@ html.cfocus .masthead .caret {
   min-height: 44px;
   color: var(--dim);
   border-radius: 8px;
+  transition: color 120ms ease; /* #165: dim to accent, same as the ledger */
 }
 .cprofiles svg {
   display: block;
@@ -444,6 +456,14 @@ html.cfocus .masthead .caret {
   background: var(--accent);
   color: var(--on-accent);
   text-decoration: none;
+}
+/* #165: the fill eases in fast (100ms keeps the chips crisp); lives here
+   beside the fill rule so the pair can never drift apart */
+.cbtn .lbl,
+.themectl .lbl {
+  transition:
+    background-color 100ms ease,
+    color 100ms ease;
 }
 
 /* ---------------------- bracket controls --------------------------------- */
@@ -497,6 +517,10 @@ html.cfocus .masthead .caret {
   background: var(--ground);
   color: var(--ink);
   border: 1px solid var(--line-strong);
+  /* #165: the focus-within wake eases like the .hchat glow */
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
   border-radius: 12px;
   overflow: hidden;
   font-family: var(--font-mono);
@@ -995,6 +1019,11 @@ html.cfocus .masthead .caret {
   background: #0b110e;
   color: #7ee787;
   border: 1px solid #33523f;
+  /* #165: the full invert eases on the 120ms grammar, brackets included */
+  transition:
+    background-color 120ms ease,
+    color 120ms ease,
+    border-color 120ms ease;
   border-radius: 7px;
   font-family: var(--font-mono);
   font-size: 13.5px;
@@ -1004,6 +1033,7 @@ html.cfocus .masthead .caret {
 }
 .homechip .br {
   color: #8fa79a;
+  transition: color 120ms ease; /* #165: rides the chip's invert */
 }
 .homechip:hover,
 .homechip:focus-visible {
