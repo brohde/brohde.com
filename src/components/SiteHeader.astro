@@ -27,10 +27,11 @@
  * core navigation): it opens the chat's contact card, the site's one contact
  * surface. Swap to a mailto if Brian vetoes.
  *
- * On /chat itself (a normal shell page since B2 Phase 2, #108) a send from
- * this input submits straight into the conversation on the page: the same
- * router resolves currentScreen() === "chat" and asks in place instead of
- * navigating.
+ * On /chat this row IS the composer (#153, UNIFY): un-hidden there, sticky
+ * via data-screen="chat" (terminal.css), with the transcript growing newest
+ * first directly beneath it. A send while currentScreen() === "chat"
+ * submits straight into the conversation in place; the retired bottom dock
+ * has no successor because this input is it.
  *
  * BaseLayout renders this on EVERY page. On the homepage the wordmark row is the
  * page's h1: the retired EditorialHeader's h1 moved here with the chrome
@@ -38,14 +39,16 @@
  */
 const isHome = Astro.url.pathname === "/";
 
-/* Header chat-input dedup (#145): the homepage slab and the /chat composer
-   already carry a chat input, so the header's chat row is hidden on those two
-   pages and shown on every other page. Server-render the correct state here so
-   the row's presence is right at first paint (zero CLS); terminal.ts re-stamps
-   data-hchat on every navigation in case the header is ever persisted. The
-   identity row stays on every page. */
+/* Header chat-input dedup (#145, amended by #153): only the homepage carries
+   its own input (the slab), so the header's chat row hides there alone; on
+   /chat the row is the live composer and everywhere else it is the jump-to-
+   chat affordance. Server-render the correct state so the row's presence is
+   right at first paint (zero CLS); terminal.ts re-stamps data-hchat and
+   data-screen on every navigation because the header is a persisted node.
+   The identity row stays on every page. */
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
-const ownsInput = path === "/" || path === "/chat";
+const ownsInput = path === "/";
+const screen = path === "/chat" ? "chat" : path === "/" ? "home" : "page";
 ---
 
 {
@@ -56,7 +59,12 @@ const ownsInput = path === "/" || path === "/chat";
   wordmark's h1-on-home role) are re-stamped by terminal.ts's
   syncHeaderChat on astro:after-swap, before the new frame paints. */
 }
-<header class="shead" data-hchat={ownsInput ? "off" : "on"} transition:persist="shead">
+<header
+  class="shead"
+  data-hchat={ownsInput ? "off" : "on"}
+  data-screen={screen}
+  transition:persist="shead"
+>
   <div class="wrap">
     <div class="idrow">
       {

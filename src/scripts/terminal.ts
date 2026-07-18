@@ -146,19 +146,29 @@ function currentScreen(): string {
   );
 }
 
-/* Header chat-input dedup (#145): the header's chat row is hidden on the two
-   pages that carry their own input (the homepage slab and the /chat composer)
-   and shown on every other page. SiteHeader server-renders the correct state
-   per page (data-hchat), and we re-stamp it during the swap so a header that
-   is ever persisted across navigations can never carry a stale state. Stamped
-   before paint (astro:after-swap) so the row's presence never shifts layout
-   after the page is visible: zero CLS. The identity row is untouched. */
+/* Header chat-input dedup (#145, amended by #153 UNIFY): only the homepage
+   hides the header's chat row (the slab is home's input). On /chat the row
+   IS the composer: un-hidden, sticky via data-screen="chat" (terminal.css),
+   with the transcript growing newest first beneath it. SiteHeader
+   server-renders the correct state per page, and we re-stamp it during the
+   swap because the header is a persisted node that would otherwise carry a
+   stale state. Stamped before paint (astro:after-swap) so nothing shifts
+   layout after the page is visible: zero CLS. The identity row is
+   untouched. */
 function syncHeaderChat() {
   const header = document.querySelector<HTMLElement>(".shead");
   if (!header) return;
   const p = location.pathname.replace(/\/+$/, "") || "/";
-  const ownsInput = p === "/" || p === "/chat";
-  header.dataset.hchat = ownsInput ? "off" : "on";
+  const onChat = p === "/chat";
+  header.dataset.hchat = p === "/" ? "off" : "on";
+  header.dataset.screen = onChat ? "chat" : p === "/" ? "home" : "page";
+  // chat-top-spec Q5: programmatically tie the composer to its transcript,
+  // but only while the log exists so the reference is never dangling.
+  const composer = byId("in-site");
+  if (composer) {
+    if (onChat && chatlog()) composer.setAttribute("aria-controls", "chatlog");
+    else composer.removeAttribute("aria-controls");
+  }
   // The header is a persisted node (#150: it holds still through every
   // navigation so the caret never stops), so per-page server-rendered
   // differences must be re-stamped here, under the swap, before paint. The
@@ -285,9 +295,41 @@ function chatlog(): HTMLElement | null {
   return byId("chatlog");
 }
 
-function scrollChatBottom() {
+/* Newest-at-top transcript (#153, chat-top-spec Q1). The composer is the
+   sticky header input at the top of /chat, so each user turn PREPENDS a
+   .turn block to the log: DOM order equals visual order equals newest first
+   (never column-reverse, which would split the two and invert within-turn
+   order). Within a turn the flow stays natural: echoed question, thinking,
+   reply, redirect line. The server-rendered intro .cmt lines sink to the
+   bottom as the oldest content. beginTurn runs once per user turn (askLive,
+   toConsole's run closure); every line builder appends through sink(), so
+   output lands in the active turn, or falls back to the log for stray lines
+   (the "# Cleared" note) and for a stale turn left detached by a
+   navigation. */
+let activeTurn: HTMLElement | null = null;
+
+function beginTurn(): HTMLElement | null {
+  const log = chatlog();
+  if (!log) return null;
+  const t = document.createElement("div");
+  t.className = "turn";
+  log.prepend(t);
+  activeTurn = t;
+  return t;
+}
+
+function sink(): HTMLElement | null {
+  if (activeTurn?.isConnected) return activeTurn;
+  return chatlog();
+}
+
+/* The composer sits at the top, the newest turn directly beneath it: after a
+   send the only scroll that can be needed is back UP to the newest turn, and
+   it is instant (no smooth behavior), so it is reduced-motion-safe by
+   construction. */
+function scrollToNewest() {
   if (currentScreen() === "chat") {
-    window.scrollTo(0, document.documentElement.scrollHeight);
+    window.scrollTo({ top: 0 });
   }
 }
 
@@ -296,21 +338,21 @@ function scrollChatBottom() {
    do not re-announce it, and do not scroll per line (rehydrate scrolls once
    at the end). Live calls omit it and therefore record + announce as before. */
 function line(cls: string, text?: string, replay = false) {
-  const log = chatlog();
-  if (!log) return;
+  const host = sink();
+  if (!host) return;
   const d = document.createElement("div");
   d.className = cls;
   if (text !== undefined) d.textContent = text;
-  log.appendChild(d);
+  host.appendChild(d);
   if (!replay) {
     record({ t: "cmt", c: cls, s: text ?? "" });
-    scrollChatBottom();
+    scrollToNewest();
   }
 }
 
 function echo(t: string, replay = false) {
-  const log = chatlog();
-  if (!log) return;
+  const host = sink();
+  if (!host) return;
   const d = document.createElement("div");
   d.className = "uline";
   const p = document.createElement("span");
@@ -319,26 +361,26 @@ function echo(t: string, replay = false) {
   p.textContent = "$ ";
   d.appendChild(p);
   d.appendChild(document.createTextNode(t));
-  log.appendChild(d);
+  host.appendChild(d);
   if (!replay) {
     record({ t: "echo", s: t });
-    scrollChatBottom();
+    scrollToNewest();
   }
 }
 
 function out(html: string, slot?: HTMLElement | null, replay = false) {
-  const log = chatlog();
-  if (!log) return;
+  const host = sink();
+  if (!host) return;
   // given a slot (the in-flight thinking line, #116), reuse its position so
   // the output lands where the visitor is already looking
   const d = slot?.isConnected ? slot : document.createElement("div");
   d.className = "out";
   d.innerHTML = html; // static strings only, never user input
-  if (!d.parentElement) log.appendChild(d);
+  if (!d.parentElement) host.appendChild(d);
   if (!replay) {
     record({ t: "out", s: html });
     announce(d.textContent ?? "");
-    scrollChatBottom();
+    scrollToNewest();
   }
 }
 
@@ -346,6 +388,7 @@ function clearChat() {
   const log = chatlog();
   if (!log) return;
   log.innerHTML = "";
+  activeTurn = null; // the note below lands in the log, never a stale turn
   llmHistory.length = 0; // clear wipes the model's context too
   purgeChat(); // #144: and the persisted session, so a cleared chat stays cleared
   line("cmt", "# Cleared", true); // shown, deliberately not stored
@@ -453,8 +496,24 @@ function rehydrateChat() {
     }
   }
   if (!transcript.length) return;
-  for (const e of transcript) renderEntry(e);
-  scrollChatBottom();
+  // The empty-state intro lines ("ask about Brian's work", "type help") are
+  // redundant once a real conversation exists, and hiding them before the
+  // replay means the prepended turns can never shift them: the restore
+  // builds the thread in one pass with nothing below it moving (CLS 0,
+  // chat-top-spec Q4).
+  for (const el of log.querySelectorAll(":scope > .cmt")) {
+    el.setAttribute("hidden", "");
+  }
+  // Replay regroups by echo boundaries: a new turn begins at each user
+  // message, and beginTurn prepends, so replaying oldest to newest lands the
+  // newest turn on top with natural order kept within each turn. Entries
+  // before the first echo (rare) fall through sink() to the log itself.
+  activeTurn = null;
+  for (const e of transcript) {
+    if (e.t === "echo") beginTurn();
+    renderEntry(e);
+  }
+  scrollToNewest();
 }
 
 /* ------------------------------------------------------------ navigation -- */
@@ -474,6 +533,7 @@ function scrollToLog() {
 
 function toConsole(cmd: string, html: string, viaKb: boolean) {
   const run = () => {
+    beginTurn(); // one user turn: the echoed command + its output (#153)
     echo(cmd);
     out(html);
   };
@@ -481,7 +541,7 @@ function toConsole(cmd: string, html: string, viaKb: boolean) {
     run();
   } else {
     pendingAfter = run;
-    if (viaKb) pendingFocus = "in-chat";
+    if (viaKb) pendingFocus = "in-site";
     navigate("/chat");
   }
 }
@@ -527,8 +587,8 @@ const MD_LINK =
     Given a slot (the in-flight thinking line, #116), the reply fills that
     same element in place: content swaps, the box never moves. */
 function renderReply(text: string, slot?: HTMLElement | null, replay = false) {
-  const log = chatlog();
-  if (!log) return;
+  const host = sink();
+  if (!host) return;
   const d = slot?.isConnected ? slot : document.createElement("div");
   d.className = "reply";
   d.replaceChildren();
@@ -553,11 +613,11 @@ function renderReply(text: string, slot?: HTMLElement | null, replay = false) {
     last = m.index + m[0].length;
   }
   d.appendChild(document.createTextNode(text.slice(last)));
-  if (!d.parentElement) log.appendChild(d);
+  if (!d.parentElement) host.appendChild(d);
   if (!replay) {
     record({ t: "reply", s: text });
     announce(text);
-    scrollChatBottom();
+    scrollToNewest();
   }
 }
 
@@ -570,8 +630,8 @@ function renderReply(text: string, slot?: HTMLElement | null, replay = false) {
    exactly once through the polite announcer. Under reduced motion the dots
    give way to the static label (rules in terminal.css). */
 function thinking(): HTMLElement | null {
-  const log = chatlog();
-  if (!log) return null;
+  const host = sink();
+  if (!host) return null;
   const d = document.createElement("div");
   d.className = "reply thinking";
   const dots = document.createElement("span");
@@ -584,9 +644,9 @@ function thinking(): HTMLElement | null {
   label.className = "tlabel";
   label.textContent = "Thinking…";
   d.append(dots, label);
-  log.appendChild(d);
+  host.appendChild(d);
   announce("Thinking…");
-  scrollChatBottom();
+  scrollToNewest();
   return d;
 }
 
@@ -635,8 +695,8 @@ function renderRedirect(
   slot: HTMLElement | null,
   live: boolean
 ): { count: HTMLElement; tail: HTMLElement } | null {
-  const log = chatlog();
-  if (!log) return null;
+  const host = sink();
+  if (!host) return null;
   const box = slot?.isConnected ? slot : document.createElement("div");
   box.className = "reply redirect";
   box.replaceChildren();
@@ -676,7 +736,7 @@ function renderRedirect(
     box.appendChild(tail);
     refs = { count, tail };
   }
-  if (!box.parentElement) log.appendChild(box);
+  if (!box.parentElement) host.appendChild(box);
   return refs;
 }
 
@@ -688,17 +748,18 @@ function startRedirect(href: string, name: string, slot: HTMLElement | null) {
   cancelRedirect("nav"); // clear any prior countdown silently
   const refs = renderRedirect(href, name, slot, true);
   record({ t: "redirect", href, name });
-  scrollChatBottom();
+  scrollToNewest();
   if (!refs) {
     navigate(href);
     return;
   }
-  // keep focus on whatever input the send came from (#143 req 2)
+  // keep focus on whatever input the send came from (#143 req 2); the
+  // fallback is the header composer, /chat's input since #153
   const active = document.activeElement as HTMLElement | null;
   const input =
     active && active.matches?.(".prompt input, .hchat input")
       ? (active as HTMLInputElement)
-      : (byId("in-chat") as HTMLInputElement | null);
+      : (byId("in-site") as HTMLInputElement | null);
 
   announce(
     `Taking you to ${name} in a few seconds. Press escape, or select stay here, to stay.`
@@ -743,6 +804,7 @@ function cancelRedirect(reason: "escape" | "stay" | "type" | "nav") {
 }
 
 async function askLive(q: string) {
+  beginTurn(); // the newest turn opens at the top of the transcript (#153)
   echo(q);
   const wait = thinking();
   try {
@@ -819,7 +881,7 @@ function toChat(q: string, viaKb: boolean) {
     ask(q);
   } else {
     pendingAfter = () => ask(q);
-    if (viaKb) pendingFocus = "in-chat";
+    if (viaKb) pendingFocus = "in-site";
     navigate("/chat");
   }
 }
@@ -854,11 +916,12 @@ function run(raw: string, viaKb: boolean) {
     return;
   }
   if (cmd === "chat") {
-    // open the chat page itself; never send "chat" as a question
+    // open the chat page itself; never send "chat" as a question. The
+    // composer is the header input (#153), so that is where focus lands.
     if (currentScreen() === "chat") {
-      byId("in-chat")?.focus({ preventScroll: true });
+      byId("in-site")?.focus({ preventScroll: true });
     } else {
-      if (viaKb) pendingFocus = "in-chat";
+      if (viaKb) pendingFocus = "in-site";
       navigate("/chat");
     }
     return;
@@ -1040,9 +1103,10 @@ function initPage() {
   }
 
   // #144: restore the /chat thread (module memory first, else sessionStorage)
-  // BEFORE running any pending send, so a carried question lands beneath the
-  // restored conversation. Recompute the roving tab stop now the log is built,
-  // since rehydrated replies add their own inline links to the cursor order.
+  // BEFORE running any pending send, so a carried question opens the newest
+  // turn above the restored conversation (#153). Recompute the roving tab
+  // stop now the log is built, since rehydrated replies add their own inline
+  // links to the cursor order.
   if (currentScreen() === "chat") {
     rehydrateChat();
     const r = roveEls();
