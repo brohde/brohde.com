@@ -9,15 +9,9 @@
  * Each entry is a real link to /log/<id> (or the external URL, marked with a
  * never-underlined ↗, #68) so it is crawlable and keyboard reachable; the
  * terminal controller only enhances, never gates, navigation.
- * With `boot`, each row reveals in order as terminal output.
  */
 import { getCollection } from "astro:content";
 import { logHref, isoDate } from "@/lib/site";
-
-interface Props {
-  boot?: boolean;
-}
-const { boot = false } = Astro.props;
 
 const posts = (await getCollection("articles", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
@@ -35,7 +29,7 @@ const domainOf = (url: string) => new URL(url).hostname.replace(/^www\./, "");
     posts.map((post) =>
       post.data.external ? (
         <a
-          class:list={["lentry", { bseq: boot }]}
+          class="lentry"
           href={post.data.external}
           target="_blank"
           rel="noopener"
@@ -60,7 +54,7 @@ const domainOf = (url: string) => new URL(url).hostname.replace(/^www\./, "");
           </span>
         </a>
       ) : (
-        <a class:list={["lentry", { bseq: boot }]} href={logHref(post.id)}>
+        <a class="lentry" href={logHref(post.id)}>
           <time class="lts" datetime={isoDate(post.data.date)}>
             {isoDate(post.data.date)}
           </time>

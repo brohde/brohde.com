@@ -5,9 +5,9 @@
  * prompt. Its token scope is fixed night (see .slab in terminal.css), so its
  * interior never follows the page ground.
  *
- * It is the booting screen (#36/#64): the slab never carries .bseq, so it is
- * fully visible from first paint while "hello" types into its prompt and the
- * editorial page reveals around it. A send here navigates to /chat, a normal
+ * The slab and the whole page paint from the first frame (#62): there is no
+ * boot reveal any more (#149). The "$ hello" line survives as static content
+ * and "hello" survives as a command. A send here navigates to /chat, a normal
  * page carrying the same slab object (#108; the old expand-to-full-window
  * morph is retired).
  */
@@ -15,7 +15,7 @@ import CommandMenu from "@/components/CommandMenu.astro";
 import Prompt from "@/components/Prompt.astro";
 
 interface Props {
-  /** prompt key, e.g. "home" (the boot types into in-home) */
+  /** prompt key, e.g. "home" (the home prompt is in-home) */
   promptId?: string;
 }
 const { promptId = "home" } = Astro.props;

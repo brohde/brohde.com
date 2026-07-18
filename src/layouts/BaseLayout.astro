@@ -24,9 +24,7 @@ import circularBold from "@/assets/fonts/circular-bold.woff2?url";
      1. The HTML document itself.
      2. The inlined stylesheet (build.inlineStylesheets: "always") — one <style>
         in <head>, so paint never waits on a second round-trip.
-     3. The inline boot gate below — a few lines, no network, no dependencies.
-   Verified: FCP is identical whether the boot sequence runs or not, i.e. paint
-   is gated by CSS delivery, not by any script. Baseline: FCP ~1.1s, LCP ~1.2s,
+   Paint is gated by CSS delivery, not by any script. Baseline: FCP ~1.1s, LCP ~1.2s,
    TBT 0, CLS 0 (Lighthouse mobile, gzip). Do not regress these.
 
    Fonts (#67/#20, license confirmed 2026-07-15): the ONE sanctioned webfont is
@@ -60,7 +58,7 @@ import circularBold from "@/assets/fonts/circular-bold.woff2?url";
      - Respect prefers-reduced-motion (freeze/skip animation) and honor the perf
        budget (canvas work off the main thread or throttled; keep TBT ~0, CLS 0).
      - Reserve layout up front so nothing shifts when the live layer arrives
-       (the boot gate uses visibility, not display, for exactly this reason).
+       (reserve the box with visibility/min-size, not display, for this reason).
    Rule of thumb: if a new layer changes FCP/LCP/CLS on the built homepage, it
    is in the wrong place. Put it behind idle/visible/interaction, with a facade.
    ========================================================================== */
@@ -152,33 +150,6 @@ const props = Astro.props;
       })();
     </script>
 
-    {
-      /*
-      Boot gate (decisions #36, #41). Runs before first paint so full content
-      never flashes: on a genuine load of the homepage (and not under reduced
-      motion) it adds html.boot, which hides the .bseq blocks until the reveal
-      runs. All content is server-rendered and stays in the DOM either way, so
-      the page is fully crawlable. terminal.ts handles the reveal + a failsafe.
-    */
-    }
-    <script is:inline>
-      (function () {
-        try {
-          if (
-            location.pathname === "/" &&
-            !matchMedia("(prefers-reduced-motion: reduce)").matches
-          ) {
-            document.documentElement.classList.add("boot");
-            setTimeout(function () {
-              document.documentElement.classList.remove("boot");
-            }, 6000);
-          }
-        } catch (e) {
-          /* any failure: skip the sequence, content stays visible */
-        }
-      })();
-    </script>
-
     <ClientRouter />
   </head>
   <body>
@@ -203,8 +174,8 @@ const props = Astro.props;
     {
       /*
       Single hydration point. One deferred module (type=module) drives every
-      interactive behavior; it wires delegated listeners and reveals the boot
-      sequence, but does no network work and nothing that blocks paint.
+      interactive behavior; it wires delegated listeners, but does no network
+      work and nothing that blocks paint.
 
       Future heavy layers hang off THIS module's idle hook, never off new tags
       here — see the FACADE PATTERN in the frontmatter. Lazy-import them

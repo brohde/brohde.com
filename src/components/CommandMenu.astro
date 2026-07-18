@@ -6,19 +6,16 @@
 interface Props {
   /** commands to show, in order */
   items?: string[];
-  /** add the boot-reveal class (homepage only) */
-  boot?: boolean;
   /** aria-label for the nav landmark */
   label?: string;
 }
 const {
   items = ["work", "about", "resume", "contact"],
-  boot = false,
   label = "Commands",
 } = Astro.props;
 ---
 
-<nav class:list={["menu", { bseq: boot }]} aria-label={label}>
+<nav class="menu" aria-label={label}>
   {
     items.map((cmd) => (
       <button type="button" class="cbtn" data-cmd={cmd}>

@@ -2,21 +2,14 @@
 /**
  * The command prompt: an input plus its autocomplete popover (#48) and the
  * ghost placeholder with a blinking caret. Reused on the home and chat screens.
- * All behavior (routing, autocomplete, history, boot typing) lives in
- * terminal.ts, which finds this block by its data-prompt id.
+ * All behavior (routing, autocomplete, history) lives in terminal.ts, which
+ * finds this block by its data-prompt id.
  */
 interface Props {
   /** unique key, e.g. "home" | "chat" */
   id: string;
   placeholder?: string;
   label?: string;
-  /**
-   * Accepted for compatibility (index.astro passes it) but intentionally a
-   * no-op: the prompt is EXEMPT from the boot hide. Decision #36's first
-   * frame is "blank with just the chatbox", and #62 wants paint immediately,
-   * so the boot's hello must type into a visible input, never a hidden one.
-   */
-  boot?: boolean;
 }
 const {
   id,
@@ -25,7 +18,7 @@ const {
      speech-input user sees (label-in-name). */
   placeholder = "Ask me anything or type help",
   label = "Ask me anything or type help",
-} = Astro.props; // boot accepted (see Props) but unused: prompt never hides
+} = Astro.props;
 
 const inputId = `in-${id}`;
 const listId = `ac-list-${id}`;

@@ -3,7 +3,7 @@
    prototypes:
      docs/design/lab/homepage-structure.html  (treatment C: editorial page +
                                                slab + ledger + article variant)
-     docs/design/lab/build-log-v3.html        (boot, prompt, autocomplete, wipe)
+     docs/design/lab/build-log-v3.html        (prompt, autocomplete, wipe)
      docs/design/lab/aurora-terminal.html     (two-ground palette)
    Page-level classes reference the semantic tokens in global.css and follow
    the system ground (#40). The slab scopes its own fixed night tokens: it is
@@ -159,8 +159,8 @@ html.cfocus .wm .caret {
    either page ground (typed #F2F7F3 17.60:1, placeholder #8FA79A 7.41:1,
    mark #7EE787 12.42:1 on #0B110E). 48px chrome sizing against the homepage
    surface's 60px hero (D1 call 7); 16px font is the iOS no-zoom floor. The
-   placeholder shows at rest: the header has no boot machinery, only the
-   homepage surface hides its invitation behind the typing sequence. */
+   placeholder shows at rest on every surface, header and homepage alike (the
+   old boot typing sequence that hid the homepage invitation is gone, #149). */
 .hchat {
   display: flex;
   align-items: center;
@@ -1292,27 +1292,6 @@ html.cfocus .wm .caret {
   color: var(--bright);
   margin: 10px 0 4px;
   text-wrap: balance;
-}
-
-/* --------------------------- boot sequence ------------------------------- */
-/* Visibility only: every element is server-rendered and stays in the DOM
-   from the first byte (crawlable for SEO + LLMs, #36). The sequence just
-   toggles visibility. Gate lives in BaseLayout's pre-paint script. */
-html.boot .bseq {
-  visibility: hidden;
-}
-html.boot .bseq.bon {
-  visibility: visible;
-}
-/* Exempt from the boot hide (#36/#62): the slab is the booting screen, so it
-   never carries .bseq. It is fully visible from the first frame (scanlines
-   up, "hello" typing into its prompt) while the editorial page reveals
-   around it as output. No blank first frame, CLS stays 0. */
-@media (prefers-reduced-motion: reduce) {
-  /* safety net: never leave content hidden under reduced motion */
-  html.boot .bseq {
-    visibility: visible;
-  }
 }
 
 /* --------------------------- screen-clear wipe (#64) --------------------- */

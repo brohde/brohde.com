@@ -34,9 +34,7 @@
  *
  * BaseLayout renders this on EVERY page. On the homepage the wordmark row is the
  * page's h1: the retired EditorialHeader's h1 moved here with the chrome
- * (HomeIntro.astro keeps the rest of the #80 identity lines). The rows carry
- * .bseq so the homepage boot reveals the header with the page (#36: the
- * first frame stays the surface alone).
+ * (HomeIntro.astro keeps the rest of the #80 identity lines).
  */
 const isHome = Astro.url.pathname === "/";
 
@@ -52,7 +50,7 @@ const ownsInput = path === "/" || path === "/chat";
 
 <header class="shead" data-hchat={ownsInput ? "off" : "on"}>
   <div class="wrap">
-    <div class="idrow bseq">
+    <div class="idrow">
       {
         isHome ? (
           <h1 class="wmrow">
@@ -73,7 +71,7 @@ const ownsInput = path === "/" || path === "/chat";
         <button type="button" data-cmd="contact">contact</button>
       </nav>
     </div>
-    <form class="hchat bseq" action="/chat" data-screen-form>
+    <form class="hchat" action="/chat" data-screen-form>
       <label class="sr" for="in-site">Ask me anything or type help</label>
       <span class="p" aria-hidden="true">$</span>
       <input

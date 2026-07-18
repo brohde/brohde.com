@@ -6,7 +6,6 @@
  *     + /slash aliases + free-form -> live chat), ported from build-log-v3.html
  *   - command autocomplete at the prompt (#48)
  *   - shell-style prompt history (#44)
- *   - the boot sequence (#36; #64: site entry only, never on internal navs)
  *   - the roving page cursor (#63) and the terminal wipe transition (#64)
  *   - the redirect countdown for model-chosen navigation (#143), the /chat
  *     conversation persistence via sessionStorage (#144), and the header
@@ -95,7 +94,6 @@ let pendingAfter: (() => void) | null = null;
 let pendingFocus: string | null = null;
 
 const ac = { open: false, items: [] as Cmd[], sel: -1, promptId: "" };
-let bootCancel: (() => void) | null = null;
 
 /* -------------------------------------------------- redirect countdown ---- */
 /* #143: when the model answers a QUESTION by choosing an open_page
@@ -1051,83 +1049,9 @@ function recall(dir: -1 | 1, input: HTMLInputElement) {
   setCaretEnd(input);
 }
 
-/* ----------------------------------------------------------------- boot ---- */
-
-function runBoot() {
-  const root = document.documentElement;
-  const els = Array.from(document.querySelectorAll<HTMLElement>(".bseq"));
-  const input = byId("in-home") as HTMLInputElement | null;
-  if (!input || !els.length) {
-    root.classList.remove("boot");
-    return;
-  }
-
-  const HELLO = "hello";
-  const T_HOLD = 500;
-  const T_CHAR = 85;
-  const T_BEAT = 460;
-  const T_STEP = 50;
-  const tReveal = T_HOLD + (HELLO.length - 1) * T_CHAR + T_BEAT;
-  const start = Date.now();
-  let shown = 0;
-  let cleared = false;
-  let timer = 0;
-
-  function end(clearInput: boolean) {
-    if (!root.classList.contains("boot")) return;
-    clearInterval(timer);
-    root.classList.remove("boot");
-    if (
-      clearInput &&
-      input &&
-      HELLO.slice(0, input.value.length) === input.value
-    ) {
-      input.value = "";
-    }
-    document.removeEventListener("keydown", skip, true);
-    document.removeEventListener("pointerdown", skip, true);
-    input?.removeEventListener("input", keep);
-    bootCancel = null;
-  }
-  function skip() {
-    end(true);
-  }
-  function keep() {
-    end(false);
-  }
-
-  bootCancel = () => end(false);
-
-  document.addEventListener("keydown", skip, true);
-  document.addEventListener("pointerdown", skip, true);
-  input.addEventListener("input", keep);
-
-  timer = window.setInterval(() => {
-    const t = Date.now() - start;
-    if (t < T_HOLD) return;
-    if (t < tReveal) {
-      const n = Math.min(HELLO.length, 1 + Math.floor((t - T_HOLD) / T_CHAR));
-      if (input.value !== HELLO.slice(0, n)) input.value = HELLO.slice(0, n);
-      return;
-    }
-    if (!cleared) {
-      cleared = true;
-      input.value = "";
-    }
-    const k = Math.min(els.length, 1 + Math.floor((t - tReveal) / T_STEP));
-    while (shown < k) els[shown++].classList.add("bon");
-    if (shown >= els.length) end(false);
-  }, 24);
-}
-
-function cancelBoot() {
-  if (bootCancel) bootCancel();
-}
-
 /* --------------------------------------------------- per-page init (VT) ---- */
 
 function initPage() {
-  cancelBoot();
   closeAC();
   histIndex = history.length;
 
@@ -1142,13 +1066,6 @@ function initPage() {
   pendingAfter = null;
   const focusId = pendingFocus;
   pendingFocus = null;
-
-  const root = document.documentElement;
-  if (currentScreen() === "home" && root.classList.contains("boot") && !RM()) {
-    runBoot();
-  } else {
-    root.classList.remove("boot");
-  }
 
   // localhost only: the chat preview note reflects the live POC bridge
   if (IS_LOCAL && currentScreen() === "chat") {
@@ -1402,18 +1319,6 @@ function setupOnce() {
   document.addEventListener("astro:page-load", () => {
     liftWipe();
   });
-
-  // Boot plays on SITE ENTRY ONLY (#64): the pre-paint gate in BaseLayout
-  // sets html.boot on genuine full loads of the homepage, and Astro never
-  // re-runs that unchanged inline script on client-side navigations. Here we
-  // only ever CLEAR the class after a swap, so internal navigation back to
-  // home renders instantly complete and the sequence never replays.
-  document.addEventListener("astro:after-swap", () => {
-    document.documentElement.classList.remove("boot");
-  });
-
-  // stop a running boot if we navigate away mid-sequence
-  document.addEventListener("astro:before-swap", cancelBoot);
 
   // #143: a navigation away during a countdown cancels it silently; the timer
   // must never fire after the visitor has already left /chat (also closes the
