@@ -79,3 +79,14 @@ const Wm = isHome ? "h1" : "p";
     <ChatBar inputId="in-site" />
   </div>
 </header>
+
+<style>
+  /* Brian's baseline riders (batch 128): on interior headers the about/contact
+     tokens read high against the compact wordmark and the theme icon, which
+     already sits on the right line there; seat the nav 2px lower. (The home
+     header gets the inverse treatment on the ICON in ThemeToggle.astro: the
+     large wordmark pulls the baseline down, the nav is already seated.) */
+  .shead:not([data-screen="home"]) .snav {
+    transform: translateY(2px);
+  }
+</style>

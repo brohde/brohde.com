@@ -88,6 +88,13 @@
     color: var(--accent);
   }
 
+  /* Brian's rider (#180 flag 3): on the home header the large wordmark pulls
+     the row's text baseline below its vertical center, so the centered icon
+     read high. Seat it 2px lower there; interior headers stay centered. */
+  :global(.shead[data-screen="home"]) .themetgl {
+    transform: translateY(2px);
+  }
+
   /* one icon, keyed on the pre-paint html[data-theme] stamp (always present
      since item 8: "dark" unless stored "light"). Sun while dark (go light),
      moon while light (go dark). */

@@ -94,3 +94,25 @@ const published = (id: string) =>
     >
   </p>
 </section>
+
+<style>
+  /* Brian (batch 128): "pretty faint but still readable". Steps the #162 note
+     down from terminal.css's 80% mix to 65%: night 3.72:1, light 3.30:1,
+     past the 3:1 readability floor but deliberately below the 4.5:1 AA text
+     line (his explicit call, #184). The underline still marks the link.
+     Scoped here so the rule outweighs terminal.css without touching the file
+     the Phase A build owns; fold back into terminal.css at the next merge. */
+  .cvia,
+  .cvia a.dimlink {
+    color: color-mix(in srgb, var(--dim) 65%, var(--ground));
+  }
+  .cvia a.dimlink {
+    text-decoration-color: color-mix(in srgb, var(--dim) 65%, var(--ground));
+  }
+  /* the scoped rules above out-specify terminal.css's hover; restore it */
+  .cvia a.dimlink:hover,
+  .cvia a.dimlink:focus-visible {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+</style>
