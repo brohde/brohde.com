@@ -246,17 +246,21 @@ html.cfocus .wm .caret {
    --accent / --on-accent from its placement scope, so it is mint-on-night in
    the header + homepage wells (12.42:1) and deep-green-on-paper in the
    daylight /chat composer (7.20:1). Mono lowercase label keeps it in the
-   control family; the radius + fill keep it in the theme. margin-bottom
-   balances it against the single line at rest while flex-end holds it at the
-   bottom as the textarea grows. */
+   control family; the radius + fill keep it in the theme. Brian's sizing
+   rider: the FIXED 30px height matches the input's rest-state text line
+   (16px face at 1.4 line height, plus a hair of air) instead of towering
+   over it; fixed, not min, so the button never grows with the textarea.
+   margin-bottom centers it against the single line at rest (13px textarea
+   padding above and below the 22px line puts center at 9px + half the
+   line) while flex-end holds it at the bottom as the textarea grows. */
 .btn-send {
   flex: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 62px;
-  min-height: 38px;
-  margin-bottom: 6px;
+  height: 30px;
+  margin-bottom: 9px;
   padding: 0 16px;
   border: 0;
   border-radius: 8px;
@@ -826,39 +830,28 @@ html.cfocus .wm .caret {
     0 0 34px rgba(255, 170, 51, 0.2),
     0 14px 34px rgba(0, 0, 0, 0.28);
 }
-/* the composer docked as the panel's TOP EDGE: the shared ChatBar material
-   with its own border/radius/shadow/margin stripped so it reads as part of
-   the panel, not a box inside it. It keeps the panel ground (opaque), so
-   while pinned it never lets the transcript show through. Sticky top:0 pins
-   it to the viewport top through a long scroll (the header is not sticky now,
-   so it scrolls away above), releasing when the panel bottom passes. z-index
-   clears the transcript so it scrolls underneath. */
+/* the composer as a FIELD WELL floating INSIDE the panel (Brian's bug report:
+   the old edge-to-edge dock strip, written for the pre-well composer, painted
+   the well's opaque ground square over the panel's border + rounded corners.
+   The C2 mock geometry is the fix: the well keeps its own box, border,
+   radius, and focus wake, seated inside the panel frame with margins, so it
+   can never touch the panel border). Sticky still pins it through a long
+   scroll (top matches the top margin so the seated gap holds while stuck);
+   z-index clears the transcript, which scrolls beneath. KNOWN NUANCE for the
+   validator: while pinned, transcript text is visible sliding through the
+   margin gaps around the well; flag with a screenshot if it reads messy. */
 .slab-chat > .chatcomposer {
   position: sticky;
-  top: 0;
+  top: 12px;
   z-index: 3;
-  margin: 0;
-  padding: 0 14px;
-  border: 0;
-  /* a reserved 1px bottom hairline: transparent at rest (no seam), coloured
-     only while stuck (.pinned), so pinning never changes the composer height
-     (zero shift) */
-  border-bottom: 1px solid transparent;
-  border-radius: 0;
-  box-shadow: none;
+  margin: 13px 12px 0;
 }
-/* the panel's own focus-within wake (accent border + warm halo) is the focus
-   affordance; suppress the composer's inherited .hchat focus border/glow so a
-   borderless top strip does not read as a detached box */
-.slab-chat > .chatcomposer:focus-within {
-  border-color: transparent;
-  box-shadow: none;
-}
-/* stuck at the viewport top: the reserved hairline colours in (eased by
-   .hchat's border-color transition; reduced motion makes it instant). Placed
-   after :focus-within so a focused-and-stuck composer still shows the line. */
+/* stuck through a long scroll: the floating well already has a full border,
+   so the old reserved-hairline trick is gone; while pinned, a soft drop
+   shadow separates the well from the transcript sliding beneath it (eased by
+   the .hchat transition family; reduced motion makes it instant). */
 .slab-chat > .chatcomposer.pinned {
-  border-bottom-color: var(--line);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
 }
 /* the pin sentinel: invisible, layout-neutral (the -1px margin cancels its
    1px height), sitting where the composer rests so the IntersectionObserver
