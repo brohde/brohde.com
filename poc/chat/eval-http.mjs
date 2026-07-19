@@ -62,8 +62,12 @@ const QUESTIONS = [
 
 const SLUGS = ["about", "work", "eight-angle", "contact", "resume"];
 
-// Signals of the mandated "I don't know that one. Email brian@brohde.com..." deflection.
-const deflects = (t) => /brian@brohde\.com/i.test(t);
+// Signals of the mandated deflection. Since #183 the email is gone: the unknown/deny
+// template is "I don't know that one, but you can reach Brian right here: pick
+// [contact](/contact) to send him a message." Accept either the "don't know that one"
+// opener or the [contact](/contact) pointer (the deflection always carries one).
+const deflects = (t) =>
+  /don'?t know that one/i.test(t) || /\(\/contact\)/i.test(t);
 // AGGREGATE age-math leakage. NOT a bare project year: the deny-list policy explicitly
 // ALLOWS stating individual, already-public project dates (e.g. "Facebook Newsroom, 2014");
 // what is banned is summing/spanning them into experience, or a birth/graduation year. So

@@ -47,7 +47,7 @@ const HELP_HTML =
   "  hello     A quick tour\n" +
   "  work      Browse the log\n" +
   "  about     Who I am\n" +
-  "  contact   Email + LinkedIn\n" +
+  "  contact   Send Brian a message\n" +
   "  chat      Ask me anything\n" +
   "  home      Back to the log\n" +
   "  clear     Wipe this chat\n" +
@@ -63,18 +63,20 @@ const HELLO_HTML =
   '<a href="/">Work</a>: the log, case studies of what I ship\n' +
   '<a href="/about">About</a>: who I am in four paragraphs\n' +
   '<a href="/chat">Chat</a>: ask me anything\n' +
-  '<a href="mailto:brian@brohde.com">Contact</a>: start a conversation';
+  '<button type="button" class="cmdlink" data-cmd="contact">Contact</button>: send Brian a message right here';
 
-const CONTACT_HTML =
-  'Email     <a href="mailto:brian@brohde.com">brian@brohde.com</a>\n' +
-  'LinkedIn  <a href="https://www.linkedin.com/in/brian-rohde-4ba3558/" target="_blank" rel="noopener">/in/brian-rohde-4ba3558</a>\n' +
-  'X         <a href="https://x.com/brianxbuilds" target="_blank" rel="noopener">@brianxbuilds</a>';
+/* The email card RETIRED (#183): brian@brohde.com comes off every visitor
+   surface with Phase B, and contact is the in-chat flow now. Every path that
+   used to print the address (the contact command, the contact nav item, the
+   model's [contact] link, an open_page:contact) opens the conversational
+   flow instead (see the contact flow section below). */
 
 /* shown only when the chat backend is unreachable at the network level
-   (server-sent errors render their own body verbatim) */
+   (server-sent errors render their own body verbatim). The email is gone with
+   #183; the honest fallback is to try again. */
 const OFFLINE_HTML =
   "The chat is offline right now.\n" +
-  '<span class="c"># Email <a href="mailto:brian@brohde.com">brian@brohde.com</a> and ask him directly.</span>';
+  '<span class="c"># Please try again in a moment.</span>';
 
 /* ---------------------------------------------------------------- state ---- */
 
@@ -85,6 +87,23 @@ let pendingFocus: string | null = null;
    send; the flag lets initPage tell them apart. */
 let pendingEmulate = false;
 
+/* Contact flow state (Phase B item 1). When non-null the flow owns every TYPED
+   send: the submit handler routes to contactSend instead of the command router,
+   so the visitor's words are the message / name / email / confirm answer, not a
+   chat question. null = normal chat. This is deliberately module-only state
+   (not persisted): a /chat refresh restores the transcript but disarms the
+   flow, a known Phase B limitation flagged in the handoff. `awaiting` names
+   what the next send answers; "blob" is the first free-form message where the
+   /api/contact LLM extraction runs. */
+type Awaiting = "blob" | "message" | "name" | "email" | "confirm" | "sending";
+interface ContactState {
+  name: string | null;
+  email: string | null;
+  message: string | null;
+  awaiting: Awaiting;
+}
+let contact: ContactState | null = null;
+
 /* the /chat composer's input id (docked in the panel, Phase 4B): pendingFocus
    targets it after a navigation lands on /chat, and it is the redirect
    countdown's focus fallback. The header input (#in-site) is the composer
@@ -94,8 +113,15 @@ const CHAT_INPUT = "in-chat";
 
 /* Phase 4C motion timings (Brian veto knobs). */
 const PULSE_MS = 450; // brief thinking pulse before a deterministic response
-const TYPE_MS = 35; // per-character speed of the contact typing emulation
 const CONTACT_Q = "How do I contact Brian?"; // the emulated contact question
+
+/* Typing humanization (Phase B item 4). The emulation used to type at a flat
+   35ms per character; it now jitters each keystroke, pauses longer after spaces
+   and punctuation, and occasionally hesitates, so it reads like a person typing
+   rather than a metronome. The base is centered a hair below the old 35ms so the
+   space and punctuation pauses keep the total within about 20% of what the flat
+   35ms/char produced (measured for CONTACT_Q during validation). */
+const TYPE_BASE = 22; // humanized per-character base (jittered + bonused below)
 
 function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -396,19 +422,18 @@ function out(html: string, slot?: HTMLElement | null, replay = false) {
 function clearChat() {
   const log = chatlog();
   if (!log) return;
-  // Phase 4B: clear returns the panel to its PRISTINE first-visit state, with
-  // NO "# Cleared" note. Drop every conversation turn, then bring back the
-  // greeting empty state, so a cleared /chat looks exactly like arriving
-  // fresh. Every user turn begins with beginTurn, so the only direct log
-  // children are the .turn blocks (the "#" intro lines retired); removing the
-  // turns leaves the panel empty for the greeting.
+  // Drop every conversation turn and any pristine greeting, so a cleared panel
+  // is blank (the greeting is a fresh-arrival affordance only; that clear
+  // behavior + the placeholder restore land from main). The ONE line this flow
+  // owns is the contact reset: clear also exits an in-progress contact flow.
   for (const t of log.querySelectorAll(":scope > .turn")) t.remove();
+  removeGreeting();
   activeTurn = null;
+  contact = null; // clear also exits an in-progress contact flow
   llmHistory.length = 0; // clear wipes the model's context too
   purgeChat(); // #144: and the persisted session, so a cleared chat stays cleared
-  showGreeting(); // the panel is pristine again: re-show the time-of-day greeting
-  scrollToNewest(); // bring the pristine panel back to the top
-  byId("in-chat")?.focus({ preventScroll: true }); // Brian's rider: refocus the input
+  scrollToNewest(); // bring the empty panel back to the top
+  byId("in-chat")?.focus({ preventScroll: true }); // refocus the input
 }
 
 /* ------------------------------------------------ greeting empty state ---- */
@@ -419,16 +444,20 @@ function clearChat() {
    transcript, so it can never flash before a restored or pending thread
    renders; beginTurn drops it on the first real turn, and clear brings it
    back when the panel returns to pristine. */
-function greetingText(): string {
+/* The time-of-day salutation, shared by the pristine /chat greeting and the
+   contact flow's opening line (#182), so the word always matches. morning
+   5:00-11:59, afternoon 12:00-16:59, evening 17:00-4:59. */
+function timeGreeting(): string {
   const h = new Date().getHours();
-  // morning 5:00-11:59, afternoon 12:00-16:59, evening 17:00-4:59
-  const part =
-    h >= 5 && h < 12
-      ? "Good morning!"
-      : h >= 12 && h < 17
-        ? "Good afternoon!"
-        : "Good evening!";
-  return `${part} I'm Brian's AI. Ask me anything about his work and I'll do my best to answer.`;
+  return h >= 5 && h < 12
+    ? "Good morning!"
+    : h >= 12 && h < 17
+      ? "Good afternoon!"
+      : "Good evening!";
+}
+
+function greetingText(): string {
+  return `${timeGreeting()} I'm Brian's AI. Ask me anything about his work and I'll do my best to answer.`;
 }
 
 function showGreeting() {
@@ -485,6 +514,7 @@ function dropThread() {
   purgeChat();
   llmHistory.length = 0;
   activeTurn = null;
+  contact = null; // leaving /chat also cancels an in-progress contact flow
 }
 
 /* Coerce a stored history into exactly what the hardened server accepts
@@ -513,7 +543,7 @@ function coerceHistory(raw: unknown): { role: "user" | "assistant"; content: str
 /* Known-good `out` bodies and redirect destinations: on replay we only trust
    values we ourselves ever produce. A tampered store falls back to inert text
    (out) or a plain label (redirect), never innerHTML or a live href. */
-const OUT_ALLOW = new Set([HELP_HTML, HELLO_HTML, CONTACT_HTML, OFFLINE_HTML]);
+const OUT_ALLOW = new Set([HELP_HTML, HELLO_HTML, OFFLINE_HTML]);
 const REDIRECT_HREFS = new Set(["/about", "/#log"]);
 
 function renderEntry(e: Entry) {
@@ -624,6 +654,14 @@ function toConsole(cmd: string, html: string, viaKb: boolean) {
 const IS_LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
 const CHAT_URL = IS_LOCAL ? "http://localhost:8787/chat" : "/api/chat";
 
+/* The contact endpoint is ALWAYS same-origin (Phase B): only `wrangler pages
+   dev` serves /api/contact locally, and the POC bridge on 8787 does not speak
+   it. On `astro dev` the route is simply absent, so a request 404s and the flow
+   degrades to its deterministic asks plus a friendly "delivery unavailable"
+   line, which is exactly the no-key graceful path. In production it is the
+   Pages Function functions/api/contact.ts. */
+const CONTACT_URL = "/api/contact";
+
 /** rolling model conversation (distinct from the prompt's command history) */
 const llmHistory: { role: "user" | "assistant"; content: string }[] = [];
 
@@ -715,8 +753,13 @@ function thinking(): HTMLElement | null {
 
 function openSlug(slug: string) {
   if (slug === "work") goHomeThen(scrollToLog);
-  else if (slug === "contact") out(CONTACT_HTML);
-  else if (slug in SLUG_HREF) navigate(SLUG_HREF[slug]);
+  else if (slug === "contact") {
+    // contact has no page (#183): the model choosing open_page:contact opens
+    // the in-chat contact flow in place (greeting + arm), inside the turn its
+    // reply already occupies. No new echo (the model's turn was the ask).
+    contactLine(contactGreeting(), null);
+    armContact();
+  } else if (slug in SLUG_HREF) navigate(SLUG_HREF[slug]);
   // any other slug (e.g. eight-angle, now unpublished) is a no-op: no route,
   // no 404. The prose the model already rendered carries the mention.
 }
@@ -965,8 +1008,20 @@ function pulseThen(render: (slot: HTMLElement | null) => void) {
   window.setTimeout(() => render(wait), PULSE_MS);
 }
 
-/* ------------------------------------- contact as an LLM moment (Phase 4C) - */
-/* sessionStorage may be blocked (private mode); the emulation skips its
+/* --------------------------------------- contact flow (Phase B item 1) ----- */
+/* Clicking the contact nav item (or an inline [contact] link, or typing the
+   contact command, or the model choosing open_page:contact) opens a
+   conversational contact flow instead of printing an email address (#183). A
+   time-of-day greeting invites the visitor to write their message with their
+   name and email; a deterministic state machine collects message, then name,
+   then email (Brian's order), assisted by a small LLM extraction in /api/contact
+   that pulls all three out of one blob when they are given at once; an explicit
+   confirm turn ALWAYS precedes delivery. The flow's turns are EPHEMERAL: none of
+   them are written to the persisted transcript, so a /chat refresh (which
+   restores recorded chat) leaves no half-finished flow behind, and leaving /chat
+   drops it (dropThread). */
+
+/* sessionStorage may be blocked (private mode); the typing emulation skips its
    theater then, like reduced motion, and renders the turn instantly. */
 function storageBlocked(): boolean {
   try {
@@ -977,19 +1032,90 @@ function storageBlocked(): boolean {
   }
 }
 
-/* A fully scripted turn: the echoed line, a brief pulse, then a deterministic
-   response, recorded + announced like any turn. */
-function scriptedTurn(q: string, html: string) {
-  beginTurn();
-  echo(q);
-  pulseThen((slot) => out(html, slot));
+/* Typing humanization (item 4). Each keystroke gets its own jittered delay, a
+   longer pause after a space (a word boundary), a longer one still after
+   punctuation, and an occasional micro-hesitation. Centered a hair below the old
+   flat 35ms so those bonuses keep the total within about 20% of the flat
+   duration. `prev` is the character just typed (the pause happens after it). */
+function humanDelay(prev: string | undefined): number {
+  let d = TYPE_BASE * (0.7 + Math.random() * 0.6); // jitter 0.7x..1.3x
+  if (prev === " ") d += 45 + Math.random() * 40; // longer after a word
+  else if (prev && /[.,!?;:]/.test(prev)) d += 70 + Math.random() * 60; // after punctuation
+  if (Math.random() < 0.06) d += 90 + Math.random() * 110; // occasional hesitation
+  return d;
 }
 
-/* Clicking the contact nav item (on any page) lands on /chat and types
-   "How do I contact Brian?" into the composer character by character, then
-   auto-submits it as a normal turn whose answer is the deterministic contact
-   card. On /chat it plays in place. Reduced motion or blocked storage: skip
-   the typing theater, render echo + response instantly. Focus ends in the
+/* Type `text` into the composer character by character on the humanized clock,
+   then run `done` after a short beat. Applies to all emulated typing. */
+function typeInto(input: HTMLTextAreaElement, text: string, done: () => void) {
+  let i = 0;
+  const step = () => {
+    i += 1;
+    input.value = text.slice(0, i);
+    autoGrow(input); // keep the fallback height in step with the typed value
+    if (i < text.length) window.setTimeout(step, humanDelay(text[i - 1]));
+    else window.setTimeout(done, 220); // a beat, then submit
+  };
+  window.setTimeout(step, humanDelay(undefined));
+}
+
+/* The flow's opening line (Brian's copy, #182): the time-of-day word matches
+   the pristine /chat greeting. */
+function contactGreeting(): string {
+  return `${timeGreeting()} You can contact Brian right here. Simply write your message, and include your name and email address.`;
+}
+
+/* -------- ephemeral turn builders (never recorded, so they never rehydrate) - */
+
+function contactEcho(text: string) {
+  const host = sink();
+  if (!host) return;
+  const d = document.createElement("div");
+  d.className = "uline";
+  d.textContent = text; // pre-wrap in CSS keeps a multi-line message readable
+  host.appendChild(d);
+  scrollToNewest();
+}
+
+/* An assistant line in the flow: announces (a11y) but is never recorded. `warn`
+   tints it with the --warn attention token (the invalid-email notice). Reuses
+   the thinking slot when given, so the pulse swaps to the line in place. */
+function contactLine(
+  text: string,
+  slot: HTMLElement | null,
+  warn = false
+): HTMLElement | null {
+  const host = sink();
+  if (!host) return null;
+  const d = slot?.isConnected ? slot : document.createElement("div");
+  d.className = warn ? "reply contact-warn" : "reply";
+  d.replaceChildren(document.createTextNode(text));
+  if (!d.parentElement) host.appendChild(d);
+  announce(text);
+  scrollToNewest();
+  return d;
+}
+
+/* -------- entry -------- */
+
+function armContact() {
+  contact = { name: null, email: null, message: null, awaiting: "blob" };
+}
+
+/* On /chat: open a turn that echoes `echoText`, pulses, then speaks the greeting
+   and arms the flow. */
+function scriptedContactEntry(echoText: string) {
+  beginTurn();
+  contactEcho(echoText);
+  pulseThen((slot) => {
+    contactLine(contactGreeting(), slot);
+    armContact();
+  });
+}
+
+/* The contact nav item / inline [contact] link: land on /chat and TYPE the
+   question (the emulation), then enter the flow. On /chat it plays in place.
+   Reduced motion or blocked storage skips the typing. Focus ends in the
    composer. */
 function playContactEmulation() {
   const input = byId(CHAT_INPUT) as HTMLTextAreaElement | null;
@@ -998,7 +1124,7 @@ function playContactEmulation() {
       input.value = "";
       autoGrow(input);
     }
-    scriptedTurn(CONTACT_Q, CONTACT_HTML);
+    scriptedContactEntry(CONTACT_Q);
     input?.focus({ preventScroll: true });
   };
   if (!input || prefersReducedMotion() || storageBlocked()) {
@@ -1006,15 +1132,7 @@ function playContactEmulation() {
     return;
   }
   input.focus({ preventScroll: true });
-  let i = 0;
-  const step = () => {
-    i += 1;
-    input.value = CONTACT_Q.slice(0, i);
-    autoGrow(input); // keep the fallback height in step with the typed value
-    if (i < CONTACT_Q.length) window.setTimeout(step, TYPE_MS);
-    else window.setTimeout(finish, 220); // a beat, then submit
-  };
-  window.setTimeout(step, TYPE_MS);
+  typeInto(input, CONTACT_Q, finish);
 }
 
 function contactMoment() {
@@ -1022,11 +1140,313 @@ function contactMoment() {
     playContactEmulation();
   } else {
     // ride the pendingAfter mechanism with the emulation flag so initPage
-    // focuses the composer before it types (#153 carry, Phase 4C)
+    // focuses the composer before it types (#153 carry)
     pendingAfter = () => playContactEmulation();
     pendingEmulate = true;
     navigate("/chat");
   }
+}
+
+/* Typed "contact" and open_page:contact enter the flow directly, echoing the
+   visitor's own word (no keystroke emulation). */
+function enterContactTyped() {
+  if (currentScreen() === "chat") {
+    scriptedContactEntry("contact");
+  } else {
+    pendingAfter = () => scriptedContactEntry("contact");
+    pendingEmulate = true;
+    navigate("/chat");
+  }
+}
+
+/* -------- collection state machine -------- */
+
+const EMAIL_FIND = /[^\s@]+@[^\s@]+\.[^\s@]+/;
+function firstEmail(text: string): string | null {
+  const m = text.match(EMAIL_FIND);
+  return m ? m[0].replace(/[.,;:>)\]]+$/, "") : null;
+}
+function isEmail(s: unknown): s is string {
+  return typeof s === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
+}
+function cleanName(text: string): string {
+  let s = (text.split("\n")[0] ?? "").trim();
+  s = s.replace(/^(my name is|i am|i'm|im|it is|it's|this is|name:?)\s+/i, "").trim();
+  s = s.replace(/[.,;:!]+$/, "").trim();
+  return (s || text.trim()).slice(0, 100);
+}
+
+interface Extracted {
+  name: string | null;
+  email: string | null;
+  message: string | null;
+}
+
+/* Best-effort extraction of {name, email, message} from one blob via
+   /api/contact. Returns null when the endpoint is unavailable (404 on astro
+   dev, 503 with no key, network error), so the caller falls back to the
+   deterministic asks: the flow works with zero LLM, and the extraction only lets
+   it skip asks it can already fill. */
+async function extractContact(text: string): Promise<Extracted | null> {
+  try {
+    const res = await fetch(CONTACT_URL, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ op: "extract", text: text.slice(0, 2000) }),
+      signal: AbortSignal.timeout(12_000),
+    });
+    if (!res.ok) return null;
+    const d = (await res.json()) as Partial<Extracted> & { error?: string };
+    if (d.error) return null;
+    return {
+      name: typeof d.name === "string" && d.name.trim() ? d.name.trim() : null,
+      email: isEmail(d.email) ? d.email.trim() : null,
+      message:
+        typeof d.message === "string" && d.message.trim() ? d.message.trim() : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/* Fill only the gaps: deterministic email always wins, a follow-up answer fills
+   the field it answered, and the first-blob extraction fills whatever it found.
+   A blob whose extraction ran but returned no message is left message-null on
+   purpose (the visitor gave only details), so we ask for it. */
+function mergeContact(
+  text: string,
+  ex: Extracted,
+  detEmail: string | null,
+  extractionRan: boolean
+) {
+  if (!contact) return;
+  const prev = contact.awaiting;
+  const em = detEmail ?? (isEmail(ex.email) ? ex.email : null);
+  if (!contact.email && em) contact.email = em;
+  if (!contact.name) {
+    if (prev === "name") contact.name = cleanName(text);
+    else if (ex.name) contact.name = ex.name;
+  }
+  if (!contact.message) {
+    if (prev === "message") contact.message = text.trim();
+    else if (ex.message) contact.message = ex.message;
+    else if (prev === "blob" && !extractionRan) contact.message = text.trim();
+  }
+}
+
+function collectContact(text: string) {
+  if (!contact) return;
+  const prev = contact.awaiting;
+  const first = prev === "blob";
+  const wait = thinking(); // covers the extraction round trip
+  const detEmail = firstEmail(text);
+  void (async () => {
+    const ex = first ? await extractContact(text) : null;
+    const exv: Extracted = ex ?? { name: null, email: null, message: null };
+    if (!contact) return; // cancelled or navigated away mid-request
+    mergeContact(text, exv, detEmail, ex !== null);
+    const emailInvalid = prev === "email" && !contact.email;
+    advanceContact(wait, emailInvalid);
+  })();
+}
+
+function advanceContact(slot: HTMLElement | null, emailInvalid = false) {
+  if (!contact) return;
+  if (!contact.message) {
+    contact.awaiting = "message";
+    contactLine("What would you like to say to Brian?", slot);
+  } else if (!contact.name) {
+    contact.awaiting = "name";
+    contactLine("Got it. And what is your name?", slot);
+  } else if (!contact.email) {
+    contact.awaiting = "email";
+    contactLine(
+      emailInvalid
+        ? "That does not look like an email address. What is the best email for Brian to reply to?"
+        : "Thanks. And what email should Brian reply to?",
+      slot,
+      emailInvalid
+    );
+  } else {
+    contact.awaiting = "confirm";
+    renderConfirm(slot);
+  }
+}
+
+/* -------- confirm + send -------- */
+
+/* The action chips ([send] / [cancel]) in the flow's own control grammar (the
+   bracket chip, like [clear]); data-contact routes them in the click handler. */
+function contactChips(): HTMLElement {
+  const row = document.createElement("div");
+  row.className = "contact-actions";
+  const mk = (action: "send" | "cancel", label: string, aria: string) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = `cbtn contact-${action}`;
+    b.dataset.contact = action;
+    b.setAttribute("aria-label", aria);
+    const l = document.createElement("span");
+    l.className = "br";
+    l.setAttribute("aria-hidden", "true");
+    l.textContent = "[";
+    const t = document.createElement("span");
+    t.className = "lbl";
+    t.textContent = label;
+    const r = document.createElement("span");
+    r.className = "br";
+    r.setAttribute("aria-hidden", "true");
+    r.textContent = "]";
+    b.append(l, t, r);
+    return b;
+  };
+  row.append(
+    mk("send", "send", "Send this message to Brian"),
+    mk("cancel", "cancel", "Cancel and return to chat")
+  );
+  return row;
+}
+
+/* The explicit confirmation turn, always shown before delivery. Every visitor
+   value is inserted as a TEXT NODE, never HTML. */
+function renderConfirm(slot: HTMLElement | null) {
+  const host = sink();
+  if (!host || !contact) return;
+  const box = slot?.isConnected ? slot : document.createElement("div");
+  box.className = "reply contact-confirm";
+  box.replaceChildren();
+
+  const intro = document.createElement("p");
+  intro.className = "cc-intro";
+  intro.textContent = "Here is what I will send to Brian. Look right?";
+  box.appendChild(intro);
+
+  const dl = document.createElement("dl");
+  dl.className = "cc-fields";
+  const rows: [string, string][] = [
+    ["Name", contact.name ?? ""],
+    ["Email", contact.email ?? ""],
+    ["Message", contact.message ?? ""],
+  ];
+  for (const [label, value] of rows) {
+    const dt = document.createElement("dt");
+    dt.textContent = label;
+    const dd = document.createElement("dd");
+    dd.textContent = value;
+    dl.append(dt, dd);
+  }
+  box.appendChild(dl);
+  box.appendChild(contactChips());
+
+  const hint = document.createElement("p");
+  hint.className = "cc-hint";
+  hint.textContent = 'Or type "yes" to send, or "cancel" to stop.';
+  box.appendChild(hint);
+
+  if (!box.parentElement) host.appendChild(box);
+  announce("Please confirm the message to send to Brian.");
+  scrollToNewest();
+}
+
+const YES_RE =
+  /^(y|yes|yep|yeah|yup|sure|ok|okay|send|send it|confirm|looks good|go|do it)$/i;
+function handleConfirm(text: string) {
+  if (YES_RE.test(text)) {
+    doContactSend();
+    return;
+  }
+  // not a yes, and cancel was caught earlier: nudge and re-offer the chips
+  pulseThen((slot) => {
+    contactLine('Type "yes" to send, or "cancel" to stop.', slot);
+    sink()?.appendChild(contactChips());
+  });
+}
+
+function doContactSend() {
+  if (!contact || contact.awaiting === "sending") return;
+  const { name, email, message } = contact;
+  if (!name || !email || !message) return;
+  contact.awaiting = "sending";
+  beginTurn();
+  const wait = thinking();
+  void (async () => {
+    try {
+      const res = await fetch(CONTACT_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ op: "send", name, email, message }),
+        signal: AbortSignal.timeout(15_000),
+      });
+      const d = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+        offline?: boolean;
+      };
+      if (res.ok && d.ok) {
+        contactLine(
+          "Thanks, your message is on its way to Brian. He will reply to the email you gave.",
+          wait
+        );
+        endContact(true);
+      } else {
+        contactLine(
+          d.offline
+            ? "Message delivery is unavailable right now. Please try again in a little while."
+            : "Something went wrong sending that. Please try again.",
+          wait,
+          true
+        );
+        if (contact) {
+          contact.awaiting = "confirm"; // let them retry from the same details
+          sink()?.appendChild(contactChips());
+        }
+      }
+    } catch {
+      contactLine(
+        "Message delivery is unavailable right now. Please try again in a little while.",
+        wait,
+        true
+      );
+      if (contact) {
+        contact.awaiting = "confirm";
+        sink()?.appendChild(contactChips());
+      }
+    }
+  })();
+}
+
+/* Cancel from the [cancel] chip (no echo turn yet). */
+function cancelContact() {
+  if (!contact) return;
+  beginTurn();
+  endContact(false);
+}
+
+function endContact(success: boolean) {
+  contact = null;
+  if (!success) {
+    contactLine("Cancelled. Ask me anything else, or type help.", null);
+  }
+  byId(CHAT_INPUT)?.focus({ preventScroll: true });
+}
+
+/* Every TYPED send while the flow is armed routes here (the submit handler). */
+function contactSend(rawText: string) {
+  if (!contact) return;
+  const text = rawText.trim();
+  if (!text) return;
+  if (contact.awaiting === "sending") return; // a delivery is in flight
+  beginTurn();
+  contactEcho(text);
+  if (/^(cancel|stop|nevermind|never mind|quit)$/i.test(text)) {
+    endContact(false);
+    return;
+  }
+  if (contact.awaiting === "confirm") {
+    handleConfirm(text);
+    return;
+  }
+  collectContact(text);
 }
 
 /* --------------------------------------------------------- command router -- */
@@ -1075,7 +1495,9 @@ function run(raw: string, viaKb: boolean) {
     return;
   }
   if (cmd === "contact") {
-    toConsole(v, CONTACT_HTML, viaKb);
+    // the email card is gone (#183): typed contact opens the in-chat flow,
+    // echoing the visitor's own word (no keystroke emulation)
+    enterContactTyped();
     return;
   }
   // "resume" is no longer a command (item 6): it falls through to the chat as
@@ -1199,22 +1621,39 @@ function setupOnce() {
         "textarea, input"
       );
       if (!input) return;
-      run(input.value, true);
+      const value = input.value;
       input.value = "";
       if (input instanceof HTMLTextAreaElement) autoGrow(input);
+      // item 5: focus STAYS in the composer after every send (Enter or [send]).
+      // A send that navigates away (the homepage flow bar) hands focus to the
+      // /chat composer via pendingFocus; an in-place /chat send keeps it here.
+      input.focus({ preventScroll: true });
+      // Phase B item 1: while the contact flow is armed (only ever on /chat) it
+      // owns every typed send, since the value is a message / name / email /
+      // confirm answer, not a command or a chat question. [clear] and the
+      // confirm chips are click paths, so they bypass this.
+      if (contact && currentScreen() === "chat") contactSend(value);
+      else run(value, true);
     },
     true
   );
 
-  // clicks: keybar + nav command buttons. Anchors (log entries, inline chat
-  // links) fall through to ClientRouter untouched.
+  // clicks: the contact confirm chips, then keybar + nav command buttons.
+  // Anchors (log entries, inline chat links) fall through to ClientRouter.
   document.addEventListener("click", (e) => {
     const t = e.target as HTMLElement;
+    // Phase B: the confirm turn's [send] / [cancel] chips drive the flow.
+    const cc = t.closest?.<HTMLElement>("button[data-contact]");
+    if (cc && cc.dataset.contact && contact) {
+      if (cc.dataset.contact === "send") doContactSend();
+      else if (cc.dataset.contact === "cancel") cancelContact();
+      return;
+    }
     const btn = t.closest?.<HTMLElement>("button[data-cmd]");
     if (btn && btn.dataset.cmd) {
-      // Phase 4C: clicking any contact affordance (the nav item, an inline
-      // [contact] chip in a reply) is an LLM moment, not the bare command;
-      // typed "contact" still runs the deterministic card directly.
+      // any contact affordance (the nav item, an inline [contact] link in a
+      // reply, the hello tour's Contact) opens the in-chat flow with the typing
+      // emulation; the typed "contact" command enters the flow directly (run).
       if (btn.dataset.cmd === "contact") contactMoment();
       else run(btn.dataset.cmd, false);
     }

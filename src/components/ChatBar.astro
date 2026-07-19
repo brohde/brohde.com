@@ -25,6 +25,11 @@
  * SENDS, Shift+Enter inserts a newline (terminal.ts keydown), because a
  * textarea's native Enter is a newline, not a submit.
  *
+ * Composer phase B: maxlength is 2000, the larger of the two endpoint caps
+ * (/api/contact accepts a 2000-char message; /api/chat still caps a question
+ * at 500 server-side). One shared control, so the field is sized for the
+ * contact flow's longer message and a chat question never comes close.
+ *
  * Send behavior (#108): the form carries data-screen-form, so terminal.ts's
  * one delegated submit handler routes the value through the one command
  * router. Free-form questions navigate to /chat and auto-ask on arrival
@@ -74,7 +79,7 @@ const {
     autocapitalize="off"
     autocorrect="off"
     spellcheck="false"
-    maxlength="240"
+    maxlength="2000"
     placeholder={placeholder}
     enterkeyhint="send"
     aria-controls={ariaControls}></textarea>
