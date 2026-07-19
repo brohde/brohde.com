@@ -1218,6 +1218,69 @@ a.lentry:focus-visible .lttl {
   cursor: pointer;
 }
 
+/* --------------------- contact flow (Phase B item 1) --------------------- */
+/* The invalid or missing email notice tints the assistant rail with the --warn
+   attention token (the one non-error signal color, defined in both grounds in
+   global.css). Text stays ink so it reads cleanly; only the rail carries the
+   signal, so it never shouts. */
+.reply.contact-warn {
+  border-left-color: var(--warn);
+}
+/* The explicit confirmation turn: an assistant reply (rail + Circular) holding
+   a compact label/value list of what will be sent, then the action chips and a
+   typed-yes hint. Every value is a text node (built in terminal.ts), so a
+   visitor's own words can never inject markup. */
+.contact-confirm .cc-intro {
+  margin: 0 0 10px;
+}
+.cc-fields {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 0 0 12px;
+}
+.cc-fields dt {
+  color: var(--dim);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  padding-top: 2px;
+}
+.cc-fields dd {
+  margin: 0;
+  color: var(--bright);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.cc-hint {
+  margin: 0;
+  color: var(--dim);
+  font-size: 13px;
+}
+/* the [send] / [cancel] chips: the site's bracket-control grammar (.cbtn), so
+   the confirm reads in the same idiom as [clear]. [send] keeps the accent
+   fill-on-hover of a real control; [cancel] is a quiet dim-to-accent secondary
+   (the same treatment the /chat keybar gives [clear]) so it never reads as a
+   second primary. */
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 6px;
+  margin: 4px 0 2px;
+}
+.contact-cancel {
+  color: var(--dim);
+}
+.contact-cancel:hover,
+.contact-cancel:focus-visible {
+  color: var(--accent);
+}
+.contact-cancel:hover .lbl,
+.contact-cancel:focus-visible .lbl {
+  background: none;
+  color: inherit;
+}
+
 /* --------------------- redirect countdown (#143) ------------------------- */
 /* A model-chosen open_page navigation announces itself in the reply flow with
    a real inline link, then a cancellable countdown. The announcement is a

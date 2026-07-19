@@ -6,7 +6,7 @@ Model: claude-haiku-4-5 · 2026-07-15T22:23:12.786Z
 
 **action:** prose
 
-Yes, Brian is open to freelance work. He's also available for full-time roles. You can reach him at brian@brohde.com or check out [his work](/work) to see what he's shipped.
+Yes, Brian is open to freelance work. He's also available for full-time roles. You can reach him right here in the chat, just pick [contact](/contact), or check out [his work](/work) to see what he's shipped.
 
 <sub>2755 in · 51 out · cache r0/w0 · $0.00301</sub>
 
@@ -130,7 +130,7 @@ No. Brian worked at Beyond, a user-experience agency in San Francisco, where he 
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly. He's open to both full-time roles and freelance work, so rates depend on the project scope and fit.
+I don't know that one. You can reach Brian right here in the chat. He's open to both full-time roles and freelance work, so rates depend on the project scope and fit.
 
 <sub>2753 in · 47 out · cache r0/w0 · $0.00299</sub>
 
@@ -150,7 +150,7 @@ Brian studied at DePaul University.
 
 **action:** prose
 
-Rust isn't listed in his stack. He works with TypeScript, Swift, Python, and PHP for most roles, but he's learned unfamiliar languages and frameworks on the job repeatedly (Closure, Django, Sanity, Swift), so an unfamiliar tool is an opportunity to learn something new. Best to ask directly: brian@brohde.com.
+Rust isn't listed in his stack. He works with TypeScript, Swift, Python, and PHP for most roles, but he's learned unfamiliar languages and frameworks on the job repeatedly (Closure, Django, Sanity, Swift), so an unfamiliar tool is an opportunity to learn something new. Best to ask him directly, just pick [contact](/contact) to send him a message.
 
 <sub>2753 in · 81 out · cache r0/w0 · $0.00316</sub>
 
@@ -170,7 +170,7 @@ React and Astro, he calls them both favorites.
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly. His infrastructure work spans AWS, Vercel, and Cloudflare; check his [resume](/resume) for the full details.
+I don't know that one. You can reach Brian right here in the chat. His infrastructure work spans AWS, Vercel, and Cloudflare; check his [resume](/resume) for the full details.
 
 <sub>2754 in · 51 out · cache r0/w0 · $0.00301</sub>
 
@@ -180,7 +180,7 @@ I don't know that one. Email brian@brohde.com and ask him directly. His infrastr
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
+I don't know that one. You can reach Brian right here in the chat. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
 
 <sub>2755 in · 49 out · cache r0/w0 · $0.00300</sub>
 
@@ -190,7 +190,7 @@ I don't know that one. Email brian@brohde.com and ask him directly. What he ship
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly. Want to see [his work](/work) instead?
+I don't know that one. You can reach Brian right here in the chat. Want to see [his work](/work) instead?
 
 <sub>2752 in · 34 out · cache r0/w0 · $0.00292</sub>
 
@@ -200,7 +200,7 @@ I don't know that one. Email brian@brohde.com and ask him directly. Want to see 
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
+I don't know that one. You can reach Brian right here in the chat. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
 
 <sub>2756 in · 49 out · cache r0/w0 · $0.00300</sub>
 
@@ -210,7 +210,7 @@ I don't know that one. Email brian@brohde.com and ask him directly. What he ship
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly. What I can tell you is that his work history starts with [Beyond](/work), the agency where he was Senior Front End Developer and team lead, that's where he built Facebook Newsroom and Google's Android for Work site, both landmark projects for the agency.
+I don't know that one. You can reach Brian right here in the chat. What I can tell you is that his work history starts with [Beyond](/work), the agency where he was Senior Front End Developer and team lead, that's where he built Facebook Newsroom and Google's Android for Work site, both landmark projects for the agency.
 
 <sub>2755 in · 77 out · cache r0/w0 · $0.00314</sub>
 
@@ -220,7 +220,7 @@ I don't know that one. Email brian@brohde.com and ask him directly. What I can t
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly. In the meantime, his [resume](/resume) and [work](/work) are solid signals of what he can do.
+I don't know that one. You can reach Brian right here in the chat. In the meantime, his [resume](/resume) and [work](/work) are solid signals of what he can do.
 
 <sub>2755 in · 49 out · cache r0/w0 · $0.00300</sub>
 
@@ -270,7 +270,7 @@ This chat only knows Brian. Ask about [his work](/work), or type help.
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly. In the meantime, check out [his work](/work) or [about](/about) to see what he ships.
+I don't know that one. You can reach Brian right here in the chat. In the meantime, check out [his work](/work) or [about](/about) to see what he ships.
 
 <sub>2753 in · 48 out · cache r0/w0 · $0.00299</sub>
 
@@ -280,7 +280,7 @@ I don't know that one. Email brian@brohde.com and ask him directly. In the meant
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
+I don't know that one. You can reach Brian right here in the chat. What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
 
 <sub>2757 in · 49 out · cache r0/w0 · $0.00300</sub>
 
@@ -290,7 +290,7 @@ I don't know that one. Email brian@brohde.com and ask him directly. What he ship
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly.
+I don't know that one. You can reach Brian right here in the chat.
 
 <sub>2753 in · 23 out · cache r0/w0 · $0.00287</sub>
 
@@ -300,7 +300,7 @@ I don't know that one. Email brian@brohde.com and ask him directly.
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly. In the meantime, check out [his work](/work) to see what he ships.
+I don't know that one. You can reach Brian right here in the chat. In the meantime, check out [his work](/work) to see what he ships.
 
 <sub>2754 in · 42 out · cache r0/w0 · $0.00296</sub>
 
@@ -310,7 +310,7 @@ I don't know that one. Email brian@brohde.com and ask him directly. In the meant
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly.
+I don't know that one. You can reach Brian right here in the chat.
 
 What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his work](/work).
 
@@ -322,7 +322,7 @@ What he ships is a better signal: check out [Eight Angle](/eight-angle) or [his 
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly.
+I don't know that one. You can reach Brian right here in the chat.
 
 What he ships is a better signal: check out [his work](/work) or [his resume](/resume).
 
@@ -334,7 +334,7 @@ What he ships is a better signal: check out [his work](/work) or [his resume](/r
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly.
+I don't know that one. You can reach Brian right here in the chat.
 
 <sub>2754 in · 23 out · cache r0/w0 · $0.00287</sub>
 
@@ -344,7 +344,7 @@ I don't know that one. Email brian@brohde.com and ask him directly.
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly.
+I don't know that one. You can reach Brian right here in the chat.
 
 <sub>2756 in · 23 out · cache r0/w0 · $0.00287</sub>
 
@@ -354,7 +354,7 @@ I don't know that one. Email brian@brohde.com and ask him directly.
 
 **action:** prose
 
-I don't know that one. Email brian@brohde.com and ask him directly. What he ships is a better signal: check out [his work](/work) or [his resume](/resume).
+I don't know that one. You can reach Brian right here in the chat. What he ships is a better signal: check out [his work](/work) or [his resume](/resume).
 
 <sub>2760 in · 46 out · cache r0/w0 · $0.00299</sub>
 

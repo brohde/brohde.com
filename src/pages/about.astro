@@ -14,7 +14,6 @@ const profilePage = {
     name: SITE.author,
     jobTitle: "AI Product Engineer",
     url: SITE.url,
-    email: `mailto:${SITE.email}`,
     sameAs: [LINKS.linkedin, LINKS.x, COMPANIES.eightAngle],
   },
 };
@@ -69,8 +68,9 @@ const profilePage = {
           </p>
           <p>
             I'm open to full time roles and freelance projects. If you want an
-            engineer who takes things from idea to production, start a
-            conversation: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+            engineer who takes things from idea to production, <a href="/chat"
+              >start a conversation</a
+            >.
           </p>
         </article>
 

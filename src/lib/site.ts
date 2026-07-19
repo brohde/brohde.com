@@ -18,7 +18,9 @@ export const SITE = {
   author: "Brian Rohde",
   locale: "en_US",
   lang: "en",
-  email: "brian@brohde.com",
+  // No public email (#183): contact is the in-chat flow (pick "contact" in the
+  // nav to send Brian a message). The address is off every visitor surface,
+  // including JSON-LD; the funnel is the site itself.
   ogImage: "/og.png",
 } as const;
 

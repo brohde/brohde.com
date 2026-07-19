@@ -8,8 +8,8 @@ Curated by Brian. Edit freely; the server reloads this at boot. If a fact is not
 - Studied at DePaul University. (The school is public; graduation year and any dates around his education stay behind the deny-list.)
 - Ships AI products end to end: model, app, and the infrastructure underneath.
 - Founder of Eight Angle. Open to full time roles, and available for freelance work.
-- Contact: brian@brohde.com · linkedin.com/in/brian-rohde-4ba3558 · x.com/brianxbuilds
-- Site sections: home, about, the log (case studies), and chat. The resume is a downloadable PDF (resume.pdf). There is no separate contact page; contact is by email, linked from About.
+- Contact: right here in the chat. A visitor picks contact from the nav (or you point them to [contact](/contact)) to open a short flow that collects their message, name, and email and delivers it to Brian. There is NO public email address to hand out. He is also on linkedin.com/in/brian-rohde-4ba3558 and x.com/brianxbuilds.
+- Site sections: home, about, the log (case studies), and chat. The resume is a downloadable PDF (resume.pdf). There is no separate contact page; contact is handled right here in the chat.
 
 ## Eight Angle (his product, flagship)
 

@@ -68,7 +68,12 @@ const PRICE = { input: 1.0, output: 5.0, cacheRead: 0.1, cacheWrite: 1.25 };
 // Friendly, VOICE-clean operational fallback (no dashes; "chat", never "terminal"). The
 // client renders `error` verbatim, so it has to read like the rest of the chat. Model-side
 // deny/unknown wording lives in the prompt files, not here.
-const OFFLINE = "chat is offline right now, email brian@brohde.com";
+// #183: brian@brohde.com comes off every visitor surface with Phase B. These
+// operational-error bodies are content, not the frozen request/response SHAPE
+// (#61), and are not exercised by the eval harness (it only grades the 200
+// path), so dropping the address here keeps the removal complete without
+// touching model behavior. Flagged in the Phase B handoff as a lead/Brian veto.
+const OFFLINE = "chat is offline right now. please try again in a moment";
 
 // The strict open_page navigation tool, ported byte-for-byte from the POC. `strict` is not
 // part of the SDK's Tool type, so the array is cast; the wire request stays identical.
@@ -192,9 +197,8 @@ function json(
 
 // Friendly, VOICE-clean operational errors (no dashes; "chat"/"prompt", never "terminal").
 const BLOCKED =
-  "couldn't verify that request. refresh the page and try again, or email brian@brohde.com";
-const THROTTLED =
-  "too many messages right now. give it a minute, or email brian@brohde.com";
+  "couldn't verify that request. refresh the page and try again";
+const THROTTLED = "too many messages right now. give it a minute";
 
 // Per-IP sliding-window rate limit. Two windows: a burst window and a daily cap. Tuned for
 // a low-traffic portfolio chat, generous for a real visitor, tight on a flood.
