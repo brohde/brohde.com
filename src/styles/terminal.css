@@ -389,6 +389,27 @@ html.cfocus .wm .caret {
   color: var(--accent);
   text-decoration-color: var(--accent);
 }
+/* Item 9: "via Beyond" reads even lighter than the note ink. A step lighter
+   than --dim, achieved by mixing --dim toward the ground so it re-derives in
+   BOTH grounds automatically (no per-theme token). Measured contrast on the
+   ground: night 5.02:1, light 4.70:1 (both past the 4.5:1 AA floor; --dim
+   sits at 7.19:1 / 7.97:1, so this is a clear, deliberate step lighter). The
+   "Beyond" link keeps its full-strength underline as the non-color
+   affordance (G183 satisfied) and still steps to accent on hover/focus.
+   Placed after the .cco a.dimlink rules so the equal-specificity color wins
+   by source order. */
+.cvia {
+  color: color-mix(in srgb, var(--dim) 80%, var(--ground));
+}
+.cvia a.dimlink {
+  color: color-mix(in srgb, var(--dim) 80%, var(--ground));
+  text-decoration-color: color-mix(in srgb, var(--dim) 80%, var(--ground));
+}
+.cvia a.dimlink:hover,
+.cvia a.dimlink:focus-visible {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
 /* Profile links as monochrome icons (#146), now inline on the role line right
    after "San Francisco" (#151): the row is icons, not words, so it leaves the
    .cco underline grammar above and joins the quiet standalone-link grammar
@@ -453,26 +474,23 @@ html.cfocus .wm .caret {
   vertical-align: 1px;
 }
 
-/* Unified fill treatment for EVERY bracket-style interactive element:
-   keybar + [send] chip (.cbtn), theme control (.themectl, folded in with
-   #101 when it docked into the footer and its local copy of this rule
-   became a duplicate; the old chat screen's .backbtn retired with the
-   full-window takeover, #108; the slab command menu retired with the slab,
-   #160). On hover and focus-visible the label fills with the accent and
-   flips to ground-colored text; the brackets stay put (prototype treatment
-   from build-log-v3.html). One rule so they can never drift. */
+/* Unified fill treatment for the bracket-style interactive elements: the
+   keybar + [send] chip (.cbtn). On hover and focus-visible the label fills
+   with the accent and flips to ground-colored text; the brackets stay put
+   (prototype treatment from build-log-v3.html). One rule so they can never
+   drift. (The theme control left this family in item 7: it is now an icon in
+   the header, not a bracket label; the old chat screen's .backbtn retired with
+   the full-window takeover #108, and the slab command menu with the slab
+   #160.) */
 .cbtn:hover .lbl,
-.cbtn:focus-visible .lbl,
-.themectl:hover .lbl,
-.themectl:focus-visible .lbl {
+.cbtn:focus-visible .lbl {
   background: var(--accent);
   color: var(--on-accent);
   text-decoration: none;
 }
 /* #165: the fill eases in fast (100ms keeps the chips crisp); lives here
    beside the fill rule so the pair can never drift apart */
-.cbtn .lbl,
-.themectl .lbl {
+.cbtn .lbl {
   transition:
     background-color 100ms ease,
     color 100ms ease;
@@ -679,7 +697,16 @@ html.cfocus .wm .caret {
   margin-bottom: -1px;
 }
 /* the [clear] chat control (Phase 4B: [help] removed, still works typed),
-   right-aligned, seated between the docked composer and the transcript */
+   right-aligned, seated between the docked composer and the transcript.
+   Item 5: the [clear] row and the log below it sit TIGHT under the composer
+   so the first exchange reads as directly attached (the old ~46px of stacked
+   padding + margins pushed the first message far below the docked input).
+   The body's top padding drops to 6px, the log's to 2px, and the newest
+   turn / greeting loses its top margin (below), leaving the [clear] control
+   as the only thing between the composer and the first line. */
+.chatbody {
+  padding-top: 6px;
+}
 .chatcmds {
   margin: 0;
   justify-content: flex-end;
@@ -772,14 +799,28 @@ html.cfocus .wm .caret {
    the single-cursor model (#63); the reduced-motion kill switch makes the
    change instant, and a static 2px offset on hover is position, not
    motion. */
-.lentry:hover .lts,
-.lentry:focus-visible .lts {
+/* only real link rows answer the cursor: the coming-soon rows (item 11) are
+   plain <div>s, no affordance, so a bare .lentry:hover would falsely imply
+   they are clickable. Scoped to a.lentry. */
+a.lentry:hover .lts,
+a.lentry:focus-visible .lts {
   color: var(--accent);
 }
-.lentry:hover .lttl,
-.lentry:focus-visible .lttl {
+a.lentry:hover .lttl,
+a.lentry:focus-visible .lttl {
   color: var(--accent);
   transform: translateX(2px);
+}
+/* Item 11: unpublished entries list as plain text with a quiet [coming soon]
+   status token, in the site's bracket-token family (like [clear]; #76 keeps
+   these lowercase). Dim mono, one non-wrapping unit trailing the title. */
+.lsoon {
+  display: inline-block;
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--dim);
+  white-space: nowrap;
 }
 /* #141: external entries carry their destination domain with the arrow,
    small and lighter than the title, never underlined (#68: inline-block
@@ -848,7 +889,14 @@ html.cfocus .wm .caret {
 
 /* ------------------------ the chat screen bits --------------------------- */
 .chatlog {
-  padding: 16px 0 8px;
+  padding: 2px 0 8px;
+}
+/* Item 5: the newest turn (prepended, so :first-child) and the greeting sit
+   flush under the [clear] row, not 18px below it. Older turns keep the
+   within-turn rhythm and their .turn + .turn separator. */
+.chatlog > .turn:first-child > .uline,
+.chatlog > .greeting {
+  margin-top: 0;
 }
 .uline {
   color: var(--bright);

@@ -25,11 +25,33 @@ import { SITE, logHref, logStamp, isoDate } from "@/lib/site";
  * large at the top of the article.
  */
 export async function getStaticPaths() {
-  // External entries live off-site: no page is generated for them.
+  // External entries live off-site: no page is generated for them. Item 11:
+  // only PUBLISHED articles generate a page, so every unpublished article URL
+  // 404s on the built site.
   const posts = await getCollection(
     "articles",
-    ({ data }) => !data.draft && !data.external
+    ({ data }) => !data.draft && !data.external && data.published
   );
+  // #179: articles serve at bare root slugs, so an article slug must never
+  // shadow a real page. Fail the build loudly instead of silently winning or
+  // losing the route race. "log" stays reserved for the /log/* 301s.
+  const RESERVED = new Set([
+    "about",
+    "chat",
+    "styleguide",
+    "404",
+    "index",
+    "rss.xml",
+    "api",
+    "log",
+  ]);
+  for (const post of posts) {
+    if (RESERVED.has(post.id) || post.id.includes("/")) {
+      throw new Error(
+        `Article slug "${post.id}" collides with a reserved route (#179 bare-slug URLs). Rename the article folder.`
+      );
+    }
+  }
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
 }
 

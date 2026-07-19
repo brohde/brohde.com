@@ -6,9 +6,13 @@
  * size), hairline separators BETWEEN rows only, no frame, no label line (the
  * sr-only heading carries the semantics). Newest first, title + pre-date
  * (#2, #3); descriptions live on the article pages, meta, and RSS.
- * Each entry is a real link to /log/<id> (or the external URL, marked with a
- * never-underlined ↗, #68) so it is crawlable and keyboard reachable; the
- * terminal controller only enhances, never gates, navigation.
+ * A PUBLISHED entry is a real link to /<id> (#179 bare slugs; or the external URL, marked
+ * with a never-underlined ↗, #68) so it is crawlable and keyboard reachable;
+ * the terminal controller only enhances, never gates, navigation. Item 11: an
+ * unpublished internal entry still LISTS (title + date) but renders as plain
+ * text (no anchor: its page 404s) with a quiet [coming soon] status token.
+ * External entries stay linked to their off-site URL regardless (they never
+ * had a generated page and never 404).
  */
 import { getCollection } from "astro:content";
 import { logHref, isoDate } from "@/lib/site";
@@ -53,13 +57,27 @@ const domainOf = (url: string) => new URL(url).hostname.replace(/^www\./, "");
             <span class="sr"> (opens in a new tab)</span>
           </span>
         </a>
-      ) : (
+      ) : post.data.published ? (
         <a class="lentry" href={logHref(post.id)}>
           <time class="lts" datetime={isoDate(post.data.date)}>
             {isoDate(post.data.date)}
           </time>
           <span class="lttl">{post.data.title}</span>
         </a>
+      ) : (
+        /* item 11: unpublished. Plain text, no anchor (the page 404s), with a
+           quiet [coming soon] token; brackets are decoration. */
+        <div class="lentry lentry-soon">
+          <time class="lts" datetime={isoDate(post.data.date)}>
+            {isoDate(post.data.date)}
+          </time>
+          <span class="lttl">
+            {post.data.title}
+            <span class="lsoon">
+              <span aria-hidden="true">[</span>coming soon<span aria-hidden="true">]</span>
+            </span>
+          </span>
+        </div>
       )
     )
   }

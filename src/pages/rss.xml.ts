@@ -11,8 +11,11 @@ function esc(s: string): string {
 }
 
 export const GET: APIRoute = async () => {
+  // Item 11: only PUBLISHED articles ship in the feed (an empty feed is fine
+  // while everything is unpublished). External entries are unpublished too, so
+  // they stay out until republished.
   const posts = (
-    await getCollection("articles", ({ data }) => !data.draft)
+    await getCollection("articles", ({ data }) => !data.draft && data.published)
   ).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
   const items = posts

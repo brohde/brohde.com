@@ -1,87 +1,111 @@
 ---
 /**
- * The theme override control (#92): an editorial chip cycling
- * system -> light/dark override -> back to system. All state semantics,
- * persistence, and the after-swap re-stamp live in src/scripts/theme.ts; the
- * pre-paint gate in BaseLayout stamps html[data-theme] so a stored override
- * never flashes.
+ * Theme toggle (#92, items 7 + 8): an ICON control in the site header's
+ * identity row (far right, aligned with the wordmark + nav tokens). The site
+ * is dark by default (item 8); this is a simple two-state dark/light switch.
+ * All state semantics, persistence, and the after-swap re-stamp live in
+ * src/scripts/theme.ts. The pre-paint gate in BaseLayout stamps an explicit
+ * html[data-theme] ("dark" unless stored "light") before first paint, so the
+ * correct icon and label show with no flash.
  *
- * Placement (#101): mounted from SiteFooter as a normal in-flow child of the
- * footer row (copyright left, control right), NOT from BaseLayout as a fixed
- * overlay. The fixed version was a mobile defect: the content column nearly
- * fills a 390px viewport, so an opaque chip pinned to the viewport sat over
- * live body text for the entire scroll, not just at the page bottom. In flow
- * it cannot overlap anything, so the whole class of bug is gone rather than
- * mitigated. Cost accepted in #101: the footer is below the fold, which is
- * less discoverable than top chrome, but the site has no shared site-wide
- * header to dock into.
+ * Placement (item 7): rendered by SiteHeader inside .idrow, moved out of
+ * SiteFooter. The header is a persisted node (transition:persist="shead"), so
+ * this button survives client-side navigations; theme.ts delegates its click
+ * on document against #themectl, so the node's position never matters to it.
  *
- * The footer (and so this control) renders on every page, /chat included
- * since B2 Phase 2 (#108): the chat page sits on the editorial ground now,
- * so the control has real work there; only the slab interior stays
- * always-night.
+ * Icon: an inline sun/moon in the site's quiet line style (stroke
+ * currentColor, no fill), sized to sit on the nav baseline, resting dim with
+ * hover/focus accent exactly like the .snav tokens. Both icons ship; CSS keyed
+ * on html[data-theme] shows exactly one (sun while dark = "go light", moon
+ * while light = "go dark"), so the visible icon is correct with zero JS.
  *
- * This component carries markup + style only, no <script>: theme.ts is
- * imported by BaseLayout's single hydration point alongside terminal.ts, per
- * the one-deferred-module contract in that file. theme.ts delegates its click
- * handler on document against #themectl, so the node's position in the DOM is
- * irrelevant to it.
- *
- * The visible label always reflects the current state with zero JS: all
- * three labels are server-rendered and CSS keyed on html[data-theme] shows
- * exactly one. display:none drops the hidden two from the accessible name
- * as well, so the button's name ("theme: system" / "theme: light" /
- * "theme: dark") is correct from first paint, before any script runs, and
- * speech-input users can say exactly what they see.
- *
- * Material: the control recolors the PAGE, so it sits on the page ground in
- * the bracket-control idiom; it is never phosphor (#67: phosphor is the
- * machine's material, and the machine ignores this control). The hover fill
- * comes from the unified bracket rule in terminal.css, shared with .cbtn,
- * so the two can never drift.
- *
- * Copy: bracket-label tokens stay lowercase (#76); no dashes (#18); never
- * the t-word in visitor-facing copy (#58).
+ * A11y: the accessible name describes the ACTION, server-rendered per state as
+ * two sr-only spans keyed on html[data-theme] (display:none drops the inactive
+ * one from the accessible name too), so the name is correct from first paint.
+ * theme.ts also speaks the new state through its polite region on toggle. No
+ * dashes (#18); never the t-word in visitor copy (#116/#58).
  */
 ---
 
-<button type="button" class="themectl" id="themectl">
-  <span class="br" aria-hidden="true">[</span><span class="lbl"
-    ><span class="tlab tlab-system">theme: system</span><span
-      class="tlab tlab-light">theme: light</span
-    ><span class="tlab tlab-dark">theme: dark</span></span
-  ><span class="br" aria-hidden="true">]</span>
+<button type="button" class="themetgl" id="themectl">
+  <span class="tlab tlab-dark sr">Switch to light theme</span>
+  <span class="tlab tlab-light sr">Switch to dark theme</span>
+  <svg
+    class="ticon ticon-sun"
+    viewBox="0 0 24 24"
+    width="18"
+    height="18"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <circle cx="12" cy="12" r="4"></circle>
+    <path
+      d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+    ></path>
+  </svg>
+  <svg
+    class="ticon ticon-moon"
+    viewBox="0 0 24 24"
+    width="18"
+    height="18"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+  </svg>
 </button>
 
 <style>
-  /* In flow in the footer row: no position, no z-index, no opaque background
-     to hide anything behind (#101). Borderless on Brian's call: the brackets
-     are the control affordance, same as .cbtn; a box around them double-marks
-     the control and forks the bracket grammar. Padding stays for the 44px
-     target. */
-  .themectl {
+  /* Far right of the identity row (margin-left:auto); the quiet nav-token
+     grammar (rest dim, engage accent). Icon-only: a 44px-tall target, min-width
+     44px for the phone tap, no visible chrome. */
+  .themetgl {
+    margin-left: auto;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    min-width: 44px;
     min-height: 44px;
-    padding: 0 10px;
-    border: 0;
+    padding: 0 6px;
     background: none;
-    color: var(--dim); /* the brackets */
-    font-family: var(--font-mono);
-    font-size: 12.5px;
+    border: 0;
     cursor: pointer;
+    color: var(--dim);
+    transition: color 120ms ease; /* #150/#165 nav-token easing */
   }
-  .lbl {
+  .themetgl:hover,
+  .themetgl:focus-visible {
     color: var(--accent);
   }
 
-  /* one visible label, keyed on the pre-paint html[data-theme] stamp */
+  /* one icon, keyed on the pre-paint html[data-theme] stamp (always present
+     since item 8: "dark" unless stored "light"). Sun while dark (go light),
+     moon while light (go dark). */
+  .ticon {
+    display: none;
+  }
+  :global(html[data-theme="dark"]) .ticon-sun,
+  :global(html[data-theme="light"]) .ticon-moon {
+    display: block;
+  }
+
+  /* the accessible name follows the same stamp: exactly one sr label stays in
+     the tree, so the button's name always describes the current action. */
   .tlab {
     display: none;
   }
-  :global(html:not([data-theme])) .tlab-system,
-  :global(html[data-theme="light"]) .tlab-light,
-  :global(html[data-theme="dark"]) .tlab-dark {
+  :global(html[data-theme="dark"]) .tlab-dark,
+  :global(html[data-theme="light"]) .tlab-light {
     display: inline;
   }
 </style>

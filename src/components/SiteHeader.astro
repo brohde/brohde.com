@@ -5,7 +5,8 @@
  * width, phones included (#121, no compact control):
  *   row 1  identity: the wordmark "brian rohde" (lowercase, #115) linking
  *          home, carrying the resting caret (#63), with the quiet mono
- *          about/contact tokens beside it (rest dim, hover accent: D1 call 5);
+ *          about/contact tokens beside it (rest dim, hover accent: D1 call 5)
+ *          and the theme toggle icon at the far right (item 7);
  *   row 2  the chat input row (ChatBar.astro, the one input material).
  *
  * Per-page states, server-stamped here and re-stamped by terminal.ts's
@@ -35,6 +36,7 @@
  * client-side navigations, before paint (zero CLS).
  */
 import ChatBar from "@/components/ChatBar.astro";
+import ThemeToggle from "@/components/ThemeToggle.astro";
 
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const isHome = path === "/";
@@ -69,6 +71,10 @@ const Wm = isHome ? "h1" : "p";
         <a href="/about">about</a>
         <button type="button" data-cmd="contact">contact</button>
       </nav>
+      {/* item 7: the theme toggle lives at the far right of the identity row
+      (moved out of the footer). It is an icon control; #themectl is theme.ts's
+      delegated hook, which survives the persisted header across swaps. */}
+      <ThemeToggle />
     </div>
     <ChatBar inputId="in-site" />
   </div>

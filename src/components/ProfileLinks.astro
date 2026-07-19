@@ -1,8 +1,11 @@
 ---
 /**
- * Profile + resume links as monochrome icons (decision #146). Rendered on the
- * homepage intro and mirrored in the styleguide specimen, so the SVG path data
- * lives in exactly one place (a drift guard: the paths are load bearing).
+ * Profile links as monochrome icons (decision #146). Rendered on the homepage
+ * intro and mirrored in the styleguide specimen, so the SVG path data lives in
+ * exactly one place (a drift guard: the paths are load bearing).
+ *
+ * Now LinkedIn + X only: the resume icon (and the resume PDF it linked) was
+ * removed site-wide (item 6, recoverable via git).
  *
  * Grammar: rest DIM, hover/focus ACCENT, matching the site's other quiet
  * standalone links (.snav, the ledger rows). These are not links in running
@@ -10,15 +13,14 @@
  * plus a focus-visible ring carries the affordance. currentColor drives every
  * fill, so the marks read on both grounds and invert cleanly to accent.
  *
- * No brand color on the third-party marks (#135 spirit: the phosphor ink
- * system owns the site identity). This is nominative use, a direct functional
- * link to Brian's own LinkedIn and X profiles, rendered quietly in mono. The
- * interim no-arrow rule holds (#68 covers the ledger arrows only; these links
- * carry none).
+ * No brand color on the marks (#135 spirit: the phosphor ink system owns the
+ * site identity). This is nominative use, a direct functional link to Brian's
+ * own LinkedIn and X profiles, rendered quietly in mono. The interim no-arrow
+ * rule holds (#68 covers the ledger arrows only; these links carry none).
  *
  * A11y: each link owns a full accessible name via aria-label plus a title
  * tooltip; the SVGs are aria-hidden decoration (focusable="false" keeps legacy
- * engines from adding a second tab stop). The 18px mark sits inside a 44x44
+ * engines from adding a second tab stop). The 18px mark sits inside a 30x44
  * target built from padding, not visible chrome, for a comfortable phone tap
  * that does not bloat the row. Inline SVG with explicit width/height reserves
  * its box at first paint, so CLS stays 0.
@@ -29,9 +31,7 @@
  * with `.cprofiles a { gap: 7px; padding: 0 10px }` and
  * `.cplabel { font-size: 13px }`. Recommendation is icon-only: the aria-label
  * and title carry the name for assistive tech and hover, and the row stays
- * clean. The document glyph is the least self-evident of the three, which is
- * the one honest cost of dropping the words; its title and aria-label answer
- * it on hover and to a screen reader.
+ * clean.
  */
 import { LINKS } from "@/lib/site";
 
@@ -41,7 +41,7 @@ interface Props {
 const { class: className } = Astro.props;
 ---
 
-<ul class:list={["cprofiles", className]} aria-label="Profiles and resume">
+<ul class:list={["cprofiles", className]} aria-label="Profiles">
   <li>
     <a
       href={LINKS.linkedin}
@@ -82,24 +82,6 @@ const { class: className } = Astro.props;
       >
         <path
           d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
-        ></path>
-      </svg>
-    </a>
-  </li>
-  <li>
-    <a href={LINKS.resume} aria-label="Resume, PDF" title="Resume (PDF)">
-      <svg
-        viewBox="0 0 24 24"
-        width="18"
-        height="18"
-        fill="currentColor"
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <path
-          d="M6 3h7l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm7 0v5h5zM7 12h8v1.6H7zM7 15h8v1.6H7zM7 18h5v1.6H7z"
         ></path>
       </svg>
     </a>

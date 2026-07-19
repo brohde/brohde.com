@@ -2,7 +2,7 @@
  * Terminal controller for brohde.com.
  *
  * One bundled module drives every interactive terminal behavior:
- *   - deterministic command router (work/about/resume/contact/help/home/clear
+ *   - deterministic command router (work/about/contact/help/home/clear
  *     + /slash aliases + free-form -> live chat), ported from build-log-v3.html
  *   - the roving page cursor (#63)
  *   - the redirect countdown for model-chosen navigation (#143), the /chat
@@ -40,14 +40,13 @@ import { navigate } from "astro:transitions/client";
 
 /* Copy case (#76): human-language strings use sentence case; lowercase is
    reserved for literal terminal tokens (typed commands, file-ish names like
-   resume.pdf, URLs and emails). */
+   build.log, URLs and emails). */
 /* static console strings (innerHTML sinks below take only these) */
 const HELP_HTML =
   "Commands\n" +
   "  hello     A quick tour\n" +
   "  work      Browse the log\n" +
   "  about     Who I am\n" +
-  "  resume    resume.pdf\n" +
   "  contact   Email + LinkedIn\n" +
   "  chat      Ask me anything\n" +
   "  home      Back to the log\n" +
@@ -63,7 +62,6 @@ const HELLO_HTML =
   "Hello! Here's what's on the site:\n" +
   '<a href="/">Work</a>: the log, case studies of what I ship\n' +
   '<a href="/about">About</a>: who I am in four paragraphs\n' +
-  '<a href="/resume.pdf">Resume</a>: the PDF\n' +
   '<a href="/chat">Chat</a>: ask me anything\n' +
   '<a href="mailto:brian@brohde.com">Contact</a>: start a conversation';
 
@@ -71,10 +69,6 @@ const CONTACT_HTML =
   'Email     <a href="mailto:brian@brohde.com">brian@brohde.com</a>\n' +
   'LinkedIn  <a href="https://www.linkedin.com/in/brian-rohde-4ba3558/" target="_blank" rel="noopener">/in/brian-rohde-4ba3558</a>\n' +
   'X         <a href="https://x.com/brianxbuilds" target="_blank" rel="noopener">@brianxbuilds</a>';
-
-const RESUME_HTML =
-  'Resume    <a href="/resume.pdf">resume.pdf</a>\n' +
-  '<span class="c"># Opens the PDF</span>';
 
 /* shown only when the chat backend is unreachable at the network level
    (server-sent errors render their own body verbatim) */
@@ -148,10 +142,16 @@ const MAX_LLM = 12; // model-history entries stored; the send slices to 8, so a
 
 const byId = (id: string) => document.getElementById(id);
 
+/* The page's OWN section (.screen) is the source of truth for the current
+   screen and its scene identity. The global header ALSO carries data-screen
+   since Phase 4 (it drives the large home wordmark + the /chat state) and it
+   renders BEFORE the section in BaseLayout, so a bare "[data-screen]" query
+   returns the persisted HEADER, whose value is "page" for every interior page
+   and which carries no data-scene-theme. Targeting .screen reads the real page
+   (the fix for the scene identity-travel bug: the theme stamp is read off this
+   fresh section by the #150 bridge below, never off the header). */
 function currentScreen(): string {
-  return (
-    document.querySelector("[data-screen]")?.getAttribute("data-screen") ?? ""
-  );
+  return document.querySelector(".screen")?.getAttribute("data-screen") ?? "";
 }
 
 /* Header per-page state on the persisted node (#145/#150, amended by Phase 4).
@@ -302,6 +302,7 @@ let replaying = false;
 function beginTurn(): HTMLElement | null {
   const log = chatlog();
   if (!log) return null;
+  removeGreeting(); // the first real turn replaces the pristine greeting
   const t = document.createElement("div");
   t.className = replaying ? "turn" : "turn turn-in";
   log.prepend(t);
@@ -379,19 +380,51 @@ function clearChat() {
   const log = chatlog();
   if (!log) return;
   // Phase 4B: clear returns the panel to its PRISTINE first-visit state, with
-  // NO "# Cleared" note. Drop every conversation turn and reveal the intro
-  // lines again (a rehydrate may have hidden them), so a cleared /chat looks
-  // exactly like arriving fresh. Every user turn begins with beginTurn, so
-  // the only direct log children are the two server intro .cmt lines and the
-  // .turn blocks; removing the turns leaves the pristine intro.
+  // NO "# Cleared" note. Drop every conversation turn, then bring back the
+  // greeting empty state, so a cleared /chat looks exactly like arriving
+  // fresh. Every user turn begins with beginTurn, so the only direct log
+  // children are the .turn blocks (the "#" intro lines retired); removing the
+  // turns leaves the panel empty for the greeting.
   for (const t of log.querySelectorAll(":scope > .turn")) t.remove();
-  for (const c of log.querySelectorAll(":scope > .cmt[hidden]"))
-    c.removeAttribute("hidden");
   activeTurn = null;
   llmHistory.length = 0; // clear wipes the model's context too
   purgeChat(); // #144: and the persisted session, so a cleared chat stays cleared
+  showGreeting(); // the panel is pristine again: re-show the time-of-day greeting
   scrollToNewest(); // bring the pristine panel back to the top
   byId("in-chat")?.focus({ preventScroll: true }); // Brian's rider: refocus the input
+}
+
+/* ------------------------------------------------ greeting empty state ---- */
+/* The "#" intro lines retired: when /chat is pristine (no thread, and NOT
+   arriving with a pending question from the homepage flow bar) a static
+   assistant-styled greeting stands in, chosen by LOCAL time of day, no API
+   call. initPage injects it only AFTER rehydrate has confirmed an empty
+   transcript, so it can never flash before a restored or pending thread
+   renders; beginTurn drops it on the first real turn, and clear brings it
+   back when the panel returns to pristine. */
+function greetingText(): string {
+  const h = new Date().getHours();
+  // morning 5:00-11:59, afternoon 12:00-16:59, evening 17:00-4:59
+  const part =
+    h >= 5 && h < 12
+      ? "Good morning!"
+      : h >= 12 && h < 17
+        ? "Good afternoon!"
+        : "Good evening!";
+  return `${part} I'm Brian's LLM. Ask me anything about his work and I'll do my best to answer.`;
+}
+
+function showGreeting() {
+  const log = chatlog();
+  if (!log || log.querySelector(".greeting")) return; // idempotent
+  const d = document.createElement("div");
+  d.className = "reply greeting"; // styled like an assistant reply
+  d.textContent = greetingText();
+  log.appendChild(d);
+}
+
+function removeGreeting() {
+  chatlog()?.querySelector(".greeting")?.remove();
 }
 
 /* -------------------------------------------- persistence + rehydrate ----- */
@@ -424,6 +457,19 @@ function purgeChat() {
   }
 }
 
+/* The /chat thread does NOT survive leaving the page (supersedes #144's
+   cross-navigation persistence): navigating AWAY from /chat drops the whole
+   thread (module transcript + model history + the persisted session), so
+   every fresh arrival at /chat is pristine and shows the greeting. The
+   homepage flow-bar handoff is untouched: that carry rides pendingAfter (a
+   module closure), not the transcript. While the visitor stays on /chat the
+   thread persists in module memory as before. */
+function dropThread() {
+  purgeChat();
+  llmHistory.length = 0;
+  activeTurn = null;
+}
+
 /* Coerce a stored history into exactly what the hardened server accepts
    (validateHistory, audit H2/M2 on main): {role: user|assistant, content:
    non-empty string <= 2000 chars}, strictly alternating roles. Anything that
@@ -450,14 +496,8 @@ function coerceHistory(raw: unknown): { role: "user" | "assistant"; content: str
 /* Known-good `out` bodies and redirect destinations: on replay we only trust
    values we ourselves ever produce. A tampered store falls back to inert text
    (out) or a plain label (redirect), never innerHTML or a live href. */
-const OUT_ALLOW = new Set([
-  HELP_HTML,
-  HELLO_HTML,
-  CONTACT_HTML,
-  RESUME_HTML,
-  OFFLINE_HTML,
-]);
-const REDIRECT_HREFS = new Set(["/about", "/log/eight-angle-ml", "/#log"]);
+const OUT_ALLOW = new Set([HELP_HTML, HELLO_HTML, CONTACT_HTML, OFFLINE_HTML]);
+const REDIRECT_HREFS = new Set(["/about", "/#log"]);
 
 function renderEntry(e: Entry) {
   if (e.t === "echo") echo(e.s, true);
@@ -496,14 +536,10 @@ function rehydrateChat() {
     }
   }
   if (!transcript.length) return;
-  // The empty-state intro lines ("ask about Brian's work", "type help") are
-  // redundant once a real conversation exists, and hiding them before the
-  // replay means the prepended turns can never shift them: the restore
-  // builds the thread in one pass with nothing below it moving (CLS 0,
-  // chat-top-spec Q4).
-  for (const el of log.querySelectorAll(":scope > .cmt")) {
-    el.setAttribute("hidden", "");
-  }
+  // The "#" intro lines retired: nothing sits below the log to hide before a
+  // restore, so the replay builds the thread with nothing moving (CLS 0). The
+  // greeting is only ever injected when the transcript is empty, so a restore
+  // never has a greeting to shift either.
   // Replay regroups by echo boundaries: a new turn begins at each user
   // message, and beginTurn prepends, so replaying oldest to newest lands the
   // newest turn on top with natural order kept within each turn. Entries
@@ -574,18 +610,19 @@ const CHAT_URL = IS_LOCAL ? "http://localhost:8787/chat" : "/api/chat";
 /** rolling model conversation (distinct from the prompt's command history) */
 const llmHistory: { role: "user" | "assistant"; content: string }[] = [];
 
-/* #54 slug allowlist -> real routes. eight-angle maps to its /log/ route;
-   work is the homepage log; contact and resume have no pages of their own,
-   so they run their deterministic commands instead (see below). */
+/* #54 slug allowlist -> real routes. work is the homepage log; contact has no
+   page of its own, so it runs its deterministic command instead (see below).
+   resume is gone site-wide (item 6). eight-angle is still matched by MD_LINK
+   but no longer resolves to a route: the article is unpublished (item 11), so
+   a chat mention degrades to a plain-text mention (renderReply) instead of a
+   link that would 404. */
 const SLUG_HREF: Record<string, string> = {
   about: "/about",
   work: "/#log",
-  "eight-angle": "/log/eight-angle-ml",
-  resume: "/resume.pdf",
 };
 
 const MD_LINK =
-  /\[([^\]\n]{1,80})\]\(\/(about|work|eight-angle|contact|resume)\)/g;
+  /\[([^\]\n]{1,80})\]\(\/(about|work|eight-angle|contact)\)/g;
 
 /** Model prose -> DOM. Text nodes only, plus allowlisted links; never HTML.
     Given a slot (the in-flight thinking line, #116), the reply fills that
@@ -608,11 +645,16 @@ function renderReply(text: string, slot?: HTMLElement | null, replay = false) {
       b.dataset.cmd = "contact";
       b.textContent = label;
       d.appendChild(b);
-    } else {
+    } else if (slug in SLUG_HREF) {
       const a = document.createElement("a");
       a.href = SLUG_HREF[slug];
       a.textContent = label;
       d.appendChild(a);
+    } else {
+      // matched the pattern but has no live route (eight-angle: unpublished,
+      // item 11). Degrade to a plain-text mention so the chat never emits a
+      // link that 404s.
+      d.appendChild(document.createTextNode(label));
     }
     last = m.index + m[0].length;
   }
@@ -657,22 +699,23 @@ function thinking(): HTMLElement | null {
 function openSlug(slug: string) {
   if (slug === "work") goHomeThen(scrollToLog);
   else if (slug === "contact") out(CONTACT_HTML);
-  else if (slug === "resume") out(RESUME_HTML);
   else if (slug in SLUG_HREF) navigate(SLUG_HREF[slug]);
+  // any other slug (e.g. eight-angle, now unpublished) is a no-op: no route,
+  // no 404. The prose the model already rendered carries the mention.
 }
 
 /* ------------------------------------------------- redirect countdown ----- */
 
 /* Which open_page slugs are a genuine navigation to ANOTHER page (so a
-   countdown makes sense), vs an in-place output (contact/resume) or a
-   same-page scroll. Returns the real destination href + a plain-words name,
-   or null to fall back to openSlug's instant behavior. */
+   countdown makes sense), vs an in-place output (contact) or a same-page
+   scroll. Returns the real destination href + a plain-words name, or null to
+   fall back to openSlug's instant behavior. */
 function redirectDest(slug: string): { href: string; name: string } | null {
   const screen = currentScreen();
   if (slug === "about" && screen !== "about")
     return { href: "/about", name: "the about page" };
-  if (slug === "eight-angle")
-    return { href: "/log/eight-angle-ml", name: "the Eight Angle article" };
+  // eight-angle is intentionally absent: the article is unpublished (item 11),
+  // so a redirect there would 404. It falls through to openSlug's no-op.
   if (slug === "work" && screen !== "home")
     return { href: "/#log", name: "the work log" };
   return null;
@@ -861,8 +904,8 @@ async function askLive(q: string) {
         // same-slot swap survives.
         startRedirect(dest.href, dest.name, hasProse ? null : (wait ?? null));
       } else {
-        // an explicit "open X" ask, or an in-place slug (contact/resume/work
-        // while home): go now, no countdown (#143 req 3)
+        // an explicit "open X" ask, or an in-place slug (contact/work while
+        // home): go now, no countdown (#143 req 3)
         if (!hasProse) wait?.remove();
         openSlug(slug);
       }
@@ -1014,10 +1057,8 @@ function run(raw: string, viaKb: boolean) {
     toConsole(v, CONTACT_HTML, viaKb);
     return;
   }
-  if (cmd === "resume") {
-    toConsole(v, RESUME_HTML, viaKb);
-    return;
-  }
+  // "resume" is no longer a command (item 6): it falls through to the chat as
+  // free-form input, like any unknown word.
 
   // free-form question: the live chat on /chat, or in place when already
   // there (#108)
@@ -1067,12 +1108,6 @@ function initPage() {
   const focusId = pendingFocus;
   pendingFocus = null;
 
-  // localhost only: the chat preview note reflects the live POC bridge
-  if (IS_LOCAL && currentScreen() === "chat") {
-    const note = byId("chat-note");
-    if (note) note.textContent = "# Live model via the local POC";
-  }
-
   // #144: restore the /chat thread (module memory first, else sessionStorage)
   // BEFORE running any pending send, so a carried question opens the newest
   // turn above the restored conversation (#153). Recompute the roving tab
@@ -1080,6 +1115,11 @@ function initPage() {
   // links to the cursor order.
   if (currentScreen() === "chat") {
     rehydrateChat();
+    // Greeting empty state: only when the panel is pristine (nothing restored)
+    // AND no pending send/command/emulation is about to render a turn. Run
+    // AFTER rehydrate so it can never flash before a restored or pending
+    // thread renders.
+    if (!transcript.length && !after && !emulate) showGreeting();
     const r = roveEls();
     if (r.length) setRoveStop(r[0], r);
     setupPin(); // watch the docked composer for the stuck hairline
@@ -1244,7 +1284,13 @@ function setupOnce() {
   // #143: a navigation away during a countdown cancels it silently; the timer
   // must never fire after the visitor has already left /chat (also closes the
   // back-button loop: the destination push happened, nothing re-triggers).
-  document.addEventListener("astro:before-swap", () => cancelRedirect("nav"));
+  // Also: leaving /chat drops the thread (item, above), so the next arrival is
+  // pristine. At astro:before-swap the OUTGOING page is still the live
+  // document, so currentScreen reports the page being left.
+  document.addEventListener("astro:before-swap", () => {
+    cancelRedirect("nav");
+    if (currentScreen() === "chat") dropThread();
+  });
 
   // #145/#150: stamp the persisted header's per-page state during the swap
   // (astro:after-swap runs before the new frame paints, so the stamp can
@@ -1278,12 +1324,15 @@ function setupOnce() {
     if (!handle) return;
     handle.setState(currentScreen() === "chat" ? "chat" : "home");
     // Per-page identity (#111, B3): the arriving page stamps its theme on
-    // the fresh [data-screen] section (article pages, from frontmatter);
-    // no stamp = the site default. Read from that fresh element, never
-    // from [data-scene]: the persisted scene node still carries the OLD
-    // page's dataset. setTheme no-ops when equal and travels the sky,
-    // peak, and mark together when it changes (snap under reduced motion).
-    const stamp = document.querySelector<HTMLElement>("[data-screen]")?.dataset
+    // its fresh .screen section (article pages, from frontmatter); no stamp
+    // = the site default. Read from that fresh section, never from the
+    // persisted [data-scene] node (which carries the OLD page's dataset) and
+    // never from the bare [data-screen] (the persisted global header matches
+    // that first and carries no theme, which pinned the mark to BR on every
+    // navigation, #150 bridge bug). setTheme no-ops when equal and travels
+    // the sky, peak, and mark together when it changes (snap under reduced
+    // motion).
+    const stamp = document.querySelector<HTMLElement>(".screen")?.dataset
       .sceneTheme;
     handle.setTheme(sceneMod.isThemeName(stamp) ? stamp : "default");
   };

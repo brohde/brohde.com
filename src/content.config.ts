@@ -21,6 +21,15 @@ const articles = defineCollection({
     description: z.string().optional(),
     date: z.coerce.date(),
     draft: z.boolean().default(false),
+    // Publish gate (item 11). Unlike `draft` (which hides an entry from the
+    // log entirely), `published: false` keeps the entry LISTED on the homepage
+    // as a "coming soon" row but generates no article page (getStaticPaths),
+    // excludes it from RSS, and keeps the chat from linking to it. All entries
+    // are unpublished today; to bring one back, set `published: true` in that
+    // article's frontmatter (its page, RSS item, homepage link, and chat link
+    // all return automatically). External entries stay linked to their
+    // off-site URL regardless (they never had a generated page and never 404).
+    published: z.boolean().default(false),
     // External log entries (Brian's writing published elsewhere). When set,
     // the homepage log links out to this URL and no article page is generated.
     external: z.string().url().optional(),

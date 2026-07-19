@@ -22,12 +22,12 @@ export const SITE = {
   ogImage: "/og.png",
 } as const;
 
-/** Profile + resume links shown in the header (#25, #33). */
+/** Profile links (#25, #33). The resume PDF and its link were removed
+    site-wide (item 6, recoverable via git). */
 export const LINKS = {
   linkedin: "https://www.linkedin.com/in/brian-rohde-4ba3558/",
   x: "https://x.com/brianxbuilds",
   xHandle: "@brianxbuilds",
-  resume: "/resume.pdf",
 } as const;
 
 /** Company links inside the bio lines (#39): official sites, quiet styling. */
@@ -38,8 +38,11 @@ export const COMPANIES = {
   beyond: "https://bynd.com",
 } as const;
 
-/** Where the article collection is served. Unbranded: just "the log". */
-export const LOG_BASE = "/log";
+/** Where the article collection is served (#179): bare slugs at the root,
+    no prefix. The old /log/* URLs 301 to these via public/_redirects. The
+    collection itself stays grouped at src/content/articles/ (routing and
+    content organization are independent; Brian's condition on the call). */
+export const LOG_BASE = "";
 
 export function logHref(id: string): string {
   return `${LOG_BASE}/${id}`;

@@ -21,9 +21,10 @@ import ChatBar from "@/components/ChatBar.astro";
  *
  * The transcript flows NEWEST FIRST: each send prepends a .turn block
  * directly beneath the composer (terminal.ts beginTurn), so the answer
- * blooms where the visitor is already looking; older turns flow downward and
- * the two intro lines below sink to the bottom as the oldest content (they
- * hide once a stored thread restores, and return on clear, Phase 4B).
+ * blooms where the visitor is already looking; older turns flow downward.
+ * When the panel is pristine (no thread, no pending question) terminal.ts
+ * injects a time-of-day greeting into the empty log in place of the retired
+ * "#" intro lines; the first real turn drops it and clear brings it back.
  *
  * The panel (slab screen material, #67) gets a min-height that extends it to
  * ~28px above the viewport bottom on load (Phase 4B), so the object fills the
@@ -79,15 +80,12 @@ import ChatBar from "@/components/ChatBar.astro";
               </button>
             </nav>
             <div class="chatlog" id="chatlog">
-              {/* on localhost terminal.ts swaps this line for the live-POC note */}
-              <p class="cmt" id="chat-note">
-                # Ask about Brian's work <span aria-hidden="true">·</span> answers
-                come from a live model
-              </p>
-              <p class="cmt">
-                # Type help for commands <span aria-hidden="true">·</span> esc
-                returns home
-              </p>
+              {
+                /* Pristine empty state: terminal.ts injects a time-of-day
+                greeting here when there is no thread and no pending question.
+                It is never server-rendered, so it can never flash before a
+                restored or pending thread renders. */
+              }
             </div>
             {
               /* no live region here: terminal.ts owns the single polite

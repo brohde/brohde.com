@@ -19,7 +19,5 @@
   Cache-Control: public, max-age=604800, stale-while-revalidate=86400
 /og-default.svg
   Cache-Control: public, max-age=604800, stale-while-revalidate=86400
-/resume.pdf
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 /robots.txt
   Cache-Control: public, max-age=3600

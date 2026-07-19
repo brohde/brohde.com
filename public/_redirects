@@ -1,0 +1,3 @@
+# #179: article URLs dropped the /log prefix for bare root slugs. Anything
+# indexed or shared under the old prefix lands on the new home permanently.
+/log/* /:splat 301

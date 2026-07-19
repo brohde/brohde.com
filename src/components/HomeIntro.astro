@@ -14,8 +14,17 @@
  * external or internal; the ledger keeps its ↗ convention (#68). If the
  * markers come back, restore "one affordance per link type" here.
  */
+import { getCollection } from "astro:content";
 import { COMPANIES, logHref } from "@/lib/site";
 import ProfileLinks from "@/components/ProfileLinks.astro";
+
+/* Item 11: the Facebook/Google credits link to their case-study pages, which
+   404 while unpublished. Gate the anchor on the article's published flag so
+   the homepage never links to a 404; republishing an article restores its
+   link automatically (single source of truth: the published flag). */
+const articles = await getCollection("articles");
+const published = (id: string) =>
+  articles.find((a) => a.id === id)?.data.published === true;
 ---
 
 <section class="cid" aria-label="Introduction">
@@ -61,9 +70,21 @@ import ProfileLinks from "@/components/ProfileLinks.astro";
     <span class="d">·</span>{" "}
     <a href={COMPANIES.twilio} target="_blank" rel="noopener">Twilio</a>{" "}
     <span class="d">·</span>{" "}
-    <a href={logHref("facebook-newsroom")}>Facebook</a> +{" "}
-    <a href={logHref("google-android-for-work")}>Google</a>{" "}
-    <span class="cnote"
+    {
+      published("facebook-newsroom") ? (
+        <a href={logHref("facebook-newsroom")}>Facebook</a>
+      ) : (
+        <span>Facebook</span>
+      )
+    } +{" "}
+    {
+      published("google-android-for-work") ? (
+        <a href={logHref("google-android-for-work")}>Google</a>
+      ) : (
+        <span>Google</span>
+      )
+    }{" "}
+    <span class="cnote cvia"
       >via{" "}<a
         class="dimlink"
         href={COMPANIES.beyond}
