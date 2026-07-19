@@ -121,7 +121,7 @@ const CONTACT_Q = "How do I contact Brian?"; // the emulated contact question
    rather than a metronome. The base is centered a hair below the old 35ms so the
    space and punctuation pauses keep the total within about 20% of what the flat
    35ms/char produced (measured for CONTACT_Q during validation). */
-const TYPE_BASE = 22; // humanized per-character base (jittered + bonused below)
+const TYPE_BASE = 20; // humanized per-character base (jittered + bonused below)
 
 function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1041,7 +1041,7 @@ function humanDelay(prev: string | undefined): number {
   let d = TYPE_BASE * (0.7 + Math.random() * 0.6); // jitter 0.7x..1.3x
   if (prev === " ") d += 45 + Math.random() * 40; // longer after a word
   else if (prev && /[.,!?;:]/.test(prev)) d += 70 + Math.random() * 60; // after punctuation
-  if (Math.random() < 0.06) d += 90 + Math.random() * 110; // occasional hesitation
+  if (Math.random() < 0.05) d += 90 + Math.random() * 110; // occasional hesitation
   return d;
 }
 
