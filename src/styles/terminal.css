@@ -159,77 +159,126 @@ html.cfocus .wm .caret {
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
 }
-/* The chat, the machine's mouth on every page (D1 call 1): a strip of the
-   always-night phosphor material, the homechip idiom grown into a real
-   field, rendered by ChatBar.astro in the header AND as the homepage flow
-   bar (#160): one material, prominence by position only. Fixed night TOKEN
-   SCOPE like the slab, so every child (the $ sigil, the [send] chip and its
-   bracket-fill hover) resolves the measured night values under either page
-   ground (typed #F2F7F3 17.60:1, placeholder #8FA79A 7.41:1, mark #7EE787
-   12.42:1 on #0B110E). 48px chrome sizing (D1 call 7); 16px font is the iOS
-   no-zoom floor. The placeholder shows at rest on every surface (#149). */
+/* The chat, the machine's mouth on every page (D1 call 1): the ONE input
+   material, rendered by ChatBar.astro in the header AND as the homepage flow
+   bar (#160) AND docked into the /chat panel (Phase 4B). Composer phase A
+   item 1: it is a recessed FIELD WELL now (recessed --well ground, a hairline
+   --line border, 10px radius, accent border on :focus-within, 160ms ease),
+   with a Circular Book input face; the "$" sigil is gone (machine cosplay
+   #116). Tokens resolve per placement: the header + homepage instances carry
+   the fixed night phosphor set (.hchat:not(.chatcomposer) below), so the well
+   is always-night on either page ground (typed #F2F7F3 17.60:1, placeholder
+   #8FA79A 7.41:1 on the #12201A well); the /chat composer inherits its
+   panel's tokens, so it turns to warm paper under the daylight chat panel.
+   16px font is the iOS no-zoom floor; the placeholder shows at rest (#149). */
 .hchat {
+  display: flex;
+  /* flex-end so the send button seats at the bottom as the textarea grows */
+  align-items: flex-end;
+  gap: 8px;
+  min-height: 50px;
+  margin: 8px 0 0;
+  padding: 0 6px 0 14px;
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  /* the focus wake (accent border) eases instead of snapping; the global
+     reduced-motion switch collapses it to an instant change */
+  transition: border-color 160ms ease;
+}
+/* Header + homepage placements are always-night phosphor wells (the daylight
+   variant belongs to the /chat panel alone, composer phase A item 5): scope
+   the fixed night token set here so the well reads the measured night values
+   under either page ground. The /chat composer (.chatcomposer) is excluded,
+   so it inherits its panel's tokens (night, or the daylight paper set). */
+.hchat:not(.chatcomposer) {
+  --well: #12201a;
+  --line: #2e4a3c;
+  --bright: #f2f7f3;
+  --dim: #8fa79a;
   --accent: #7ee787;
   --on-accent: #0b110e;
-  --dim: #8fa79a;
-
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-height: 48px;
-  margin: 8px 0 0;
-  padding: 0 13px;
-  background: #0b110e;
-  border: 1px solid #33523f;
-  border-radius: 8px;
-  box-shadow: 0 0 14px rgba(126, 231, 135, 0.14);
   color-scheme: dark;
-  /* #165: the focus wake (accent border, doubled glow) eases instead of
-     snapping; slightly softer than the 120ms color grammar because glow
-     reads as light, not ink. Reduced motion collapses it (global switch). */
-  transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease;
 }
-/* the [send] chip (chat-surfaces-r1 Q3): the one bracket-fill control on the
-   input material, so the field reads composer, not search box. .cbtn carries
-   the grammar (accent label, dim brackets, accent fill on hover/focus via
-   the unified rule); this only seats it. */
-.hchat .send {
-  min-width: 44px;
-  justify-content: center;
-  flex: none;
-}
-/* the homepage flow bar (#160): the same strip in the reading flow between
-   the identity block and the ledger; only spacing differs from the header
+/* the homepage flow bar (#160): the same well in the reading flow between the
+   identity block and the ledger; only spacing differs from the header
    placement, never the material. Phase 4A spacing (Brian, exact): the gap
    above the bar is 1.5x the old value (28px -> 42px); the same 42px sits
    below it, with the hint line living INSIDE that below-gap (see .clog). */
 .hchat.flowchat {
   margin: 42px 0 0;
 }
-.hchat input {
+/* the input face: Circular Book, not mono (composer phase A item 1). A
+   textarea that rests at one line (rows=1) and auto-grows with content
+   (field-sizing where supported; terminal.ts carries a scrollHeight fallback),
+   capped at ~6 lines, then scrolls internally, so a whole message fits (the
+   Phase B contact flow writes into it). The growth is a reflow, not a
+   transition, so reduced motion needs no special case. */
+.hchat textarea {
   flex: 1;
   min-width: 0;
   background: none;
   border: 0;
-  color: #f2f7f3;
-  font-family: var(--font-mono);
+  resize: none;
+  color: var(--bright);
+  font-family: var(--font-edit);
+  font-weight: 400;
   font-size: 16px; /* >=16px: never zooms on iOS focus */
   line-height: 1.4;
-  caret-color: #7ee787;
-  padding: 11px 0;
+  caret-color: var(--accent);
+  padding: 13px 0;
+  field-sizing: content;
+  max-height: 160px; /* about 6 lines, then the textarea scrolls internally */
+  overflow-y: auto;
 }
-.hchat input::placeholder {
-  color: #8fa79a;
+.hchat textarea::placeholder {
+  color: var(--dim);
   opacity: 1;
 }
-.hchat input:focus {
+.hchat textarea:focus {
   outline: none;
 }
 .hchat:focus-within {
-  border-color: #7ee787;
-  box-shadow: 0 0 18px rgba(126, 231, 135, 0.24);
+  border-color: var(--accent);
+}
+/* the [send] primary button (composer phase A item 2): a filled accent
+   control, no brackets (the fill is the affordance, #102/#161). It reads
+   --accent / --on-accent from its placement scope, so it is mint-on-night in
+   the header + homepage wells (12.42:1) and deep-green-on-paper in the
+   daylight /chat composer (7.20:1). Mono lowercase label keeps it in the
+   control family; the radius + fill keep it in the theme. margin-bottom
+   balances it against the single line at rest while flex-end holds it at the
+   bottom as the textarea grows. */
+.btn-send {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 62px;
+  min-height: 38px;
+  margin-bottom: 6px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    filter 120ms ease,
+    box-shadow 160ms ease,
+    transform 120ms ease;
+}
+.btn-send:hover {
+  filter: brightness(1.06);
+  /* the glow is the accent's own light: mint on the night wells (the fallback),
+     warm deep-green on the daylight /chat panel, which sets --send-glow */
+  box-shadow: 0 0 16px var(--send-glow, rgba(126, 231, 135, 0.32));
+}
+.btn-send:active {
+  transform: translateY(1px);
 }
 /* Header chat-input dedup (#145, amended by #153): hidden only on the
    homepage, whose slab carries its own input; on /chat this row IS the
@@ -617,6 +666,13 @@ html.cfocus .wm .caret {
 }
 .slab-chat {
   margin-top: 10px;
+  /* a flex column so the [clear] footer (composer phase A item 5) seats at the
+     panel's BOTTOM edge while the transcript body (.chatbody, flex: 1) absorbs
+     the slack: composer at the top, then the body, then the footer. Sticky
+     still pins the composer against the document scroll (the panel is not a
+     scroll/clip container: overflow stays visible below). */
+  display: flex;
+  flex-direction: column;
   /* Phase 4B: the panel extends to ~28px above the viewport bottom on load
      (footer falls below the fold), then GROWS with the conversation while
      the PAGE scrolls (no internal scroll region). 120px = the top offset
@@ -651,6 +707,121 @@ html.cfocus .wm .caret {
   );
 }
 .slab-chat:focus-within {
+  box-shadow:
+    0 0 34px rgba(255, 170, 51, 0.2),
+    0 14px 34px rgba(0, 0, 0, 0.28);
+}
+
+/* DAYLIGHT CHAT PANEL (composer phase A item 6): under the LIGHT theme the
+   /chat panel ALONE becomes a warm sheet of paper in late sun, the daylight
+   counterpart to the night screen. This revises #67's always-night rule for
+   the chat SURFACE only: .prose pre article excerpts and any literal machine
+   output stay always-night (they show terminal output; the chat is a
+   conversation, so it earns the paper). Same geometry as the night panel; the
+   phosphor tokens flip to the site's light palette on a #fbfaf6 paper ground
+   (one warm step off the page white so it reads as a raised object), the
+   scanlines go (they read as dirt on paper), and the golden hour survives as a
+   warm top-corner wash + a warm seat shadow, never in the ink.
+   Keyed the same three ways the hero band uses, so the theme toggle wins in
+   both directions: the system light preference, an explicit light override,
+   and an explicit dark override RE-ASSERTING night on a light-preference system
+   (the base .slab night tokens would otherwise lose source-order to the media
+   rule). The [data-theme] rules beat the media query on specificity. */
+@media (prefers-color-scheme: light) {
+  .slab-chat {
+    --ground: #fbfaf6;
+    --ink: #14211a;
+    --bright: #14211a;
+    --dim: #3f5348;
+    --accent: #086148;
+    --on-accent: #fbfbf8;
+    --line: #dae0d6;
+    --line-strong: #c7d0c4;
+    --well: #f1f2ec;
+    --send-glow: rgba(8, 97, 72, 0.24);
+    color-scheme: light;
+    /* golden-hour warmth in the shadow + a neutral seat shadow */
+    box-shadow:
+      0 0 40px rgba(214, 150, 40, 0.12),
+      0 14px 30px rgba(30, 26, 18, 0.08);
+  }
+  /* golden-hour glow field, warm and faint on paper */
+  .slab-chat::before {
+    background: radial-gradient(
+      460px 210px at 14% 0%,
+      rgba(255, 170, 51, 0.1),
+      transparent 68%
+    );
+  }
+  .slab-chat::after {
+    opacity: 0; /* no scanlines on paper */
+  }
+  .slab-chat:focus-within {
+    box-shadow:
+      0 0 40px rgba(214, 150, 40, 0.2),
+      0 14px 30px rgba(30, 26, 18, 0.08);
+  }
+}
+:root[data-theme="light"] .slab-chat {
+  --ground: #fbfaf6;
+  --ink: #14211a;
+  --bright: #14211a;
+  --dim: #3f5348;
+  --accent: #086148;
+  --on-accent: #fbfbf8;
+  --line: #dae0d6;
+  --line-strong: #c7d0c4;
+  --well: #f1f2ec;
+  --send-glow: rgba(8, 97, 72, 0.24);
+  color-scheme: light;
+  box-shadow:
+    0 0 40px rgba(214, 150, 40, 0.12),
+    0 14px 30px rgba(30, 26, 18, 0.08);
+}
+:root[data-theme="light"] .slab-chat::before {
+  background: radial-gradient(
+    460px 210px at 14% 0%,
+    rgba(255, 170, 51, 0.1),
+    transparent 68%
+  );
+}
+:root[data-theme="light"] .slab-chat::after {
+  opacity: 0;
+}
+:root[data-theme="light"] .slab-chat:focus-within {
+  box-shadow:
+    0 0 40px rgba(214, 150, 40, 0.2),
+    0 14px 30px rgba(30, 26, 18, 0.08);
+}
+/* explicit dark override on a light-preference system: restate the night panel
+   so the toggle can always force the screen back */
+:root[data-theme="dark"] .slab-chat {
+  --ground: #0b110e;
+  --ink: #d6e5dc;
+  --bright: #f2f7f3;
+  --dim: #8fa79a;
+  --accent: #7ee787;
+  --on-accent: #0b110e;
+  --line: #2e4a3c;
+  --line-strong: #33523f;
+  --well: #12201a;
+  --send-glow: rgba(126, 231, 135, 0.32);
+  color-scheme: dark;
+  box-shadow:
+    0 0 34px rgba(255, 170, 51, 0.12),
+    0 14px 34px rgba(0, 0, 0, 0.28);
+}
+:root[data-theme="dark"] .slab-chat::before {
+  background: radial-gradient(
+    420px 190px at 14% 0%,
+    rgba(255, 170, 51, 0.08),
+    transparent 70%
+  );
+}
+:root[data-theme="dark"] .slab-chat::after {
+  opacity: 0.45;
+}
+:root[data-theme="dark"] .slab-chat:focus-within {
   box-shadow:
     0 0 34px rgba(255, 170, 51, 0.2),
     0 14px 34px rgba(0, 0, 0, 0.28);
@@ -696,20 +867,51 @@ html.cfocus .wm .caret {
   height: 1px;
   margin-bottom: -1px;
 }
-/* the [clear] chat control (Phase 4B: [help] removed, still works typed),
-   right-aligned, seated between the docked composer and the transcript.
-   Item 5: the [clear] row and the log below it sit TIGHT under the composer
-   so the first exchange reads as directly attached (the old ~46px of stacked
-   padding + margins pushed the first message far below the docked input).
-   The body's top padding drops to 6px, the log's to 2px, and the newest
-   turn / greeting loses its top margin (below), leaving the [clear] control
-   as the only thing between the composer and the first line. */
+/* the transcript body sits TIGHT under the docked composer (its top padding
+   drops to 6px, the log's to 2px, and the newest turn / greeting loses its top
+   margin, below), so the first exchange reads as directly attached to the
+   input. flex: 1 lets the body absorb the panel's slack, pushing the [clear]
+   footer to the bottom edge (composer phase A item 5). */
 .chatbody {
+  flex: 1;
   padding-top: 6px;
 }
+/* [clear] AS THE PANEL FOOTER (composer phase A item 5): moved to the BOTTOM
+   of the panel, right-aligned, under a 1px hairline. The transcript runs
+   newest-first, so the bottom is the OLDEST end of the thread: [clear] reads
+   as the panel's quiet footer, not the first control you meet before you have
+   said anything. [help] is still typed-only. */
 .chatcmds {
-  margin: 0;
+  margin: 6px 0 0;
+  padding: 10px 14px 12px;
+  border-top: 1px solid var(--line);
   justify-content: flex-end;
+}
+/* [clear] is a QUIET secondary, never a twin of the filled send (item 5): it
+   keeps the bracket token but drops the .cbtn fill-on-hover. It rests DIM and
+   steps to accent on hover/focus, the nav-token grammar the header and ledger
+   use, so the filled send is the only filled thing on the surface and [clear]
+   can never read as a second primary. */
+.chatcmds .cbtn {
+  color: var(--dim);
+}
+.chatcmds .cbtn .br {
+  transition: color 120ms ease;
+}
+.chatcmds .cbtn:hover,
+.chatcmds .cbtn:focus-visible {
+  color: var(--accent);
+}
+.chatcmds .cbtn:hover .br,
+.chatcmds .cbtn:focus-visible .br {
+  color: var(--accent);
+}
+/* override the unified bracket fill-on-hover for this one control: no fill, the
+   label just joins the accent step above */
+.chatcmds .cbtn:hover .lbl,
+.chatcmds .cbtn:focus-visible .lbl {
+  background: none;
+  color: inherit;
 }
 /* Turn separation (#153 + chat-surfaces-r1 Q4): the ledger's own hairline
    grammar (.lentry + .lentry), because both are newest-first lists of
@@ -898,15 +1100,30 @@ a.lentry:focus-visible .lttl {
 .chatlog > .greeting {
   margin-top: 0;
 }
+/* The conversation is Circular now (composer phase A item 4): the whole chat
+   is a person asking a person, so it speaks in the site's one editorial face,
+   not the command-line mono. The visitor's echoed question is Circular MEDIUM
+   (500), bright; weight marks the turn, not a face swap. pre-wrap preserves the
+   line breaks a multi-line send carries (item 2). Mono survives only for
+   controls and meta (the send label, [clear], and deterministic command output
+   in .out, which stays mono below). */
 .uline {
+  font-family: var(--font-edit);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.5;
   color: var(--bright);
   margin-top: 18px;
+  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+/* the model's reply: Circular BOOK (400), ink, on the 2px assistant rail. The
+   rail (not a face switch) is what now marks the machine's voice. */
 .reply {
-  font-family: var(--font-sans);
+  font-family: var(--font-edit);
+  font-weight: 400;
   font-size: 16px;
-  line-height: 1.65;
+  line-height: 1.62;
   color: var(--ink);
   max-width: 62ch;
   border-left: 2px solid var(--line-strong);
@@ -914,6 +1131,12 @@ a.lentry:focus-visible .lttl {
   margin: 10px 0 2px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+/* code blocks and inline code inside a reply STAY mono (item 4): the machine's
+   own tokens keep the machine face even when the conversation around them went
+   editorial. */
+.reply :is(code, pre) {
+  font-family: var(--font-mono);
 }
 .out {
   white-space: pre-wrap;

@@ -57,7 +57,11 @@ const website = {
           hint line beneath is the quiet feedback surface (hint() in
           terminal.ts): command nudges and the one-time cursor hint. */
         }
-        <ChatBar inputId="in-home" class="flowchat" />
+        <ChatBar
+          inputId="in-home"
+          class="flowchat"
+          placeholder="Ask Brian's AI anything"
+        />
         <p class="cmt hint" id="hint-top" aria-live="polite"></p>
         <ArticleLog />
       </main>

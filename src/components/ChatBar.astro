@@ -6,9 +6,24 @@
  * /chat, which carry their own input); the homepage renders it as the flow
  * chat bar in the reading column; /chat docks it INTO the phosphor panel as
  * the panel's top edge (Phase 4B, class "chatcomposer"). Extracted here so
- * the placements can never drift: same night phosphor strip, same $ sigil,
- * same placeholder, same [send] chip. Prominence comes from position and
- * seating only (docked / sticky), never a restyle.
+ * the placements can never drift: same field-well material, same placeholder,
+ * same filled send button. Prominence comes from position and seating only
+ * (docked / sticky), never a restyle.
+ *
+ * Composer phase A: the row is a recessed FIELD WELL (recessed --well ground,
+ * a hairline --line border, 10px radius, accent border on :focus-within) with
+ * a Circular Book input face; the "$" sigil is dropped (machine cosplay #116).
+ * The header + homepage instances hold the always-night phosphor tokens; the
+ * /chat composer inherits its panel's tokens, so it turns to warm paper under
+ * the daylight chat panel (light theme).
+ *
+ * Multi-line auto-grow: the control is a TEXTAREA that rests at one line
+ * (rows=1, visually identical to the old single-line field) and grows with
+ * content up to a cap, then scrolls internally, so a whole contact message
+ * (Phase B) fits comfortably. `field-sizing: content` drives the growth where
+ * supported; terminal.ts carries a scrollHeight fallback for the rest. Enter
+ * SENDS, Shift+Enter inserts a newline (terminal.ts keydown), because a
+ * textarea's native Enter is a newline, not a submit.
  *
  * Send behavior (#108): the form carries data-screen-form, so terminal.ts's
  * one delegated submit handler routes the value through the one command
@@ -18,12 +33,11 @@
  * place. action="/chat" is only the no-JS fallback so a raw submit never
  * reloads the current page with ?q=; script always prevents it.
  *
- * The [send] chip (chat-surfaces-r1 Q3): the bracket-fill grammar so the
- * field reads as a composer, not a search box, and phone users get a tap
- * target for the primary action. type="submit", so it rides the same
- * delegated submit path as Enter (enterkeyhint labels the key). On pages
- * where the row is a jump-to-chat affordance the chip reads as "go", which
- * is correct.
+ * The [send] button (composer phase A item 2): a filled accent primary, no
+ * brackets (the fill is the affordance, #102/#161). type="submit", so a tap
+ * rides the same delegated submit path as Enter (enterkeyhint labels the key).
+ * On pages where the row is a jump-to-chat affordance it reads as "send",
+ * which is correct.
  */
 interface Props {
   /** unique input id per placement, e.g. "in-site" (header), "in-home", "in-chat" */
@@ -34,30 +48,35 @@ interface Props {
       where the log is server-rendered on the same page, so the reference is
       never dangling) */
   ariaControls?: string;
+  /** placeholder + accessible label for this placement, per surface (Brian's
+      copy call): the header + homepage instances carry identity ("Ask Brian's
+      AI anything") since no greeting introduces the chat there; the /chat
+      docked composer keeps the terse field instruction (the default), since the
+      greeting right below it already introduces the AI. One component, one
+      placeholder prop, so the placements never fork. */
+  placeholder?: string;
 }
-const { inputId, class: cls, ariaControls } = Astro.props;
+const {
+  inputId,
+  class: cls,
+  ariaControls,
+  placeholder = "Ask a question, or type help",
+} = Astro.props;
 ---
 
 <form class:list={["hchat", cls]} action="/chat" data-screen-form>
-  <label class="sr" for={inputId}>Ask me anything or type help</label>
-  <span class="p" aria-hidden="true">$</span>
-  <input
+  <label class="sr" for={inputId}>{placeholder}</label>
+  <textarea
     id={inputId}
     name="q"
-    type="text"
+    rows="1"
     autocomplete="off"
     autocapitalize="off"
     autocorrect="off"
     spellcheck="false"
     maxlength="240"
-    placeholder="Ask me anything or type help"
+    placeholder={placeholder}
     enterkeyhint="send"
-    aria-controls={ariaControls}
-  />
-  <button type="submit" class="cbtn send" aria-label="Send">
-    <span class="br" aria-hidden="true">[</span><span class="lbl">send</span><span
-      class="br"
-      aria-hidden="true">]</span
-    >
-  </button>
+    aria-controls={ariaControls}></textarea>
+  <button type="submit" class="btn-send" aria-label="Send">send</button>
 </form>

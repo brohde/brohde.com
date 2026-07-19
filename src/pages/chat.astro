@@ -72,13 +72,6 @@ import ChatBar from "@/components/ChatBar.astro";
             ariaControls="chatlog"
           />
           <div class="slabbody chatbody">
-            <nav class="keybar chatcmds" aria-label="Commands">
-              <button type="button" class="cbtn" data-cmd="clear">
-                <span class="br" aria-hidden="true">[</span>
-                <span class="lbl">clear</span>
-                <span class="br" aria-hidden="true">]</span>
-              </button>
-            </nav>
             <div class="chatlog" id="chatlog">
               {
                 /* Pristine empty state: terminal.ts injects a time-of-day
@@ -94,6 +87,20 @@ import ChatBar from "@/components/ChatBar.astro";
               what bridges the composer to this transcript in main. */
             }
           </div>
+          {
+            /* [clear] as the panel FOOTER (composer phase A item 5): the
+            transcript is newest-first, so the bottom is the oldest end of the
+            thread, and [clear] reads as the panel's quiet footer, not the first
+            control you meet. A direct .slab-chat child after the flex-grown
+            body, so it seats at the panel's bottom edge under a hairline. */
+          }
+          <nav class="keybar chatcmds" aria-label="Commands">
+            <button type="button" class="cbtn" data-cmd="clear">
+              <span class="br" aria-hidden="true">[</span>
+              <span class="lbl">clear</span>
+              <span class="br" aria-hidden="true">]</span>
+            </button>
+          </nav>
         </section>
       </main>
     </div>

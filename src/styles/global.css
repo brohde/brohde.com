@@ -103,6 +103,12 @@
   --line-strong: #33523f;
   --well: #12201a;
 
+  /* Attention token (composer phase A item 6): a soft golden-hour amber for a
+     non-error attention state, the daylight-scene warmth turned into a signal.
+     The palette carries no red on purpose; Phase B's invalid-email field state
+     tints its border with this. Defined in both grounds now, wired later. */
+  --warn: #e0a94b;
+
   /* phosphor wordmark glow + CRT scanline (night only) */
   --wm-glow:
     0 0 26px rgba(126, 231, 135, 0.3), 0 0 3px rgba(126, 231, 135, 0.35);
@@ -124,6 +130,8 @@
     --line: #dae0d6;
     --line-strong: #c7d0c4;
     --well: #f1f2ec;
+
+    --warn: #b3791f;
 
     --wm-glow: none;
     --crt-alpha: 0; /* scanlines read as dirt on paper; drop them in light */
@@ -160,6 +168,8 @@
   --line-strong: #33523f;
   --well: #12201a;
 
+  --warn: #e0a94b;
+
   --wm-glow:
     0 0 26px rgba(126, 231, 135, 0.3), 0 0 3px rgba(126, 231, 135, 0.35);
   --crt-alpha: 0.45;
@@ -179,6 +189,8 @@
   --line-strong: #c7d0c4;
   --well: #f1f2ec;
 
+  --warn: #b3791f;
+
   --wm-glow: none;
   --crt-alpha: 0;
   --glow-field: rgba(8, 97, 72, 0.05);
@@ -197,6 +209,7 @@
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
   --color-well: var(--well);
+  --color-warn: var(--warn);
 
   --font-mono: var(--font-mono);
   --font-sans: var(--font-sans);

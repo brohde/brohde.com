@@ -116,7 +116,7 @@ const REDIRECT_SECONDS = 5; // Generous enough that a keyboard or switch user
 let redirect: {
   timer: number;
   tail: HTMLElement; // the countdown + stay control, removed on cancel
-  input: HTMLInputElement | null; // where focus returns after a click-cancel
+  input: HTMLTextAreaElement | null; // where focus returns after a click-cancel
 } | null = null;
 
 /* --------------------------------------------- conversation persistence --- */
@@ -141,6 +141,24 @@ const MAX_LLM = 12; // model-history entries stored; the send slices to 8, so a
 /* --------------------------------------------------------------- helpers --- */
 
 const byId = (id: string) => document.getElementById(id);
+
+/* Composer multi-line auto-grow (composer phase A item 2). The one .hchat
+   control is a TEXTAREA now: it rests at one line and grows with content to a
+   ~6-line cap, then scrolls internally. CSS `field-sizing: content` drives the
+   growth where supported; this scrollHeight fallback covers the rest (reset to
+   auto, then grow to the content height, capped at the CSS max-height). The
+   growth is a synchronous reflow, never an animation, so reduced motion needs
+   no special case. */
+const FIELD_SIZING =
+  typeof CSS !== "undefined" &&
+  typeof CSS.supports === "function" &&
+  CSS.supports("field-sizing", "content");
+const GROW_CAP = 160; // matches .hchat textarea max-height
+function autoGrow(el: HTMLTextAreaElement) {
+  if (FIELD_SIZING) return;
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, GROW_CAP) + "px";
+}
 
 /* The page's OWN section (.screen) is the source of truth for the current
    screen and its scene identity. The global header ALSO carries data-screen
@@ -347,12 +365,11 @@ function echo(t: string, replay = false) {
   if (!host) return;
   const d = document.createElement("div");
   d.className = "uline";
-  const p = document.createElement("span");
-  p.className = "p";
-  p.setAttribute("aria-hidden", "true");
-  p.textContent = "$ ";
-  d.appendChild(p);
-  d.appendChild(document.createTextNode(t));
+  // Composer phase A: the "$" sigil is dropped from the echoed question too
+  // (item 1/4). The line is the visitor's own words in the editorial voice
+  // (Circular Medium), not a machine prompt. textContent preserves the newlines
+  // a multi-line send carries; .uline renders them (white-space: pre-wrap).
+  d.textContent = t;
   host.appendChild(d);
   if (!replay) {
     record({ t: "echo", s: t });
@@ -411,7 +428,7 @@ function greetingText(): string {
       : h >= 12 && h < 17
         ? "Good afternoon!"
         : "Good evening!";
-  return `${part} I'm Brian's LLM. Ask me anything about his work and I'll do my best to answer.`;
+  return `${part} I'm Brian's AI. Ask me anything about his work and I'll do my best to answer.`;
 }
 
 function showGreeting() {
@@ -804,9 +821,9 @@ function startRedirect(href: string, name: string, slot: HTMLElement | null) {
   // fallback is the header composer, /chat's input since #153
   const active = document.activeElement as HTMLElement | null;
   const input =
-    active && active.matches?.(".hchat input")
-      ? (active as HTMLInputElement)
-      : (byId(CHAT_INPUT) as HTMLInputElement | null);
+    active && active.matches?.(".hchat textarea")
+      ? (active as HTMLTextAreaElement)
+      : (byId(CHAT_INPUT) as HTMLTextAreaElement | null);
 
   announce(
     `Taking you to ${name} in a few seconds. Press escape, or select stay here, to stay.`
@@ -975,9 +992,12 @@ function scriptedTurn(q: string, html: string) {
    the typing theater, render echo + response instantly. Focus ends in the
    composer. */
 function playContactEmulation() {
-  const input = byId(CHAT_INPUT) as HTMLInputElement | null;
+  const input = byId(CHAT_INPUT) as HTMLTextAreaElement | null;
   const finish = () => {
-    if (input) input.value = "";
+    if (input) {
+      input.value = "";
+      autoGrow(input);
+    }
     scriptedTurn(CONTACT_Q, CONTACT_HTML);
     input?.focus({ preventScroll: true });
   };
@@ -990,6 +1010,7 @@ function playContactEmulation() {
   const step = () => {
     i += 1;
     input.value = CONTACT_Q.slice(0, i);
+    autoGrow(input); // keep the fallback height in step with the typed value
     if (i < CONTACT_Q.length) window.setTimeout(step, TYPE_MS);
     else window.setTimeout(finish, 220); // a beat, then submit
   };
@@ -1158,11 +1179,12 @@ function setupOnce() {
     }
   });
 
-  // THE submit path for every input (both ChatBar placements): Enter fires
-  // the native form submission, the [send] chip is type=submit, and virtual
-  // keyboards / IME land here too. Capture phase + preventDefault so it runs
-  // before Astro's ClientRouter submit handler, which would otherwise hijack
-  // the GET form and navigate to /chat?q=...
+  // THE submit path for every composer (both ChatBar placements): the [send]
+  // button is type=submit, Enter routes here via requestSubmit (keydown below,
+  // since a textarea's native Enter is a newline), and virtual keyboards / IME
+  // land here too. Capture phase + preventDefault so it runs before Astro's
+  // ClientRouter submit handler, which would otherwise hijack the GET form and
+  // navigate to /chat?q=...
   document.addEventListener(
     "submit",
     (e) => {
@@ -1171,10 +1193,15 @@ function setupOnce() {
       );
       if (!form) return;
       e.preventDefault();
-      const input = form.querySelector<HTMLInputElement>("input");
+      // the control is a TEXTAREA now (composer phase A item 2); keep the
+      // input fallback so any legacy specimen still submits
+      const input = form.querySelector<HTMLTextAreaElement | HTMLInputElement>(
+        "textarea, input"
+      );
       if (!input) return;
       run(input.value, true);
       input.value = "";
+      if (input instanceof HTMLTextAreaElement) autoGrow(input);
     },
     true
   );
@@ -1200,7 +1227,7 @@ function setupOnce() {
   // input is the one .hchat material, so one selector covers them all.
   document.addEventListener("focusin", (e) => {
     const t = e.target as HTMLElement;
-    const live = !!t.matches?.(".hchat input") || isRove(t);
+    const live = !!t.matches?.(".hchat textarea") || isRove(t);
     document.documentElement.classList.toggle("cfocus", live);
     if (isRove(t)) {
       setRoveStop(t);
@@ -1216,14 +1243,16 @@ function setupOnce() {
     }
   });
 
-  // input: typing during a redirect countdown is a cancel signal
+  // input: keep the textarea sized to its content (composer phase A item 2,
+  // fallback where field-sizing is unsupported), and treat typing during a
+  // redirect countdown as a cancel signal.
   document.addEventListener("input", (e) => {
     const input = e.target as HTMLElement;
+    if (!input.matches?.(".hchat textarea")) return;
+    autoGrow(input as HTMLTextAreaElement);
     // #143 req 2: a visitor typing their next message has chosen to stay.
     // Cancel the countdown but let the keystroke through (no preventDefault).
-    if (redirect && input.matches?.(".hchat input")) {
-      cancelRedirect("type");
-    }
+    if (redirect) cancelRedirect("type");
   });
 
   // keyboard: escape + the roving cursor. Arrow logic only runs while a
@@ -1244,7 +1273,7 @@ function setupOnce() {
       // the resting caret (blur); from rest, Escape leaves non-home screens.
       // An input blurs first too, so Escape mid-question never throws typed
       // text away by navigating.
-      if (t && (t.matches?.(".hchat input") || isRove(t))) {
+      if (t && (t.matches?.(".hchat textarea") || isRove(t))) {
         e.preventDefault();
         t.blur();
         return;
@@ -1275,10 +1304,22 @@ function setupOnce() {
       return;
     }
 
-    // Enter in a chat input rides the NATIVE form submission into the one
-    // delegated submit handler above; no keydown handling is needed (#160:
-    // the .prompt-specific Enter/autocomplete/history block retired with
-    // the slab).
+    // Enter SENDS (composer phase A item 2). The one .hchat control is a
+    // TEXTAREA now, whose native Enter inserts a newline, so Enter-to-send is
+    // wired here: Enter with no Shift, and not mid-IME-composition, submits the
+    // form through the one delegated submit handler above (requestSubmit fires a
+    // cancelable submit event, so that handler still owns the send + reset).
+    // Shift+Enter falls through to the native newline.
+    if (
+      e.key === "Enter" &&
+      !e.shiftKey &&
+      !e.isComposing &&
+      t.matches?.(".hchat textarea")
+    ) {
+      e.preventDefault();
+      const form = t.closest<HTMLFormElement>("form[data-screen-form]");
+      form?.requestSubmit();
+    }
   });
 
   // #143: a navigation away during a countdown cancels it silently; the timer

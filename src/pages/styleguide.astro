@@ -21,6 +21,7 @@ const swatches = [
   { name: "line", desc: "hairline" },
   { name: "line-strong", desc: "stronger hairline" },
   { name: "well", desc: "input / code well" },
+  { name: "warn", desc: "attention (amber)" },
 ];
 
 const themes = [
@@ -75,18 +76,19 @@ const themes = [
                   <span class="snav-spec">contact</span>
                 </span>
               </div>
-              <div class="hchat">
-                <span class="p" aria-hidden="true">
-                  $
-                </span>
-                <span style="color:#8fa79a;font-size:16px;flex:1">
-                  Ask me anything or type help
-                </span>
-                <span class="cbtn send">
-                  <span class="br">[</span>
-                  <span class="lbl">send</span>
-                  <span class="br">]</span>
-                </span>
+            {/* the ChatBar composer: a recessed field well (always-night here
+                and on the homepage), a Circular textarea, a filled send. Inert
+                specimen: aria-hidden, readonly, out of the tab order. */}
+              <div class="hchat" aria-hidden="true">
+                <textarea
+                  rows="1"
+                  readonly
+                  tabindex="-1"
+                  placeholder="Ask Brian's AI anything"
+                />
+                <button class="btn-send" type="button" tabindex="-1">
+                  send
+                </button>
               </div>
             </div>
 
@@ -136,18 +138,16 @@ const themes = [
 
             <h2 class="sg-h">flow chat bar (homepage)</h2>
             {/* the same .hchat material as the header row, flow placement */}
-            <div class="hchat" style="margin-top:0">
-              <span class="p" aria-hidden="true">
-                $
-              </span>
-              <span style="color:#8fa79a;font-size:16px;flex:1">
-                Ask me anything or type help
-              </span>
-              <span class="cbtn send">
-                <span class="br">[</span>
-                <span class="lbl">send</span>
-                <span class="br">]</span>
-              </span>
+            <div class="hchat" style="margin-top:0" aria-hidden="true">
+              <textarea
+                rows="1"
+                readonly
+                tabindex="-1"
+                placeholder="Ask a question, or type help"
+              />
+              <button class="btn-send" type="button" tabindex="-1">
+                send
+              </button>
             </div>
 
             <h2 class="sg-h">ledger entries</h2>
