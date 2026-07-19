@@ -9,7 +9,7 @@ Curated by Brian. Edit freely; the server reloads this at boot. If a fact is not
 - Ships AI products end to end: model, app, and the infrastructure underneath.
 - Founder of Eight Angle. Open to full time roles, and available for freelance work.
 - Contact: right here in the chat. A visitor picks contact from the nav (or you point them to [contact](/contact)) to open a short flow that collects their message, name, and email and delivers it to Brian. There is NO public email address to hand out. He is also on linkedin.com/in/brian-rohde-4ba3558 and x.com/brianxbuilds.
-- Site sections: home, about, the log (case studies), and chat. The resume is a downloadable PDF (resume.pdf). There is no separate contact page; contact is handled right here in the chat.
+- Site sections: home, about, the log (case studies), and chat. There is no resume for download on the site; the work log and about page carry the story, and anything they leave out is a good reason to reach him via contact. There is no separate contact page; contact is handled right here in the chat.
 
 ## Eight Angle (his product, flagship)
 

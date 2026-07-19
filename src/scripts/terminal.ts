@@ -333,7 +333,7 @@ function chatlog(): HTMLElement | null {
 }
 
 /* Newest-at-top transcript (#153, chat-top-spec Q1). The composer is the
-   sticky header input at the top of /chat, so each user turn PREPENDS a
+   strip docked sticky at the top of the /chat panel, so each user turn PREPENDS a
    .turn block to the log: DOM order equals visual order equals newest first
    (never column-reverse, which would split the two and invert within-turn
    order). Within a turn the flow stays natural: echoed question, thinking,
@@ -685,17 +685,17 @@ const llmHistory: { role: "user" | "assistant"; content: string }[] = [];
 
 /* #54 slug allowlist -> real routes. work is the homepage log; contact has no
    page of its own, so it runs its deterministic command instead (see below).
-   resume is gone site-wide (item 6). eight-angle is still matched by MD_LINK
-   but no longer resolves to a route: the article is unpublished (item 11), so
-   a chat mention degrades to a plain-text mention (renderReply) instead of a
-   link that would 404. */
+   resume is gone site-wide (#177 item 6) and out of the model prompt, but stays
+   matched by MD_LINK as a backstop; eight-angle is matched but unpublished
+   (item 11). Matched slugs with no route here degrade to a plain-text mention
+   (renderReply) instead of a link that would 404. */
 const SLUG_HREF: Record<string, string> = {
   about: "/about",
   work: "/#log",
 };
 
 const MD_LINK =
-  /\[([^\]\n]{1,80})\]\(\/(about|work|eight-angle|contact)\)/g;
+  /\[([^\]\n]{1,80})\]\(\/(about|work|eight-angle|contact|resume)\)/g;
 
 /** Model prose -> DOM. Text nodes only, plus allowlisted links; never HTML.
     Given a slot (the in-flight thinking line, #116), the reply fills that

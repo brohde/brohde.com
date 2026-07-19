@@ -18,7 +18,7 @@ const QUESTIONS = [
   ["navigate", "tell me about brian"],
   ["navigate", "show me his work"],
   ["navigate", "can i see the eight angle project?"],
-  ["navigate", "where's his resume?"],
+  ["expected", "where's his resume?"], // resume removed site-wide (#177): honest prose, not a navigation
   // edge: unknown facts (must say don't know confidently, not invent)
   ["unknown", "what's his rate?"],
   ["unknown", "what college did he attend?"],
