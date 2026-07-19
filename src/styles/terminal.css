@@ -178,27 +178,74 @@ html.cfocus .wm .caret {
   gap: 8px;
   min-height: 50px;
   margin: 8px 0 0;
-  padding: 0 6px 0 14px;
+  /* 8px right per Brian: the send button reads the same air on its top,
+     right, and bottom, in the wells and the /chat dock alike */
+  padding: 0 8px 0 14px;
   background: var(--well);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  /* the focus wake (accent border) eases instead of snapping; the global
+  /* Brian: the input is JUST the field + send button, one strip with a
+     bottom hairline, in every placement (the old full border + radius read
+     as a copy of the whole chat panel with no body inside it) */
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  /* the focus wake (accent hairline) eases instead of snapping; the global
      reduced-motion switch collapses it to an instant change */
   transition: border-color 160ms ease;
 }
-/* Header + homepage placements are always-night phosphor wells (the daylight
-   variant belongs to the /chat panel alone, composer phase A item 5): scope
-   the fixed night token set here so the well reads the measured night values
-   under either page ground. The /chat composer (.chatcomposer) is excluded,
-   so it inherits its panel's tokens (night, or the daylight paper set). */
+/* Header + homepage strips FOLLOW THE SITE THEME exactly like the /chat
+   panel does (Brian, supersedes phase A item 5's always-night wells, which
+   belonged to the retired boxed-well design): the night set is the dark
+   default, and the stored light theme flips the strip to the same paper
+   palette the daylight panel uses. Keyed on data-theme only: the pre-paint
+   gate always stamps it explicitly, so there is no unstamped moment for a
+   media query to cover. The /chat composer (.chatcomposer) stays excluded,
+   inheriting its panel's tokens. */
 .hchat:not(.chatcomposer) {
   --well: #12201a;
   --line: #2e4a3c;
+  --line-strong: #33523f;
   --bright: #f2f7f3;
   --dim: #8fa79a;
   --accent: #7ee787;
   --on-accent: #0b110e;
   color-scheme: dark;
+  /* Brian: standalone placements are a MINI CHAT PANEL, the body just is
+     not there: the /chat panel's own frame, radius, halo, and focus wake
+     wrap the composer strip (the strip's underline is retired here, the
+     frame is the border) */
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  box-shadow:
+    0 0 34px rgba(255, 170, 51, 0.12),
+    0 14px 34px rgba(0, 0, 0, 0.28);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.hchat:not(.chatcomposer):focus-within {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 34px rgba(255, 170, 51, 0.2),
+    0 14px 34px rgba(0, 0, 0, 0.28);
+}
+:root[data-theme="light"] .hchat:not(.chatcomposer) {
+  --well: #f1f2ec;
+  --line: #dae0d6;
+  --line-strong: #c7d0c4;
+  --bright: #14211a;
+  --dim: #3f5348;
+  --accent: #086148;
+  --on-accent: #fbfbf8;
+  --send-glow: rgba(8, 97, 72, 0.24);
+  color-scheme: light;
+  box-shadow:
+    0 0 40px rgba(214, 150, 40, 0.12),
+    0 14px 30px rgba(30, 26, 18, 0.08);
+}
+:root[data-theme="light"] .hchat:not(.chatcomposer):focus-within {
+  box-shadow:
+    0 0 40px rgba(214, 150, 40, 0.2),
+    0 14px 30px rgba(30, 26, 18, 0.08);
 }
 /* the homepage flow bar (#160): the same well in the reading flow between the
    identity block and the ledger; only spacing differs from the header
@@ -232,8 +279,12 @@ html.cfocus .wm .caret {
   overflow-y: auto;
 }
 .hchat textarea::placeholder {
+  /* Brian: as light as possible, every placement (the strip design carries
+     the affordance; two placeholder states live in terminal.ts, the
+     original invitation on a pristine /chat and "Write a message..." once
+     the thread is underway) */
   color: var(--dim);
-  opacity: 1;
+  opacity: 0.4;
 }
 .hchat textarea:focus {
   outline: none;
@@ -246,21 +297,19 @@ html.cfocus .wm .caret {
    --accent / --on-accent from its placement scope, so it is mint-on-night in
    the header + homepage wells (12.42:1) and deep-green-on-paper in the
    daylight /chat composer (7.20:1). Mono lowercase label keeps it in the
-   control family; the radius + fill keep it in the theme. Brian's sizing
-   rider: the FIXED 30px height matches the input's rest-state text line
-   (16px face at 1.4 line height, plus a hair of air) instead of towering
-   over it; fixed, not min, so the button never grows with the textarea.
-   margin-bottom centers it against the single line at rest (13px textarea
-   padding above and below the 22px line puts center at 9px + half the
-   line) while flex-end holds it at the bottom as the textarea grows. */
+   control family; the radius + fill keep it in the theme. Brian's sizing:
+   a FIXED 34px height in every placement (fixed, not min, so the button
+   never grows with the textarea); margin-bottom centers it against the
+   single line at rest while flex-end holds it at the bottom as the
+   textarea grows. */
 .btn-send {
   flex: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 62px;
-  height: 30px;
-  margin-bottom: 9px;
+  height: 34px;
+  margin-bottom: 7px;
   padding: 0 16px;
   border: 0;
   border-radius: 8px;
@@ -830,27 +879,34 @@ html.cfocus .wm .caret {
     0 0 34px rgba(255, 170, 51, 0.2),
     0 14px 34px rgba(0, 0, 0, 0.28);
 }
-/* the composer as a FIELD WELL floating INSIDE the panel (Brian's bug report:
-   the old edge-to-edge dock strip, written for the pre-well composer, painted
-   the well's opaque ground square over the panel's border + rounded corners.
-   The C2 mock geometry is the fix: the well keeps its own box, border,
-   radius, and focus wake, seated inside the panel frame with margins, so it
-   can never touch the panel border). Sticky still pins it through a long
-   scroll (top matches the top margin so the seated gap holds while stuck);
-   z-index clears the transcript, which scrolls beneath. KNOWN NUANCE for the
-   validator: while pinned, transcript text is visible sliding through the
-   margin gaps around the well; flag with a screenshot if it reads messy. */
+/* the composer DOCKS as the panel's top edge (Brian's design, restored after
+   the lead briefly floated it as a bordered well, which read as a second box
+   inside the panel frame): no box of its own, the well ground runs edge to
+   edge with ONLY a bottom hairline separating it from the transcript. The
+   original overlap bug was never the dock itself but its SQUARE top corners
+   painting the opaque well ground over the panel's rounded frame; the fix is
+   matching the panel's curve from inside its 1px border (11px top radius).
+   Sticky pins the strip to the viewport top through a long scroll; z-index
+   clears the transcript, which slides beneath. */
 .slab-chat > .chatcomposer {
   position: sticky;
-  top: 12px;
+  top: 0;
   z-index: 3;
-  margin: 13px 12px 0;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 11px 11px 0 0;
 }
-/* stuck through a long scroll: the floating well already has a full border,
-   so the old reserved-hairline trick is gone; while pinned, a soft drop
-   shadow separates the well from the transcript sliding beneath it (eased by
-   the .hchat transition family; reduced motion makes it instant). */
+/* the panel frame carries the focus wake on /chat; the docked strip's
+   hairline stays quiet so the composer never reads as a second glowing box */
+.slab-chat > .chatcomposer:focus-within {
+  border-color: var(--line);
+}
+/* stuck: detached from the panel's top edge, so the matched corner curve
+   flattens and a soft shadow separates the strip from the transcript sliding
+   under it (eased by the .hchat transition family; reduced motion snaps) */
 .slab-chat > .chatcomposer.pinned {
+  border-radius: 0;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
 }
 /* the pin sentinel: invisible, layout-neutral (the -1px margin cancels its
@@ -867,7 +923,7 @@ html.cfocus .wm .caret {
    footer to the bottom edge (composer phase A item 5). */
 .chatbody {
   flex: 1;
-  padding-top: 6px;
+  padding-top: 12px;
 }
 /* [clear] AS THE PANEL FOOTER (composer phase A item 5): moved to the BOTTOM
    of the panel, right-aligned, under a 1px hairline. The transcript runs
@@ -1135,6 +1191,11 @@ a.lentry:focus-visible .lttl {
   white-space: pre-wrap;
   margin: 8px 0 2px;
   overflow-wrap: anywhere;
+  /* Brian's rider: EVERY response carries the assistant rail, the static
+     console strings (help, hello, contact) included, so the machine's voice
+     is marked consistently whether or not the model wrote the words */
+  border-left: 2px solid var(--line-strong);
+  padding-left: 13px;
 }
 .out .c {
   color: var(--dim);

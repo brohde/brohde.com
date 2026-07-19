@@ -41,6 +41,11 @@ import { navigate } from "astro:transitions/client";
 /* Copy case (#76): human-language strings use sentence case; lowercase is
    reserved for literal terminal tokens (typed commands, file-ish names like
    build.log, URLs and emails). */
+/* the /chat hint once a conversation is underway (Brian): the pristine
+   panel keeps the component's original invitation; this softer one takes
+   over from the first visitor line and [clear] restores the original */
+const ONGOING_PH = "Write a message...";
+
 /* static console strings (innerHTML sinks below take only these) */
 const HELP_HTML =
   "Commands\n" +
@@ -375,6 +380,15 @@ function echo(t: string, replay = false) {
     record({ t: "echo", s: t });
     scrollToNewest();
   }
+  // Brian: once the thread holds visitor text the hint softens to the
+  // conversational "Write a message..."; the ORIGINAL invitation belongs to
+  // the pristine panel only (fresh arrival, or restored by [clear] below).
+  // Lives here so a session restore softens it too, not just a live send.
+  const f = byId("in-chat") as HTMLTextAreaElement | null;
+  if (f && f.placeholder !== ONGOING_PH) {
+    f.dataset.ph ??= f.placeholder;
+    f.placeholder = ONGOING_PH;
+  }
 }
 
 function out(html: string, slot?: HTMLElement | null, replay = false) {
@@ -396,18 +410,20 @@ function out(html: string, slot?: HTMLElement | null, replay = false) {
 function clearChat() {
   const log = chatlog();
   if (!log) return;
-  // Phase 4B: clear returns the panel to its PRISTINE first-visit state, with
-  // NO "# Cleared" note. Drop every conversation turn, then bring back the
-  // greeting empty state, so a cleared /chat looks exactly like arriving
-  // fresh. Every user turn begins with beginTurn, so the only direct log
-  // children are the .turn blocks (the "#" intro lines retired); removing the
-  // turns leaves the panel empty for the greeting.
+  // Brian's rider (supersedes the #177 pristine restore): clear EMPTIES the
+  // panel, with NO "# Cleared" note and NO greeting; the time-of-day greeting
+  // belongs to fresh arrivals only. Every user turn begins with beginTurn, so
+  // the only direct log children are the .turn blocks; removing them (and a
+  // standing greeting, if the visitor cleared before typing) leaves it bare.
   for (const t of log.querySelectorAll(":scope > .turn")) t.remove();
+  removeGreeting();
   activeTurn = null;
   llmHistory.length = 0; // clear wipes the model's context too
   purgeChat(); // #144: and the persisted session, so a cleared chat stays cleared
-  showGreeting(); // the panel is pristine again: re-show the time-of-day greeting
-  scrollToNewest(); // bring the pristine panel back to the top
+  // the bare panel is an initial state again: the original invitation returns
+  const f = byId("in-chat") as HTMLTextAreaElement | null;
+  if (f?.dataset.ph) f.placeholder = f.dataset.ph;
+  scrollToNewest(); // bring the bare panel back to the top
   byId("in-chat")?.focus({ preventScroll: true }); // Brian's rider: refocus the input
 }
 
@@ -1202,6 +1218,9 @@ function setupOnce() {
       run(input.value, true);
       input.value = "";
       if (input instanceof HTMLTextAreaElement) autoGrow(input);
+      // Brian's rider: the field keeps focus after a send (a [send] click
+      // would otherwise leave focus on the button)
+      input.focus({ preventScroll: true });
     },
     true
   );
