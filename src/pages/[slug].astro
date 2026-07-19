@@ -28,9 +28,13 @@ export async function getStaticPaths() {
   // External entries live off-site: no page is generated for them. Item 11:
   // only PUBLISHED articles generate a page, so every unpublished article URL
   // 404s on the built site.
+  // #188: unpublished internal articles DO generate a page again, as a
+  // "Coming soon" stub wearing the article's full scene identity, so the
+  // matrix travel is live end to end while the writing stays offline. Stubs
+  // are noindex and carry no JSON-LD; RSS stays published-only.
   const posts = await getCollection(
     "articles",
-    ({ data }) => !data.draft && !data.external && data.published
+    ({ data }) => !data.draft && !data.external
   );
   // #179: articles serve at bare root slugs, so an article slug must never
   // shadow a real page. Fail the build loudly instead of silently winning or
@@ -56,7 +60,9 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+// a stub renders no body, so the content pipeline only runs for real articles
+const isStub = !post.data.published;
+const { Content } = isStub ? { Content: null } : await render(post);
 const { title, description, date, stats, theme } = post.data;
 
 const canonical = new URL(logHref(post.id), SITE.url).href;
@@ -79,7 +85,8 @@ const articleLd = {
   title={title}
   description={description ?? SITE.description}
   ogType="article"
-  jsonLd={articleLd}
+  jsonLd={isStub ? undefined : articleLd}
+  noindex={isStub}
 >
   <Scene theme={theme} />
   <section
@@ -105,7 +112,7 @@ const articleLd = {
           <h1 class="atitle">{title}</h1>
 
           {
-            stats && (
+            !isStub && stats && (
               <div class="astats" role="group" aria-label="Key numbers">
                 {stats.map((s) => (
                   <div class="astat">
@@ -118,8 +125,14 @@ const articleLd = {
           }
 
           <div class="prose" style="margin-top:0">
-            {description && <p>{description}</p>}
-            <Content />
+            {isStub ? (
+              <p>Coming soon.</p>
+            ) : (
+              <>
+                {description && <p>{description}</p>}
+                {Content && <Content />}
+              </>
+            )}
           </div>
         </article>
 
