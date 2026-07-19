@@ -1359,7 +1359,7 @@ function setupOnce() {
   // re-binds a fresh facade, or tears down when the page has none (in which
   // case there is nothing to stamp). No-op until the module has loaded; the
   // first mount reads its state from the server-rendered dataset.
-  const syncSceneState = () => {
+  const syncSceneState = (surge = false) => {
     if (!sceneMod) return;
     const handle = sceneMod.initScene();
     if (!handle) return;
@@ -1376,6 +1376,15 @@ function setupOnce() {
     const stamp = document.querySelector<HTMLElement>(".screen")?.dataset
       .sceneTheme;
     handle.setTheme(sceneMod.isThemeName(stamp) ? stamp : "default");
+    // #186 part 1: the field swells on every client-side navigation, sharing
+    // a start with the identity travel above (setTheme). surge() is a no-op
+    // under reduced motion or while paused and writes no travel accumulator,
+    // so the swell rides on top of the 2.6s travel without fighting it. Fired
+    // only from the astro:page-load path (never the post-import catch-up
+    // below), so the initial direct load gets the loud wake (part 2) rather
+    // than a nav surge. The CSS column swap is untouched: the surge is a
+    // scalar inside the tide's own rAF tick, sharing no variable with it.
+    if (surge) handle.surge();
   };
   const requestScene = () => {
     if (sceneRequested || !document.querySelector("[data-scene]")) return;
@@ -1394,7 +1403,7 @@ function setupOnce() {
     });
   };
   document.addEventListener("astro:page-load", requestScene);
-  document.addEventListener("astro:page-load", syncSceneState);
+  document.addEventListener("astro:page-load", () => syncSceneState(true));
 }
 
 const w = window as unknown as { __terminalInit?: boolean };

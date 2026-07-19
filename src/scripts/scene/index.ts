@@ -92,6 +92,33 @@ const OUT_MS = 1400; // mark travel envelope (out, hold, in)
 const HOLD_MS = 900;
 const IN_MS = 1400;
 
+/* mobile ambient presence (#186 part 3): the background-mode intensity cap.
+   Raising it lifts BOTH the tide density and, through applyAlpha (which keys
+   canvas opacity off the effective intensity), the canvas opacity in step;
+   0.34 lands the canvas near 0.79. Hard ceiling 0.7 = desktop parity, the
+   measured B1 contrast floor (a weaker tide behind the same pour is more
+   contrast, not less), and 0.34 sits well under it. */
+const MOBILE_INTENSITY = 0.34;
+
+/* the surge envelope (#186 parts 1 + 2): a scalar S in 0..1 on a one-shot
+   attack / peak / release clock (surgeT) added to advance(), so it costs no
+   new rAF and no timer. It lifts mid-field density (an additive term on the
+   per-cell v, so more cells cross the visible threshold and lit cells climb
+   one to two ramp buckets) and optionally quickens the drift clock at crest.
+   Brightness and density ONLY: it never writes the travel accumulators (m,
+   mix, tmix) and never touches the peak color or its alpha, so it composes
+   with the 2.6s identity travel without fighting it, and the pour keeps text
+   AA (the density lift adds mid-ramp cells, it does not raise the peak-bucket
+   ceiling the B1 harness already cleared). Two presets share the primitive. */
+const SURGE_DRIFT_MULT = 1.25; // drift clock speed at crest (1.0 = off)
+const NAV_SURGE_ATTACK_MS = 160; // field rises to crest as the old column clears
+const NAV_SURGE_PEAK_MS = 90; // crest holds across the 40ms beat + first breath
+const NAV_SURGE_RELEASE_MS = 720; // field exhales to ambient as text settles
+const NAV_SURGE_DENSITY = 0.18; // additive lift on v at the nav crest
+const WAKE_HOLD_MS = 200; // wake crest holds as the canvas finishes fading in
+const WAKE_SETTLE_MS = 1500; // wake settles from crest to ambient
+const WAKE_DENSITY = 0.22; // additive lift on v at the first live frame
+
 /* the content column: measured live from the page (#120); the selector can
    be overridden per page via data-scene-content. CONTENT_W is only the
    no-column-found fallback, matching --scene-content-w in scene.css. */
@@ -326,6 +353,11 @@ export interface SceneHandle {
   setTheme(name: ThemeName): void;
   setMark(name: SourceName): void;
   setState(state: SceneState): void;
+  /** #186 part 1: swell the field on a navigation (the nav surge preset).
+      A no-op under reduced motion or while paused; never touches the travel
+      accumulators, so it composes with an identity travel fired at the same
+      instant. */
+  surge(): void;
   /** live tick durations (ms) from the last ~240 ticks, for perf audits */
   stats(): SceneStats;
   destroy(): void;
@@ -387,6 +419,17 @@ function mount(container: HTMLElement): SceneHandle {
   let themeFrom = PEAKS[theme];
   let themeTo = PEAKS[theme];
   let tmix = 1; // theme peak travel: 1 arrived
+  /* surge envelope (#186): a one-shot armed by armSurge, advanced in
+     advance(), read in step() as a density lift and in loop() as a drift
+     multiplier. surgeS caches the last evaluated scalar so the tick evaluates
+     the envelope exactly once. */
+  let surgeArmed = false;
+  let surgeT = 0; // ms since the armed envelope started
+  let surgeAtk = 0; // attack / peak / release durations of the armed preset
+  let surgePk = 0;
+  let surgeRel = 0;
+  let surgeGain = 0; // the armed preset's density peak
+  let surgeS = 0; // last evaluated envelope scalar (0 at rest)
   let bgMode = false; // background fallback: whisper cap, full-field mark
   let edgePx = 0; // measured right edge of the content column (#120)
   let ready = false; // staged boot: nothing paints before stage 3
@@ -400,7 +443,9 @@ function mount(container: HTMLElement): SceneHandle {
   let sinDiag = new Float32Array(0);
 
   function eff(): number {
-    return bgMode ? Math.min(placement.intensity, 0.12) : placement.intensity;
+    return bgMode
+      ? Math.min(placement.intensity, MOBILE_INTENSITY)
+      : placement.intensity;
   }
 
   /* whisper dims the whole field so it can sit behind a page (lab curve).
@@ -515,7 +560,37 @@ function mount(container: HTMLElement): SceneHandle {
     else staticFrame();
   }
 
+  /* the surge scalar from surgeT: a smoothstep rise over attack, a hold at 1
+     across peak, a smoothstep fall over release; 0 when unarmed or elapsed.
+     A clamp plus a smoothstep, constant cost, independent of grid size. */
+  function surgeEnvelope(): number {
+    if (!surgeArmed) return 0;
+    const pkEnd = surgeAtk + surgePk;
+    if (surgeT >= pkEnd + surgeRel) return 0;
+    if (surgeT < surgeAtk) return surgeAtk > 0 ? ease(surgeT / surgeAtk) : 1;
+    if (surgeT < pkEnd) return 1;
+    return ease(1 - (surgeT - pkEnd) / surgeRel);
+  }
+
+  /* arm a surge preset. A no-op under reduced motion or while the runner is
+     paused, so the settled still and the reduced-motion path never swell, and
+     a backgrounded direct load gets no wake (spec). It writes no travel
+     accumulator: surge is brightness and density, travel is shape and color. */
+  function armSurge(atk: number, pk: number, rel: number, gain: number) {
+    if (reduced() || !running) return;
+    surgeArmed = true;
+    surgeT = 0;
+    surgeAtk = atk;
+    surgePk = pk;
+    surgeRel = rel;
+    surgeGain = gain;
+  }
+
   function advance(dt: number) {
+    if (surgeArmed) {
+      surgeT += dt;
+      if (surgeT >= surgeAtk + surgePk + surgeRel) surgeArmed = false;
+    }
     if (tmix < 1) tmix = Math.min(1, tmix + dt / CLOCK_MS);
     if (mix !== target) {
       const dc = dt / CLOCK_MS;
@@ -590,6 +665,11 @@ function mount(container: HTMLElement): SceneHandle {
     const imgW = (0.35 + 0.55 * eff()) * em;
     const tideW = 1.08 - imgW;
     const l = lum(cur);
+    /* #186: the tick's one envelope evaluation. surgeS is cached for the
+       loop's drift term; dens is the constant additive density lift added to
+       every cell's v below (0 at rest). */
+    surgeS = surgeEnvelope();
+    const dens = surgeGain * surgeS;
     for (let cx = 0; cx < cols; cx++)
       sinCol[cx] = Math.sin(cx * 0.42 + t * 0.0004);
     for (let cy = 0; cy < rows; cy++)
@@ -600,7 +680,7 @@ function mount(container: HTMLElement): SceneHandle {
     for (let cy = 0; cy < rows; cy++) {
       for (let cx = 0; cx < cols; cx++) {
         const tide = (sinCol[cx] + sinRow[cy] + sinDiag[cx + cy] + 3) / 6;
-        const v = l[cy * cols + cx] * imgW + tide * tideW;
+        const v = l[cy * cols + cx] * imgW + tide * tideW + dens;
         const idx = Math.floor(clamp(v, 0, 0.999) * RAMP.length);
         if (idx < 1) continue;
         const bucket = idx < 3 ? 0 : idx < 5 ? 1 : idx < 7 ? 2 : 3;
@@ -624,6 +704,11 @@ function mount(container: HTMLElement): SceneHandle {
     holdT = 0;
     mix = target;
     tmix = 1;
+    /* the settled still carries no swell: disarm any in-flight surge so the
+       reduced-motion path and the paused frame land at ambient density */
+    surgeArmed = false;
+    surgeT = 0;
+    surgeS = 0;
   }
 
   function staticFrame() {
@@ -671,7 +756,11 @@ function mount(container: HTMLElement): SceneHandle {
     if (now - last >= TICK_MS) {
       const dt = last === 0 ? TICK_MS : Math.min(now - last, 100);
       last = now;
-      t += dt;
+      /* #186: the drift clock quickens at the surge crest. surgeS is last
+         tick's scalar (step() refreshes it after advancing the envelope); a
+         one-tick skew at 9fps is imperceptible and keeps the envelope to one
+         evaluation per tick. At rest the multiplier is exactly 1. */
+      t += dt * (1 + (SURGE_DRIFT_MULT - 1) * surgeS);
       const s0 = performance.now();
       step(dt, t);
       durs.push(performance.now() - s0);
@@ -808,7 +897,19 @@ function mount(container: HTMLElement): SceneHandle {
       staticFrame(); // the first painted frame (a settled still under RM)
       container.classList.add("live"); // fades the facade sky out
       update(); // starts the runner (visibility and reduced motion permitting)
-      defer(applyAlpha, 600);
+      defer(() => {
+        applyAlpha();
+        /* #186 part 2: the loud wake. Armed as the canvas opacity rises from
+           0 to its resting value (the visual fade-in, 400ms in live.css), so
+           the density is already at crest when the first live frame lands, then
+           settles to ambient over WAKE_SETTLE_MS. The wake has no attack: the
+           opacity fade is the visual rise. armSurge is a no-op under reduced
+           motion or while paused, so a reduced-motion or backgrounded load gets
+           the settled still with no wake. Direct load only: client-side
+           navigations reuse the persisted handle (initScene no-op), so mount()
+           never re-runs and the wake never re-arms. */
+        armSurge(0, WAKE_HOLD_MS, WAKE_SETTLE_MS, WAKE_DENSITY);
+      }, 600);
     }, 300);
   }, 300);
 
@@ -861,6 +962,15 @@ function mount(container: HTMLElement): SceneHandle {
       container.dataset.sceneState = next;
       target = next === "chat" ? 1 : 0;
       if (!running) staticFrame();
+    },
+
+    surge() {
+      armSurge(
+        NAV_SURGE_ATTACK_MS,
+        NAV_SURGE_PEAK_MS,
+        NAV_SURGE_RELEASE_MS,
+        NAV_SURGE_DENSITY
+      );
     },
 
     stats(): SceneStats {
