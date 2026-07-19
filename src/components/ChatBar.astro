@@ -10,12 +10,13 @@
  * same filled send button. Prominence comes from position and seating only
  * (docked / sticky), never a restyle.
  *
- * Composer phase A: the row is a recessed FIELD WELL (recessed --well ground,
- * a hairline --line border, 10px radius, accent border on :focus-within) with
- * a Circular Book input face; the "$" sigil is dropped (machine cosplay #116).
- * The header + homepage instances hold the always-night phosphor tokens; the
- * /chat composer inherits its panel's tokens, so it turns to warm paper under
- * the daylight chat panel (light theme).
+ * #194 final design: the row is the shared COMPOSER STRIP (well ground,
+ * Circular Book input face, no "$" sigil, #116). Placement dresses it: the
+ * /chat composer docks into its panel (bottom hairline, panel-matched
+ * corners), while the header + homepage instances wear the MINI CHAT PANEL
+ * frame (the panel's border, radius, halo, and focus wake around just the
+ * strip). Every placement follows the site theme (night default, daylight
+ * paper under light); tokens live in terminal.css.
  *
  * Multi-line auto-grow: the control is a TEXTAREA that rests at one line
  * (rows=1, visually identical to the old single-line field) and grows with

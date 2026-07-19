@@ -161,15 +161,13 @@ html.cfocus .wm .caret {
 }
 /* The chat, the machine's mouth on every page (D1 call 1): the ONE input
    material, rendered by ChatBar.astro in the header AND as the homepage flow
-   bar (#160) AND docked into the /chat panel (Phase 4B). Composer phase A
-   item 1: it is a recessed FIELD WELL now (recessed --well ground, a hairline
-   --line border, 10px radius, accent border on :focus-within, 160ms ease),
-   with a Circular Book input face; the "$" sigil is gone (machine cosplay
-   #116). Tokens resolve per placement: the header + homepage instances carry
-   the fixed night phosphor set (.hchat:not(.chatcomposer) below), so the well
-   is always-night on either page ground (typed #F2F7F3 17.60:1, placeholder
-   #8FA79A 7.41:1 on the #12201A well); the /chat composer inherits its
-   panel's tokens, so it turns to warm paper under the daylight chat panel.
+   bar (#160) AND docked into the /chat panel (Phase 4B). #194 final design:
+   this base is the shared COMPOSER STRIP skeleton (well ground, Circular
+   Book face, no "$" sigil, #116), and each real placement dresses it: the
+   /chat composer docks into its panel (bottom hairline, panel-matched
+   corners, .slab-chat scope below), while the header + homepage instances
+   wear the MINI CHAT PANEL frame (.hchat:not(.chatcomposer) below). Every
+   placement follows the site theme; contrast both themes logged in #196.
    16px font is the iOS no-zoom floor; the placeholder shows at rest (#149). */
 .hchat {
   display: flex;
@@ -182,9 +180,8 @@ html.cfocus .wm .caret {
      right, and bottom, in the wells and the /chat dock alike */
   padding: 0 8px 0 14px;
   background: var(--well);
-  /* Brian: the input is JUST the field + send button, one strip with a
-     bottom hairline, in every placement (the old full border + radius read
-     as a copy of the whole chat panel with no body inside it) */
+  /* the skeleton's chrome is the dock's (bottom hairline only); the
+     standalone mini-panel scope overrides it with the full frame (#194) */
   border: 0;
   border-bottom: 1px solid var(--line);
   border-radius: 0;
@@ -294,9 +291,9 @@ html.cfocus .wm .caret {
 }
 /* the [send] primary button (composer phase A item 2): a filled accent
    control, no brackets (the fill is the affordance, #102/#161). It reads
-   --accent / --on-accent from its placement scope, so it is mint-on-night in
-   the header + homepage wells (12.42:1) and deep-green-on-paper in the
-   daylight /chat composer (7.20:1). Mono lowercase label keeps it in the
+   --accent / --on-accent from its placement scope, which follows the site
+   theme everywhere (#194): mint-on-night 12.42:1 under dark, deep green on
+   paper 7.20:1 under light. Mono lowercase label keeps it in the
    control family; the radius + fill keep it in the theme. Brian's sizing:
    a FIXED 34px height in every placement (fixed, not min, so the button
    never grows with the textarea); margin-bottom centers it against the
@@ -917,7 +914,7 @@ html.cfocus .wm .caret {
   margin-bottom: -1px;
 }
 /* the transcript body sits TIGHT under the docked composer (its top padding
-   drops to 6px, the log's to 2px, and the newest turn / greeting loses its top
+   drops to 12px (#194), the log's to 2px, and the newest turn / greeting loses its top
    margin, below), so the first exchange reads as directly attached to the
    input. flex: 1 lets the body absorb the panel's slack, pushing the [clear]
    footer to the bottom edge (composer phase A item 5). */
@@ -1317,9 +1314,9 @@ a.lentry:focus-visible .lttl {
   }
 }
 
-/* the bottom composer dock is RETIRED (#153: the composer is the sticky
-   header row); its safe-area padding went with it, the footer already
-   handles the bottom inset */
+/* the OLD bottom composer dock is RETIRED (#153; since Phase 4B the composer
+   docks at the TOP of the /chat panel); its safe-area padding went with it,
+   the footer already handles the bottom inset */
 .keybar {
   display: flex;
   flex-wrap: wrap;

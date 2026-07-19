@@ -4,9 +4,10 @@ import ProfileLinks from "@/components/ProfileLinks.astro";
 
 // Specimen page (D4 pattern). Forces both grounds side by side regardless of
 // system scheme, so a token change can be eyeballed in light and dark at once.
-// The chat input material (.hchat, ChatBar) renders IDENTICALLY in both
-// panels: it scopes its own fixed night tokens (#67), which is exactly the
-// point. The slab + autocomplete specimens retired with the homepage slab
+// KNOWN GAP (#195 audit): the composer follows the SITE theme via
+// :root[data-theme] (#194), which the forced panel classes cannot key, so
+// the .hchat specimens below render per the live toggle, not per panel;
+// flip the site theme to see the composer's other face. The slab + autocomplete specimens retired with the homepage slab
 // (#160). Phase 4A retired the reading-column masthead: the name is the
 // header wordmark rendered large on the homepage (the "global header (home)"
 // specimen below), so the identity block opens on the role line.
@@ -35,8 +36,9 @@ const themes = [
     <main id="main" class="wrap aboutpad">
       <h1 class="arttitle">styleguide</h1>
       <p class="cmt">
-        # design tokens + component specimens in both grounds (#40). The chat
-        input material is always night (#67). Noindex, out of the sitemap.
+        # design tokens + component specimens in both grounds (#40). The
+        composer follows the site theme (#194), so its specimens track the
+        live toggle, not these forced panels. Noindex, out of the sitemap.
       </p>
 
       {
@@ -76,8 +78,9 @@ const themes = [
                   <span class="snav-spec">contact</span>
                 </span>
               </div>
-            {/* the ChatBar composer: a recessed field well (always-night here
-                and on the homepage), a Circular textarea, a filled send. Inert
+            {/* the ChatBar composer as the standalone MINI CHAT PANEL
+                (#194: panel frame + halo around just the strip), theme
+                following the live toggle (see the page comment). Inert
                 specimen: aria-hidden, readonly, out of the tab order. */}
               <div class="hchat" aria-hidden="true">
                 <textarea
