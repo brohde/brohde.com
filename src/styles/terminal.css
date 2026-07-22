@@ -1688,6 +1688,12 @@ a.lentry:focus-visible .lttl {
 }
 .prose figure.portrait > p:has(img) {
   max-width: 300px;
+  /* phone captures sit centered in the column (Brian, 2026-07-22) */
+  margin-inline: auto;
+}
+.prose figure.portrait figcaption {
+  text-align: center;
+  margin-inline: auto;
 }
 .prose figcaption {
   margin-top: 10px;
