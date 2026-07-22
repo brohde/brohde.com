@@ -200,7 +200,12 @@ html.cfocus .wm .caret {
 .hchat:not(.chatcomposer) {
   --well: #12201a;
   --line: #2e4a3c;
-  --line-strong: #33523f;
+  /* Prominence pass: the mini panel is a primary invitation, so its frame is
+     lifted from #33523f to read clearly on the dark ground (border-vs-well
+     ~1.93:1 -> ~3.47:1). Deliberately kept well under the --accent focus
+     color (#7ee787, ~10.9:1 on the well) so focus-within still reads as a
+     distinct state change, not just a brighter border. */
+  --line-strong: #4e7a61;
   --bright: #f2f7f3;
   --dim: #8fa79a;
   --accent: #7ee787;
@@ -228,7 +233,10 @@ html.cfocus .wm .caret {
 :root[data-theme="light"] .hchat:not(.chatcomposer) {
   --well: #f1f2ec;
   --line: #dae0d6;
-  --line-strong: #c7d0c4;
+  /* Parity pass on paper: frame lifted from #c7d0c4 (border-vs-well ~1.35:1)
+     to #97a693 (~2.27:1), still well under the light --accent focus color
+     (#086148, ~6.6:1 on the well) so focus stays a clear state change. */
+  --line-strong: #97a693;
   --bright: #14211a;
   --dim: #3f5348;
   --accent: #086148;
@@ -282,6 +290,14 @@ html.cfocus .wm .caret {
      the thread is underway) */
   color: var(--dim);
   opacity: 0.4;
+}
+/* Prominence pass: the standalone MINI CHAT PANEL (header + homepage flow
+   bar) lifts its placeholder so the invitation reads clearly on the well.
+   var(--dim) at 0.8 lands ~4.68:1 (dark, dim #8fa79a over well #12201a) and
+   ~4.47:1 (light, dim #3f5348 over well #f1f2ec), clearing the ~4.5:1 target.
+   The /chat composer (.chatcomposer) is excluded, keeping its softer rest. */
+.hchat:not(.chatcomposer) textarea::placeholder {
+  opacity: 0.8;
 }
 .hchat textarea:focus {
   outline: none;
@@ -1531,104 +1547,6 @@ a.lentry:focus-visible .lttl {
 .homechip:hover .br,
 .homechip:focus-visible .br {
   color: #0b110e;
-}
-
-/* article hero band (#97/#103): the tide's hero placement as a document
-   object at the top of the article, replacing the old boxed tideband. The
-   reference frame is a SCREEN, not the document (#103): the band takes 30%
-   of the screen the article opens on (--screen, the #103 token; svh so
-   mobile URL bars do not resize it), the page ground bleeds up over it
-   from the 20% line (the mask at 20/30 = 66.7% of the band kills the
-   bottom edge, so no rectangle reads), and the body's top edge lands at
-   27.5% of the screen via the negative bottom margin (0.30 - 0.275; every
-   mark's ink clears 26.6%, the #103 measurement). The band sits on the
-   page ground and follows it; its ink pair (--hb-night / --hb-lite,
-   inline from HeroBand.astro) is the article theme's tide peak. Facade =
-   the server glyph field on ::before; the live layer is a settled STILL
-   of the article's mark painted into the canvas at idle by the scene
-   chunk (initHeroBand). No animation: the motion spec (#139) gates it. */
-.heroband {
-  --screen: max(640px, 100svh);
-  --hb-ink: var(--hb-night, #7ee787);
-  position: relative;
-  height: calc(var(--screen) * 0.3);
-  margin: 0 0 calc(var(--screen) * -0.025);
-  overflow: hidden;
-  pointer-events: none;
-  -webkit-mask-image: linear-gradient(to bottom, #000 66.7%, transparent);
-  mask-image: linear-gradient(to bottom, #000 66.7%, transparent);
-}
-@media (prefers-color-scheme: light) {
-  .heroband {
-    --hb-ink: var(--hb-lite, #086148);
-  }
-}
-:root[data-theme="dark"] .heroband {
-  --hb-ink: var(--hb-night, #7ee787);
-}
-:root[data-theme="light"] .heroband {
-  --hb-ink: var(--hb-lite, #086148);
-}
-/* the glyph field is pseudo-element CONTENT (from --glyphs, set inline by
-   HeroBand.astro): a pure texture, never document text */
-.heroband::before {
-  content: var(--glyphs, "");
-  position: absolute;
-  inset: -8px;
-  font-family: var(--font-mono);
-  font-size: 15px;
-  line-height: 1.5;
-  letter-spacing: 4px;
-  color: var(--hb-ink);
-  opacity: 0.2;
-  overflow: hidden;
-  user-select: none;
-  word-break: break-all;
-  transition: opacity 400ms ease;
-}
-.heroband canvas {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 400ms ease;
-}
-/* facade handoff: the still fades in over the field, the field yields */
-.heroband.live::before {
-  opacity: 0;
-}
-.heroband.live canvas {
-  opacity: 1;
-}
-@media (prefers-reduced-motion: reduce) {
-  .heroband::before,
-  .heroband canvas {
-    transition: none;
-  }
-}
-
-/* #152: at gutter widths the article's identity mark already lives in the
-   scene's right gutter (Scene.astro), so the band showing it too would be
-   a duplicate. The band itself stays exactly as is (geometry, mask, glyph
-   field texture); only the settled mark still (painted into the canvas by
-   initHeroBand) is suppressed, and the glyph field is held at its resting
-   opacity instead of yielding to a mark that is not there. Gate matches
-   the shell's own gutter breakpoint (body:has(.scene), the .wrap left-anchor
-   rule above) so band and gutter can never disagree about which widths
-   actually show the gutter. Below this width the band keeps the mark, since
-   the gutter falls back to a faint background treatment with no legible
-   mark of its own. Both rules only touch opacity (already transitioned,
-   already none'd under reduced motion above), so crossing the breakpoint
-   costs no layout and no new transition rules. */
-@media (min-width: 1000px) {
-  body:has(.scene) .heroband.live::before {
-    opacity: 0.2;
-  }
-  body:has(.scene) .heroband.live canvas {
-    opacity: 0;
-  }
 }
 
 .adate {

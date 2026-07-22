@@ -1,5 +1,5 @@
 ---
-title: "He designed his site in ChatGPT. I ditched Squarespace for Claude Code, Astro, and Keystatic, and you should too."
+title: "New client type: ChatGPT designer x banker: using AI to build from PNG visual design files"
 description: "A wealth management client designed his own site in ChatGPT, pixel by pixel; I built it in Astro and used Pastel to turn his 435 review comments into a real, accessible site."
 date: 2026-06-30
 draft: false

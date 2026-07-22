@@ -134,33 +134,26 @@ const props = Astro.props;
 
     {
       /*
-      Theme gate (#92, item 8). Runs before first paint so the ground is DARK
-      by default with no flash unless light is stored: it always stamps an
-      explicit html[data-theme] ("dark" unless localStorage("theme") ===
-      "light"), which the :root[data-theme] blocks in global.css use to beat
-      prefers-color-scheme in both directions. Because the stamp is always
-      explicit, the system scheme never shows through. When light is stored it
-      also flips the single theme-color meta above to the light ground, so
-      browser chrome matches from first paint. Deliberately tiny, no network,
-      no dependencies: it sits in the pre-paint critical path and must stay
-      cheap (#70). theme.ts re-applies the same resolution after every swap.
+      Theme gate (#92, item 8). The site now ALWAYS loads dark: this stamps an
+      explicit html[data-theme="dark"] before first paint, which the
+      :root[data-theme] blocks in global.css use to beat prefers-color-scheme,
+      so a system-light visitor still opens on the dark ground with no flash.
+      The theme-color meta above stays dark; no light flip on load. The visitor
+      can still flip to light for the visit via the header toggle (theme.ts
+      holds that choice in a session variable), but a full reload returns to
+      dark. We also clear the legacy localStorage "theme" key so a previously
+      pinned light visitor gets dark again. Deliberately tiny, no network, no
+      dependencies: it sits in the pre-paint critical path and must stay cheap
+      (#70).
     */
     }
     <script is:inline>
       (function () {
-        var light = false;
+        document.documentElement.setAttribute("data-theme", "dark");
         try {
-          light = localStorage.getItem("theme") === "light";
+          localStorage.removeItem("theme");
         } catch (e) {
-          /* storage blocked: fall through to the dark default */
-        }
-        document.documentElement.setAttribute(
-          "data-theme",
-          light ? "light" : "dark"
-        );
-        if (light) {
-          var m = document.querySelector('meta[name="theme-color"]');
-          if (m) m.setAttribute("content", "#FBFBF8");
+          /* storage blocked: nothing to clear */
         }
       })();
     </script>

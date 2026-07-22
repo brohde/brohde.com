@@ -17,8 +17,13 @@
 import { getCollection } from "astro:content";
 import { logHref, isoDate } from "@/lib/site";
 
+/* Ledger order is (sortDate ?? date) descending; the DISPLAYED date stays
+   `date` everywhere below (the pre-dated Facebook piece sits beside its
+   sibling without faking its 2014 stamp). */
+const orderKey = (d: { sortDate?: Date; date: Date }) =>
+  (d.sortDate ?? d.date).valueOf();
 const posts = (await getCollection("articles", ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+  (a, b) => orderKey(b.data) - orderKey(a.data)
 );
 
 /* #141: external entries show their destination domain with the arrow.
