@@ -9,6 +9,14 @@ step `tools/build/build-chat-prompt.mjs` (wired into `npm run build`) reads
 generated module the Function imports. Edit the prompt or the facts here, nowhere
 else.
 
+**The facts pack is the model's ONLY knowledge source.** The chat never reads the
+site's article markdown (`src/content/articles/`), rendered pages, or anything
+else in the repo. Publishing, unpublishing, or rewriting an article changes
+nothing about what the chat knows; the project knowledge visitors ask about
+(Eight Angle, Facebook Newsroom, Android for Work, Gold Coast, Twilio, Gong)
+lives in `chat/facts.md` and only there. If an article teaches the model
+something new, that fact must be added to the pack by hand.
+
 > **Formerly `poc/chat/`.** This directory was promoted out of `poc/` in the
 > pre-public repo reorg (#213); chat is no longer a proof of concept (#158).
 > Older docs and handoffs still reference the old `poc/chat/` path. Those are
