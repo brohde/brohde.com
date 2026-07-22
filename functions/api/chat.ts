@@ -16,6 +16,19 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { SYSTEM } from "./_chat-prompt.generated";
+// Shared helpers, deduplicated from chat.ts + contact.ts (audit-server proposal 1). The
+// body cap, base-URL normalize, client construction, json(), clientIp(), the content-type /
+// body preamble, and the rate-limit trio all live in _shared.ts now, parameterized only for
+// the two deliberate per-endpoint differences (rate-limit tunables + key prefix; the unified
+// retryAfterFor). The frozen chat request/response bytes are unchanged. See _shared.ts.
+import {
+  makeAnthropic,
+  json,
+  clientIp,
+  readValidatedBody,
+  rateLimit,
+  type RateLimitConfig,
+} from "./_shared";
 
 interface Env {
   // Anthropic key. Prod: a Pages secret named ANTHROPIC_API_KEY (Dashboard →
@@ -43,23 +56,12 @@ interface Env {
   CHAT_DEBUG?: string;
 }
 
-// Request-hardening limits (audit H2). Bound the total body, the message, and each history
-// entry so a single request cannot carry hundreds of KB of billable input tokens.
-const MAX_BODY_BYTES = 16_384; // reject the raw body over ~16 KB before parsing
+// Request-hardening limits (audit H2). The message and per-history-entry caps stay here (the
+// body cap, MAX_BODY_BYTES, moved to _shared.ts with the preamble that enforces it). Bound
+// so a single request cannot carry hundreds of KB of billable input tokens.
 const MAX_MESSAGE_CHARS = 500; // unchanged from the frozen POC (message length cap)
 const MAX_HISTORY_ENTRIES = 8; // the model only ever uses the last 8 turns anyway
 const MAX_HISTORY_ENTRY_CHARS = 2_000; // per-entry content cap
-
-// Normalize an optional SDK base URL (audit H1). Trims whitespace and strips trailing
-// slashes so the SDK's appended `/v1/messages` path lands cleanly. Works with the
-// Cloudflare AI Gateway Anthropic endpoint shape:
-//   https://gateway.ai.cloudflare.com/v1/<account_id>/<gateway_id>/anthropic
-// (a trailing slash there would produce a double-slash `//v1/messages` and 404).
-function normalizeBaseUrl(u?: string): string | undefined {
-  if (!u) return undefined;
-  const trimmed = u.trim().replace(/\/+$/, "");
-  return trimmed.length > 0 ? trimmed : undefined;
-}
 
 const MODEL = "claude-haiku-4-5";
 // $ per MTok: input / output / cache read / cache write (5m ttl). Verbatim from the POC.
@@ -115,19 +117,9 @@ async function runChat(
   message: string,
   history: Anthropic.MessageParam[]
 ): Promise<ChatResult> {
-  const baseURL = normalizeBaseUrl(env.ANTHROPIC_BASE_URL);
-  const gatewayToken = env.ANTHROPIC_GATEWAY_TOKEN?.trim();
-  const client = new Anthropic({
-    apiKey: env.ANTHROPIC_API_KEY,
-    // Only pass baseURL when set; otherwise the SDK default (api.anthropic.com) holds.
-    // Normalized above so an AI Gateway URL with or without a trailing slash both work.
-    ...(baseURL ? { baseURL } : {}),
-    // Only for an Authenticated AI Gateway; inert (no header) otherwise, so the default
-    // unauthenticated-gateway / direct wiring stays a pure config change (audit H1).
-    ...(gatewayToken
-      ? { defaultHeaders: { "cf-aig-authorization": `Bearer ${gatewayToken}` } }
-      : {}),
-  });
+  // Client construction is shared with contact.ts (audit H1): baseURL + gateway header wired
+  // identically. The wire request below stays byte-for-byte the POC's.
+  const client = makeAnthropic(env);
 
   const messages: Anthropic.MessageParam[] = [
     ...history.slice(-8),
@@ -175,24 +167,6 @@ async function runChat(
   };
 }
 
-function json(
-  body: unknown,
-  status = 200,
-  headers: Record<string, string> = {}
-): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    // Cache-Control: no-store on every API response (audit L3). This is a dynamic,
-    // per-request endpoint; nothing here should ever be cached by an intermediary or a
-    // future GET. `public/_headers` scopes its cache rules to static paths only.
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-      ...headers,
-    },
-  });
-}
-
 // --- Phase B: abuse controls (#49 gate) --------------------------------------------------
 
 // Friendly, VOICE-clean operational errors (no dashes; "chat"/"prompt", never "terminal").
@@ -201,109 +175,15 @@ const BLOCKED =
 const THROTTLED = "too many messages right now. give it a minute";
 
 // Per-IP sliding-window rate limit. Two windows: a burst window and a daily cap. Tuned for
-// a low-traffic portfolio chat, generous for a real visitor, tight on a flood.
-const RL_MINUTE = { windowMs: 60_000, max: 10 };
-const RL_DAY = { windowMs: 86_400_000, max: 60 };
-
-// In-isolate counter. Now used ALWAYS as a synchronous first gate (see rateLimit), not
-// only as a KV fallback. It lives in one Worker isolate's memory, is not shared across
-// isolates/PoPs, and resets when the isolate recycles, so it is not authoritative on its
-// own. Its value is that the check-and-increment is fully synchronous (no await between
-// read and write), which makes it atomic within a single isolate: a concurrent burst from
-// one IP routed to the same isolate is counted deterministically and cannot all read the
-// same pre-state. That closes the most common half of the M1 race; the cross-PoP half is
-// backstopped by the KV gate below and, authoritatively, by the AI Gateway hard spend cap
-// (H1). See docs/reference/handoffs/chat-hardening.md for the residual-risk writeup.
-const memBuckets = new Map<string, number[]>();
-
-function retryAfterFor(
-  times: number[],
-  window: { windowMs: number },
-  now: number
-): number {
-  const oldest = Math.min(...times);
-  return Math.max(1, Math.ceil((window.windowMs - (now - oldest)) / 1000));
-}
-
-function clientIp(request: Request): string {
-  return (
-    request.headers.get("CF-Connecting-IP") ||
-    request.headers.get("x-forwarded-for") ||
-    "unknown"
-  );
-}
-
-// Synchronous in-isolate gate. No awaits between read and write, so it is atomic within a
-// single isolate: concurrent requests from one IP interleave only at await points, and
-// there are none here, so each request sees the increments of the ones before it.
-function rateLimitLocal(
-  ip: string,
-  now: number
-): { ok: boolean; retryAfter: number } {
-  const key = `rl:${ip}`;
-  const times = (memBuckets.get(key) ?? []).filter(
-    (t) => now - t < RL_DAY.windowMs
-  );
-  const inMinute = times.filter((t) => now - t < RL_MINUTE.windowMs);
-
-  if (inMinute.length >= RL_MINUTE.max) {
-    return { ok: false, retryAfter: retryAfterFor(inMinute, RL_MINUTE, now) };
-  }
-  if (times.length >= RL_DAY.max) {
-    return { ok: false, retryAfter: retryAfterFor(times, RL_DAY, now) };
-  }
-
-  times.push(now);
-  memBuckets.set(key, times);
-  return { ok: true, retryAfter: 0 };
-}
-
-// Durable cross-PoP gate, KV-backed. Read-modify-write, so it is best-effort under
-// concurrency (KV has no atomic compare-and-set and reads are edge-cached ~60s). It is the
-// authoritative store across isolates/PoPs; the synchronous local gate above catches the
-// same-isolate burst that KV would miss. Residual cross-PoP race is documented in the
-// handoff and bounded hard by the AI Gateway spend cap (H1).
-async function rateLimitKv(
-  kv: KVNamespace,
-  ip: string,
-  now: number
-): Promise<{ ok: boolean; retryAfter: number }> {
-  const key = `rl:${ip}`;
-  const raw = await kv.get(key);
-  const times = (raw ? (JSON.parse(raw) as number[]) : []).filter(
-    (t) => now - t < RL_DAY.windowMs
-  );
-  const inMinute = times.filter((t) => now - t < RL_MINUTE.windowMs);
-
-  if (inMinute.length >= RL_MINUTE.max) {
-    return { ok: false, retryAfter: retryAfterFor(inMinute, RL_MINUTE, now) };
-  }
-  if (times.length >= RL_DAY.max) {
-    return { ok: false, retryAfter: retryAfterFor(times, RL_DAY, now) };
-  }
-
-  times.push(now);
-  // KV min TTL is 60s; a day keeps the key alive across the daily window then self-expires.
-  await kv.put(key, JSON.stringify(times), { expirationTtl: 86_400 });
-  return { ok: true, retryAfter: 0 };
-}
-
-// Per-IP rate limit. Two gates, both must pass: a synchronous in-isolate gate (atomic per
-// isolate, always on) and, when bound, the durable KV gate (authoritative cross-PoP). The
-// effective limit is the tighter of the two. Neither gate alone is a hard cost ceiling; the
-// AI Gateway spend cap (H1) is (see handoff M1).
-async function rateLimit(
-  env: Env,
-  ip: string
-): Promise<{ ok: boolean; retryAfter: number }> {
-  const now = Date.now();
-
-  const local = rateLimitLocal(ip, now);
-  if (!local.ok) return local;
-
-  if (env.CHAT_RL) return rateLimitKv(env.CHAT_RL, ip, now);
-  return { ok: true, retryAfter: 0 };
-}
+// a low-traffic portfolio chat, generous for a real visitor, tight on a flood. The gate
+// machinery (the synchronous in-isolate counter + the durable KV gate + the unified
+// retryAfterFor) lives in _shared.ts; this is chat's own budget, keyed under the `rl:`
+// prefix so it never shares a count with contact's `crl:` budget.
+const RL: RateLimitConfig = {
+  keyPrefix: "rl:",
+  minute: { windowMs: 60_000, max: 10 },
+  day: { windowMs: 86_400_000, max: 60 },
+};
 
 // Cloudflare Turnstile (invisible bot check). The client posts a `turnstileToken` obtained
 // from the Turnstile widget; we verify it server-side via siteverify.
@@ -376,28 +256,13 @@ function validateHistory(raw: unknown): HistoryResult {
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
 
-  // Content-Type enforcement (audit L5): shed non-JSON traffic before touching the body.
-  const contentType = request.headers.get("content-type") ?? "";
-  if (!contentType.toLowerCase().includes("application/json")) {
-    return json({ error: "content-type must be application/json" }, 415);
-  }
-
-  // Body size bound (audit H2): reject an oversized body before parsing so a single request
-  // cannot carry hundreds of KB of billable input tokens. Check the declared length first
-  // (cheap), then the actual read (the header can be absent or lie).
-  const declaredLen = request.headers.get("content-length");
-  if (declaredLen !== null && Number(declaredLen) > MAX_BODY_BYTES) {
-    return json({ error: "request body too large" }, 413);
-  }
-  let rawBody = "";
-  try {
-    rawBody = await request.text();
-  } catch {
-    rawBody = "";
-  }
-  if (rawBody.length > MAX_BODY_BYTES) {
-    return json({ error: "request body too large" }, 413);
-  }
+  // Content-type + body-size preamble (audit L5 / H2), shared with contact.ts: shed non-JSON
+  // and oversized bodies before parsing. The byte-identical 415/413 responses live in
+  // _shared.ts. What happens AFTER this differs deliberately (chat falls malformed JSON
+  // through to its message-required 400; contact returns its own "invalid json" 400).
+  const bodyCheck = await readValidatedBody(request);
+  if (!bodyCheck.ok) return bodyCheck.response;
+  const rawBody = bodyCheck.rawBody;
 
   let parsed: {
     message?: unknown;
@@ -430,7 +295,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const ip = clientIp(request);
 
   // Rate limit first: the cheapest way to shed a flood before siteverify or the model call.
-  const rl = await rateLimit(env, ip);
+  const rl = await rateLimit(env, RL, ip);
   if (!rl.ok) {
     return json({ error: THROTTLED }, 429, {
       "Retry-After": String(rl.retryAfter),

@@ -24,6 +24,19 @@
 // now). The Resend key exists ONLY as a Pages production secret; nothing here reads a .env.
 
 import Anthropic from "@anthropic-ai/sdk";
+// Shared helpers, deduplicated from chat.ts + contact.ts (audit-server proposal 1). The body
+// cap, base-URL normalize, client construction, json(), clientIp(), the content-type / body
+// preamble, and the rate-limit trio all live in _shared.ts now. contact keeps its own
+// rate-limit tunables + `crl:` key prefix (passed as RateLimitConfig) and its own frozen
+// error strings; the shared code never emits a contact response-body string. See _shared.ts.
+import {
+  makeAnthropic,
+  json,
+  clientIp,
+  readValidatedBody,
+  rateLimit,
+  type RateLimitConfig,
+} from "./_shared";
 
 interface Env {
   // Anthropic key for the extraction call. Prod: the same ANTHROPIC_API_KEY Pages secret the
@@ -49,9 +62,8 @@ interface Env {
 
 // Caps. Contact messages are longer than a chat turn (500), so the message cap here is 2000
 // characters (documented per the brief); name and email are bounded tight. The whole request
-// body is bounded before parse so a single call cannot carry hundreds of KB of billable
-// input tokens through the extraction model.
-const MAX_BODY_BYTES = 16_384;
+// body is bounded before parse (the shared MAX_BODY_BYTES cap in _shared.ts) so a single
+// call cannot carry hundreds of KB of billable input tokens through the extraction model.
 const MAX_TEXT_CHARS = 2_000; // the extraction blob
 const MAX_MESSAGE_CHARS = 2_000; // the contact message on send
 const MAX_NAME_CHARS = 100;
@@ -63,95 +75,17 @@ const MODEL = "claude-haiku-4-5";
 // revalidates so a crafted body cannot deliver a malformed reply-to header.
 const EMAIL_VALID = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Normalize the optional SDK base URL, same as chat.ts (trim + strip trailing slashes so the
-// SDK's appended /v1/messages lands cleanly on the AI Gateway URL shape).
-function normalizeBaseUrl(u?: string): string | undefined {
-  if (!u) return undefined;
-  const trimmed = u.trim().replace(/\/+$/, "");
-  return trimmed.length > 0 ? trimmed : undefined;
-}
-
-function json(
-  body: unknown,
-  status = 200,
-  headers: Record<string, string> = {}
-): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    // Cache-Control: no-store on every API response (audit L3, same control as chat.ts):
-    // a dynamic, per-request endpoint nothing should ever cache. public/_headers scopes
-    // its cache rules to static paths only.
-    headers: {
-      "content-type": "application/json",
-      "cache-control": "no-store",
-      ...headers,
-    },
-  });
-}
-
-// --- rate limit (same shape as chat.ts, its own key prefix) ------------------------------
+// --- rate limit (shared machinery in _shared.ts, contact's own budget + key prefix) ------
 
 // Generous enough for a real multi-turn flow (a couple of extraction calls plus one send),
-// tight on a flood. The authoritative cost ceiling is the shared AI Gateway spend cap.
-const RL_MINUTE = { windowMs: 60_000, max: 15 };
-const RL_DAY = { windowMs: 86_400_000, max: 40 };
-const memBuckets = new Map<string, number[]>();
-
-function clientIp(request: Request): string {
-  return (
-    request.headers.get("CF-Connecting-IP") ||
-    request.headers.get("x-forwarded-for") ||
-    "unknown"
-  );
-}
-
-function retryAfterFor(times: number[], windowMs: number, now: number): number {
-  const oldest = Math.min(...times);
-  return Math.max(1, Math.ceil((windowMs - (now - oldest)) / 1000));
-}
-
-// Synchronous in-isolate gate: no await between read and write, so it is atomic within one
-// isolate (the same-origin burst KV would miss). KV is the durable cross-PoP backstop.
-function rateLimitLocal(ip: string, now: number): { ok: boolean; retryAfter: number } {
-  const key = `crl:${ip}`;
-  const times = (memBuckets.get(key) ?? []).filter((t) => now - t < RL_DAY.windowMs);
-  const inMinute = times.filter((t) => now - t < RL_MINUTE.windowMs);
-  if (inMinute.length >= RL_MINUTE.max)
-    return { ok: false, retryAfter: retryAfterFor(inMinute, RL_MINUTE.windowMs, now) };
-  if (times.length >= RL_DAY.max)
-    return { ok: false, retryAfter: retryAfterFor(times, RL_DAY.windowMs, now) };
-  times.push(now);
-  memBuckets.set(key, times);
-  return { ok: true, retryAfter: 0 };
-}
-
-async function rateLimitKv(
-  kv: KVNamespace,
-  ip: string,
-  now: number
-): Promise<{ ok: boolean; retryAfter: number }> {
-  const key = `crl:${ip}`;
-  const raw = await kv.get(key);
-  const times = (raw ? (JSON.parse(raw) as number[]) : []).filter(
-    (t) => now - t < RL_DAY.windowMs
-  );
-  const inMinute = times.filter((t) => now - t < RL_MINUTE.windowMs);
-  if (inMinute.length >= RL_MINUTE.max)
-    return { ok: false, retryAfter: retryAfterFor(inMinute, RL_MINUTE.windowMs, now) };
-  if (times.length >= RL_DAY.max)
-    return { ok: false, retryAfter: retryAfterFor(times, RL_DAY.windowMs, now) };
-  times.push(now);
-  await kv.put(key, JSON.stringify(times), { expirationTtl: 86_400 });
-  return { ok: true, retryAfter: 0 };
-}
-
-async function rateLimit(env: Env, ip: string): Promise<{ ok: boolean; retryAfter: number }> {
-  const now = Date.now();
-  const local = rateLimitLocal(ip, now);
-  if (!local.ok) return local;
-  if (env.CHAT_RL) return rateLimitKv(env.CHAT_RL, ip, now);
-  return { ok: true, retryAfter: 0 };
-}
+// tight on a flood. The authoritative cost ceiling is the shared AI Gateway spend cap. The
+// gate machinery (in-isolate + KV + the unified retryAfterFor) lives in _shared.ts; this is
+// contact's own budget, keyed under `crl:` so it never shares a count with chat's `rl:`.
+const RL: RateLimitConfig = {
+  keyPrefix: "crl:",
+  minute: { windowMs: 60_000, max: 15 },
+  day: { windowMs: 86_400_000, max: 40 },
+};
 
 // --- extraction (the small Haiku call) ---------------------------------------------------
 
@@ -188,15 +122,9 @@ const extractTool = [
 ] as unknown as Anthropic.Messages.ToolUnion[];
 
 async function extract(env: Env, text: string): Promise<Extracted> {
-  const baseURL = normalizeBaseUrl(env.ANTHROPIC_BASE_URL);
-  const gatewayToken = env.ANTHROPIC_GATEWAY_TOKEN?.trim();
-  const client = new Anthropic({
-    apiKey: env.ANTHROPIC_API_KEY,
-    ...(baseURL ? { baseURL } : {}),
-    ...(gatewayToken
-      ? { defaultHeaders: { "cf-aig-authorization": `Bearer ${gatewayToken}` } }
-      : {}),
-  });
+  // Client construction is shared with chat.ts (audit H1): baseURL + gateway header wired
+  // identically, so extraction rides the same AI Gateway spend cap with no code change.
+  const client = makeAnthropic(env);
 
   const response = await client.messages.create({
     model: MODEL,
@@ -276,29 +204,13 @@ async function backup(
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
 
-  // Content-Type enforcement (audit L5, same control as chat.ts): shed non-JSON traffic
-  // before touching the body.
-  const contentType = request.headers.get("content-type") ?? "";
-  if (!contentType.toLowerCase().includes("application/json")) {
-    return json({ error: "content-type must be application/json" }, 415);
-  }
-
-  // Body size bound (audit H2, same control as chat.ts): reject an oversized body before
-  // parsing so a single call cannot carry hundreds of KB of billable extraction input.
-  // Check the declared length first (cheap), then the actual read (the header can lie).
-  const declaredLen = request.headers.get("content-length");
-  if (declaredLen !== null && Number(declaredLen) > MAX_BODY_BYTES) {
-    return json({ error: "request body too large" }, 413);
-  }
-  let rawBody = "";
-  try {
-    rawBody = await request.text();
-  } catch {
-    rawBody = "";
-  }
-  if (rawBody.length > MAX_BODY_BYTES) {
-    return json({ error: "request body too large" }, 413);
-  }
+  // Content-type + body-size preamble (audit L5 / H2), shared with chat.ts: shed non-JSON and
+  // oversized bodies before parsing. The byte-identical 415/413 responses live in _shared.ts.
+  // What happens AFTER this differs deliberately: contact returns its own "invalid json" 400
+  // on a malformed body (chat instead falls through to its message-required 400).
+  const bodyCheck = await readValidatedBody(request);
+  if (!bodyCheck.ok) return bodyCheck.response;
+  const rawBody = bodyCheck.rawBody;
 
   let parsed: {
     op?: unknown;
@@ -314,7 +226,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const ip = clientIp(request);
-  const rl = await rateLimit(env, ip);
+  const rl = await rateLimit(env, RL, ip);
   if (!rl.ok) {
     return json({ error: "too many requests, give it a minute" }, 429, {
       "Retry-After": String(rl.retryAfter),
