@@ -137,6 +137,8 @@ const CONTACT_Q = "How do I contact Brian?"; // the emulated contact question
    (20 to 14) with the contact-flow speed pass so the entry emulation lands
    faster while keeping the human cadence. `prev` is the character just typed. */
 const TYPE_BASE = 14; // humanized per-character base (jittered + bonused below)
+const TYPE_SETTLE_MS = 120; // beat after the last keystroke before the emulated
+// send fires (shortened with the contact-flow speed pass so it resolves faster)
 
 function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -568,7 +570,8 @@ function dropThread() {
    never be rejected on the next send. */
 function coerceHistory(raw: unknown): { role: "user" | "assistant"; content: string }[] {
   if (!Array.isArray(raw)) return [];
-  const out: { role: "user" | "assistant"; content: string }[] = [];
+  // named `hist` (not `out`) so it never reads as the module `out()` sink below
+  const hist: { role: "user" | "assistant"; content: string }[] = [];
   let prev: string | null = null;
   for (const e of raw) {
     if (!e || typeof e !== "object") continue;
@@ -578,10 +581,10 @@ function coerceHistory(raw: unknown): { role: "user" | "assistant"; content: str
     if (typeof raw2 !== "string" || raw2.length === 0) continue;
     if (role === prev) continue; // server requires strict alternation
     const content = raw2.length > 2000 ? raw2.slice(0, 2000) : raw2;
-    out.push({ role, content });
+    hist.push({ role, content });
     prev = role;
   }
-  return out;
+  return hist;
 }
 
 /* Known-good `out` bodies and redirect destinations: on replay we only trust
@@ -905,7 +908,7 @@ function startRedirect(href: string, name: string, slot: HTMLElement | null) {
     return;
   }
   // keep focus on whatever input the send came from (#143 req 2); the
-  // fallback is the header composer, /chat's input since #153
+  // fallback is the docked /chat composer (#in-chat, Phase 4B)
   const active = document.activeElement as HTMLElement | null;
   const input =
     active && active.matches?.(".hchat textarea")
@@ -976,8 +979,9 @@ async function askLive(q: string) {
     };
     if (!res.ok || d.error) {
       // server-sent error bodies ({error}) render verbatim: 400 validation,
-      // 429 rate limit (friendly body), 502/503 offline text with the email.
-      // renderReply builds text nodes only, so the body is inert.
+      // 429 rate limit (friendly body), 502/503 offline text (no email since
+      // #183, just a try-again). renderReply builds text nodes only, so the
+      // body is inert.
       renderReply(
         d.error || "Something went wrong. Try again in a moment.",
         wait
@@ -1101,8 +1105,7 @@ function typeInto(input: HTMLTextAreaElement, text: string, done: () => void) {
     input.value = text.slice(0, i);
     autoGrow(input); // keep the fallback height in step with the typed value
     if (i < text.length) window.setTimeout(step, humanDelay(text[i - 1]));
-    else window.setTimeout(done, 120); // a beat, then submit (shortened with the
-    // contact-flow speed pass so the emulation resolves faster)
+    else window.setTimeout(done, TYPE_SETTLE_MS); // a beat, then submit
   };
   window.setTimeout(step, humanDelay(undefined));
 }
@@ -1495,6 +1498,15 @@ function handleConfirm(text: string) {
   }, CONTACT_PULSE_MS);
 }
 
+/* After a failed delivery, drop back to the confirm state and re-offer the
+   [send] / [cancel] chips so the visitor can retry from the same details.
+   Shared by both send-failure paths (server not-ok and network throw). */
+function reofferContactSend() {
+  if (!contact) return;
+  contact.awaiting = "confirm";
+  sink()?.appendChild(contactChips());
+}
+
 function doContactSend() {
   if (!contact || contact.awaiting === "sending") return;
   const { name, email, message } = contact;
@@ -1529,10 +1541,7 @@ function doContactSend() {
           wait,
           true
         );
-        if (contact) {
-          contact.awaiting = "confirm"; // let them retry from the same details
-          sink()?.appendChild(contactChips());
-        }
+        reofferContactSend(); // let them retry from the same details
       }
     } catch {
       contactLine(
@@ -1540,10 +1549,7 @@ function doContactSend() {
         wait,
         true
       );
-      if (contact) {
-        contact.awaiting = "confirm";
-        sink()?.appendChild(contactChips());
-      }
+      reofferContactSend();
     }
   })();
 }
@@ -1610,7 +1616,8 @@ function run(raw: string, viaKb: boolean) {
   }
   if (cmd === "chat") {
     // open the chat page itself; never send "chat" as a question. The
-    // composer is the header input (#153), so that is where focus lands.
+    // composer is the docked panel input (#in-chat, Phase 4B), so that is
+    // where focus lands.
     if (currentScreen() === "chat") {
       byId(CHAT_INPUT)?.focus({ preventScroll: true });
     } else {
