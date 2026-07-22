@@ -1377,9 +1377,12 @@ function editContactField(field: string) {
 
 /* -------- confirm + send -------- */
 
-/* One bracket-chip builder in the flow's control grammar (the bracket chip,
-   like [clear]); data-contact (+ optional data-field) routes it in the click
-   handler. `action` also names the class so the CSS can dress each kind. */
+/* One button builder in the flow's control grammar (a real button, like the
+   keybar clear); data-contact (+ optional data-field) routes it in the click
+   handler. `action` also names the class so the CSS can dress each kind (the
+   filled primary .contact-send vs the quiet secondary cancel/edit). The label
+   is a plain .lbl span so the routing attributes and aria-label stay
+   byte-identical to the old bracket chip. */
 function mkContactBtn(
   action: "send" | "cancel" | "edit",
   label: string,
@@ -1392,18 +1395,10 @@ function mkContactBtn(
   b.dataset.contact = action;
   if (field) b.dataset.field = field;
   b.setAttribute("aria-label", aria);
-  const l = document.createElement("span");
-  l.className = "br";
-  l.setAttribute("aria-hidden", "true");
-  l.textContent = "[";
   const t = document.createElement("span");
   t.className = "lbl";
   t.textContent = label;
-  const r = document.createElement("span");
-  r.className = "br";
-  r.setAttribute("aria-hidden", "true");
-  r.textContent = "]";
-  b.append(l, t, r);
+  b.append(t);
   return b;
 }
 

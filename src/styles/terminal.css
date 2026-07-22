@@ -589,46 +589,44 @@ html.cfocus .wm .caret {
   vertical-align: 1px;
 }
 
-/* Unified fill treatment for the bracket-style interactive elements: the
-   keybar + [send] chip (.cbtn). On hover and focus-visible the label fills
-   with the accent and flips to ground-colored text; the brackets stay put
-   (prototype treatment from build-log-v3.html). One rule so they can never
-   drift. (The theme control left this family in item 7: it is now an icon in
-   the header, not a bracket label; the old chat screen's .backbtn retired with
-   the full-window takeover #108, and the slab command menu with the slab
-   #160.) */
-.cbtn:hover .lbl,
-.cbtn:focus-visible .lbl {
-  background: var(--accent);
-  color: var(--on-accent);
-  text-decoration: none;
-}
-/* #165: the fill eases in fast (100ms keeps the chips crisp); lives here
-   beside the fill rule so the pair can never drift apart */
-.cbtn .lbl {
-  transition:
-    background-color 100ms ease,
-    color 100ms ease;
-}
-
-/* ---------------------- bracket controls --------------------------------- */
-/* The homepage slab, its command menu, the hero prompt, and the command
-   autocomplete (#48) + prompt history surfaces RETIRED with #160 (the flow
-   chat bar is home's input; the machinery's revival path is chat-top-spec
-   Phase B on the .hchat inputs). .cbtn survives as the bracket-control
-   grammar: the /chat keybar and the [send] chip. */
+/* ---------------------- chat-surface buttons ----------------------------- */
+/* Real buttons for the chat controls (Brian: "make it look more like a
+   button", the bracket treatment dropped). ONE grammar shared by the /chat
+   keybar [clear], the contact-flow cancel/edit chips, and the confirm
+   send/cancel: a rounded rect at the 8px button radius (matches .btn-send), a
+   44px touch target, and the global 2px accent focus-visible ring. .cbtn is
+   the QUIET SECONDARY (cancel / edit / clear): transparent ground, a muted-ink
+   hairline, dim label rising to accent ink + accent edge + a faint accent
+   wash on hover/focus. .contact-send lifts to the loud accent-filled PRIMARY
+   (below). All colors read --accent / --on-accent / --dim / --ground from the
+   panel scope, so the pair follows the site theme (night default, daylight
+   paper under light). The homepage slab, its command menu, the hero prompt,
+   and the #48 autocomplete / history surfaces RETIRED with #160, so .cbtn is
+   now ONLY these chat controls. */
 .cbtn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 44px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--dim) 70%, var(--ground));
   background: none;
-  border: 0;
-  padding: 0 6px;
+  color: var(--dim);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  color: var(--accent);
-  font: inherit;
+  transition:
+    color 120ms ease,
+    border-color 120ms ease,
+    background-color 120ms ease;
 }
-/* hover/focus fill lives in the unified bracket rule above */
+.cbtn:hover,
+.cbtn:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+}
 
 .hint {
   min-height: 1.4em;
@@ -954,32 +952,10 @@ html.cfocus .wm .caret {
   border-top: 1px solid var(--line);
   justify-content: flex-end;
 }
-/* [clear] is a QUIET secondary, never a twin of the filled send (item 5): it
-   keeps the bracket token but drops the .cbtn fill-on-hover. It rests DIM and
-   steps to accent on hover/focus, the nav-token grammar the header and ledger
-   use, so the filled send is the only filled thing on the surface and [clear]
-   can never read as a second primary. */
-.chatcmds .cbtn {
-  color: var(--dim);
-}
-.chatcmds .cbtn .br {
-  transition: color 120ms ease;
-}
-.chatcmds .cbtn:hover,
-.chatcmds .cbtn:focus-visible {
-  color: var(--accent);
-}
-.chatcmds .cbtn:hover .br,
-.chatcmds .cbtn:focus-visible .br {
-  color: var(--accent);
-}
-/* override the unified bracket fill-on-hover for this one control: no fill, the
-   label just joins the accent step above */
-.chatcmds .cbtn:hover .lbl,
-.chatcmds .cbtn:focus-visible .lbl {
-  background: none;
-  color: inherit;
-}
+/* [clear] is a QUIET secondary, never a twin of the filled send (item 5): the
+   base .cbtn IS the quiet secondary (transparent, muted-ink hairline, dim
+   label rising to accent), so the keybar needs no extra colour rules. The
+   filled .contact-send stays the only loud control on the surface. */
 /* Turn separation (#153 + chat-surfaces-r1 Q4): the ledger's own hairline
    grammar (.lentry + .lentry), because both are newest-first lists of
    records. Newest turn first in DOM carries no rule; each older turn below
@@ -1278,44 +1254,46 @@ a.lentry:focus-visible .lttl {
   color: var(--dim);
   font-size: 13px;
 }
-/* the [send] / [cancel] chips: the site's bracket-control grammar (.cbtn), so
-   the confirm reads in the same idiom as [clear]. [send] keeps the accent
-   fill-on-hover of a real control; [cancel] is a quiet dim-to-accent secondary
-   (the same treatment the /chat keybar gives [clear]) so it never reads as a
-   second primary. */
+/* the send / cancel chips: real buttons in the shared .cbtn grammar, so the
+   confirm reads in the same idiom as the keybar clear. .contact-send is the
+   loud accent-filled PRIMARY; cancel is the quiet secondary the base .cbtn
+   already draws, so it never reads as a second primary. */
 .contact-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 6px;
-  margin: 4px 0 2px;
+  gap: 8px;
+  margin: 8px 0 2px;
 }
-/* the [edit name|email|message] row (item 2): the same bracket grammar, spaced
-   like the action row but sitting just under the field list, above [send] */
+/* the edit name / email / message row (item 2): the same button grammar,
+   spaced like the action row but sitting just under the field list, above
+   send. Each edit chip is a quiet secondary (base .cbtn), subordinate to the
+   filled send below. */
 .contact-edits {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 6px;
-  margin: 2px 0 8px;
+  gap: 8px;
+  margin: 4px 0 10px;
 }
-/* [cancel] and the edit chips are quiet dim-to-accent secondaries (the same
-   treatment the /chat keybar gives [clear]) so they never read as a second
-   primary next to [send]. */
-.contact-cancel,
-.contact-edit {
-  color: var(--dim);
+/* PRIMARY: send is the one loud control on the surface, an accent-filled
+   button (mint on the night wells 12.5:1, deep green on daylight paper 7.2:1
+   for --on-accent text). Hover/focus brightens and lights the accent's own
+   glow, matching .btn-send's grammar so the two send controls read as one
+   family. */
+.contact-send {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+  transition:
+    filter 120ms ease,
+    box-shadow 160ms ease;
 }
-.contact-cancel:hover,
-.contact-cancel:focus-visible,
-.contact-edit:hover,
-.contact-edit:focus-visible {
-  color: var(--accent);
-}
-.contact-cancel:hover .lbl,
-.contact-cancel:focus-visible .lbl,
-.contact-edit:hover .lbl,
-.contact-edit:focus-visible .lbl {
-  background: none;
-  color: inherit;
+.contact-send:hover,
+.contact-send:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+  filter: brightness(1.06);
+  box-shadow: 0 0 16px var(--send-glow, rgba(126, 231, 135, 0.32));
 }
 
 /* --------------------- redirect countdown (#143) ------------------------- */
@@ -1420,7 +1398,7 @@ a.lentry:focus-visible .lttl {
 .keybar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 6px;
+  gap: 8px;
   margin-bottom: 2px;
 }
 

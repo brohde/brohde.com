@@ -153,6 +153,30 @@ const themes = [
               </button>
             </div>
 
+            <h2 class="sg-h">chat controls</h2>
+            {/* the /chat keybar clear, the contact-flow send/cancel/edit: real
+                buttons, no brackets (Brian's redesign). .contact-send is the
+                loud accent-filled PRIMARY; the rest are quiet secondaries.
+                Inert specimen: aria-hidden, out of the tab order. */}
+            <div
+              class="keybar"
+              style="margin-top:0"
+              aria-hidden="true"
+            >
+              <button class="cbtn contact-send" type="button" tabindex="-1">
+                <span class="lbl">send</span>
+              </button>
+              <button class="cbtn contact-cancel" type="button" tabindex="-1">
+                <span class="lbl">cancel</span>
+              </button>
+              <button class="cbtn" type="button" tabindex="-1">
+                <span class="lbl">clear</span>
+              </button>
+              <button class="cbtn contact-edit" type="button" tabindex="-1">
+                <span class="lbl">edit name</span>
+              </button>
+            </div>
+
             <h2 class="sg-h">ledger entries</h2>
             <div class="clog" style="margin-top:0">
               <span class="lentry">
