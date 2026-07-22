@@ -83,8 +83,7 @@ const HELP_HTML =
   "  chat      Ask me anything\n" +
   "  home      Back to the log\n" +
   "  clear     Wipe this chat\n" +
-  "  help      This list\n" +
-  '<span class="c"># Anything else goes to the chat</span>';
+  "  help      This list";
 
 /* hello: a short natural-language tour of the core pages (Brian's ask,
    2026-07-15; capitalized page-name links per #76). Links are underlined,
@@ -463,7 +462,7 @@ function coerceHistory(raw: unknown): { role: "user" | "assistant"; content: str
    values we ourselves ever produce. A tampered store falls back to inert text
    (out) or a plain label (redirect), never innerHTML or a live href. */
 const OUT_ALLOW = new Set([HELP_HTML, HELLO_HTML, OFFLINE_HTML]);
-const REDIRECT_HREFS = new Set(["/about", "/#log"]);
+const REDIRECT_HREFS = new Set(["/about", "/#log", "/eight-angle-ml"]);
 
 function renderEntry(e: Entry) {
   if (e.t === "echo") echo(e.s, true);
@@ -593,6 +592,9 @@ const llmHistory: { role: "user" | "assistant"; content: string }[] = [];
 const SLUG_HREF: Record<string, string> = {
   about: "/about",
   work: "/#log",
+  // the article page exists again (#188 image-first stub), so the model's
+  // eight-angle slug is a real destination, not a no-op
+  "eight-angle": "/eight-angle-ml",
 };
 
 const MD_LINK =
@@ -679,8 +681,8 @@ function openSlug(slug: string) {
     // the ask).
     speakGreetingAndArm(null);
   } else if (slug in SLUG_HREF) navigate(SLUG_HREF[slug]);
-  // any other slug (e.g. eight-angle, now unpublished) is a no-op: no route,
-  // no 404. The prose the model already rendered carries the mention.
+  // any unknown slug is a no-op: no route, no 404. The prose the model
+  // already rendered carries the mention.
 }
 
 /* ------------------------------------------------- redirect countdown ----- */
@@ -693,10 +695,12 @@ function redirectDest(slug: string): { href: string; name: string } | null {
   const screen = currentScreen();
   if (slug === "about" && screen !== "about")
     return { href: "/about", name: "the about page" };
-  // eight-angle is intentionally absent: the article is unpublished (item 11),
-  // so a redirect there would 404. It falls through to openSlug's no-op.
   if (slug === "work" && screen !== "home")
     return { href: "/#log", name: "the work log" };
+  // the Eight Angle article page exists again (#188 image-first stub), so the
+  // slug earns the same guarded countdown as any other navigation away.
+  if (slug === "eight-angle" && location.pathname !== "/eight-angle-ml")
+    return { href: "/eight-angle-ml", name: "the Eight Angle article" };
   return null;
 }
 
@@ -1378,7 +1382,7 @@ function doContactSend() {
       };
       if (res.ok && d.ok) {
         contactLine(
-          "Thanks, your message is on its way to Brian. He will reply to the email you gave.",
+          "Thanks, your message is on its way to Brian.",
           wait
         );
         endContact(true);
@@ -1703,9 +1707,10 @@ function setupOnce() {
   document.addEventListener("keydown", (e) => {
     const t = e.target as HTMLElement;
 
-    // Article pages: bare left/right arrows walk the newer/older chain
-    // (Brian, 2026-07-21), matching the bottom nav's visual order (newer
-    // left). Never with modifiers (browser history), never from editable or
+    // Bare left/right arrows page a closed loop through the whole log with
+    // the homepage as the cap on both ends (Brian, 2026-07-21): home -> newest
+    // -> ... -> oldest -> home, right moving older-ward and left reversing it.
+    // Never with modifiers (browser history), never from editable or
     // scrollable contexts, so typing and code-block scrolling keep the keys.
     if (
       (e.key === "ArrowLeft" || e.key === "ArrowRight") &&
@@ -1713,18 +1718,34 @@ function setupOnce() {
       !e.metaKey &&
       !e.ctrlKey &&
       !e.shiftKey &&
-      currentScreen() === "log" &&
       !t?.closest?.("input, textarea, select, [contenteditable], pre, video, audio")
     ) {
-      const link = document.querySelector<HTMLAnchorElement>(
-        e.key === "ArrowLeft" ? ".anavmore .navnewer" : ".anavmore .navolder"
-      );
-      e.preventDefault();
-      // Past either end of the chain the homepage is the bookend (Brian,
-      // 2026-07-21), so arrow paging always loops back to the ledger.
-      if (link) link.click();
-      else navigate("/");
-      return;
+      const screen = currentScreen();
+      if (screen === "log") {
+        const link = document.querySelector<HTMLAnchorElement>(
+          e.key === "ArrowLeft" ? ".anavmore .navnewer" : ".anavmore .navolder"
+        );
+        e.preventDefault();
+        // Past either end of the chain the homepage is the bookend, so arrow
+        // paging always returns to the ledger before wrapping around.
+        if (link) link.click();
+        else navigate("/");
+        return;
+      }
+      if (screen === "home") {
+        // From the ledger, right enters the loop at the newest article and
+        // left at the oldest. External entries carry target="_blank" and own
+        // no page, so only internal rows are loop stops. Left/right paging
+        // outranks the roving cursor here; up/down still move the cursor.
+        const rows = document.querySelectorAll<HTMLAnchorElement>(
+          ".clog a.lentry:not([target])"
+        );
+        if (rows.length) {
+          e.preventDefault();
+          (e.key === "ArrowRight" ? rows[0] : rows[rows.length - 1]).click();
+          return;
+        }
+      }
     }
 
     if (e.key === "Escape") {
