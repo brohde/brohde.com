@@ -110,6 +110,13 @@ const IN_MS = 1400;
 const NAV_OUT_MS = 200;
 const NAV_HOLD_MS = 140;
 const NAV_IN_MS = 300;
+/* desktop takes the scenic route (Brian, 2026-07-22): the outgoing mark
+   visibly dissolves into the tide, holds there, and the new one reforms
+   after the reading column has already landed. Phones keep the compressed
+   envelope above (the mark is a background whisper there). */
+const NAV_OUT_DESK_MS = 450;
+const NAV_HOLD_DESK_MS = 300;
+const NAV_IN_DESK_MS = 700;
 
 /* mobile ambient presence (#186 part 3): the background-mode intensity cap.
    Raising it lifts BOTH the tide density and, through applyAlpha (which keys
@@ -838,11 +845,13 @@ function mount(container: HTMLElement): SceneHandle {
         travelTheme(name); // snaps: request(snap) + settle land it at rest
         return;
       }
-      // compress the MARK envelope for this one crossing (advance() reads these;
-      // reaching idle resets them to ambient). The sky/peak keep the 2.6s clock.
-      outMs = NAV_OUT_MS;
-      holdMs = NAV_HOLD_MS;
-      inMs = NAV_IN_MS;
+      // swap the MARK envelope for this one crossing (advance() reads these;
+      // reaching idle resets them to ambient). The sky/peak keep the 2.6s
+      // clock. Desktop gets the slower, watchable dissolve; the background/
+      // mobile mode keeps the compressed beat.
+      outMs = bgMode ? NAV_OUT_MS : NAV_OUT_DESK_MS;
+      holdMs = bgMode ? NAV_HOLD_MS : NAV_HOLD_DESK_MS;
+      inMs = bgMode ? NAV_IN_MS : NAV_IN_DESK_MS;
       travelTheme(name);
       // the existing nav surge preset, fired once for the crossing
       armSurge(
