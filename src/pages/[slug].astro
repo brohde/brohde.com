@@ -2,14 +2,15 @@
 import { getCollection, render } from "astro:content";
 import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import HeroBand from "@/components/HeroBand.astro";
 import Scene from "@/components/Scene.astro";
 import { SITE, logHref, logStamp, isoDate } from "@/lib/site";
 
 /**
  * Article page, #67 C variant: editorial reading surface (Circular via
  * .prose/.atitle) on the system ground; every terminal moment is a piece of
- * the phosphor screen (the homechips, the hero band, pre excerpts).
+ * the phosphor screen (the homechips, pre excerpts). Articles carry only the
+ * background Scene now, like the homepage and About (the top matrix hero band
+ * is retired).
  * SEO/JSON-LD/RSS behavior unchanged; internal navigation rides the #150
  * tide transition (scene persists and travels identity, reading column
  * cross-fades; see global.css).
@@ -22,8 +23,7 @@ import { SITE, logHref, logStamp, isoDate } from "@/lib/site";
  * DOM carries transition:persist, so on client-side navigations the OLD
  * page's node survives and props alone cannot flip identity; the bridge
  * reads the stamp from this fresh, non-persisted element and travels the
- * scene there. The hero band (#97/#103) presents the same identity's mark
- * large at the top of the article.
+ * scene there.
  */
 export async function getStaticPaths() {
   // External entries live off-site: no page is generated for them. Item 11:
@@ -119,8 +119,6 @@ const articleLd = {
         convention: the visible command word IS the accessible name. */
     }
     <div class="wrap artpad">
-      <HeroBand seed={post.id} theme={theme} />
-
       <main id="main">
         <article>
           <p class="adate">
