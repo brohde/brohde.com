@@ -1,64 +1,85 @@
 # brohde.com
 
-Personal portfolio + writing site for Brian Rohde. Showcases client work and project deep dives to potential clients, plus thought-leadership articles on AI-assisted workflows.
+The personal portfolio and writing site for Brian Rohde, live at [brohde.com](https://brohde.com). It showcases client work and project deep dives for potential clients, alongside thought-leadership articles on AI-assisted workflows. The site also carries an in-page chat: an LLM assistant that answers questions about Brian and his work, and can hand off to a contact flow.
 
 ## Stack
 
-- [Astro](https://astro.build) + [Tailwind CSS](https://tailwindcss.com)
-- Hosted on Cloudflare (Pages)
-- Private GitHub repo (for now)
+- [Astro](https://astro.build) 7 + [Tailwind CSS](https://tailwindcss.com) 4, static output.
+- Hosted on [Cloudflare Pages](https://pages.cloudflare.com).
+- The chat and contact endpoints are [Cloudflare Pages Functions](https://developers.cloudflare.com/pages/functions/) that call the [Anthropic API](https://docs.anthropic.com) (Claude), fronted by a Cloudflare AI Gateway with a hard spend cap.
 
-## Local development
+## How this repo is built: the studio process
 
-```
-npm install       # once
-npm run dev       # dev server at http://localhost:4321
-npm run build     # node tools/build/build-chat-prompt.mjs && astro check && astro build -> ./dist
-npm run preview   # serve the production build locally
-npm run format    # prettier (astro + tailwind plugins)
-```
+This site is built by a [Claude Code](https://claude.com/claude-code) studio process, and that process is part of what the repo shows. Claude acts as studio lead and delegates to specialist sub-agents (design, engineering, copy, SEO and accessibility). Every decision, every conversation with Brian, and the running project status are checked in and public by design, so any reader can see how the site was actually made, not just the finished result.
 
-Deploy target: Cloudflare Pages. Build command `npm run build`, output directory `dist`.
+If you want to understand the working model before the code, read these:
 
-**New to this repo? Read `docs/ENGINEERING.md` next.** It covers the full architecture (pages, layouts, the terminal controller, the theme token system, content collections), the content-layer staleness gotcha you will otherwise lose an afternoon to, the interaction model as actually decided and shipped, the content review workflow, deploy details (env vars, `_headers`, the chat production plan), and the binding engineering rules.
+- [`CLAUDE.md`](CLAUDE.md): the working agreement. The process rules the studio runs under.
+- [`docs/DECISIONS.md`](docs/DECISIONS.md): every decision made, with date and rationale.
+- [`docs/COMMS-LOG.md`](docs/COMMS-LOG.md): the running log of communications and delegated sub-agent work.
+- [`docs/TEAM.md`](docs/TEAM.md): the studio roster of expert roles and the model policy.
+- [`docs/GATE.md`](docs/GATE.md): the agreed definition of done for the current program.
+- [`docs/ENGINEERING.md`](docs/ENGINEERING.md): the deep build reference (architecture, run and build and deploy, the interaction model as shipped). Read this if you are here for the code.
 
 ## Repo map
 
-| Path                            | Purpose                                                                                                                                                                                                                                                  |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `astro.config.mjs`              | Astro config: static output, sitemap (excludes /chat, /styleguide), prefetch, Tailwind v4 vite plugin                                                                                                                                                    |
-| `src/content.config.ts`         | Content collections: `articles` schema (title, description, date, draft, external)                                                                                                                                                                       |
-| `src/content/articles/`         | One folder per article (`<slug>/index.md`)                                                                                                                                                                                                               |
-| `src/pages/`                    | Routes: `/` (masthead + flow chat bar + ledger, #160), `/about`, `/chat` (top composer + newest-first transcript, #153), `/styleguide`, `/log/[...slug]`, `/404`, `/rss.xml`                                                                                                                              |
-| `src/layouts/BaseLayout.astro`  | HTML shell: head, SEO, theme-color, font preloads, ClientRouter (fallback swap, #150), analytics, terminal mount                                                                                                                                                    |
-| `src/components/`               | `SEO`, `Analytics` (PostHog), `SiteHeader` (global two-row header; the input row is /chat's composer, #153), `ChatBar` (the one input material + [send]), `HomeIntro` (masthead + identity, #160), `ArticleLog` (ledger), `SiteFooter`, `ThemeToggle`, `Scene` (facade), `HeroBand` (article hero, #97/#103)                                                                                                                       |
-| `src/scripts/terminal.ts`       | Command router, roving cursor (#63), redirect countdown (#143), chat persistence (#144), header state bridge (#145/#153), scene state/theme bridge (#150)                                                                                                                                       |
-| `src/scripts/scene/`            | The aurora + glyph tide scene (#106/#114/#120): lazy module behind the #70 facade (engine, placements, sources, live styles); facade in `Scene.astro` + `src/styles/scene.css`                                                                           |
-| `src/styles/global.css`         | Tailwind import, design tokens (both grounds, #40), Circular @font-face (#20), base + View-Transition rules                                                                                                                                              |
-| `src/styles/terminal.css`       | Component classes for option C (#67): masthead + editorial identity, the chat input material (scoped night tokens), ledger, the /chat transcript panel                                                                                                                                           |
-| `src/assets/fonts/`             | LL Circular Pro woff2 subsets (Book/Medium/Bold, licensed #20), hashed into `/_astro/` at build                                                                                                                                                          |
-| `src/lib/site.ts`               | Site constants: metadata, social links, company links, log helpers                                                                                                                                                                                       |
-| `public/`                       | `_headers` (CSP + security), `_redirects`, `robots.txt`, favicons, `apple-touch-icon.png`, `media/` (case-study video), `og.png` (social card)                                                                                                           |
-| `functions/api/`                | Cloudflare Pages Functions: `chat.ts` (production chat backend, POST `/api/chat`; Haiku router ported from `chat/`, behavior frozen #61, + Turnstile + per-IP rate limiting #49), `contact.ts` (in-chat contact flow, POST `/api/contact`; Resend + KV backup + rate limits), `_shared.ts` (shared helpers). `_chat-prompt.generated.ts` is built from `chat/` (gitignored) |
-| `tools/build/build-chat-prompt.mjs` | Prebuild codegen (runs in `npm run build`): bundles `chat/system-prompt.md` + `facts.md` into the chat Function, single source of truth                                                                                                              |
-| `tools/og/`                     | On-demand OG-card renderer (`node tools/og/render.mjs`, Chrome over CDP): writes `public/og.png`                                                                                                                                                          |
-| `wrangler.toml`                 | Cloudflare Pages config-as-code: output dir + `nodejs_compat` for the chat Function (secrets/KV bindings stay in the dashboard)                                                                                                                          |
-| `PLAN.md`                       | Original project brief from Brian                                                                                                                                                                                                                        |
-| `CLAUDE.md`                     | Working agreement for Claude sessions, read first                                                                                                                                                                                                        |
-| `docs/STATUS.md`                | **Current state + next steps**: the session-resume anchor                                                                                                                                                                                                |
-| `docs/DECISIONS.md`             | Every decision made, with rationale                                                                                                                                                                                                                      |
-| `docs/COMMS-LOG.md`             | Running log of Brian ↔ Claude communications and delegated sub-agent work                                                                                                                                                                                |
-| `docs/ENGINEERING.md`           | **Build reference for engineers**: architecture, run/build/deploy, the interaction model as shipped, content workflow, binding engineering rules                                                                                                         |
-| `docs/TEAM.md`                  | The studio roster (dynamic): expert roles and model policy                                                                                                                                                                                               |
-| `docs/CONTENT.md`               | Article backlog and content pipeline                                                                                                                                                                                                                     |
-| `docs/VOICE.md`                 | Brian's writing style guide, binding for all published copy                                                                                                                                                                                              |
-| `docs/drafts/`                  | Article drafts with editorial meta (title options, open questions) awaiting review; approved bodies move to `src/content/articles/`                                                                                                                      |
-| `docs/design/`                  | Design deliverables + the approved prototypes (`lab/build-log-v3.html`, `lab/aurora-terminal.html`)                                                                                                                                                      |
-| `docs/reference/`               | Source material: resume PDF, prior-project conventions brief, chat feasibility research, the LLM-terminal build plan; `handoffs/` holds per-agent handoff docs (#127)                                                                                     |
-| `docs/archive/`                 | Archived history: superseded STATUS sections (`status-history.md`) and `source-assets/` (original fonts, case-study captures, legacy-site screenshots the design work was mined from)                                                                     |
-| `chat/`                         | Production chat: the prompt, the facts pack, and the eval harness (formerly `poc/chat/`). The build bundles `chat/system-prompt.md` + `chat/facts.md` into the chat Function                                                                              |
-| `.claude/agents/`               | Reusable sub-agent definitions for the studio experts                                                                                                                                                                                                    |
+The meaningful directories. Full architecture lives in [`docs/ENGINEERING.md`](docs/ENGINEERING.md).
 
-## Working model
+| Path | Purpose |
+| --- | --- |
+| `src/` | The Astro site: `pages/` (routes), `layouts/`, `components/`, `scripts/` (the client controller and the ambient canvas scene), `styles/`, `content/articles/` (one folder per article), `lib/` (site constants, article ordering, JSON-LD builders), `assets/fonts/`. |
+| `chat/` | Source of truth for the chat model behavior: the system prompt, the facts pack, a local dev bridge, and the eval harness. The build bundles the prompt and facts into the chat Function. |
+| `functions/api/` | Cloudflare Pages Functions, the only server surface: `chat.ts` (`POST /api/chat`), `contact.ts` (`POST /api/contact`), and `_shared.ts` (shared helpers; a leading underscore means not routed). |
+| `tools/` | Build and asset tooling: `build/build-chat-prompt.mjs` (the prompt codegen, see below) and `og/` (the on-demand Open Graph card renderer). |
+| `public/` | Static assets served as-is: `_headers` (CSP and security headers), `_redirects`, `robots.txt`, favicons, `media/` (case-study video), `og.png`. |
+| `docs/` | The studio process and reference material: `STATUS.md`, `DECISIONS.md`, `COMMS-LOG.md`, `ENGINEERING.md`, `TEAM.md`, `VOICE.md`, plus `reference/`, `drafts/`, `design/`, and `archive/`. |
+| `.claude/agents/` | Reusable sub-agent definitions for the studio experts. |
 
-This project is run like a design studio: Claude acts as studio lead/CEO, delegating to specialist sub-agents (design, engineering, copy, SEO/a11y) and logging all decisions and delegations so any session can resume from `docs/STATUS.md` at any point.
+Top-level config: `astro.config.mjs`, `wrangler.toml` (Cloudflare Pages config-as-code), `package.json`, `PLAN.md` (the original brief), and `CLAUDE.md`.
+
+## About the article dates
+
+Articles are pre-dated on purpose, and the dates are meaningful. A piece about past work carries the date that work shipped, not the date the article was written. Where a retrospective revisits an old project from today, it carries a dated postscript so the timeline stays honest. This is a deliberate editorial choice and it is disclosed here so no reader mistakes a historical date for a fresh one.
+
+## Local development
+
+```sh
+npm install          # once
+npm run dev          # astro dev at http://localhost:4321
+npm run build        # codegen -> astro check -> astro build -> ./dist
+npm run preview      # serve the built ./dist locally
+npm run check        # astro check alone (typecheck + Astro diagnostics)
+npm run format       # prettier --write .
+```
+
+`npm run build` runs a prompt codegen step first: `tools/build/build-chat-prompt.mjs` bundles `chat/system-prompt.md` and `chat/facts.md` into a generated TypeScript module the chat Function imports. That generated file is gitignored and rebuilt on every build, locally and on Cloudflare. Edit the prompt or facts in `chat/`, never the generated output.
+
+### Running the chat locally
+
+The site itself renders without any keys. To exercise the live chat in local dev, run the bridge in `chat/`, which talks to the real Anthropic API:
+
+```sh
+cd chat
+npm install
+npm start            # local Haiku bridge on http://localhost:8787 (loopback only)
+```
+
+The bridge reads its key from `chat/.env` as `ANTHROPIC_API_KEY=...`. That file is required only for the local chat bridge, holds a real key, and is never committed (it is gitignored). Deploys get their keys from the Cloudflare dashboard instead. See [`docs/ENGINEERING.md`](docs/ENGINEERING.md) section 9 for the full local-chat and Pages Functions parity story.
+
+## Deploy
+
+Cloudflare Pages. Build command `npm run build`, output directory `dist`. The two Pages Functions are compiled from `functions/` by Cloudflare. All secrets (the Anthropic key, the gateway token, the Resend key, the Turnstile secret) live in the Cloudflare dashboard, never in `wrangler.toml` or the repo. `docs/ENGINEERING.md` section 8 documents the full deploy posture.
+
+## Secret hygiene
+
+The repo carries no secret values, and a fresh-history cut is made before it goes public. To keep it that way, a `gitleaks` pre-commit hook is provided in `tools/git-hooks/`. It is not enabled automatically (this repo never touches your local git config on your behalf). Enable it for your clone with one command:
+
+```sh
+git config core.hooksPath tools/git-hooks
+```
+
+With the hook enabled, each commit runs `gitleaks protect --staged` against the staged diff and blocks the commit if it finds a secret. If `gitleaks` is not installed, the hook warns and lets the commit through rather than failing, so it never blocks a contributor who has not installed the scanner. The scan config, including allowlisted false-positive shapes, is in [`.gitleaks.toml`](.gitleaks.toml).
+
+## License
+
+None yet. This code is source-visible for reading and learning. All rights reserved. No reuse license is granted at this time, and there is no `LICENSE` file in the repo. Do not assume any permission to reuse, redistribute, or create derivative works from the code or the written content until a license is published here.
