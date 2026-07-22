@@ -11,10 +11,10 @@ Work top to bottom. Each item is a gate, not a suggestion.
 ## A. Before the cut
 
 - [ ] **Sensitivity prune merged.** The rulings on `docs/reference/prune-list.md` (6 must-remove, 12 judgment calls) are applied and merged to main. The prune agent owns that work; this checklist only depends on it being done.
-- [ ] **Verification greps green.** After the prune, re-run the sweep patterns and confirm the must-remove items are gone from the tree:
-  - `git grep -n '847-630-6829'` returns nothing (the real phone number in the resume PDF; the PDF is binary, so confirm the file was regenerated or dropped, not just grepped).
-  - `git grep -nE '76\.21\.34\.198|208\.113\.245\.188|hosted-email-verify=zzw7fdhu'` returns nothing (the DNS runbook infra identifiers).
-  - `git grep -ni 'Dragan|Filipovic'` and `git grep -n 'Anthony Thomas Galante'` return only what Brian chose to keep after the consent rulings.
+- [ ] **Verification greps green.** After the prune, confirm the must-remove items are gone from the tree. The patterns themselves are not quoted here: this checklist ships in the public repo, and quoting the pruned values would republish them. The executed audit record (docs/reference/prune-list.md) lists each item descriptively; verify against it:
+  - The resume PDF was removed from the repo outright (2026-07-22, Brian's order), which retires its personal phone number with it: confirm no tracked file matches `find . -iname '*resume*'`.
+  - The DNS runbook's A-record IPs and mail-verify token: zero-hit verified at the prune merge (2026-07-22); re-check by reading the gutted docs/reference/brohde-com-dns-cutover.md.
+  - The gold-coast client's personal name and the old repo codename: zero-hit verified at the prune merge. `git grep -n 'Anthony Thomas Galante'` may return hits; that name is public by consent and appears in the live article.
   - `git grep -n '/Users/brian'` is reduced to whatever Brian accepted (the J7 local-path tidy-up).
 - [ ] **No live key on disk gets force-added.** Confirm `git check-ignore chat/.env` still reports it ignored, and `git ls-files chat/.env` is empty. The real Anthropic key lives only there and must never enter the tree.
 - [ ] **Chat keyed eval (optional).** If Brian supplies the Anthropic key, re-run the chat eval once (`chat/` harness) to confirm the frozen #61 behavior still passes after any prompt/facts apostrophe sweep. This is optional and does not block the flip on its own.

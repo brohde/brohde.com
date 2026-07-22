@@ -1014,6 +1014,12 @@ function speakGreetingAndArm(slot: HTMLElement | null) {
   const el = contactLine(contactGreeting(), slot);
   el?.appendChild(contactCancelChip());
   armContact();
+  // The greeting asks for the visitor's message, so the cursor is theirs:
+  // focus lands in the composer the moment the flow arms (Brian, batch:
+  // after the response to the auto-typed question, focus the input). The
+  // page-swap entry paths reset focus to body during the navigation, so
+  // the earlier focus() calls upstream cannot be relied on alone.
+  byId(CHAT_INPUT)?.focus({ preventScroll: true });
 }
 
 /* On /chat: open a turn that echoes `echoText`, pulses, then speaks the greeting
