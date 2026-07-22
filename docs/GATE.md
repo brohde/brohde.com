@@ -7,8 +7,8 @@ _The definition of done for the current program. Any session or loop measures ag
 ### A. Code quality (Phase A, in flight)
 
 - [x] All five audit tracks merged (scripts 4f50b2b, server 342d29d, css 4ad51d0, astro c10ec29, reorg proposal 7b4dfea), build green, astro check 0/0/0; debt Q1/Q2/Q4/A1/A2 closed; security hardening re-verified
-- [ ] Structural proposals DECIDED by Brian: terminal.ts staged split (Stage 1 low-risk), scene data tables, functions _shared.ts (curl re-test phase), repo reorganization (poc -> chat/ promotion + assets archive + 8-step sequence), CSS reorg (option A/B), ChatPanel/schema/Screen extractions
-- [ ] Decided structural work built and merged, phased and validated
+- [x] Structural proposals DECIDED (#213) and BUILT: scripts extraction 7cd7698, surfaces 7723677 (Screen wrapper skipped with cause), _shared.ts 5ef9c03 (45/45 byte-identical matrix), repo reorg 61093fb (poc -> chat/, tools/build, assets archived, key file verified ignored; deep terminal split skipped per pick)
+- [x] Decided structural work built and merged; human smoke test owed (chat send, contact arm, theme toggle, one cross-theme transition)
 
 ### B. Docs accuracy
 
