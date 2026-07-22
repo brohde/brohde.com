@@ -20,6 +20,12 @@ const articles = defineCollection({
     title: z.string(),
     description: z.string().optional(),
     date: z.coerce.date(),
+    // Optional ledger-ordering override, independent of the DISPLAYED `date`.
+    // The homepage log and RSS sort by (sortDate ?? date) descending, while
+    // every surface still SHOWS `date`. Lets a deliberately pre-dated entry
+    // (the 2014 Facebook piece) sit beside its sibling in the ledger without
+    // faking its publish date. Omit to sort by `date`.
+    sortDate: z.coerce.date().optional(),
     draft: z.boolean().default(false),
     // Publish gate (item 11). Unlike `draft` (which hides an entry from the
     // log entirely), `published: false` keeps the entry LISTED on the homepage
