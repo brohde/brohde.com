@@ -1,0 +1,45 @@
+# GATE — the agreed completion state
+
+_The definition of done for the current program. Any session or loop measures against this list and stops when it is green or when every open item is blocked on Brian. Agreed with Brian 2026-07-21; edit only with his word. Check items off as they land._
+
+## Program: publish-readiness (the repo goes public)
+
+### A. Code quality (Phase A, in flight)
+
+- [ ] All five audit tracks merged (scripts, astro, css, server, reorg proposal), build green, Lighthouse 100 / CLS 0 held on /, one article, /chat
+- [ ] Structural proposals DECIDED by Brian: terminal.ts split, shared function helpers, repo reorganization (incl. poc/ disposition)
+- [ ] Decided structural work built and merged, phased and validated
+
+### B. Docs accuracy
+
+- [ ] ENGINEERING.md rewritten against current source (debt D1)
+- [ ] Docs quick-win cluster closed (D2-D7, D12, D13)
+- [ ] Scene engineering doc written (D8); docs index + CLAUDE.md reading path fixed (D9); model policy single-sourced (D10); STATUS slimmed + archived (D11)
+
+### C. Content
+
+- [ ] Publish flips: Brian's word per article (gold-coast, facebook-newsroom, google-android-for-work ready; atg after the 4h call; eight-angle after the C1 numbers confirm)
+- [ ] The #206 taste flags ruled (ATG 4h-vs-5h, eight-angle period, google "Website" casing, twilio label)
+- [ ] Eight Angle mark rebuilt from Brian's logo file (BLOCKED ON BRIAN: the SVG/PNG)
+- [ ] nownow.mp4 + platform-surfaces.mp4 identified by Brian: place or archive
+
+### D. Chat hygiene
+
+- [ ] poc/chat apostrophe + vocabulary sweep (Q3) WITH the keyed eval re-run (needs Brian's key, one command)
+- [ ] Eval fixtures relabeled (Q7); L1 self-disclosure prompt tweak (S4) decided
+
+### E. Sensitivity prune + publish mechanics
+
+- [ ] Prune list compiled (R1: personal email, DNS/account specifics, budget notes, resume PDF, MEMORY references) and APPROVED BY BRIAN before anything is removed
+- [ ] Git-history secret scan verified formally (S1)
+- [ ] Fresh-history cut prepared (curated initial commit per #202)
+- [ ] Public README + the pre-dating presentation line
+- [ ] Go/no-go checklist reviewed with Brian; HE flips the repo public
+
+## Standing quality bars (every merge, not steps)
+
+Build green; zero em dashes in visible copy and comments; typographic apostrophes in visible copy; no "terminal" in copy; #61 chat contract frozen; commits authored by Brian only; docs (STATUS/DECISIONS/COMMS) current at each milestone.
+
+## Out of scope for this gate (parked, do not pull in)
+
+Awards submission, presence features, cycling starter questions, ASCII-art marks (unless Brian's logo round un-parks it), analytics phase.
