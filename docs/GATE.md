@@ -30,8 +30,8 @@ _The definition of done for the current program. Any session or loop measures ag
 
 ### E. Sensitivity prune + publish mechanics
 
-- [ ] Prune list compiled (R1: personal email, DNS/account specifics, budget notes, resume PDF, MEMORY references) and APPROVED BY BRIAN before anything is removed
-- [ ] Git-history secret scan verified formally (S1)
+- [x] Prune list COMPILED (docs/reference/prune-list.md, 9b8e4cf: 6 must-remove, 12 judgment calls) - [ ] and APPROVED BY BRIAN before anything is removed
+- [x] Git-history secret scan verified formally (S1 PASS: no secret values ever committed; chat/.env never in history)
 - [ ] Fresh-history cut prepared (curated initial commit per #202)
 - [ ] Public README + the pre-dating presentation line
 - [ ] Go/no-go checklist reviewed with Brian; HE flips the repo public
