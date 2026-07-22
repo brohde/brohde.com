@@ -23,11 +23,11 @@ dist/
 .dev.vars
 .dev.vars.*
 
-# generated: chat system prompt bundled from poc/chat/ at build (see scripts/build-chat-prompt.mjs)
+# generated: chat system prompt bundled from chat/ at build (see scripts/build-chat-prompt.mjs)
 functions/api/_chat-prompt.generated.ts
 
 # ephemeral eval working output (HTTP parity harness)
-poc/chat/eval-http-transcript.md
+chat/eval-http-transcript.md
 
 # os / editor
 .DS_Store

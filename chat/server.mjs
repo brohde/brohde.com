@@ -12,7 +12,7 @@ const SYSTEM =
   "\n\n# FACTS PACK\n\n" +
   readFileSync(path.join(here, "facts.md"), "utf8");
 
-// load poc/chat/.env if present (ANTHROPIC_API_KEY=sk-ant-...), so the key
+// load chat/.env if present (ANTHROPIC_API_KEY=sk-ant-...), so the key
 // lives in a gitignored file instead of shell history or a chat transcript
 try {
   for (const line of readFileSync(path.join(here, ".env"), "utf8").split(
@@ -27,7 +27,7 @@ if (
   /your-key/.test(process.env.ANTHROPIC_API_KEY)
 ) {
   console.error(
-    "No real ANTHROPIC_API_KEY found. Paste it into poc/chat/.env as: ANTHROPIC_API_KEY=sk-ant-..."
+    "No real ANTHROPIC_API_KEY found. Paste it into chat/.env as: ANTHROPIC_API_KEY=sk-ant-..."
   );
   process.exit(1);
 }

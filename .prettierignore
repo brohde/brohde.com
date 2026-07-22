@@ -6,7 +6,7 @@ dist/
 .astro/
 node_modules/
 docs/
-poc/
+chat/
 assets/
 .claude/
 PLAN.md
