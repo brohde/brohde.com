@@ -78,6 +78,9 @@ function json(
 ): Response {
   return new Response(JSON.stringify(body), {
     status,
+    // Cache-Control: no-store on every API response (audit L3, same control as chat.ts):
+    // a dynamic, per-request endpoint nothing should ever cache. public/_headers scopes
+    // its cache rules to static paths only.
     headers: {
       "content-type": "application/json",
       "cache-control": "no-store",
@@ -273,11 +276,16 @@ async function backup(
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
 
+  // Content-Type enforcement (audit L5, same control as chat.ts): shed non-JSON traffic
+  // before touching the body.
   const contentType = request.headers.get("content-type") ?? "";
   if (!contentType.toLowerCase().includes("application/json")) {
     return json({ error: "content-type must be application/json" }, 415);
   }
 
+  // Body size bound (audit H2, same control as chat.ts): reject an oversized body before
+  // parsing so a single call cannot carry hundreds of KB of billable extraction input.
+  // Check the declared length first (cheap), then the actual read (the header can lie).
   const declaredLen = request.headers.get("content-length");
   if (declaredLen !== null && Number(declaredLen) > MAX_BODY_BYTES) {
     return json({ error: "request body too large" }, 413);
