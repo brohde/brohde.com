@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Scene from "@/components/Scene.astro";
-import { LINKS } from "@/lib/site";
+import { COMPANIES } from "@/lib/site";
 import { profilePageLd } from "@/lib/schema";
 
 const description =
@@ -46,11 +46,13 @@ const profilePage = profilePageLd();
           <p>
             Before this I led web platforms, working day to day with marketing,
             product, and design. I was Staff Web Engineer at <a
-              href={LINKS.linkedin}
+              href={COMPANIES.gong}
               target="_blank"
               rel="noopener">Gong</a
             >, where I built an LLM translation workflow and replatformed the
-            site. At <a href="/twilio-signal-pong">Twilio</a> I was Technical
+            site. At <a href={COMPANIES.twilio} target="_blank" rel="noopener"
+              >Twilio</a
+            > I was Technical
             Web Lead and shipped the company’s first global website and unified
             CMS. Earlier, at the agency Beyond, I built projects for Facebook,
             including their <a href="/facebook-newsroom">Newsroom site</a>, its
