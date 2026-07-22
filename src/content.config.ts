@@ -1,4 +1,5 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
+import { z } from "astro/zod";
 import { glob } from "astro/loaders";
 
 /**
@@ -38,7 +39,7 @@ const articles = defineCollection({
     published: z.boolean().default(false),
     // External log entries (Brian's writing published elsewhere). When set,
     // the homepage log links out to this URL and no article page is generated.
-    external: z.string().url().optional(),
+    external: z.url().optional(),
     // Per-article scene identity (#111, wired B3): the theme names the sky
     // palette + tide peak + mark the article page mounts (see the PEAKS and
     // THEME_SOURCE tables in src/scripts/scene/index.ts). Omit for the site

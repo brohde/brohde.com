@@ -125,13 +125,26 @@ const articleLd = {
   mainEntityOfPage: canonical,
   url: canonical,
 };
+
+// Breadcrumb trail (A2): home > this article, so search engines render the
+// path and the article is one hop off the site root (bare-slug URLs, #179).
+// Ships only on real articles, alongside articleLd; stubs stay JSON-LD-free
+// and noindex.
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: SITE.name, item: SITE.url },
+    { "@type": "ListItem", position: 2, name: title, item: canonical },
+  ],
+};
 ---
 
 <BaseLayout
   title={title}
   description={description ?? SITE.description}
   ogType="article"
-  jsonLd={isStub ? undefined : articleLd}
+  jsonLd={isStub ? undefined : [articleLd, breadcrumbLd]}
   noindex={isStub}
 >
   <Scene theme={theme} />
@@ -175,7 +188,12 @@ const articleLd = {
                 {stubFigs.map((f) => (
                   <figure>
                     {f.kind === "img" ? (
-                      <Image src={f.img} alt={f.alt} />
+                      <Image
+                        src={f.img}
+                        alt={f.alt}
+                        widths={[320, 640, 960, 1280]}
+                        sizes="(max-width: 700px) 92vw, 660px"
+                      />
                     ) : (
                       <video
                         src={f.src}
