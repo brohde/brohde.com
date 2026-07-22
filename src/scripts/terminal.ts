@@ -118,15 +118,17 @@ const CHAT_INPUT = "in-chat";
 
 /* Phase 4C motion timings (Brian veto knobs). */
 const PULSE_MS = 450; // brief thinking pulse before a deterministic response
+const CONTACT_PULSE_MS = 180; // the contact flow's own quicker pulse (asks,
+// greeting, edit re-asks, confirm nudge): the flow is a form, not a chat, so
+// the beat between turns is snappier than the 450ms general chat pulse.
 const CONTACT_Q = "How do I contact Brian?"; // the emulated contact question
 
-/* Typing humanization (Phase B item 4). The emulation used to type at a flat
-   35ms per character; it now jitters each keystroke, pauses longer after spaces
-   and punctuation, and occasionally hesitates, so it reads like a person typing
-   rather than a metronome. The base is centered a hair below the old 35ms so the
-   space and punctuation pauses keep the total within about 20% of what the flat
-   35ms/char produced (measured for CONTACT_Q during validation). */
-const TYPE_BASE = 20; // humanized per-character base (jittered + bonused below)
+/* Typing humanization (Phase B item 4). The emulation jitters each keystroke,
+   pauses longer after spaces and punctuation, and occasionally hesitates, so it
+   reads like a person typing rather than a metronome. The base was lowered again
+   (20 to 14) with the contact-flow speed pass so the entry emulation lands
+   faster while keeping the human cadence. `prev` is the character just typed. */
+const TYPE_BASE = 14; // humanized per-character base (jittered + bonused below)
 
 function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -220,7 +222,11 @@ function syncHeaderChat() {
   const p = location.pathname.replace(/\/+$/, "") || "/";
   const onHome = p === "/";
   const onChat = p === "/chat";
-  header.dataset.hchat = onHome || onChat ? "off" : "on";
+  // /contact carries its own docked composer (like /chat and the homepage), so
+  // the header's jump-to-chat input row hides there too, else two composers
+  // stack. It stays a normal interior header otherwise (data-screen "page").
+  const ownsInput = onHome || onChat || p === "/contact";
+  header.dataset.hchat = ownsInput ? "off" : "on";
   header.dataset.screen = onChat ? "chat" : onHome ? "home" : "page";
   // Phase 4A: the wordmark is the homepage's h1 and a <p> everywhere else.
   // The header is a persisted node, so the server tag can be a page behind
@@ -369,7 +375,19 @@ function sink(): HTMLElement | null {
    it is instant (no smooth behavior), so it is reduced-motion-safe by
    construction. */
 function scrollToNewest() {
-  if (currentScreen() === "chat") {
+  if (currentScreen() !== "chat") return;
+  // Caret-at-top fix: only pull the page to the very top when the composer has
+  // actually scrolled ABOVE the viewport (its sticky rest is now inset by
+  // --chat-pin-gap, so a rect.top below 0 means the composer, and the newest
+  // turn directly beneath it, are out of view up top). When the composer is
+  // already onscreen (its common state, natural or stuck at the gap) a new turn
+  // blooms right under it, so no scroll is needed: the caret keeps its resting
+  // gap below the panel border instead of jamming against the top. CLS 0: this
+  // only ever scrolls, it never changes layout.
+  const composer = document.querySelector<HTMLElement>(
+    ".slab-chat > .chatcomposer"
+  );
+  if (composer && composer.getBoundingClientRect().top < 0) {
     window.scrollTo({ top: 0 });
   }
 }
@@ -773,10 +791,10 @@ function openSlug(slug: string) {
   if (slug === "work") goHomeThen(scrollToLog);
   else if (slug === "contact") {
     // contact has no page (#183): the model choosing open_page:contact opens
-    // the in-chat contact flow in place (greeting + arm), inside the turn its
-    // reply already occupies. No new echo (the model's turn was the ask).
-    contactLine(contactGreeting(), null);
-    armContact();
+    // the in-chat contact flow in place (greeting + arm + cancel chip), inside
+    // the turn its reply already occupies. No new echo (the model's turn was
+    // the ask).
+    speakGreetingAndArm(null);
   } else if (slug in SLUG_HREF) navigate(SLUG_HREF[slug]);
   // any other slug (e.g. eight-angle, now unpublished) is a no-op: no route,
   // no 404. The prose the model already rendered carries the mention.
@@ -1017,13 +1035,16 @@ function toChat(q: string, viaKb: boolean) {
    The pulse reuses the #116 thinking box, so the response lands in the SAME
    node (zero shift). Reduced motion: no pulse, instant render. Commands that
    NAVIGATE (about, home, work) never reach here; clicked links stay instant. */
-function pulseThen(render: (slot: HTMLElement | null) => void) {
+function pulseThen(
+  render: (slot: HTMLElement | null) => void,
+  ms: number = PULSE_MS
+) {
   if (prefersReducedMotion()) {
     render(null);
     return;
   }
   const wait = thinking();
-  window.setTimeout(() => render(wait), PULSE_MS);
+  window.setTimeout(() => render(wait), ms);
 }
 
 /* --------------------------------------- contact flow (Phase B item 1) ----- */
@@ -1072,7 +1093,8 @@ function typeInto(input: HTMLTextAreaElement, text: string, done: () => void) {
     input.value = text.slice(0, i);
     autoGrow(input); // keep the fallback height in step with the typed value
     if (i < text.length) window.setTimeout(step, humanDelay(text[i - 1]));
-    else window.setTimeout(done, 220); // a beat, then submit
+    else window.setTimeout(done, 120); // a beat, then submit (shortened with the
+    // contact-flow speed pass so the emulation resolves faster)
   };
   window.setTimeout(step, humanDelay(undefined));
 }
@@ -1120,15 +1142,32 @@ function armContact() {
   contact = { name: null, email: null, message: null, awaiting: "blob" };
 }
 
+/* Speak the greeting into `slot`, arm the flow, and append the [cancel] chip so
+   abandoning is discoverable from the very first line (item 1a). Shared by every
+   entry: the scripted echo entry, the model's open_page:contact, and the
+   /contact route entry. */
+function speakGreetingAndArm(slot: HTMLElement | null) {
+  const el = contactLine(contactGreeting(), slot);
+  el?.appendChild(contactCancelChip());
+  armContact();
+}
+
 /* On /chat: open a turn that echoes `echoText`, pulses, then speaks the greeting
    and arms the flow. */
 function scriptedContactEntry(echoText: string) {
   beginTurn();
   contactEcho(echoText);
-  pulseThen((slot) => {
-    contactLine(contactGreeting(), slot);
-    armContact();
-  });
+  pulseThen((slot) => speakGreetingAndArm(slot), CONTACT_PULSE_MS);
+}
+
+/* The /contact route entry (item 5): NO fake user echo (nobody typed anything),
+   just a pulse then the greeting turn as the newest line, with the flow armed.
+   Runs from initPage on /contact whether the panel is pristine or a thread was
+   rehydrated below (the visitor came to contact, so the greeting is newest). */
+function routeContactEntry() {
+  if (contact) return; // already armed (defensive against a double page-load)
+  beginTurn();
+  pulseThen((slot) => speakGreetingAndArm(slot), CONTACT_PULSE_MS);
 }
 
 /* The contact nav item / inline [contact] link: land on /chat and TYPE the
@@ -1256,71 +1295,142 @@ function collectContact(text: string) {
   if (!contact) return;
   const prev = contact.awaiting;
   const first = prev === "blob";
-  const wait = thinking(); // covers the extraction round trip
   const detEmail = firstEmail(text);
-  void (async () => {
-    const ex = first ? await extractContact(text) : null;
-    const exv: Extracted = ex ?? { name: null, email: null, message: null };
-    if (!contact) return; // cancelled or navigated away mid-request
-    mergeContact(text, exv, detEmail, ex !== null);
-    const emailInvalid = prev === "email" && !contact.email;
-    advanceContact(wait, emailInvalid);
-  })();
+  if (first) {
+    // the first blob is the only turn that hits the network (the /api/contact
+    // extraction): show the thinking spinner while that round trip runs.
+    const wait = thinking();
+    void (async () => {
+      const ex = await extractContact(text);
+      const exv: Extracted = ex ?? { name: null, email: null, message: null };
+      if (!contact) return; // cancelled or navigated away mid-request
+      mergeContact(text, exv, detEmail, ex !== null);
+      advanceContact(wait, false);
+    })();
+    return;
+  }
+  // every follow-up answer (message / name / email, and the edit re-asks) is
+  // local: no extraction, so NO spinner (item 3). Merge synchronously, then
+  // advance through the short contact pulse so the beat still reads as the
+  // machine thinking briefly.
+  const exv: Extracted = { name: null, email: null, message: null };
+  mergeContact(text, exv, detEmail, false);
+  const emailInvalid = prev === "email" && !contact.email;
+  pulseThen((slot) => advanceContact(slot, emailInvalid), CONTACT_PULSE_MS);
+}
+
+/* The ask copy, factored out so the edit re-asks (editContactField) reuse the
+   EXACT same strings advanceContact speaks the first time. */
+const ASK_MESSAGE = "What would you like to say to Brian?";
+const ASK_NAME = "Got it. And what is your name?";
+const ASK_EMAIL = "Thanks. And what email should Brian reply to?";
+const ASK_EMAIL_INVALID =
+  "That does not look like an email address. What is the best email for Brian to reply to?";
+
+/* Speak an ask line and append the [cancel] chip, so abandoning stays
+   discoverable on every ask (item 1a). */
+function askLine(text: string, slot: HTMLElement | null, warn = false) {
+  const el = contactLine(text, slot, warn);
+  el?.appendChild(contactCancelChip());
 }
 
 function advanceContact(slot: HTMLElement | null, emailInvalid = false) {
   if (!contact) return;
   if (!contact.message) {
     contact.awaiting = "message";
-    contactLine("What would you like to say to Brian?", slot);
+    askLine(ASK_MESSAGE, slot);
   } else if (!contact.name) {
     contact.awaiting = "name";
-    contactLine("Got it. And what is your name?", slot);
+    askLine(ASK_NAME, slot);
   } else if (!contact.email) {
     contact.awaiting = "email";
-    contactLine(
-      emailInvalid
-        ? "That does not look like an email address. What is the best email for Brian to reply to?"
-        : "Thanks. And what email should Brian reply to?",
-      slot,
-      emailInvalid
-    );
+    askLine(emailInvalid ? ASK_EMAIL_INVALID : ASK_EMAIL, slot, emailInvalid);
   } else {
     contact.awaiting = "confirm";
     renderConfirm(slot);
   }
 }
 
+/* Edit before send (item 2): a [edit name|email|message] chip on the confirm
+   nulls that one field and re-asks it with the same copy, then the existing
+   merge/advance machinery walks straight back to the confirm (every other field
+   is still filled). No typed "edit" grammar. */
+function editContactField(field: string) {
+  if (!contact || contact.awaiting === "sending") return;
+  if (field !== "name" && field !== "email" && field !== "message") return;
+  contact[field] = null;
+  contact.awaiting = field;
+  beginTurn();
+  const ask =
+    field === "message" ? ASK_MESSAGE : field === "name" ? ASK_NAME : ASK_EMAIL;
+  pulseThen((slot) => askLine(ask, slot), CONTACT_PULSE_MS);
+  byId(CHAT_INPUT)?.focus({ preventScroll: true });
+}
+
 /* -------- confirm + send -------- */
 
-/* The action chips ([send] / [cancel]) in the flow's own control grammar (the
-   bracket chip, like [clear]); data-contact routes them in the click handler. */
+/* One bracket-chip builder in the flow's control grammar (the bracket chip,
+   like [clear]); data-contact (+ optional data-field) routes it in the click
+   handler. `action` also names the class so the CSS can dress each kind. */
+function mkContactBtn(
+  action: "send" | "cancel" | "edit",
+  label: string,
+  aria: string,
+  field?: string
+): HTMLButtonElement {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = `cbtn contact-${action}`;
+  b.dataset.contact = action;
+  if (field) b.dataset.field = field;
+  b.setAttribute("aria-label", aria);
+  const l = document.createElement("span");
+  l.className = "br";
+  l.setAttribute("aria-hidden", "true");
+  l.textContent = "[";
+  const t = document.createElement("span");
+  t.className = "lbl";
+  t.textContent = label;
+  const r = document.createElement("span");
+  r.className = "br";
+  r.setAttribute("aria-hidden", "true");
+  r.textContent = "]";
+  b.append(l, t, r);
+  return b;
+}
+
+/* A lone [cancel] chip (item 1a), appended to every contact ask + the greeting
+   turn so abandoning the flow is discoverable everywhere, not only at confirm.
+   Same grammar and aria-label as the confirm's cancel. */
+function contactCancelChip(): HTMLElement {
+  const row = document.createElement("div");
+  row.className = "contact-actions";
+  row.appendChild(
+    mkContactBtn("cancel", "cancel", "Cancel and return to chat")
+  );
+  return row;
+}
+
+/* The confirm's [edit name] [edit email] [edit message] chips (item 2): each
+   re-asks its one field, then merge/advance returns to the confirm. */
+function contactEditChips(): HTMLElement {
+  const row = document.createElement("div");
+  row.className = "contact-edits";
+  row.append(
+    mkContactBtn("edit", "edit name", "Edit the name", "name"),
+    mkContactBtn("edit", "edit email", "Edit the email", "email"),
+    mkContactBtn("edit", "edit message", "Edit the message", "message")
+  );
+  return row;
+}
+
+/* The action chips ([send] / [cancel]) shown at confirm and on a send retry. */
 function contactChips(): HTMLElement {
   const row = document.createElement("div");
   row.className = "contact-actions";
-  const mk = (action: "send" | "cancel", label: string, aria: string) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = `cbtn contact-${action}`;
-    b.dataset.contact = action;
-    b.setAttribute("aria-label", aria);
-    const l = document.createElement("span");
-    l.className = "br";
-    l.setAttribute("aria-hidden", "true");
-    l.textContent = "[";
-    const t = document.createElement("span");
-    t.className = "lbl";
-    t.textContent = label;
-    const r = document.createElement("span");
-    r.className = "br";
-    r.setAttribute("aria-hidden", "true");
-    r.textContent = "]";
-    b.append(l, t, r);
-    return b;
-  };
   row.append(
-    mk("send", "send", "Send this message to Brian"),
-    mk("cancel", "cancel", "Cancel and return to chat")
+    mkContactBtn("send", "send", "Send this message to Brian"),
+    mkContactBtn("cancel", "cancel", "Cancel and return to chat")
   );
   return row;
 }
@@ -1354,6 +1464,8 @@ function renderConfirm(slot: HTMLElement | null) {
     dl.append(dt, dd);
   }
   box.appendChild(dl);
+  // edit-before-send (item 2): change any one field, then it walks back here
+  box.appendChild(contactEditChips());
   box.appendChild(contactChips());
 
   const hint = document.createElement("p");
@@ -1377,7 +1489,7 @@ function handleConfirm(text: string) {
   pulseThen((slot) => {
     contactLine('Type "yes" to send, or "cancel" to stop.', slot);
     sink()?.appendChild(contactChips());
-  });
+  }, CONTACT_PULSE_MS);
 }
 
 function doContactSend() {
@@ -1576,11 +1688,23 @@ function initPage() {
   // links to the cursor order.
   if (currentScreen() === "chat") {
     rehydrateChat();
-    // Greeting empty state: only when the panel is pristine (nothing restored)
-    // AND no pending send/command/emulation is about to render a turn. Run
-    // AFTER rehydrate so it can never flash before a restored or pending
-    // thread renders.
-    if (!transcript.length && !after && !emulate) showGreeting();
+    // /contact route entry (item 5): the section carries data-contact-arm, so
+    // instead of the pristine greeting we arm the flow with the contact
+    // greeting as the newest turn. This runs whether the panel is pristine or a
+    // thread was rehydrated below (the visitor came to contact). A pending
+    // send/command/emulation still wins (it owns the turn). Because initPage
+    // fires on every astro:page-load, a refresh of /contact re-arms
+    // deterministically. /chat has no marker, so it keeps the normal greeting.
+    const armed = !!document.querySelector(".screen[data-contact-arm]");
+    if (armed && !after && !emulate) {
+      routeContactEntry();
+    } else if (!transcript.length && !after && !emulate) {
+      // Greeting empty state: only when the panel is pristine (nothing
+      // restored) AND no pending send/command/emulation is about to render a
+      // turn. Run AFTER rehydrate so it can never flash before a restored or
+      // pending thread renders.
+      showGreeting();
+    }
     const r = roveEls();
     if (r.length) setRoveStop(r[0], r);
     setupPin(); // watch the docked composer for the stuck hairline
@@ -1666,6 +1790,8 @@ function setupOnce() {
     if (cc && cc.dataset.contact && contact) {
       if (cc.dataset.contact === "send") doContactSend();
       else if (cc.dataset.contact === "cancel") cancelContact();
+      else if (cc.dataset.contact === "edit")
+        editContactField(cc.dataset.field ?? "");
       return;
     }
     const btn = t.closest?.<HTMLElement>("button[data-cmd]");
@@ -1725,6 +1851,22 @@ function setupOnce() {
       if (redirect) {
         e.preventDefault();
         cancelRedirect("escape");
+        return;
+      }
+      // Contact flow abandon (item 1b): while the flow is armed on /chat, an
+      // Escape with an EMPTY composer abandons the flow immediately (the spoken
+      // "Cancelled" line flows through cancelContact's announcer); with typed
+      // text present, Escape only blurs so the draft is never discarded (and
+      // never navigates away mid-flow). No second-Escape confirm.
+      if (contact && currentScreen() === "chat") {
+        const ta = byId(CHAT_INPUT) as HTMLTextAreaElement | null;
+        if (!ta || ta.value.trim() === "") {
+          e.preventDefault();
+          cancelContact();
+          return;
+        }
+        e.preventDefault();
+        ta.blur();
         return;
       }
       // single-cursor model (#63): the first Escape parks the cursor back on

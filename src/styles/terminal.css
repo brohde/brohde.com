@@ -732,6 +732,11 @@ html.cfocus .wm .caret {
 }
 .slab-chat {
   margin-top: 10px;
+  /* the docked composer's sticky inset (caret-at-top fix): the composer pins a
+     small gap below the viewport top instead of flush at 0, so the caret keeps
+     a visible breathing gap below the panel border rather than jamming against
+     the very top after a send. scrollToNewest reads this rest position. */
+  --chat-pin-gap: 10px;
   /* a flex column so the [clear] footer (composer phase A item 5) seats at the
      panel's BOTTOM edge while the transcript body (.chatbody, flex: 1) absorbs
      the slack: composer at the top, then the body, then the footer. Sticky
@@ -903,7 +908,7 @@ html.cfocus .wm .caret {
    clears the transcript, which slides beneath. */
 .slab-chat > .chatcomposer {
   position: sticky;
-  top: 0;
+  top: var(--chat-pin-gap);
   z-index: 3;
   margin: 0;
   border: 0;
@@ -1284,15 +1289,31 @@ a.lentry:focus-visible .lttl {
   gap: 0 6px;
   margin: 4px 0 2px;
 }
-.contact-cancel {
+/* the [edit name|email|message] row (item 2): the same bracket grammar, spaced
+   like the action row but sitting just under the field list, above [send] */
+.contact-edits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 6px;
+  margin: 2px 0 8px;
+}
+/* [cancel] and the edit chips are quiet dim-to-accent secondaries (the same
+   treatment the /chat keybar gives [clear]) so they never read as a second
+   primary next to [send]. */
+.contact-cancel,
+.contact-edit {
   color: var(--dim);
 }
 .contact-cancel:hover,
-.contact-cancel:focus-visible {
+.contact-cancel:focus-visible,
+.contact-edit:hover,
+.contact-edit:focus-visible {
   color: var(--accent);
 }
 .contact-cancel:hover .lbl,
-.contact-cancel:focus-visible .lbl {
+.contact-cancel:focus-visible .lbl,
+.contact-edit:hover .lbl,
+.contact-edit:focus-visible .lbl {
   background: none;
   color: inherit;
 }

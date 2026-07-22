@@ -41,8 +41,11 @@ import ThemeToggle from "@/components/ThemeToggle.astro";
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const isHome = path === "/";
 // /chat now docks the composer into its panel (Phase 4B), so it hides the
-// header input row too, joining the homepage.
-const ownsInput = isHome || path === "/chat";
+// header input row too, joining the homepage. /contact mirrors the /chat
+// surface (the dedicated contact-flow route), so it docks its own composer and
+// hides the header row the same way; stamped here server-side so a full
+// /contact load never flashes two composers (CLS 0), matching syncHeaderChat.
+const ownsInput = isHome || path === "/chat" || path === "/contact";
 const screen = path === "/chat" ? "chat" : isHome ? "home" : "page";
 const Wm = isHome ? "h1" : "p";
 ---
