@@ -46,6 +46,7 @@ Lowercase is preserved ONLY for literal terminal tokens, i.e. things the visitor
 - Typed commands and their bracket-menu labels: `work`, `about`, `chat`, `clear`, `help`, `contact`, `resume`, `hello` (and the HELP list's command column)
 - File-ish names: `build.log`, `resume.pdf`
 - URLs, email addresses, domains (e.g. `brohde.com`, `brian@brohde.com`)
+- **Monotype layout features (Brian, 2026-07-22): when a structural label renders in the mono voice (the article nav's `newer`/`older`, the date line's `log` kicker, button labels like `clear`/`send`/`cancel`), keep the text lowercase for stylistic purposes.** These are chrome, not sentences; the mono face carries the machine register and lowercase completes it. Human-language copy in the editorial face keeps sentence case as above.
 
 When a sentence needs to reference one of those tokens inline, the token itself still stays lowercase even though the sentence around it is capitalized (e.g. "Type `help` for commands").
 

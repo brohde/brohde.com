@@ -43,10 +43,14 @@ import ProfileLinks from "@/components/ProfileLinks.astro";
       elements, which would fuse "Founder," to the link and eat the middot
       gaps */
   }
+  {
+    /* The founder credit stays on-site too (Brian, 2026-07-22): the article
+      links out to eightangle.com itself, and visitors should learn about
+      him here first. */
+  }
   <p class="cco">
     Founder,{" "}
-    <a href={COMPANIES.eightAngle} target="_blank" rel="noopener">Eight Angle</a
-    >
+    <a href={logHref("eight-angle-ml")}>Eight Angle</a>
   </p>
   {
     /* #162: "(contract)" replaced by "via Beyond": the agency named and
@@ -60,16 +64,17 @@ import ProfileLinks from "@/components/ProfileLinks.astro";
       for these lines holds). */
   }
   {
-    /* Gong and Twilio drive to Brian's LinkedIn, not the company sites
-      (Brian, 2026-07-22: "I would rather drive them to my LinkedIn"; the
-      profile carries his time there, the company homepage sells the
-      company). Facebook/Google keep linking their case-study proof. */
+    /* Every company credit links its proof (Brian, 2026-07-22): Twilio,
+      Facebook, and Google land on their case-study pages; Gong, with no
+      article yet, drives to Brian's LinkedIn instead of gong.io ("I would
+      rather drive them to my LinkedIn"; the profile carries his tenure,
+      the company homepage sells the company). */
   }
   <p class="cco">
     <span class="d">Prev:</span>{" "}
     <a href={LINKS.linkedin} target="_blank" rel="noopener">Gong</a>{" "}
     <span class="d">·</span>{" "}
-    <a href={LINKS.linkedin} target="_blank" rel="noopener">Twilio</a>{" "}
+    <a href={logHref("twilio-signal-pong")}>Twilio</a>{" "}
     <span class="d">·</span>{" "}
     <a href={logHref("facebook-newsroom")}>Facebook</a> +{" "}
     <a href={logHref("google-android-for-work")}>Google</a>{" "}

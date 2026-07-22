@@ -33,13 +33,13 @@ const { newer = null, older = null } = Astro.props;
     <nav class="anavmore" aria-label="More from the log">
       {newer && (
         <a class="anavlink navnewer" href={logHref(newer.id)}>
-          <span class="navdir">Newer</span>
+          <span class="navdir">newer</span>
           <span class="navttl">{newer.data.title}</span>
         </a>
       )}
       {older && (
         <a class="anavlink navolder" href={logHref(older.id)}>
-          <span class="navdir">Older</span>
+          <span class="navdir">older</span>
           <span class="navttl">{older.data.title}</span>
         </a>
       )}
