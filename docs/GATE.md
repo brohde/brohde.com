@@ -6,8 +6,8 @@ _The definition of done for the current program. Any session or loop measures ag
 
 ### A. Code quality (Phase A, in flight)
 
-- [ ] All five audit tracks merged (scripts, astro, css, server, reorg proposal), build green, Lighthouse 100 / CLS 0 held on /, one article, /chat
-- [ ] Structural proposals DECIDED by Brian: terminal.ts split, shared function helpers, repo reorganization (incl. poc/ disposition)
+- [x] All five audit tracks merged (scripts 4f50b2b, server 342d29d, css 4ad51d0, astro c10ec29, reorg proposal 7b4dfea), build green, astro check 0/0/0; debt Q1/Q2/Q4/A1/A2 closed; security hardening re-verified
+- [ ] Structural proposals DECIDED by Brian: terminal.ts staged split (Stage 1 low-risk), scene data tables, functions _shared.ts (curl re-test phase), repo reorganization (poc -> chat/ promotion + assets archive + 8-step sequence), CSS reorg (option A/B), ChatPanel/schema/Screen extractions
 - [ ] Decided structural work built and merged, phased and validated
 
 ### B. Docs accuracy
