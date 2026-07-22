@@ -645,7 +645,9 @@ html.cfocus .wm .caret {
   color: var(--dim);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  transition: color 120ms ease;
+  transition:
+    color 120ms ease,
+    transform 120ms ease;
 }
 /* Titles read at a controlled measure (Brian, 2026-07-21: "more readable,
    add some margin right"): a wrap ceiling well short of the column edge plus
@@ -671,9 +673,12 @@ html.cfocus .wm .caret {
 /* only real link rows answer the cursor: the coming-soon rows (item 11) are
    plain <div>s, no affordance, so a bare .lentry:hover would falsely imply
    they are clickable. Scoped to a.lentry. */
+/* date and title nudge together (Brian, 2026-07-22: only the title
+   shifting looked odd), so the whole record moves as one unit */
 a.lentry:hover .lts,
 a.lentry:focus-visible .lts {
   color: var(--accent);
+  transform: translateX(2px);
 }
 a.lentry:hover .lttl,
 a.lentry:focus-visible .lttl {

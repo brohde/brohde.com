@@ -1,8 +1,8 @@
 ---
-title: "Twilio SIGNAL: building Signal pong, a multiplayer game for the conference floor"
+title: "Twilio SIGNAL: Building a multi-player game and custom device “Hackpack”"
 description: "How I designed and built Signal pong, a multiplayer game and device to showcase Twilio’s products on the conference floor."
 date: 2018-10-25
-draft: true
+draft: false
 theme: twilio
 ---
 
