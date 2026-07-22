@@ -3,7 +3,6 @@ title: "Wealth management client uses ChatGPT to write and design his own websit
 description: "A banker designed his own site in ChatGPT, pixel by pixel, and handed me eight PNGs; I built it in Astro and used Pastel to turn his 435 review comments into a real, accessible site."
 date: 2026-06-30
 draft: false
-published: true
 theme: goldcoast
 ---
 

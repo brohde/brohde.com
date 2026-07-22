@@ -3,7 +3,6 @@ title: "Google’s Android for Work Website"
 description: "How I built Google’s Android for Work marketing site front end entirely inside Google’s internal CMS, JavaScript libraries, and code standards."
 date: 2015-09-01
 draft: false
-published: true
 theme: android
 ---
 
