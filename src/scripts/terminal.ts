@@ -92,6 +92,14 @@ let pendingFocus: string | null = null;
    send; the flag lets initPage tell them apart. */
 let pendingEmulate = false;
 
+/* #150 Phase 3 matrix choreography. Set at astro:before-swap when the crossing
+   is choreographed (the destination scene theme differs from the current one,
+   so navTravel + the nav surge already fired during the swap and <html> carries
+   data-vt-matrix); the page-load handler then only syncs state (no second
+   surge) and clears the flag. Same-theme crossings never set it and keep the
+   fast concurrent fade. Recomputed on every before-swap, never mid-transition. */
+let navChoreographed = false;
+
 /* Contact flow state (Phase B item 1). When non-null the flow owns every TYPED
    send: the submit handler routes to contactSend instead of the command router,
    so the visitor's words are the message / name / email / confirm answer, not a
@@ -1928,9 +1936,35 @@ function setupOnce() {
   // Also: leaving /chat drops the thread (item, above), so the next arrival is
   // pristine. At astro:before-swap the OUTGOING page is still the live
   // document, so currentScreen reports the page being left.
-  document.addEventListener("astro:before-swap", () => {
+  document.addEventListener("astro:before-swap", (event) => {
     cancelRedirect("nav");
     if (currentScreen() === "chat") dropThread();
+
+    // #150 Phase 3 matrix gate. The destination scene theme is read from the
+    // INCOMING document's own .screen section (undefined -> the site default),
+    // never from the persisted [data-scene] node, which still holds the OLD
+    // page's theme. GOVERNING RULE (Brian): the choreographed sequence runs
+    // ONLY when the destination theme differs from the current one; a same-mark
+    // crossing (home <-> /about, both "default") keeps today's fast concurrent
+    // fade with no stamp. The stamp is recomputed here on every swap and never
+    // mutated mid-transition; documentElement persists across the swap, so it
+    // survives the transition it governs.
+    const root = document.documentElement;
+    navChoreographed = false;
+    if (sceneMod) {
+      const raw = event.newDocument.querySelector<HTMLElement>(".screen")
+        ?.dataset.sceneTheme;
+      const destTheme = sceneMod.isThemeName(raw) ? raw : "default";
+      const handle = sceneMod.initScene();
+      if (handle && handle.getTheme() !== destTheme) {
+        root.dataset.vtMatrix = ""; // opens the matrix CSS window for this swap
+        handle.navTravel(destTheme); // compressed mark travel + one nav surge
+        navChoreographed = true;
+      }
+    }
+    // Same-theme, or the module has not loaded yet: ensure no stale stamp is
+    // present so the default fast fade governs the column swap.
+    if (!navChoreographed) delete root.dataset.vtMatrix;
   });
 
   // #145/#150: stamp the persisted header's per-page state during the swap
@@ -2003,7 +2037,20 @@ function setupOnce() {
     });
   };
   document.addEventListener("astro:page-load", requestScene);
-  document.addEventListener("astro:page-load", () => syncSceneState(true));
+  document.addEventListener("astro:page-load", () => {
+    // #150 Phase 3: when the before-swap gate ran navTravel (the destination
+    // theme differed), the identity travel AND the nav surge already fired
+    // during the swap. Page-load then only syncs the chat/home tint: setTheme
+    // no-ops on the already-applied destination, and NO second surge fires.
+    // Otherwise the normal fallback path travels + surges here (covers a
+    // same-theme crossing, the module not being loaded yet, and hard loads).
+    if (navChoreographed) {
+      navChoreographed = false;
+      syncSceneState(false);
+    } else {
+      syncSceneState(true);
+    }
+  });
 }
 
 const w = window as unknown as { __terminalInit?: boolean };

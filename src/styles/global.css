@@ -339,6 +339,23 @@ main {
 ::view-transition-new(main) {
   animation: vt-main-in 220ms ease 40ms both;
 }
+/* Matrix crossing (#150 Phase 3): stamped on <html> by terminal.ts, ONLY for a
+   navigation whose destination scene theme differs from the current one (a
+   same-mark crossing keeps the fast concurrent fade above). The old column
+   clears fast (140ms) and the new column holds off until 460ms, opening a
+   140-460ms window where neither column snapshot is painted and the live scene
+   beneath is the visible event: the mark dissolves to tide and reforms as the
+   new page's mark (the scene's compressed nav envelope), and the new column
+   lands as that mark finishes forming. Higher specificity than the defaults, so
+   it wins while the stamp is present and yields to the defaults when it is not.
+   documentElement persists across the swap, so the stamp survives the very
+   transition it governs. */
+html[data-vt-matrix]::view-transition-old(main) {
+  animation: vt-main-out 140ms ease both;
+}
+html[data-vt-matrix]::view-transition-new(main) {
+  animation: vt-main-in 200ms ease 460ms both;
+}
 @keyframes vt-main-out {
   to {
     opacity: 0;
@@ -357,7 +374,9 @@ main {
    transition, the swap settles in a single frame. */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(main),
-  ::view-transition-new(main) {
+  ::view-transition-new(main),
+  html[data-vt-matrix]::view-transition-old(main),
+  html[data-vt-matrix]::view-transition-new(main) {
     animation: none;
   }
 }
