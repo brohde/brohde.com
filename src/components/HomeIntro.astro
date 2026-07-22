@@ -14,7 +14,7 @@
  * external or internal; the ledger keeps its ↗ convention (#68). If the
  * markers come back, restore "one affordance per link type" here.
  */
-import { COMPANIES, LINKS, logHref } from "@/lib/site";
+import { LINKS, logHref } from "@/lib/site";
 import ProfileLinks from "@/components/ProfileLinks.astro";
 
 /* The Facebook/Google credits link their case-study pages unconditionally
@@ -81,7 +81,7 @@ import ProfileLinks from "@/components/ProfileLinks.astro";
     <span class="cnote cvia"
       >via{" "}<a
         class="dimlink"
-        href={COMPANIES.beyond}
+        href={LINKS.linkedin}
         target="_blank"
         rel="noopener">Beyond</a
       ></span
