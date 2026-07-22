@@ -10,6 +10,35 @@
    a screen, not a theme, and never follows the page ground.
    ========================================================================== */
 
+/* ============================================================================
+   SECTION MAP (file order; #213 in-file reorg per docs/reference/handoffs/
+   audit-css.md option A). The chat surface is now one contiguous region: the
+   ledger + footer were lifted out of the middle of it and sit up with the
+   other page-structure blocks. Pure block moves + this map; zero built-CSS
+   change (comments are stripped by the bundler, and the moved blocks have
+   selectors disjoint from what they leapfrogged, so cascade order is
+   unchanged).
+
+     1.  layout                 (.wrap, .screen, .d/.cmt, .caret)
+     2.  global site header     (.shead/.idrow/.wm/.snav/.hchat family/home masthead)
+     3.  editorial identity     (.cid/.crole/.cco/.cprofiles/.cvia/.ext)
+     4.  the log as a ledger    (.clog/.lentry/.lts/.lttl/.lsoon/.extmark/.extdom)
+     5.  site footer            (.sfoot/.homepad)
+     6.  chat-surface buttons   (.cbtn, .hint)
+     7.  the slab material      (.slab)
+     8.  /chat: one joined object (.slab-chat/.chatcomposer/.chatbody/.chatcmds/.turn)
+     9.  the chat screen bits   (.chatlog/.uline/.reply/.out/.cmdlink)
+     10. contact flow           (the .contact- and .cc- families)
+     11. redirect countdown     (the .rdx- family)
+     12. thinking indicator     (.thinking/.tdots/.tlabel)
+     13. keybar                 (.keybar)
+     14. prose                  (about + article reading type)
+     15. article pages          (.artpad/.adate/.atitle/.astats)
+     16. article prev/next nav  (.anavmore)
+     17. article figures        (.prose figure ...)
+     18. small screens          (media queries)
+   ========================================================================== */
+
 .wrap {
   max-width: 760px;
   margin: 0 auto;
@@ -581,6 +610,147 @@ html.cfocus .wm .caret {
   vertical-align: 1px;
 }
 
+/* ------------------------- the log as a ledger (#67) --------------------- */
+/* A work record a client can audit. Restyled per Brian's batch 77 change
+   order: the mono date sits ABOVE the title, the title is the editorial
+   body voice (normal weight, body size, matching the homepage's .cco
+   editorial copy), hairline separators BETWEEN rows only (no top/bottom
+   frame), and the old "log" label line is gone (the section's sr-only
+   heading carries the semantics). Rows stay borderless standalone links:
+   hover/focus color is the affordance, per the nav-token argument (these
+   are not links in running text, so G183/#99 does not bind). */
+/* Phase 4A spacing: the below-gap under the flow chat bar is 42px total,
+   measured from the bar's bottom edge to the first ledger entry, with the
+   hint line's reserved height (#hint-top) living INSIDE it: the hint's 6px
+   top margin + its ~17px reserved height + this 19px = ~42px, so the ledger
+   starts right after the 42px (not 42 + the old 48 stacked). Homepage only
+   (ArticleLog renders .clog nowhere else; the styleguide specimen zeroes
+   this inline). Measured value; tune here if the rendered gap drifts. */
+.clog {
+  margin-top: 19px;
+}
+.lentry {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  padding: 14px 2px;
+  text-decoration: none;
+}
+.lentry + .lentry {
+  border-top: 1px solid var(--line);
+}
+.lts {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transition: color 120ms ease;
+}
+.lttl {
+  font-family: var(--font-edit);
+  font-weight: 400;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--bright);
+  transition:
+    color 120ms ease,
+    transform 120ms ease;
+}
+/* #150 micro-add: the whole record answers the cursor. The date joins the
+   title's accent, and the title nudges 2px in the reading direction
+   (transform only, compositor-cheap, zero layout). Ties the long list to
+   the single-cursor model (#63); the reduced-motion kill switch makes the
+   change instant, and a static 2px offset on hover is position, not
+   motion. */
+/* only real link rows answer the cursor: the coming-soon rows (item 11) are
+   plain <div>s, no affordance, so a bare .lentry:hover would falsely imply
+   they are clickable. Scoped to a.lentry. */
+a.lentry:hover .lts,
+a.lentry:focus-visible .lts {
+  color: var(--accent);
+}
+a.lentry:hover .lttl,
+a.lentry:focus-visible .lttl {
+  color: var(--accent);
+  transform: translateX(2px);
+}
+/* Item 11: unpublished entries list as plain text with a quiet [coming soon]
+   status token, in the site's bracket-token family (like [clear]; #76 keeps
+   these lowercase). Dim mono, one non-wrapping unit trailing the title. */
+.lsoon {
+  display: inline-block;
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+/* #141: external entries carry their destination domain with the arrow,
+   small and lighter than the title, never underlined (#68: inline-block
+   keeps underlines out). One non-wrapping unit so a narrow viewport wraps
+   "arrow + domain" to the next line together, never splits them. The dim
+   ink stays dim on row hover on purpose: destination is metadata, the
+   title carries the hover voice. */
+.lttl .extmark {
+  display: inline-block;
+  white-space: nowrap;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--dim);
+  margin-left: 6px;
+}
+.lttl .extmark .ext {
+  margin-left: 0;
+}
+.extdom {
+  margin-left: 4px;
+}
+
+/* --------------------------- site footer (#91) --------------------------- */
+/* Replaces the home slab's status + "# brohde.com" lines, which were mono
+   chrome sitting inside the homepage wrap. This is a real site footer: it
+   renders from BaseLayout OUTSIDE .screen, so it is never nested in a
+   section and therefore always maps to the one contentinfo landmark, the
+   same on every page, /chat included (#108: the chat page sits on the
+   editorial ground like every other page).
+   Editorial face on the editorial ground. Dim ink holds 7.19:1 (night) and
+   7.97:1 (light) against the ground, past the 4.5:1 AA floor. Static and
+   server rendered above the fold boundary of nothing, so CLS stays 0. */
+/* The row (#101) also carries the theme control (#92), which used to be a
+   fixed overlay and occluded body text through the whole scroll on mobile.
+   Copyright left, control right, on one line: measured 38px of clearance at
+   320px, the narrowest realistic viewport. flex-wrap is a safety valve only,
+   and its real trigger is a LONGER COPYRIGHT STRING, not a text-size change
+   (this face is sized in px, so a root font-size preference cannot move it;
+   page zoom scales the whole row together and reflow is covered by the 320px
+   case above). Verified: at 320px a string long enough to close the gap
+   stacks the control onto its own line instead of colliding.
+   The bottom padding clears the iOS home indicator now that a real touch
+   target, not just text, ends the page. */
+.sfoot {
+  border-top: 1px solid var(--line);
+  padding: 18px 0 calc(28px + env(safe-area-inset-bottom, 0px));
+}
+.sfoot .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+.sfoot p {
+  margin: 0;
+  font-family: var(--font-edit);
+  font-size: 13.5px;
+  color: var(--dim);
+}
+.homepad {
+  padding-top: 4px;
+  padding-bottom: 36px;
+}
+
 /* ---------------------- chat-surface buttons ----------------------------- */
 /* Real buttons for the chat controls (Brian: "make it look more like a
    button", the bracket treatment dropped). ONE grammar shared by the /chat
@@ -981,147 +1151,6 @@ html.cfocus .wm .caret {
     opacity: 0;
     transform: translateY(6px);
   }
-}
-
-/* ------------------------- the log as a ledger (#67) --------------------- */
-/* A work record a client can audit. Restyled per Brian's batch 77 change
-   order: the mono date sits ABOVE the title, the title is the editorial
-   body voice (normal weight, body size, matching the homepage's .cco
-   editorial copy), hairline separators BETWEEN rows only (no top/bottom
-   frame), and the old "log" label line is gone (the section's sr-only
-   heading carries the semantics). Rows stay borderless standalone links:
-   hover/focus color is the affordance, per the nav-token argument (these
-   are not links in running text, so G183/#99 does not bind). */
-/* Phase 4A spacing: the below-gap under the flow chat bar is 42px total,
-   measured from the bar's bottom edge to the first ledger entry, with the
-   hint line's reserved height (#hint-top) living INSIDE it: the hint's 6px
-   top margin + its ~17px reserved height + this 19px = ~42px, so the ledger
-   starts right after the 42px (not 42 + the old 48 stacked). Homepage only
-   (ArticleLog renders .clog nowhere else; the styleguide specimen zeroes
-   this inline). Measured value; tune here if the rendered gap drifts. */
-.clog {
-  margin-top: 19px;
-}
-.lentry {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2px;
-  padding: 14px 2px;
-  text-decoration: none;
-}
-.lentry + .lentry {
-  border-top: 1px solid var(--line);
-}
-.lts {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--dim);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  transition: color 120ms ease;
-}
-.lttl {
-  font-family: var(--font-edit);
-  font-weight: 400;
-  font-size: 15.5px;
-  line-height: 1.5;
-  color: var(--bright);
-  transition:
-    color 120ms ease,
-    transform 120ms ease;
-}
-/* #150 micro-add: the whole record answers the cursor. The date joins the
-   title's accent, and the title nudges 2px in the reading direction
-   (transform only, compositor-cheap, zero layout). Ties the long list to
-   the single-cursor model (#63); the reduced-motion kill switch makes the
-   change instant, and a static 2px offset on hover is position, not
-   motion. */
-/* only real link rows answer the cursor: the coming-soon rows (item 11) are
-   plain <div>s, no affordance, so a bare .lentry:hover would falsely imply
-   they are clickable. Scoped to a.lentry. */
-a.lentry:hover .lts,
-a.lentry:focus-visible .lts {
-  color: var(--accent);
-}
-a.lentry:hover .lttl,
-a.lentry:focus-visible .lttl {
-  color: var(--accent);
-  transform: translateX(2px);
-}
-/* Item 11: unpublished entries list as plain text with a quiet [coming soon]
-   status token, in the site's bracket-token family (like [clear]; #76 keeps
-   these lowercase). Dim mono, one non-wrapping unit trailing the title. */
-.lsoon {
-  display: inline-block;
-  margin-left: 8px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--dim);
-  white-space: nowrap;
-}
-/* #141: external entries carry their destination domain with the arrow,
-   small and lighter than the title, never underlined (#68: inline-block
-   keeps underlines out). One non-wrapping unit so a narrow viewport wraps
-   "arrow + domain" to the next line together, never splits them. The dim
-   ink stays dim on row hover on purpose: destination is metadata, the
-   title carries the hover voice. */
-.lttl .extmark {
-  display: inline-block;
-  white-space: nowrap;
-  text-decoration: none;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--dim);
-  margin-left: 6px;
-}
-.lttl .extmark .ext {
-  margin-left: 0;
-}
-.extdom {
-  margin-left: 4px;
-}
-
-/* --------------------------- site footer (#91) --------------------------- */
-/* Replaces the home slab's status + "# brohde.com" lines, which were mono
-   chrome sitting inside the homepage wrap. This is a real site footer: it
-   renders from BaseLayout OUTSIDE .screen, so it is never nested in a
-   section and therefore always maps to the one contentinfo landmark, the
-   same on every page, /chat included (#108: the chat page sits on the
-   editorial ground like every other page).
-   Editorial face on the editorial ground. Dim ink holds 7.19:1 (night) and
-   7.97:1 (light) against the ground, past the 4.5:1 AA floor. Static and
-   server rendered above the fold boundary of nothing, so CLS stays 0. */
-/* The row (#101) also carries the theme control (#92), which used to be a
-   fixed overlay and occluded body text through the whole scroll on mobile.
-   Copyright left, control right, on one line: measured 38px of clearance at
-   320px, the narrowest realistic viewport. flex-wrap is a safety valve only,
-   and its real trigger is a LONGER COPYRIGHT STRING, not a text-size change
-   (this face is sized in px, so a root font-size preference cannot move it;
-   page zoom scales the whole row together and reflow is covered by the 320px
-   case above). Verified: at 320px a string long enough to close the gap
-   stacks the control onto its own line instead of colliding.
-   The bottom padding clears the iOS home indicator now that a real touch
-   target, not just text, ends the page. */
-.sfoot {
-  border-top: 1px solid var(--line);
-  padding: 18px 0 calc(28px + env(safe-area-inset-bottom, 0px));
-}
-.sfoot .wrap {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px 16px;
-}
-.sfoot p {
-  margin: 0;
-  font-family: var(--font-edit);
-  font-size: 13.5px;
-  color: var(--dim);
-}
-.homepad {
-  padding-top: 4px;
-  padding-bottom: 36px;
 }
 
 /* ------------------------ the chat screen bits --------------------------- */

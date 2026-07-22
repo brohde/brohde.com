@@ -1,22 +1,13 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Scene from "@/components/Scene.astro";
-import { SITE, LINKS, COMPANIES } from "@/lib/site";
+import { COMPANIES } from "@/lib/site";
+import { profilePageLd } from "@/lib/schema";
 
 const description =
   "Brian Rohde is an AI Product Engineer in San Francisco who ships full-stack AI products end to end: model, app, and the infrastructure underneath.";
 
-const profilePage = {
-  "@context": "https://schema.org",
-  "@type": "ProfilePage",
-  mainEntity: {
-    "@type": "Person",
-    name: SITE.author,
-    jobTitle: "AI Product Engineer",
-    url: SITE.url,
-    sameAs: [LINKS.linkedin, LINKS.x, COMPANIES.eightAngle],
-  },
-};
+const profilePage = profilePageLd();
 ---
 
 <BaseLayout title="About" description={description} jsonLd={profilePage}>

@@ -1,39 +1,17 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Scene from "@/components/Scene.astro";
-import ChatBar from "@/components/ChatBar.astro";
+import ChatPanel from "@/components/ChatPanel.astro";
 
 /**
- * /chat, a normal page in the global shell (#108). The frame is the same as
- * every other page: standard global header above (Phase 4B: /chat reverts to
- * the interior header, no sticky band, minus the input row), footer below,
- * the transcript in the LEFT COLUMN (#109) with the right gutter kept for
- * the scene.
- *
- * Phase 4B: the composer LEAVES the header and docks INTO the phosphor
- * panel as its top edge, so the input and the transcript read as ONE
- * continuous night-material object (Brian: the header input felt disjointed
- * from the response box). It is the same ChatBar material as everywhere else
- * (one source), seated seamlessly (no border between the input row and the
- * transcript; the panel's outer border + radius wrap both), and PINNED
- * (position: sticky; top: 0) within the panel so it stays in view while a
- * long thread scrolls, releasing when the panel's bottom passes.
- *
- * The transcript flows NEWEST FIRST: each send prepends a .turn block
- * directly beneath the composer (terminal.ts beginTurn), so the answer
- * blooms where the visitor is already looking; older turns flow downward.
- * When the panel is pristine (no thread, no pending question) terminal.ts
- * injects a time-of-day greeting into the empty log in place of the retired
- * "#" intro lines; the first real turn drops it and clear brings it back.
- *
- * The panel (slab screen material, #67) gets a min-height that extends it to
- * ~28px above the viewport bottom on load (Phase 4B), so the object fills the
- * first view and the footer falls below the fold; long content grows the
- * panel and the PAGE scrolls (no internal scroll region). No title bar or
- * ready dot (machine cosplay #116 retired). Golden hour (#74) is atmosphere
- * only. Copy sentence-cased per #76. Keybar is [clear] only, right-aligned
- * (Phase 4B): [help] still works typed; [clear] is the one control the site
- * nav does not otherwise carry.
+ * /chat, a normal page in the global shell (#108). The surface (Scene + the
+ * .screen section + docked ChatBar composer + transcript + [clear] keybar) is
+ * the shared ChatPanel, so /chat and /contact can never drift. Phase 4B: the
+ * composer docks INTO the phosphor panel as its top edge, the transcript flows
+ * NEWEST FIRST (terminal.ts beginTurn), and terminal.ts injects a time-of-day
+ * greeting into the empty log when the panel is pristine. The panel gets a
+ * min-height that extends it to ~28px above the viewport bottom on load; long
+ * content grows the panel and the page scrolls (no internal scroll region).
+ * noindex: a functional surface, not indexable content.
  */
 ---
 
@@ -42,65 +20,5 @@ import ChatBar from "@/components/ChatBar.astro";
   description="Ask about Brian Rohde’s work. Answers come from a live model."
   noindex={true}
 >
-  {
-    /* the scene in its golden-hour chat state (#74/#108) on the default BR
-    identity (#150: /chat always resets to default + golden hour). Carrying
-    the scene also puts this page on the full-width shell automatically
-    (body:has(.scene), #125/#126). */
-  }
-  <Scene state="chat" />
-  <section class="screen" id="scr-chat" data-screen="chat" tabindex="-1">
-    <div class="wrap chatpad">
-      <main id="main">
-        <h1 class="sr">Chat</h1>
-        <section class="slab slab-chat" aria-label="Chat">
-          {
-            /* the pin sentinel: a 0-layout marker terminal.ts watches with an
-            IntersectionObserver to know when the sticky composer is stuck at
-            the viewport top (so it can gain its bottom hairline only then). */
-          }
-          <div class="pin-sentinel" aria-hidden="true"></div>
-          {
-            /* the composer docked as the panel's top edge (Phase 4B): ONE
-            material with the site's chat input, seamless with the transcript
-            below, sticky within the panel. aria-controls ties it to its
-            transcript, server-rendered on this same page. */
-          }
-          <ChatBar
-            inputId="in-chat"
-            class="chatcomposer"
-            ariaControls="chatlog"
-          />
-          <div class="slabbody chatbody">
-            <div class="chatlog" id="chatlog">
-              {
-                /* Pristine empty state: terminal.ts injects a time-of-day
-                greeting here when there is no thread and no pending question.
-                It is never server-rendered, so it can never flash before a
-                restored or pending thread renders. */
-              }
-            </div>
-            {
-              /* no live region here: terminal.ts owns the single polite
-              announcer (created lazily on document.body), so chat output and
-              the #116 thinking state can never double-announce. It is also
-              what bridges the composer to this transcript in main. */
-            }
-          </div>
-          {
-            /* [clear] as the panel FOOTER (composer phase A item 5): the
-            transcript is newest-first, so the bottom is the oldest end of the
-            thread, and [clear] reads as the panel's quiet footer, not the first
-            control you meet. A direct .slab-chat child after the flex-grown
-            body, so it seats at the panel's bottom edge under a hairline. */
-          }
-          <nav class="keybar chatcmds" aria-label="Commands">
-            <button type="button" class="cbtn" data-cmd="clear">
-              <span class="lbl">clear</span>
-            </button>
-          </nav>
-        </section>
-      </main>
-    </div>
-  </section>
+  <ChatPanel screenId="scr-chat" label="Chat" />
 </BaseLayout>

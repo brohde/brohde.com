@@ -1,0 +1,100 @@
+---
+import Scene from "@/components/Scene.astro";
+import ChatBar from "@/components/ChatBar.astro";
+
+/**
+ * The joined /chat + /contact surface (audit-astro proposal 1). Both pages are
+ * the SAME object: BaseLayout + the golden-hour chat Scene + the .screen section
+ * carrying data-screen="chat", the docked ChatBar composer, the chatbody
+ * transcript, and the [clear] keybar. Extracted here so a future chat-surface
+ * change is made once, not twice (the two pages had drifted into ~45 duplicated
+ * lines). Every currentScreen() gate, the pin observer, and the scene state all
+ * behave exactly as before because the markup is byte-identical.
+ *
+ * The differences are props:
+ *   - screenId: the section id (#scr-chat / #scr-contact), a stable hook.
+ *   - label:    the sr <h1> and the slab's aria-label ("Chat" / "Contact").
+ *   - arm:      stamps data-contact-arm. initPage reads it (on load and on every
+ *               astro:page-load refresh) and arms the contact flow with the
+ *               time-of-day greeting as the newest turn instead of the pristine
+ *               chat greeting. Absent on /chat, present on /contact.
+ *
+ * The composer input id stays "in-chat" on both surfaces: the contact flow
+ * targets that composer, and there is only ever one chat panel per page.
+ */
+interface Props {
+  /** section id, e.g. "scr-chat" or "scr-contact" */
+  screenId: string;
+  /** sr heading + slab aria-label, e.g. "Chat" or "Contact" */
+  label: string;
+  /** stamp data-contact-arm to arm the contact greeting on load (/contact) */
+  arm?: boolean;
+}
+const { screenId, label, arm = false } = Astro.props;
+// data-contact-arm is a bare attribute (the original static markup wrote it
+// valueless). Astro renders `={""}` bare but `={true}` as `="true"`, so the
+// empty string is what reproduces the byte-exact `data-contact-arm`.
+---
+
+{
+  /* the scene in its golden-hour chat state (#74/#108) on the default BR
+  identity (#150: /chat always resets to default + golden hour). Carrying the
+  scene also puts the page on the full-width shell (body:has(.scene),
+  #125/#126). */
+}
+<Scene state="chat" />
+<section
+  class="screen"
+  id={screenId}
+  data-screen="chat"
+  data-contact-arm={arm ? "" : undefined}
+  tabindex="-1"
+>
+  <div class="wrap chatpad">
+    <main id="main">
+      <h1 class="sr">{label}</h1>
+      <section class="slab slab-chat" aria-label={label}>
+        {
+          /* the pin sentinel: a 0-layout marker terminal.ts watches with an
+          IntersectionObserver to know when the sticky composer is stuck at the
+          viewport top (so it can gain its bottom hairline only then). */
+        }
+        <div class="pin-sentinel" aria-hidden="true"></div>
+        {
+          /* the composer docked as the panel's top edge (Phase 4B): ONE material
+          with the site's chat input, seamless with the transcript below, sticky
+          within the panel. aria-controls ties it to its transcript, server
+          rendered on this same page. */
+        }
+        <ChatBar inputId="in-chat" class="chatcomposer" ariaControls="chatlog" />
+        <div class="slabbody chatbody">
+          <div class="chatlog" id="chatlog">
+            {
+              /* Pristine empty state: terminal.ts injects a time-of-day greeting
+              (or, on /contact, the armed contact greeting) here. Never
+              server-rendered, so it can never flash before a restored or pending
+              thread renders. */
+            }
+          </div>
+          {
+            /* no live region here: terminal.ts owns the single polite announcer
+            (created lazily on document.body), so chat output and the #116
+            thinking state can never double-announce. */
+          }
+        </div>
+        {
+          /* [clear] as the panel FOOTER (composer phase A item 5): the transcript
+          is newest-first, so the bottom is the oldest end of the thread, and
+          [clear] reads as the panel's quiet footer, not the first control you
+          meet. A direct .slab-chat child after the flex-grown body, so it seats
+          at the panel's bottom edge under a hairline. */
+        }
+        <nav class="keybar chatcmds" aria-label="Commands">
+          <button type="button" class="cbtn" data-cmd="clear">
+            <span class="lbl">clear</span>
+          </button>
+        </nav>
+      </section>
+    </main>
+  </div>
+</section>

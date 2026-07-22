@@ -4,37 +4,10 @@ import ChatBar from "@/components/ChatBar.astro";
 import HomeIntro from "@/components/HomeIntro.astro";
 import Scene from "@/components/Scene.astro";
 import ArticleLog from "@/components/ArticleLog.astro";
-import { SITE, LINKS, COMPANIES } from "@/lib/site";
+import { personLd, websiteLd } from "@/lib/schema";
 
-const person = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: SITE.author,
-  url: SITE.url,
-  jobTitle: "AI Product Engineer",
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "San Francisco",
-    addressRegion: "CA",
-    addressCountry: "US",
-  },
-  sameAs: [LINKS.linkedin, LINKS.x, COMPANIES.eightAngle],
-  knowsAbout: [
-    "Machine learning",
-    "iOS development",
-    "Astro",
-    "Web performance",
-    "AI-assisted engineering",
-  ],
-};
-
-const website = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: SITE.name,
-  url: SITE.url,
-  author: { "@type": "Person", name: SITE.author },
-};
+const person = personLd();
+const website = websiteLd();
 ---
 
 <BaseLayout ogType="profile" jsonLd={[person, website]}>
