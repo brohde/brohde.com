@@ -12,7 +12,7 @@ theme: news
 
 <figure>
 
-<video src="/media/newsroom.mp4" poster="/media/newsroom-poster.jpg" controls preload="metadata" playsinline aria-label="Screen capture video of the shipped newsroom.fb.com"></video>
+<video src="/media/newsroom.mp4" poster="/media/newsroom-poster.jpg" controls autoplay muted loop preload="metadata" playsinline aria-label="Screen capture video of the shipped newsroom.fb.com"></video>
 
 <figcaption>The shipped Newsroom in motion: a screen capture recorded in 2017, three years after launch, still running the theme I built in 2014.</figcaption>
 

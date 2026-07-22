@@ -26,6 +26,14 @@ That’s the migration end to end: 13 pages off WordPress, checked against the o
 
 Nothing about the brand changed. Anthony’s site was already monochrome, full-bleed photography, restrained typography; the redesign kept that system and built the rest of the site up to it, instead of replacing it with something that happened to be easier to build. Every time a page’s design gets revisited, my rule is three genuinely different concepts, built as clickable HTML previews, before any of it touches real code. The press page concepts didn’t get built until extraction had delivered the real 25 press mentions, real publication names, real photos, so the review was against real content, not filler. Anthony liked pieces of two of the three: one concept’s photography, another’s typographic record of each mention. I sent that combination back as a new option. A couple of rounds later, the hybrid ("The Catalogue": a masonry of press plates, each with its entry printed underneath, readable without a hover) was the one that landed.
 
+<figure>
+
+![The refreshed press page at anthonythomasgalante.com: the lowercase wordmark with Collections, Custom, Press, and About navigation above the line "25 features & appearances in the press," and a masonry grid of press plates including Playbill, SwatchOn, Mutual Aid NYC, Cool Hunting, Photobook Magazine, and the Art Directors Guild Awards, each with its numbered entry printed beneath.](./press-live-2026-07.png)
+
+<figcaption><a href="https://anthonythomasgalante.com/press/" target="_blank" rel="noopener">anthonythomasgalante.com/press</a></figcaption>
+
+</figure>
+
 Same pattern on the collection pages: three structurally different hero treatments to solve one specific problem (tall 2:3 portrait photography meeting a wide desktop viewport), full crop versus full push versus something in between. Anthony picked the version that added a text column beside the photo instead of cropping it. I can generate concepts fast. Which one is right for someone else’s brand isn’t my call to make alone. The result reads like the same site, just working harder: no rebrand, no new visual language, just the version of it WordPress couldn’t build.
 
 <figure>

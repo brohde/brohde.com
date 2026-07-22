@@ -83,19 +83,36 @@ const ARTICLE_IMAGES = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true }
 );
 type StubFig =
-  | { kind: "img"; img: ImageMetadata; alt: string; caption: string }
-  | { kind: "video"; src: string; poster?: string; label: string; caption: string };
+  | { kind: "img"; img: ImageMetadata; alt: string; caption: string; cls?: string }
+  | {
+      kind: "video";
+      src: string;
+      poster?: string;
+      label: string;
+      caption: string;
+      cls?: string;
+      auto?: boolean;
+    };
 const stubFigs: StubFig[] = [];
 if (isStub && post.body) {
-  for (const b of post.body.matchAll(/<figure>([\s\S]*?)<\/figure>/g)) {
-    const block = b[1];
+  for (const b of post.body.matchAll(
+    /<figure(?:\s+class="([^"]*)")?>([\s\S]*?)<\/figure>/g
+  )) {
+    const cls = b[1];
+    const block = b[2];
     const caption =
       block.match(/<figcaption>([\s\S]*?)<\/figcaption>/)?.[1]?.trim() ?? "";
     const img = block.match(/!\[([^\]]*)\]\(\.\/([^)]+)\)/);
     if (img) {
       const mod = ARTICLE_IMAGES[`/src/content/articles/${post.id}/${img[2]}`];
       if (mod)
-        stubFigs.push({ kind: "img", img: mod.default, alt: img[1], caption });
+        stubFigs.push({
+          kind: "img",
+          img: mod.default,
+          alt: img[1],
+          caption,
+          cls,
+        });
       continue;
     }
     const vid = block.match(/<video[^>]*\bsrc="([^"]+)"[^>]*>/);
@@ -105,7 +122,10 @@ if (isStub && post.body) {
         src: vid[1],
         poster: block.match(/\bposter="([^"]+)"/)?.[1],
         label: block.match(/\baria-label="([^"]+)"/)?.[1] ?? "",
+        // silent captures may autoplay (muted loop rides along with it)
+        auto: /\bautoplay\b/.test(vid[0]),
         caption,
+        cls,
       });
     }
   }
@@ -166,24 +186,32 @@ const breadcrumbSchema = breadcrumbLd({ title, canonical });
             {isStub ? (
               <>
                 {stubFigs.map((f) => (
-                  <figure>
-                    {f.kind === "img" ? (
-                      <Image
-                        src={f.img}
-                        alt={f.alt}
-                        widths={[320, 640, 960, 1280]}
-                        sizes="(max-width: 700px) 92vw, 660px"
-                      />
-                    ) : (
-                      <video
-                        src={f.src}
-                        poster={f.poster}
-                        controls
-                        preload="metadata"
-                        playsinline
-                        aria-label={f.label}
-                      />
-                    )}
+                  <figure class={f.cls}>
+                    {/* media wrapped in <p> to mirror the markdown pipeline's
+                        output, so the .prose figure > p:has() plate rules
+                        (and the portrait cap) style stubs identically */}
+                    <p>
+                      {f.kind === "img" ? (
+                        <Image
+                          src={f.img}
+                          alt={f.alt}
+                          widths={[320, 640, 960, 1280]}
+                          sizes="(max-width: 700px) 92vw, 660px"
+                        />
+                      ) : (
+                        <video
+                          src={f.src}
+                          poster={f.poster}
+                          controls
+                          autoplay={f.auto}
+                          muted={f.auto}
+                          loop={f.auto}
+                          preload="metadata"
+                          playsinline
+                          aria-label={f.label}
+                        />
+                      )}
+                    </p>
                     {/* captions are repo-authored markup (may carry links) */}
                     <figcaption set:html={f.caption} />
                   </figure>

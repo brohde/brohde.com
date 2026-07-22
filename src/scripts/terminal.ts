@@ -1879,6 +1879,16 @@ function setupOnce() {
   document.addEventListener("astro:after-swap", () => {
     document.querySelectorAll("video").forEach((v) => v.load());
   });
+  // Reduced motion also governs autoplaying b-roll (silent loops on
+  // articles): strip the autoplay before it fires and leave the visitor
+  // the normal controls. Runs on page-load so hard loads are covered too.
+  document.addEventListener("astro:page-load", () => {
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.querySelectorAll<HTMLVideoElement>("video[autoplay]").forEach((v) => {
+      v.removeAttribute("autoplay");
+      v.pause();
+    });
+  });
 
   // per-page setup, on initial load and every VT navigation
   document.addEventListener("astro:page-load", initPage);

@@ -44,6 +44,14 @@ A model nobody installs is a research project. Everything a stranger sees first,
 
 </figure>
 
+<figure class="portrait">
+
+![The Eight Angle App Store listing in an iPhone frame: "Every practice, preserved." above a practice review screen with Save Highlight and Save Recording buttons, a Watch Practice button, and a Poses gallery of Crow, Upward Dog, Chaturanga, and Plank thumbnails.](./appstore-phone-2026-07.png)
+
+<figcaption><a href="https://apps.apple.com/us/app/eight-angle-yoga-pose-tracker/id6760512056" target="_blank" rel="noopener">Eight Angle on the App Store</a></figcaption>
+
+</figure>
+
 ## Free, then paid
 
 The app is free to download and use; you pay only for the thing at its center, the pose detection and the tracking it powers, at $5.99 a month or $39.99 a year. The 7-day trial is the part I’d point to: it starts not when you install but when you finish your first practice. Charging for value before someone has felt it is how trials get cancelled, so the clock waits until they have.
