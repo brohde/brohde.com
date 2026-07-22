@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "node scripts/build-chat-prompt.mjs && astro check && astro build",
+    "build": "node tools/build/build-chat-prompt.mjs && astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check",

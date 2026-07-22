@@ -23,7 +23,7 @@ dist/
 .dev.vars
 .dev.vars.*
 
-# generated: chat system prompt bundled from chat/ at build (see scripts/build-chat-prompt.mjs)
+# generated: chat system prompt bundled from chat/ at build (see tools/build/build-chat-prompt.mjs)
 functions/api/_chat-prompt.generated.ts
 
 # ephemeral eval working output (HTTP parity harness)

@@ -4,7 +4,7 @@ This directory is the source of truth for the site's chat: the system prompt, th
 facts pack, and the eval harness that signed the behavior off (38/38, decision
 #61). It is production infrastructure, not a throwaway. The production Cloudflare
 Pages Function (`functions/api/chat.ts`) does not duplicate this text: the build
-step `scripts/build-chat-prompt.mjs` (wired into `npm run build`) reads
+step `tools/build/build-chat-prompt.mjs` (wired into `npm run build`) reads
 `chat/system-prompt.md` + `chat/facts.md`, concatenates them, and emits the
 generated module the Function imports. Edit the prompt or the facts here, nowhere
 else.

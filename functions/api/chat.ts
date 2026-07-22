@@ -4,7 +4,7 @@
 //
 // This is a FAITHFUL port of the validated POC at chat/server.mjs, whose behavior is
 // FROZEN (38/38 eval, decision #61). Do not change model behavior here. The system prompt
-// and facts pack are NOT duplicated: scripts/build-chat-prompt.mjs reads the canonical
+// and facts pack are NOT duplicated: tools/build/build-chat-prompt.mjs reads the canonical
 // files in chat/ at build time (a prebuild step in `npm run build`) and emits
 // ./_chat-prompt.generated.ts, imported below. Edit the prompt/facts in chat/, never
 // here.
