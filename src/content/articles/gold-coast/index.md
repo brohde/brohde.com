@@ -46,7 +46,7 @@ Eight pages, one system, live at goldcoastcapm.com. My client can log into Keyst
 
 ![The finished goldcoastcapm.com homepage: a navy and gold Gold Coast Capital Management site with the headline "Independent Advice. Lower Fees. Trusted Long-Term Guidance," a Chicago skyline photo, and a row of figures reading 20 years experience, CFA charterholder, 100% client retention since founding, and a 0.50% advisory fee.](./hero-live-2026-07.png)
 
-<figcaption>The finished goldcoastcapm.com, built in Astro from the client's ChatGPT comps: his navy and gold, his exact copy. Captured 2026.</figcaption>
+<figcaption><a href="https://goldcoastcapm.com" target="_blank" rel="noopener">goldcoastcapm.com</a></figcaption>
 
 </figure>
 
