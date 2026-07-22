@@ -1,5 +1,5 @@
 ---
-title: "New client type: ChatGPT designer x banker: using AI to build from PNG visual design files"
+title: "Wealth management client uses ChatGPT to write and design his own website"
 description: "A banker designed his own site in ChatGPT, pixel by pixel, and handed me eight PNGs; I built it in Astro and used Pastel to turn his 435 review comments into a real, accessible site."
 date: 2026-06-30
 draft: false
