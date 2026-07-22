@@ -1,24 +1,24 @@
 ---
 title: "Twilio SIGNAL: building Signal pong, a multiplayer game for the conference floor"
-description: "How I designed and built Signal pong, a multiplayer game and device to showcase Twilio's products on the conference floor."
+description: "How I designed and built Signal pong, a multiplayer game and device to showcase Twilio’s products on the conference floor."
 date: 2018-10-25
 draft: true
 theme: twilio
 ---
 
-Most of what I did at Twilio was the website: the company's first CMS, a design system, the marketing pages behind it. This project was the exception. For Twilio's customer conference, I designed and built a multiplayer game and a device to show off what Twilio's products could do. It's called Signal pong.
+Most of what I did at Twilio was the website: the company’s first CMS, a design system, the marketing pages behind it. This project was the exception. For Twilio’s customer conference, I designed and built a multiplayer game and a device to show off what Twilio’s products could do. It’s called Signal pong.
 
 ## The problem
 
-A conference booth can only demonstrate so much. You can put an API on a screen, walk people through it, and hand out stickers, but developers remember the thing they got to touch. The goal was to build something for the show floor that showed off Twilio's products by letting attendees actually use them, and to make it hold up live, on its own, for the run of the event.
+A conference booth can only demonstrate so much. You can put an API on a screen, walk people through it, and hand out stickers, but developers remember the thing they got to touch. The goal was to build something for the show floor that showed off Twilio’s products by letting attendees actually use them, and to make it hold up live, on its own, for the run of the event.
 
 ## The approach
 
-I owned both halves: the game and the device it ran on. Designing and building both meant Signal pong had to be a real, working object on the floor, something a person could walk up to and play against someone else, not a demo video of an idea. Because it was built around Twilio's products, the gameplay was the pitch. Playing it was the demonstration.
+I owned both halves: the game and the device it ran on. Designing and building both meant Signal pong had to be a real, working object on the floor, something a person could walk up to and play against someone else, not a demo video of an idea. Because it was built around Twilio’s products, the gameplay was the pitch. Playing it was the demonstration.
 
 ## The result
 
-Signal pong ran at Twilio's customer conference, on the show floor, for attendees to play. There is a video of it in action.
+Signal pong ran at Twilio’s customer conference, on the show floor, for attendees to play. There is a video of it in action.
 
 <!--
   FIGURE SLOT (reserved): B-roll video of Signal pong running at the conference.

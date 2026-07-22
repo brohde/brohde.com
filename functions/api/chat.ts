@@ -197,7 +197,7 @@ function json(
 
 // Friendly, VOICE-clean operational errors (no dashes; "chat"/"prompt", never "terminal").
 const BLOCKED =
-  "couldn't verify that request. refresh the page and try again";
+  "couldn’t verify that request. refresh the page and try again";
 const THROTTLED = "too many messages right now. give it a minute";
 
 // Per-IP sliding-window rate limit. Two windows: a burst window and a daily cap. Tuned for
