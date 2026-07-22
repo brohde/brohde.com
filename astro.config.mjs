@@ -24,9 +24,13 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      // Keep internal / preview surfaces out of the sitemap.
+      // Keep internal / preview / noindex surfaces out of the sitemap
+      // (/contact is noindex like /chat; article stubs stay listed because
+      // they flip published soon and the ledger already links them).
       filter: (page) =>
-        !page.includes("/styleguide") && !page.includes("/chat"),
+        !page.includes("/styleguide") &&
+        !page.includes("/chat") &&
+        !page.includes("/contact"),
       // Sitemap URLs must agree with the canonical tags, which strip the
       // trailing slash everywhere except the root (SEO.astro).
       serialize: (item) => {
