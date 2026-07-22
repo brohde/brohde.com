@@ -5,6 +5,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import Scene from "@/components/Scene.astro";
 import ArticleNav from "@/components/ArticleNav.astro";
 import { SITE, logHref, logStamp, isoDate } from "@/lib/site";
+import { articleLd, breadcrumbLd } from "@/lib/schema";
 import { articleChain, neighborsOf } from "@/lib/articles";
 
 /**
@@ -113,38 +114,18 @@ const { title, description, date, stats, theme } = post.data;
 
 const canonical = new URL(logHref(post.id), SITE.url).href;
 
-const articleLd = {
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  headline: title,
-  ...(description ? { description } : {}),
-  datePublished: isoDate(date),
-  dateModified: isoDate(date),
-  author: { "@type": "Person", name: SITE.author, url: SITE.url },
-  publisher: { "@type": "Person", name: SITE.author },
-  mainEntityOfPage: canonical,
-  url: canonical,
-};
-
-// Breadcrumb trail (A2): home > this article, so search engines render the
-// path and the article is one hop off the site root (bare-slug URLs, #179).
-// Ships only on real articles, alongside articleLd; stubs stay JSON-LD-free
-// and noindex.
-const breadcrumbLd = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: SITE.name, item: SITE.url },
-    { "@type": "ListItem", position: 2, name: title, item: canonical },
-  ],
-};
+// JSON-LD (src/lib/schema.ts). BlogPosting always; BreadcrumbList (A2: home >
+// this article) alongside it. Both ship only on real articles; stubs stay
+// JSON-LD-free and noindex (see the jsonLd prop gate below).
+const articleSchema = articleLd({ title, description, date, canonical });
+const breadcrumbSchema = breadcrumbLd({ title, canonical });
 ---
 
 <BaseLayout
   title={title}
   description={description ?? SITE.description}
   ogType="article"
-  jsonLd={isStub ? undefined : [articleLd, breadcrumbLd]}
+  jsonLd={isStub ? undefined : [articleSchema, breadcrumbSchema]}
   noindex={isStub}
 >
   <Scene theme={theme} />

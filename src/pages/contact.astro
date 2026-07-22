@@ -1,24 +1,19 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import Scene from "@/components/Scene.astro";
-import ChatBar from "@/components/ChatBar.astro";
+import ChatPanel from "@/components/ChatPanel.astro";
 
 /**
  * /contact, a dedicated entry into the in-chat contact flow (fixbatch Phase 2).
- * The surface is the SAME joined object as /chat (BaseLayout + Scene + the
- * .screen section carrying data-screen="chat", the docked ChatBar composer, the
- * chatbody transcript, and the [clear] keybar), so every currentScreen() gate,
- * the pin observer, and the scene state all behave exactly as they do on /chat.
+ * The surface is the SAME joined object as /chat, rendered through the shared
+ * ChatPanel; the one addition is `arm`, which stamps data-contact-arm on the
+ * section. initPage reads it (on load and on every astro:page-load refresh) and
+ * arms the contact flow with the time-of-day greeting as the newest turn instead
+ * of the pristine chat greeting. There is no fake user echo. If a thread was
+ * rehydrated (visitor arrived mid-session) it stays below the greeting. The nav
+ * item / typed `contact` / open_page:contact entries are untouched and still
+ * play their emulation on /chat.
  *
- * The one addition is data-contact-arm on the section: initPage reads it and,
- * on load (and on every refresh, since initPage runs on astro:page-load), arms
- * the contact flow with the time-of-day greeting as the newest turn instead of
- * the pristine chat greeting. There is no fake user echo (nobody typed
- * anything). If a thread was rehydrated (the visitor arrived mid-session) it
- * stays below the greeting. The nav item / typed `contact` / open_page:contact
- * entries are untouched and still play their emulation on /chat.
- *
- * noindex like /chat: this is a functional entry point, not indexable content.
+ * noindex like /chat: a functional entry point, not indexable content.
  */
 ---
 
@@ -27,53 +22,5 @@ import ChatBar from "@/components/ChatBar.astro";
   description="Send Brian a message. His AI helps you write it."
   noindex={true}
 >
-  {
-    /* the scene in its golden-hour chat state, default BR identity, same as
-    /chat; carrying the scene also puts this page on the full-width shell
-    (body:has(.scene), #125/#126). */
-  }
-  <Scene state="chat" />
-  <section
-    class="screen"
-    id="scr-contact"
-    data-screen="chat"
-    data-contact-arm
-    tabindex="-1"
-  >
-    <div class="wrap chatpad">
-      <main id="main">
-        <h1 class="sr">Contact</h1>
-        <section class="slab slab-chat" aria-label="Contact">
-          {
-            /* the pin sentinel: a 0-layout marker terminal.ts watches to know
-            when the sticky composer is stuck at the viewport top. */
-          }
-          <div class="pin-sentinel" aria-hidden="true"></div>
-          {
-            /* the composer docked as the panel's top edge, ONE material with
-            the site's chat input, seamless with the transcript below. The
-            input id stays in-chat: the contact flow targets that composer. */
-          }
-          <ChatBar
-            inputId="in-chat"
-            class="chatcomposer"
-            ariaControls="chatlog"
-          />
-          <div class="slabbody chatbody">
-            <div class="chatlog" id="chatlog">
-              {
-                /* terminal.ts arms the contact flow here on load (the greeting
-                turn), so nothing is server-rendered into the log. */
-              }
-            </div>
-          </div>
-          <nav class="keybar chatcmds" aria-label="Commands">
-            <button type="button" class="cbtn" data-cmd="clear">
-              <span class="lbl">clear</span>
-            </button>
-          </nav>
-        </section>
-      </main>
-    </div>
-  </section>
+  <ChatPanel screenId="scr-contact" label="Contact" arm />
 </BaseLayout>
