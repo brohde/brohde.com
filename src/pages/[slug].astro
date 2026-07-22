@@ -45,6 +45,7 @@ export async function getStaticPaths() {
     "about",
     "chat",
     "contact",
+    "credits",
     "styleguide",
     "404",
     "index",
@@ -189,20 +190,9 @@ const articleLd = {
           </a>
         </footer>
         {
-          /* The Android robot in this page's scene is CC BY 3.0 (Google
-            brand guidelines); the user-visible attribution the license
-            requires rides the theme wiring, so it can never detach from
-            the identity it credits (#135 follow-up). */
-        }
-        {
-          theme === "android" && (
-            <p class="attrib">
-              The Android robot in this page's background is reproduced or
-              modified from work created and shared by Google and used
-              according to terms described in the Creative Commons 3.0
-              Attribution License.
-            </p>
-          )
+          /* The Android robot's CC BY 3.0 attribution (#135) lives on
+            /credits since 2026-07-21 (Brian's call), linked from the global
+            footer on every page. */
         }
       </main>
     </div>

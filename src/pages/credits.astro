@@ -1,0 +1,45 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Scene from "@/components/Scene.astro";
+
+/**
+ * Credits / colophon: third-party attributions live here, off the reading
+ * surfaces, linked from the global footer (Brian, 2026-07-21; the Android
+ * robot line moved here from the article template). CC BY 3.0 permits
+ * attribution "in any reasonable manner"; a credits page one click from
+ * every page satisfies it without a license notice inside an article.
+ */
+const description = "Attributions and typography credits for brohde.com.";
+---
+
+<BaseLayout title="Credits" description={description}>
+  <Scene />
+  <section class="screen" id="scr-credits" data-screen="credits" tabindex="-1">
+    <div class="wrap artpad">
+      <main id="main">
+        <h1 class="atitle">Credits</h1>
+        <article class="prose" style="margin-top:0">
+          <p>
+            The Android robot mark in the Android for Work article's background
+            is reproduced or modified from work created and shared by Google
+            and used according to terms described in the <a
+              href="https://creativecommons.org/licenses/by/3.0/"
+              target="_blank"
+              rel="noopener">Creative Commons 3.0 Attribution License</a
+            >.
+          </p>
+          <p>Typography is LL Circular, licensed from Lineto.</p>
+        </article>
+
+        <footer class="aend">
+          <a class="homechip" href="/">
+            <span class="br" aria-hidden="true">[</span>home<span
+              class="br"
+              aria-hidden="true">]</span
+            >
+          </a>
+        </footer>
+      </main>
+    </div>
+  </section>
+</BaseLayout>
