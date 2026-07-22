@@ -1,6 +1,6 @@
 /// <reference types="@cloudflare/workers-types" />
 //
-// POST /api/chat  —  production chat backend for brohde.com (Cloudflare Pages Function).
+// POST /api/chat: production chat backend for brohde.com (Cloudflare Pages Function).
 //
 // This is a FAITHFUL port of the validated POC at poc/chat/server.mjs, whose behavior is
 // FROZEN (38/38 eval, decision #61). Do not change model behavior here. The system prompt
