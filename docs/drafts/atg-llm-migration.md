@@ -3,7 +3,7 @@
 **Status:** draft v2
 **Type:** Project case study, WordPress-to-Astro migration and design refresh (freelance client work)
 **Suggested pre-date:** 2026-07-11 (the day the bulk of the build happened; see open questions on which date actually belongs on this)
-**Source project:** `/Users/brian/Projects/anthony-thomas-galante` (repo; not yet cut over to production, see open questions)
+**Source project:** the client's migration repo (local, read-only; not yet cut over to production, see open questions)
 
 **v2 note:** restructured per Brian's 2026-07-15 direction around three pillars, in order of emphasis: (1) the migration itself, a live site moved without losing anything, (2) a UI refresh that kept the look, the site got better without becoming a different site, (3) free hosting and a free CMS, the punchline for potential clients. Timing numbers and methodology notes carried over unchanged from v1; they were already forensically verified and are not touched in this pass.
 
@@ -69,10 +69,10 @@ The site is built, reviewed, and staged on Cloudflare. Cutover, the DNS switch t
 
 **Before (WordPress site), full-page screenshots already captured:**
 
-- `/Users/brian/Projects/anthony-thomas-galante/migration/reference/screenshots/home-desktop.png` (+ `home-mobile.png`)
-- `/Users/brian/Projects/anthony-thomas-galante/migration/reference/screenshots/press-desktop.png` (+ `press-mobile.png`)
-- `/Users/brian/Projects/anthony-thomas-galante/migration/reference/screenshots/custom-desktop.png` (+ `custom-mobile.png`)
-- `/Users/brian/Projects/anthony-thomas-galante/migration/reference/screenshots/collections-desktop.png` (+ `collections-mobile.png`)
+- `migration/reference/screenshots/home-desktop.png` (+ `home-mobile.png`) [in the client repo]
+- `migration/reference/screenshots/press-desktop.png` (+ `press-mobile.png`)
+- `migration/reference/screenshots/custom-desktop.png` (+ `custom-mobile.png`)
+- `migration/reference/screenshots/collections-desktop.png` (+ `collections-mobile.png`)
 - Full set (13 pages × desktop/mobile) lives in the same directory; `capture-report.txt` alongside it documents the capture.
 
 **After (new Astro build):** no static screenshots exist yet. Two options: run the dev server (`npm run dev -- --port 4400` in the atg repo, admin at `/keystatic`) and capture fresh, or check whether the workers.dev staging URL referenced in `docs/decisions.md` (`https://anthonythomasgalante.rohdeb.workers.dev`) is still live. Either way, matching before/after pairs (same page, same viewport) would be the strongest visual for this article: home, press, and a collection/lookbook detail page are the best candidates given the design work that went into them.
@@ -86,7 +86,7 @@ The site is built, reviewed, and staged on Cloudflare. Cutover, the DNS switch t
 - Custom-pages concept board is referenced as `design-direction-preview.html` (a scratchpad artifact) in `docs/plans/03-design-direction.md` but I didn't find a saved local copy; it may only exist as a hosted artifact link elsewhere in the log, or may need regenerating.
   These are useful screenshots (they show the concept-comparison workflow directly) but they're both client work product and live links that could change or expire. Recommend capturing static screenshots of them now, before publishing, if Brian wants to use them.
 
-**Log excerpts worth screenshotting** (from `/Users/brian/Projects/anthony-thomas-galante/SESSION_LOG.txt`, 1,850 lines):
+**Log excerpts worth screenshotting** (from `SESSION_LOG.txt` in the client repo, 1,850 lines):
 
 - Lines 1 to 75: the opening exchange, session start through both exploration agents reporting back, and Brian's real-time correction about subagent model choice (line ~45-54).
 - Line ~465: "I love #2 and #3. Any way to combine these?" This is the design-hybrid request, a clean example of the human-taste checkpoint in action.
@@ -98,7 +98,7 @@ The site is built, reviewed, and staged on Cloudflare. Cutover, the DNS switch t
 
 1. **Timing, resolved (was: 11 hours vs 4 hours).** The 11-hour figure was wrong. It came from reading the first-to-last timestamp in `SESSION_LOG.txt` (which renders in Pacific time: [10:40] to [21:42]), a span that straddles a roughly six-hour afternoon break. Remove the break and the initial build was one morning: about five hours at the keyboard (four after the planning hour), no gap over fifteen minutes. That matches your memory of about four hours including LLM waiting.
 
-   Method (two sentences): I parsed the Claude Code session transcripts (three `.jsonl` files under `~/.claude/projects/-Users-brian-Projects-anthony-thomas-galante/`) for per-record UTC timestamps and roles, never loading them whole, then classified every gap as LLM working time (a prompt to the end of the following assistant or agent activity), Brian hands-on time (assistant output to my next message when the gap is under fifteen minutes), or away time (any gap over fifteen minutes, excluded). I cross-checked every interval against the atg repo's git author timestamps, which cluster 08:40 to 12:35 Hawaii time on 2026-07-11.
+   Method (two sentences): I parsed the Claude Code session transcripts (three `.jsonl` files under the client project's local Claude Code projects directory) for per-record UTC timestamps and roles, never loading them whole, then classified every gap as LLM working time (a prompt to the end of the following assistant or agent activity), Brian hands-on time (assistant output to my next message when the gap is under fifteen minutes), or away time (any gap over fifteen minutes, excluded). I cross-checked every interval against the atg repo's git author timestamps, which cluster 08:40 to 12:35 Hawaii time on 2026-07-11.
 
    Headline numbers, initial build: wall-clock span about 5.0h (7:40am to 12:45pm Hawaii, one sitting, zero breaks over 15 min); total including LLM waiting the same 5.0h because nothing broke the sitting, roughly 4.0h of that the build proper after the planning-and-audit hour; my hands-on time with LLM generation subtracted about 2.0h. Follow-up, separate and later: about 20 minutes that same evening on the session-logging tooling (git commit at 18:54 Hawaii), then about 35 minutes of active work on 2026-07-14 across a couple of resumed sessions on DNS, mail, and registrar checks ahead of cutover (this is where DreamHost surfaced as the real registrar), under an hour of work combined. Caveat: the logs only see time inside Claude Code sessions. Browser testing, edits in another app, registrar-dashboard work, or client calls during away gaps are invisible, and any reading or testing I did while the model was mid-turn is counted here as LLM time, so 2.0h hands-on is a floor and the honest elapsed figure is the ~5h at the keyboard. If `docs/CONTENT.md` item #2 still carries an "under 4 hours" claim, reconcile it to "about four hours including LLM waiting, one morning."
 
@@ -110,6 +110,6 @@ The site is built, reviewed, and staged on Cloudflare. Cutover, the DNS switch t
 
 5. **Which date actually belongs on this article?** I defaulted to 2026-07-11 (the main build day) per the site's pre-dating convention, but 2026-07-14 (last activity) or an eventual launch date are both defensible. Your call.
 
-6. **OK to state the old hosting cost (~$20/month, SiteGround) publicly, now that it's load-bearing for the piece?** In v1 this was a minor detail; in v2 it's the setup for the whole third pillar ("$20 a month to $0"), so it now appears twice (intro and the hosting section) instead of once. It's in your own planning doc as the reason for the move (`MY_PLAN.md`: "I believe we pay $20 a month"), and it's not obviously sensitive, but it is the client's spend, stated more prominently than before. Flag if you'd rather generalize it ("a paid host" instead of a number) given the increased emphasis.
+6. **OK to state the old hosting cost (~$20/month, SiteGround) publicly, now that it's load-bearing for the piece?** In v1 this was a minor detail; in v2 it's the setup for the whole third pillar ("$20 a month to $0"), so it now appears twice (intro and the hosting section) instead of once. It appears in your own planning notes as the reason for the move, and it's not obviously sensitive, but it is the client's spend, stated more prominently than before. Flag if you'd rather generalize it ("a paid host" instead of a number) given the increased emphasis.
 
 7. **FYI, not a decision needed: "Cloudflare," not "Cloudflare Pages," in the copy.** I checked the repo rather than assume. `wrangler.jsonc` (`name: "anthonythomasgalante"`, matching the dashboard project) and `docs/decisions.md` show this deploys as a Cloudflare Worker with static assets (`@astrojs/cloudflare` adapter, Workers Builds for CI, `wrangler deploy`), not the classic Pages product. Both are free and both show up under Cloudflare's dashboard, so I kept the draft's wording generic ("Cloudflare," "Cloudflare's free tier") rather than assert "Pages," which the repo doesn't actually support. Say the word if you want the more specific "Cloudflare Workers" in the copy instead.

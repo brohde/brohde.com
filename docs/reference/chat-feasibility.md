@@ -38,7 +38,7 @@ Runs the model client-side. Zero API cost but a 1-2GB model download and poor mo
 ## Making it "perfect" (the real work)
 
 1. **Deterministic layer first.** Commands like `work`, `about`, `resume`, `contact` are answered instantly from structured data with zero LLM involvement: zero cost, zero latency, zero hallucination. The LLM only handles free-form questions. This also answers Brian's usability note: the terminal shows a visible menu of clickable commands, so projects/about are one click away and the interface stays discoverable, not a guessing game.
-2. **Grounding.** System prompt = facts file (resume, project data, VOICE.md rules) + hard instruction to say "I don't know, email brian@brohde.com" rather than guess. No question outside the facts file gets a creative answer.
+2. **Grounding.** System prompt = facts file (resume, project data, VOICE.md rules) + hard instruction to say "I don't know, contact Brian directly" rather than guess. No question outside the facts file gets a creative answer.
 3. **Eval set.** ~30 expected questions with acceptable answers, run against any prompt/model change before deploy.
 4. **Abuse control.** Cloudflare Turnstile (invisible CAPTCHA) + per-IP rate limits (e.g. 10 messages/hour) + short max_tokens + AI Gateway spend cap. A public LLM endpoint without this becomes someone's free API.
 5. **Review loop.** Log every conversation to PostHog; review weekly, fold gaps into the facts file.

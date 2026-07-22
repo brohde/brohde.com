@@ -44,7 +44,7 @@ _Note: claims only support co-authoring the blog post, not building the badge. K
 
 ### gold-coast
 **Current:** "My client designed his site in ChatGPT. Here's what it took to ship it."
-_The hook is strong and honest (curiosity-led, first person). Weakness vs formula: no build tech named, no client. **Consent caveat:** this piece pends the client's consent, so the title should NOT name Gold Coast Capital / Dragan until that clears. Client-neutral options below; a named variant only if consent lands._
+_The hook is strong and honest (curiosity-led, first person). Weakness vs formula: no build tech named, no client. **Consent caveat:** this piece pends the client's consent, so the title should NOT name Gold Coast Capital until that clears. Client-neutral options below; a named variant only if consent lands._
 
 - ★ **A. "He designed his site in ChatGPT. I shipped it in Astro."** — keeps the hook, adds the two technologies, states the work, first person, tight. Consent-safe.
 - B. "From ChatGPT comps to a shipped site, built in Astro" — descriptive, snippet-friendly.
@@ -129,7 +129,7 @@ _Recommendation: A if Brian confirms 47; B if he wants a number-free headline wh
 | **facebook-newsroom** | `f` letterform (keep) — mono char, not the FB logo | Newsroom blue (keep) | No | **Safe** — letterform + brand-adjacent color, on the right side of #45/#59. |
 | **google-android-for-work** | `G` letterform (keep) — mono char, not the 4-color Google G | Android green (keep) | No | **Safe** — but do NOT render the literal four-color Google "G"; that specific combination imitates the mark. Single-ink mono G stays safe. |
 | **atg-llm-migration** | `a` letterform (or "atg" monogram) — new drawer | Warm neutral / bone-on-ink (ATG's brand is monochrome) | Yes | **Safe** — letterform; honors the client's monochrome identity. Flag: a near-neutral accent reads close to default, design-director to differentiate. |
-| **gold-coast** | `g` (or "gc" monogram to disambiguate from Android's `G`) — new drawer | Gold (navy ground if per-page grounds ship) | Yes | **Safe** — letterform. **HOLD until client consent** (piece is unpublished pending Dragan). Flag: gold may collide with the site's chat-state amber; differentiate. |
+| **gold-coast** | `g` (or "gc" monogram to disambiguate from Android's `G`) — new drawer | Gold (navy ground if per-page grounds ship) | Yes | **Safe** — letterform. **HOLD until client consent** (piece is unpublished pending the client's consent). Flag: gold may collide with the site's chat-state amber; differentiate. |
 | **twilio-hackpack-v4** | `t` letterform — new drawer | Twilio red | Yes | **Safe** — letterform. **But:** this is an `external:` entry with no interior page, so it likely needs no scene identity at all. Assign only if it ever gets an on-site landing/excerpt. |
 
 ### Review of the existing four (in the module today)

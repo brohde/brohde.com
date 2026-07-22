@@ -2,7 +2,7 @@
 
 **Status:** draft v1
 **Suggested pre-date:** 2026-06-30 [CONFIRM: exact wrap/launch date, see open questions]
-**Source project:** `/Users/brian/Projects/dragan` (read-only research; live site: https://goldcoastcapm.com)
+**Source project:** the Gold Coast client repo (local, read-only research; live site: https://goldcoastcapm.com)
 
 ## Title options
 
@@ -51,7 +51,7 @@ The pitch for "alternatives to Squarespace" isn't that a page builder can't get 
 
 ## Image candidates
 
-All paths are in `/Users/brian/Projects/dragan` (read-only source repo, not brohde.com).
+All paths are in the Gold Coast client repo (local, read-only source repo, not brohde.com).
 
 **Client's original ChatGPT designs** (`docs/from_client/`):
 
@@ -76,8 +76,8 @@ All paths are in `/Users/brian/Projects/dragan` (read-only source repo, not broh
 
 ## Open questions for Brian
 
-1. **Client consent.** Does Dragan Mark Filipovic know this project will be featured publicly, including that he designed the site himself in ChatGPT? That detail is complimentary but personal, worth confirming he's comfortable with it appearing (and whether to use "Dragan," full name, or just "my client").
-2. **Naming ChatGPT specifically.** Comfortable naming the tool, or should the article stay generic ("an AI tool" / "an LLM")? The repo itself never documents which tool he used; that detail came from your framing, not from anything in `/Users/brian/Projects/dragan`, so I've taken it as given but can't independently verify specifics (version, whether it was image generation vs. a coding mode, etc.).
+1. **Client consent.** Does the client know this project will be featured publicly, including that he designed the site himself in ChatGPT? That detail is complimentary but personal, worth confirming he's comfortable with it appearing (and whether to use his first name, full name, or just "my client").
+2. **Naming ChatGPT specifically.** Comfortable naming the tool, or should the article stay generic ("an AI tool" / "an LLM")? The repo itself never documents which tool he used; that detail came from your framing, not from anything in the client repo, so I've taken it as given but can't independently verify specifics (version, whether it was image generation vs. a coding mode, etc.).
 3. **Pre-date.** Repo activity runs June 11 (designs delivered) through June 30 (last docs updated) 2026, with Pastel review dated June 21 to June 29. I don't have an explicit launch date, "2026-06-30" is a placeholder. What's the actual (or intended) publish date?
 4. **Engagement framing.** Is this freelance work you want framed as solo ("I built"), and is there anything about scope, timeline in weeks, or how you were engaged (referral, existing relationship, etc.) worth adding for credibility? I didn't find that in the repo and didn't want to invent it.
 5. **Client business claims.** The live site states figures like "0.50% advisory fee," "20 Years Experience," "100% Client Retention." I deliberately left these out of the draft since they're claims about the client's business, not about the build, but let me know if you'd like one or two included as scene-setting color, they'd need his sign-off same as everything else client-specific.

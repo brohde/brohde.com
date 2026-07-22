@@ -34,7 +34,7 @@ Items 5, 6, 7 of the original brief were dropped per the lead's mid-task message
   Strips a malformed email server-side.
 - `{op:"send", name, email, message}` -> `{ok:true}`. Validates (name <=100, valid email
   <=200, message 1..2000), writes a KV backup, then delivers via the Resend REST API
-  (`https://api.resend.com/emails`) from `contact@send.brohde.com` to `brian@brohde.com`
+  (`https://api.resend.com/emails`) from `contact@send.brohde.com` to Brian's personal inbox
   with `reply_to` set to the visitor's email.
 
 Shared patterns: content-type 415, 16KB body cap (413), per-IP rate limit (same shape as
@@ -169,5 +169,5 @@ The lead landed items 5/6/7 + composer/`.out` CSS after my base (12d7b59). Expec
 - Create the Resend account, verify the `send.brohde.com` sending domain, set `RESEND_API_KEY`
   as a Pages secret. Confirm the from address `contact@send.brohde.com` matches the verified domain.
 - Redeploy (any push). Then send a real test message through the flow and confirm it arrives at
-  `brian@brohde.com` and a `contact:` KV key was written.
+  Brian's personal inbox and a `contact:` KV key was written.
 - Optional: run the keyed eval parity (owed item 1).

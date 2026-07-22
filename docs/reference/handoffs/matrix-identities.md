@@ -57,7 +57,7 @@ The Android robot is licensed by Google under CC BY 3.0 (Google brand guidelines
 1. Per-article theme wiring: article pages currently render the `TideBand` facade, not the scene. B3 passes `theme` (and optionally `mark`) into `Scene.astro` per page: eight-angle-ml = `eight`, facebook-newsroom = `news`, google-android-for-work = `android`, atg-llm-migration = `atg`, gold-coast = `goldcoast`. Homepage/about/404/brohde-com-build ride `default` (BR).
 2. Themed SKY css: `.skyslot[data-sky]` palette blocks (lab reference) for ALL non-default themes, the new three included; deliberately not added here.
 3. Per-page GROUND identities (#74): `:root` token work, B3.
-4. Gold Coast consent gate: the gold-coast piece is unpublished pending Dragan; the identity ships with the piece, not before.
+4. Gold Coast consent gate: the gold-coast piece is unpublished pending the client's consent; the identity ships with the piece, not before.
 5. The user-visible Android attribution line (above).
 
 ## Judgment calls a reviewer should know
