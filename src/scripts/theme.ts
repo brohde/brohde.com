@@ -1,29 +1,28 @@
 /**
- * Theme override (#92, items 7 + 8). The site is DARK BY DEFAULT: absent
- * localStorage("theme") means dark, and "light" is the only stored override
- * (this supersedes #40/#92's old follow-system default). This module owns the
+ * Theme override (#92, items 7 + 8). The site ALWAYS LOADS DARK: there is no
+ * persistence. The header toggle flips a per-visit, in-memory choice; a full
+ * page reload resets it and the site opens dark again. This module owns the
  * two-state dark/light toggle in the header (ThemeToggle.astro, #themectl).
  *
- * State model: resolved theme = stored "light" ? "light" : "dark". Toggling
- * flips it; going light stores "light", going dark clears the key (dark is the
- * default, so it needs no stored value). The pre-paint gate in BaseLayout
- * stamps an EXPLICIT html[data-theme] ("dark" unless stored "light") before
- * first paint, so first paint is dark with no flash unless light is stored;
- * global.css's :root[data-theme] blocks make the attribute win over
+ * State model: resolved theme = sessionLight ? "light" : "dark", where
+ * sessionLight is a module-level variable that defaults to false. Toggling
+ * flips it FOR THE VISIT only, never touching localStorage (the pre-paint gate
+ * in BaseLayout also clears the legacy "theme" key so old light pins are gone).
+ * The pre-paint gate stamps an EXPLICIT html[data-theme="dark"] before first
+ * paint; global.css's :root[data-theme] blocks make the attribute win over
  * prefers-color-scheme in both directions.
  *
  * THE VIEW-TRANSITIONS TRAP: Astro's ClientRouter swap replaces the root
  * element's attributes with the incoming page's server HTML, which carries no
- * data-theme. The astro:after-swap re-stamp below re-applies the resolved
- * theme before the new page paints, so the theme survives every internal
- * navigation flash-free; because we always stamp explicitly, the brief
- * attribute-less moment can never fall back to the system scheme.
+ * data-theme. The module (and sessionLight with it) survives the swap, so the
+ * astro:after-swap re-stamp below re-applies the in-visit choice before the new
+ * page paints: a client-side nav keeps the visitor's light pick, while a full
+ * reload re-evaluates the module and returns to dark.
  *
- * <meta name="theme-color"> is a single tag (dark by default in BaseLayout;
- * the pre-paint gate flips it to light when light is stored). syncMeta rewrites
- * its content to match the resolved theme so browser chrome tracks the ground.
- * The swap replaces <head> too, so apply() re-runs from the same after-swap
- * hook.
+ * <meta name="theme-color"> is a single tag (dark by default in BaseLayout).
+ * syncMeta rewrites its content to match the resolved theme so browser chrome
+ * tracks the ground. The swap replaces <head> too, so apply() re-runs from the
+ * same after-swap hook.
  *
  * Scope of effect: data-theme lives on :root and recolors the editorial
  * surfaces only. The slab and every phosphor material scope their own fixed
@@ -38,36 +37,17 @@
 
 type Theme = "light" | "dark";
 
-const KEY = "theme";
 const DARK_COLOR = "#0E1512";
 const LIGHT_COLOR = "#FBFBF8";
 
-/** the only stored value that means anything is "light"; everything else
-    (absent, "dark", garbage) resolves to the dark default */
-function storedLight(): boolean {
-  try {
-    return localStorage.getItem(KEY) === "light";
-  } catch {
-    return false; // storage blocked: behave as the dark default
-  }
-}
+/** the visitor's in-visit choice; defaults to dark and is never persisted, so
+    a full page reload re-evaluates this module and returns to dark. It
+    survives ClientRouter swaps because the module is not re-evaluated on
+    client-side navigation. */
+let sessionLight = false;
 
 function resolved(): Theme {
-  return storedLight() ? "light" : "dark";
-}
-
-function store(t: Theme) {
-  try {
-    if (t === "light") localStorage.setItem(KEY, "light");
-    else localStorage.removeItem(KEY); // dark is the default: no key needed
-  } catch {
-    /* storage blocked: the in-page override still applied for this view */
-  }
-}
-
-/** the two-state flip */
-function next(cur: Theme): Theme {
-  return cur === "light" ? "dark" : "light";
+  return sessionLight ? "light" : "dark";
 }
 
 /** keep browser chrome in step with the resolved ground */
@@ -118,8 +98,9 @@ function setupOnce() {
 
   document.addEventListener("click", (e) => {
     if (!(e.target as HTMLElement).closest?.("#themectl")) return;
-    const t = next(resolved());
-    store(t);
+    // flip the in-visit choice only; no persistence (a reload returns to dark)
+    sessionLight = !sessionLight;
+    const t = resolved();
     apply(t);
     announce(t);
   });
