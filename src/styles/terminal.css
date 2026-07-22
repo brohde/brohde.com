@@ -1507,52 +1507,40 @@ a.lentry:focus-visible .lttl {
 
 /* ----------------------- article pages (#67 C variant) ------------------- */
 /* B2 Phase 1: the .atop chrome bar ([home] chip + path label) is retired;
-   the global header is the one frame. .homechip survives in the .aend rows
-   and the theme control idiom. */
+   the global header is the one frame. The [home]/[log] bracket chips are gone
+   site-wide (2026-07-21, Option C): links look like links, real buttons are
+   chat actions, brackets survive only as the [coming soon] ledger token. */
 .artpad {
+  /* Masthead top air: with no hero band and no top padding, a 40px editorial
+     title sat ~24px under a mono chat panel. Give it room. */
+  padding-top: clamp(16px, 4vw, 40px);
   padding-bottom: 40px;
-}
-/* the way home is a phosphor chip: a small piece of the screen (#67 C) */
-.homechip {
-  display: inline-flex;
-  align-items: center;
-  min-height: 36px;
-  padding: 0 12px;
-  background: #0b110e;
-  color: #7ee787;
-  border: 1px solid #33523f;
-  /* #165: the full invert eases on the 120ms grammar, brackets included */
-  transition:
-    background-color 120ms ease,
-    color 120ms ease,
-    border-color 120ms ease;
-  border-radius: 7px;
-  font-family: var(--font-mono);
-  font-size: 13.5px;
-  text-decoration: none;
-  cursor: pointer;
-  box-shadow: 0 0 14px rgba(126, 231, 135, 0.14);
-}
-.homechip .br {
-  color: #8fa79a;
-  transition: color 120ms ease; /* #165: rides the chip's invert */
-}
-.homechip:hover,
-.homechip:focus-visible {
-  background: #7ee787;
-  color: #0b110e;
-  border-color: #7ee787;
-}
-.homechip:hover .br,
-.homechip:focus-visible .br {
-  color: #0b110e;
 }
 
 .adate {
   font-family: var(--font-mono);
   font-size: 12.5px;
   color: var(--dim);
-  margin: 0 0 8px;
+  /* 12px (from 8px) so the date clears the 40px title now the nav row is gone */
+  margin: 0 0 12px;
+}
+/* "log" is the article's one top affordance: the archive-return link, back to
+   /#log. Standalone navigation in the quiet-link idiom (like .snav): rest dim
+   (7.19:1 night / 7.97:1 light on the ground), engage accent + 1px underline,
+   so G183's color-only trap does not bind (D1 call 5). */
+.adate a {
+  color: var(--dim);
+  text-decoration: none;
+  transition:
+    color 120ms ease,
+    text-decoration-color 120ms ease;
+}
+.adate a:hover,
+.adate a:focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
 }
 .atitle {
   font-family: var(--font-edit);
@@ -1595,16 +1583,6 @@ a.lentry:focus-visible .lttl {
   margin-top: 2px;
 }
 
-.aend {
-  display: flex;
-  gap: 0 10px;
-  align-items: center;
-  border-top: 1px solid var(--line);
-  margin-top: 36px;
-  padding-top: 12px;
-  font-family: var(--font-mono);
-}
-
 /* required third-party license credit (today: the Android robot, CC BY 3.0
    per Google's brand guidelines), rendered by the article template when the
    page's identity needs it. Quiet by design: metadata, not body copy. */
@@ -1624,35 +1602,11 @@ a.lentry:focus-visible .lttl {
    slot renders only when it exists (no disabled controls at the ends). All
    static, no images: CLS 0.
 
-   TOP (.anavtop): compact secondary row of bracket chips near the date line,
-   the ledger's [coming soon]/[clear] token family, quiet-link grammar (rest
-   dim, engage accent). Titles live in an sr suffix so the header stays
-   uncluttered while a screen reader still hears each destination. */
-.anavtop {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 14px;
-  margin: 0 0 18px;
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-}
-.anavtop .anavchip {
-  color: var(--dim);
-  text-decoration: none;
-  transition: color 120ms ease;
-}
-.anavtop .anavchip .br {
-  color: var(--dim);
-  transition: color 120ms ease; /* rides the chip's dim-to-accent, like the ledger */
-}
-.anavtop .anavchip:hover,
-.anavtop .anavchip:focus-visible,
-.anavtop .anavchip:hover .br,
-.anavtop .anavchip:focus-visible .br {
-  color: var(--accent);
-}
+   The compact top [newer]/[older] chip row (.anavtop) was retired
+   (2026-07-21): the one top affordance is the "log" archive-return link in
+   the .adate line, and full prev/next lives here at the bottom. */
 
-/* BOTTOM (.anavmore): the primary nav landmark. Two slots, newer LEFT / older
+/* .anavmore: the primary nav landmark. Two slots, newer LEFT / older
    RIGHT (the ledger reads top-down newest-first, so "back toward newest" sits
    at the line start and "deeper/older" advances rightward). Explicit grid
    columns keep each slot on its own side even when the other is absent (first

@@ -30,8 +30,8 @@ const profilePage = {
     {
       /* B2 Phase 1: the .atop chrome bar ([home] chip + path label) is
         retired; the global header is the one frame on every page. The way
-        home is the header wordmark; the .aend chips below keep the
-        end-of-content paths. */
+        home is the header wordmark; the page ends clean (Option C,
+        2026-07-21) and the global footer follows, matching articles. */
     }
     <div class="wrap artpad">
       <main id="main">
@@ -72,21 +72,6 @@ const profilePage = {
             >Contact me using my AI <span aria-hidden="true">&#8594;</span></a
           >
         </p>
-
-        <footer class="aend">
-          <a class="homechip" href="/">
-            <span class="br" aria-hidden="true">[</span>home<span
-              class="br"
-              aria-hidden="true">]</span
-            >
-          </a>
-          <a class="homechip" href="/#log">
-            <span class="br" aria-hidden="true">[</span>log<span
-              class="br"
-              aria-hidden="true">]</span
-            >
-          </a>
-        </footer>
       </main>
     </div>
   </section>

@@ -9,10 +9,10 @@ import { articleChain, neighborsOf } from "@/lib/articles";
 
 /**
  * Article page, #67 C variant: editorial reading surface (Circular via
- * .prose/.atitle) on the system ground; every terminal moment is a piece of
- * the phosphor screen (the homechips, pre excerpts). Articles carry only the
- * background Scene now, like the homepage and About (the top matrix hero band
- * is retired).
+ * .prose/.atitle) on the system ground; the phosphor screen survives only in
+ * pre excerpts now (the bracket chips are retired site-wide, Option C
+ * 2026-07-21). Articles carry only the background Scene, like the homepage and
+ * About (the top matrix hero band is retired).
  * SEO/JSON-LD/RSS behavior unchanged; internal navigation rides the #150
  * tide transition (scene persists and travels identity, reading column
  * cross-fades; see global.css).
@@ -143,18 +143,17 @@ const articleLd = {
   >
     {
       /* B2 Phase 1: the .atop chrome bar is retired; the global header is
-        the one frame on every page. The .aend chips keep their no-aria-label
-        convention: the visible command word IS the accessible name. */
+        the one frame on every page. The single top affordance is the "log"
+        archive-return link inside the .adate line; full prev/next lives at
+        the bottom where the titles are. */
     }
     <div class="wrap artpad">
       <main id="main">
         <article>
           <p class="adate">
             <time datetime={isoDate(date)}>{logStamp(date)}</time>{" "}
-            <span aria-hidden="true">·</span> log
+            <span aria-hidden="true">·</span> <a href="/#log">log</a>
           </p>
-          {/* Compact secondary hop, header-level (not a second landmark). */}
-          <ArticleNav variant="top" newer={newer} older={older} />
           <h1 class="atitle">{title}</h1>
 
           {
@@ -201,9 +200,9 @@ const articleLd = {
           </div>
         </article>
 
-        {/* Primary prev/next nav: full titles, between the body and the
-            home/log footer chips. */}
-        <ArticleNav variant="bottom" newer={newer} older={older} />
+        {/* Primary (and only) prev/next nav: full titles, the de facto
+            article footer above the global footer. */}
+        <ArticleNav newer={newer} older={older} />
 
         {
           /* The [home]/[log] chips + their rule are GONE from articles
