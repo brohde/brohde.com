@@ -28,24 +28,24 @@ const profilePage = profilePageLd();
       <main id="main">
         <h1 class="atitle">About</h1>
         <article class="prose" style="margin-top:0">
-          {/* Brian's LinkedIn bio, verbatim (2026-07-22). */}
-          <p>
-            Full-stack engineer shipping AI products end to end: currently
-            founder of <a href="/eight-angle-ml">Eight Angle</a>, an iOS app
-            with a custom-trained on-device ML classifier; and a freelance
-            builder delivering client sites through agentic coding workflows.
-            Previously led web platforms at Gong and Twilio, spanning
-            replatforms, design systems, localization, and growth, in daily
-            partnership with marketing, product, and design. AI multiplies my
-            output; taste and engineering judgment decide what ships.
-          </p>
           {
-            /* The career detail Brian asked to preserve, links pointing at
-            the site's own articles where one exists (Twilio: the SIGNAL
-            piece, matching the header); Gong drives to LinkedIn. */
+            /* One merged story (Brian, 2026-07-22): the LinkedIn bio and the
+            career detail folded into a single narrative, now → building →
+            the career that led here → the signature line. Links preserved:
+            Eight Angle → internal; Gong → LinkedIn (new tab); Twilio → the
+            SIGNAL piece; Newsroom + Android for Work → internal case studies. */
           }
           <p>
-            Before that I was Staff Web Engineer at <a
+            I’m a full-stack engineer in San Francisco, shipping AI products
+            end to end. Today I’m founder of <a href="/eight-angle-ml"
+              >Eight Angle</a
+            >, an iOS app with a custom-trained on-device ML classifier, and a
+            freelance builder delivering client sites through agentic coding
+            workflows.
+          </p>
+          <p>
+            Before this I led web platforms, working day to day with marketing,
+            product, and design. I was Staff Web Engineer at <a
               href={LINKS.linkedin}
               target="_blank"
               rel="noopener">Gong</a
@@ -59,6 +59,7 @@ const profilePage = profilePageLd();
               >Google’s Android for Work website</a
             >.
           </p>
+          <p>AI multiplies my output; taste and engineering judgment decide what ships.</p>
           {
             /* Closing CTA lives inside .prose on purpose (Brian, 2026-07-22):
             the editorial body face and the accent-green link treatment, not
