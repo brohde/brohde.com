@@ -12,9 +12,9 @@ _The definition of done for the current program. Any session or loop measures ag
 
 ### B. Docs accuracy
 
-- [ ] ENGINEERING.md rewritten against current source (debt D1)
-- [ ] Docs quick-win cluster closed (D2-D7, D12, D13)
-- [ ] Scene engineering doc written (D8); docs index + CLAUDE.md reading path fixed (D9); model policy single-sourced (D10); STATUS slimmed + archived (D11)
+- [x] ENGINEERING.md rewritten against current source (debt D1, merged 222cd9d)
+- [x] Docs quick-win cluster closed (D2-D7, D12, D13; merged 898b5a2)
+- [x] Scene doc (D8, docs/reference/scene.md), docs index (reorg), model policy single-sourced (D10), STATUS slimmed + archived (D11). REMAINING: the CLAUDE.md reading-path line (D9) is a working-agreement edit, Brian-gated
 
 ### C. Content
 
