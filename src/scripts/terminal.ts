@@ -1847,6 +1847,29 @@ function setupOnce() {
   document.addEventListener("keydown", (e) => {
     const t = e.target as HTMLElement;
 
+    // Article pages: bare left/right arrows walk the newer/older chain
+    // (Brian, 2026-07-21), matching the bottom nav's visual order (newer
+    // left). Never with modifiers (browser history), never from editable or
+    // scrollable contexts, so typing and code-block scrolling keep the keys.
+    if (
+      (e.key === "ArrowLeft" || e.key === "ArrowRight") &&
+      !e.altKey &&
+      !e.metaKey &&
+      !e.ctrlKey &&
+      !e.shiftKey &&
+      currentScreen() === "log" &&
+      !t?.closest?.("input, textarea, select, [contenteditable], pre, video, audio")
+    ) {
+      const link = document.querySelector<HTMLAnchorElement>(
+        e.key === "ArrowLeft" ? ".anavmore .navnewer" : ".anavmore .navolder"
+      );
+      if (link) {
+        e.preventDefault();
+        link.click();
+      }
+      return;
+    }
+
     if (e.key === "Escape") {
       // #143 req 2: while a redirect countdown is running, Escape cancels it
       // and stays put. It takes priority over the blur/leave behavior below so
