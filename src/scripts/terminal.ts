@@ -1719,10 +1719,11 @@ function setupOnce() {
       const link = document.querySelector<HTMLAnchorElement>(
         e.key === "ArrowLeft" ? ".anavmore .navnewer" : ".anavmore .navolder"
       );
-      if (link) {
-        e.preventDefault();
-        link.click();
-      }
+      e.preventDefault();
+      // Past either end of the chain the homepage is the bookend (Brian,
+      // 2026-07-21), so arrow paging always loops back to the ledger.
+      if (link) link.click();
+      else navigate("/");
       return;
     }
 
