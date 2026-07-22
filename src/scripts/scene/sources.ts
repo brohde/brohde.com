@@ -278,7 +278,9 @@ export const DRAW: Record<
   br: (sctx) => drawWord(sctx, "BR", 330, 263, 26),
   robot: drawRobot,
   gccm: gridOr("gccm", (sctx) => drawWord(sctx, "GCCM", 180, 218, 16)),
-  atg: gridOr("atg", (sctx) => drawWord(sctx, "atg", 238, 208, 22)),
+  // atg stays the hand-drawn "atg" letterform (Brian, 2026-07-22: better than
+  // the vector "A" mark the codegen produced); the grid is deliberately unused
+  atg: (sctx) => drawWord(sctx, "atg", 238, 208, 22),
   twilio: gridOr("twilio", drawTwilio),
 };
 
