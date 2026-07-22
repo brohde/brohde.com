@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { getCollection } from "astro:content";
 import { SITE, logHref } from "@/lib/site";
+import { orderedArticles } from "@/lib/articles";
 
 function esc(s: string): string {
   return s
@@ -14,13 +14,11 @@ export const GET: APIRoute = async () => {
   // Item 11: only PUBLISHED articles ship in the feed (an empty feed is fine
   // while everything is unpublished). External entries are unpublished too, so
   // they stay out until republished.
-  // Order by (sortDate ?? date) descending, mirroring the homepage ledger; the
-  // item <pubDate> below still reports the real `date`.
-  const orderKey = (d: { sortDate?: Date; date: Date }) =>
-    (d.sortDate ?? d.date).valueOf();
-  const posts = (
-    await getCollection("articles", ({ data }) => !data.draft && data.published)
-  ).sort((a, b) => orderKey(b.data) - orderKey(a.data));
+  // Order by (sortDate ?? date) descending via the shared helper, mirroring the
+  // homepage ledger; the item <pubDate> below still reports the real `date`.
+  const posts = await orderedArticles(
+    (e) => !e.data.draft && e.data.published
+  );
 
   const items = posts
     .map((post) => {

@@ -14,17 +14,14 @@
  * External entries stay linked to their off-site URL regardless (they never
  * had a generated page and never 404).
  */
-import { getCollection } from "astro:content";
 import { logHref, isoDate } from "@/lib/site";
+import { orderedArticles } from "@/lib/articles";
 
-/* Ledger order is (sortDate ?? date) descending; the DISPLAYED date stays
-   `date` everywhere below (the pre-dated Facebook piece sits beside its
-   sibling without faking its 2014 stamp). */
-const orderKey = (d: { sortDate?: Date; date: Date }) =>
-  (d.sortDate ?? d.date).valueOf();
-const posts = (await getCollection("articles", ({ data }) => !data.draft)).sort(
-  (a, b) => orderKey(b.data) - orderKey(a.data)
-);
+/* Ledger order is (sortDate ?? date) descending, via the shared helper so this
+   list, RSS, and the article prev/next chain can never disagree. The DISPLAYED
+   date stays `date` everywhere below (the pre-dated Facebook piece sits beside
+   its sibling without faking its 2014 stamp). */
+const posts = await orderedArticles((e) => !e.data.draft);
 
 /* #141: external entries show their destination domain with the arrow.
    Derived from the entry's own URL (never hardcoded) so any future
