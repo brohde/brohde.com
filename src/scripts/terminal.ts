@@ -64,7 +64,7 @@ const HELP_HTML =
    keyboard reachable, and join the roving cursor order like any other chat
    output. */
 const HELLO_HTML =
-  "Hello! Here's what's on the site:\n" +
+  "Hello! Here’s what’s on the site:\n" +
   '<a href="/">Work</a>: the log, case studies of what I ship\n' +
   '<a href="/about">About</a>: who I am in four paragraphs\n' +
   '<a href="/chat">Chat</a>: ask me anything\n' +
@@ -501,7 +501,7 @@ function timeGreeting(): string {
 }
 
 function greetingText(): string {
-  return `${timeGreeting()} I'm Brian's AI. Ask me anything about his work and I'll do my best to answer.`;
+  return `${timeGreeting()} I’m Brian’s AI. Ask me anything about his work and I’ll do my best to answer.`;
 }
 
 function showGreeting() {
