@@ -46,7 +46,7 @@ A model nobody installs is a research project. Everything a stranger sees first,
 
 <figure class="portrait">
 
-![The Eight Angle App Store listing in an iPhone frame: "Every practice, preserved." above a practice review screen with Save Highlight and Save Recording buttons, a Watch Practice button, and a Poses gallery of Crow, Upward Dog, Chaturanga, and Plank thumbnails.](./appstore-phone-2026-07.png)
+![The Eight Angle App Store listing on an iPhone: the mint app icon beside "Eight Angle: Yoga Pose Tracker, Practice Smarter on Your Mat" with a Get button, a 5.0 star rating, a 4+ age rating, and the Health & Fitness category, above screenshot cards showing the Eight Angle wordmark over a yogi practicing in a plant-filled room and a bronze Crow Explorer achievement.](./appstore-phone-2026-07.png)
 
 <figcaption><a href="https://apps.apple.com/us/app/eight-angle-yoga-pose-tracker/id6760512056" target="_blank" rel="noopener">Eight Angle on the App Store</a></figcaption>
 
