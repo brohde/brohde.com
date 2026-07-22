@@ -1,5 +1,7 @@
 # Aurora lab handoff (demo 04 system knowledge)
 
+> **Lab origin, frozen reference.** This documents `docs/design/lab/aurora-terminal.html`, the design lab where the scene was invented, frozen as the reference spec (#106). It is **superseded by the production scene module** that shipped from it: `src/scripts/scene/*`, `src/components/Scene.astro`, and `src/styles/scene.css`. The lab's structure (one HTML file, procedural sources, `glyph4` IIFE) is NOT how production is organized, so do not build against it. For scene work, read the production engineering doc at **`docs/reference/scene.md`**; this file survives as the record of the original system knowledge and the taste calls Brian approved.
+
 _Context saved 2026-07-15 from the outgoing design-director; updated 2026-07-15 after the theme-press rework of demo 04 (#74) landed and Brian approved the delivery with all four of its taste flags ("I'm good with this!"). Any new designer picking up `aurora-terminal.html` reads this first instead of re-deriving the system. Source of truth: `docs/design/lab/aurora-terminal.html` (committed `f653063`), published artifact `9b0b7ddf-75b3-4e68-bd36-d6b76647bd71`._
 
 ## What demo 04 is

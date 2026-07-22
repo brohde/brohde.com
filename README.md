@@ -13,7 +13,7 @@ Personal portfolio + writing site for Brian Rohde. Showcases client work and pro
 ```
 npm install       # once
 npm run dev       # dev server at http://localhost:4321
-npm run build     # astro check && astro build -> ./dist (static, for Cloudflare Pages)
+npm run build     # node tools/build/build-chat-prompt.mjs && astro check && astro build -> ./dist
 npm run preview   # serve the production build locally
 npm run format    # prettier (astro + tailwind plugins)
 ```
@@ -39,7 +39,7 @@ Deploy target: Cloudflare Pages. Build command `npm run build`, output directory
 | `src/assets/fonts/`             | LL Circular Pro woff2 subsets (Book/Medium/Bold, licensed #20), hashed into `/_astro/` at build                                                                                                                                                          |
 | `src/lib/site.ts`               | Site constants: metadata, social links, company links, log helpers                                                                                                                                                                                       |
 | `public/`                       | `_headers` (CSP + security), `_redirects`, `robots.txt`, favicons, `apple-touch-icon.png`, `media/` (case-study video), `og.png` (social card)                                                                                                           |
-| `functions/api/chat.ts`         | Cloudflare Pages Function: production chat backend, POST `/api/chat`. Haiku router ported from `chat/` (behavior frozen, #61) + Turnstile + per-IP rate limiting (#49). `_chat-prompt.generated.ts` beside it is built from `chat/` (gitignored)         |
+| `functions/api/`                | Cloudflare Pages Functions: `chat.ts` (production chat backend, POST `/api/chat`; Haiku router ported from `chat/`, behavior frozen #61, + Turnstile + per-IP rate limiting #49), `contact.ts` (in-chat contact flow, POST `/api/contact`; Resend + KV backup + rate limits), `_shared.ts` (shared helpers). `_chat-prompt.generated.ts` is built from `chat/` (gitignored) |
 | `tools/build/build-chat-prompt.mjs` | Prebuild codegen (runs in `npm run build`): bundles `chat/system-prompt.md` + `facts.md` into the chat Function, single source of truth                                                                                                              |
 | `tools/og/`                     | On-demand OG-card renderer (`node tools/og/render.mjs`, Chrome over CDP): writes `public/og.png`                                                                                                                                                          |
 | `wrangler.toml`                 | Cloudflare Pages config-as-code: output dir + `nodejs_compat` for the chat Function (secrets/KV bindings stay in the dashboard)                                                                                                                          |
@@ -54,7 +54,8 @@ Deploy target: Cloudflare Pages. Build command `npm run build`, output directory
 | `docs/VOICE.md`                 | Brian's writing style guide, binding for all published copy                                                                                                                                                                                              |
 | `docs/drafts/`                  | Article drafts with editorial meta (title options, open questions) awaiting review; approved bodies move to `src/content/articles/`                                                                                                                      |
 | `docs/design/`                  | Design deliverables + the approved prototypes (`lab/build-log-v3.html`, `lab/aurora-terminal.html`)                                                                                                                                                      |
-| `docs/reference/`               | Source material: resume PDF, prior-project conventions brief, chat feasibility research, the LLM-terminal build plan                                                                                                                                     |
+| `docs/reference/`               | Source material: resume PDF, prior-project conventions brief, chat feasibility research, the LLM-terminal build plan; `handoffs/` holds per-agent handoff docs (#127)                                                                                     |
+| `docs/archive/`                 | Archived history: superseded STATUS sections (`status-history.md`) and `source-assets/` (original fonts, case-study captures, legacy-site screenshots the design work was mined from)                                                                     |
 | `chat/`                         | Production chat: the prompt, the facts pack, and the eval harness (formerly `poc/chat/`). The build bundles `chat/system-prompt.md` + `chat/facts.md` into the chat Function                                                                              |
 | `.claude/agents/`               | Reusable sub-agent definitions for the studio experts                                                                                                                                                                                                    |
 
