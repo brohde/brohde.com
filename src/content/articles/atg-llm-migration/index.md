@@ -28,6 +28,14 @@ Nothing about the brand changed. Anthony's site was already monochrome, full-ble
 
 Same pattern on the collection pages: three structurally different hero treatments to solve one specific problem (tall 2:3 portrait photography meeting a wide desktop viewport), full crop versus full push versus something in between. Anthony picked the version that added a text column beside the photo instead of cropping it. I can generate concepts fast. Which one is right for someone else's brand isn't my call to make alone. The result reads like the same site, just working harder: no rebrand, no new visual language, just the version of it WordPress couldn't build.
 
+<figure>
+
+![The anthonythomasgalante.com homepage: the lowercase "anthony thomas galante" wordmark with Collections, Custom, Press, and About navigation, above a full-bleed, moody photograph of a green-topped rocky sea cliff with waves breaking on dark rocks below.](./hero-live-2026-07.png)
+
+<figcaption>anthonythomasgalante.com: the monochrome, full-bleed photography and restrained typography the migration kept intact. Captured 2026.</figcaption>
+
+</figure>
+
 ## From $20 a month to $0
 
 The old site cost about $20 a month for plain WordPress hosting. The new one is a static Astro build that runs for free. Cloudflare hosts it, deploying straight from the repo. Keystatic Cloud handles the CMS, also free: Anthony signs in with his own email, no GitHub account, no code, and edits collections, lookbooks, and press entries directly. Every save writes a file into the same repo the site builds from, so his content isn't locked inside a CMS vendor's database; if he ever wants to swap the editing tool later, the files underneath are still just files. Hosting and content editing together: $0 a month, once DNS cutover clears the one blocker left, which is registrar access on his end, not the build.

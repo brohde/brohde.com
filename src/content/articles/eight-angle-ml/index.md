@@ -30,16 +30,19 @@ The biggest gain came from changing what detects the body. Apple's Vision framew
 
 ## The live app
 
-The feature I'm proudest of is Picture-in-Picture recording: follow a YouTube class full-screen while Eight Angle keeps tracking in a small tile. `AVPictureInPictureController` is built for video playback, not a live camera, so this is off-label use, and it needs backgrounded camera access that Apple grants case by case and usually reserves for video calls. I applied for the entitlement, got it, and shipped it. It also produced the worst bug in the app: practices vanished when someone dismissed the tile, but only outside the debugger, which suspends the process that was killing them. Analytics on the save path caught it in the field.
+The app is native SwiftUI, built for iPhone and iPad. The feature I'm proudest of is Picture-in-Picture recording: follow a YouTube class full-screen while Eight Angle keeps tracking in a small tile. `AVPictureInPictureController` is built for video playback, not a live camera, so this is off-label use, and it needs backgrounded camera access that Apple grants case by case and usually reserves for video calls. I applied for the entitlement, got it, and shipped it. It also produced the worst bug in the app: practices vanished when someone dismissed the tile, but only outside the debugger, which suspends the process that was killing them. Analytics on the save path caught it in the field.
 
 ## The brand and the store
 
 A model nobody installs is a research project. Everything a stranger sees first, I made: the logo, the [marketing site](https://eightangle.com) (a static Astro build on Cloudflare), and the App Store listing, which is its own product surface. App Store Optimization is the store's SEO; its title, subtitle, keywords, and screenshots decide who finds a yoga app in search. To turn those searches into installs I run Apple Search Ads: figuring out what people actually type, grouping terms by intent, setting bids, and pushing spend toward what converts. Left alone, the account drifts into paying for the wrong taps, so I tune it on a schedule.
 
-<!--
-FIGURE SLOT (asset owed by Brian): the brand.
-The Eight Angle logo and/or the marketing-site home page. Same <figure> pattern as above.
--->
+<figure>
+
+![The eightangle.com marketing homepage: the Eight Angle wordmark above the line "Yoga practice and pose tracker" and the headline "Make the most of your yoga practice," with a "Download for iOS" button and three iPhone mockups showing a practice review screen, a list of logged practices with their detected poses, and a personal-stats profile.](./hero-live-2026-07.png)
+
+<figcaption>The marketing site I designed and built for Eight Angle, a static Astro build on Cloudflare. Captured 2026.</figcaption>
+
+</figure>
 
 ## Free, then paid
 

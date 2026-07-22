@@ -1,6 +1,6 @@
 ---
 title: "New client type: ChatGPT designer x banker: using AI to build from PNG visual design files"
-description: "A wealth management client designed his own site in ChatGPT, pixel by pixel; I built it in Astro and used Pastel to turn his 435 review comments into a real, accessible site."
+description: "A banker designed his own site in ChatGPT, pixel by pixel, and handed me eight PNGs; I built it in Astro and used Pastel to turn his 435 review comments into a real, accessible site."
 date: 2026-06-30
 draft: false
 theme: goldcoast
@@ -41,5 +41,13 @@ The second is line wrapping. His designs dictated exact breaks: "move 'not' to t
 ## The result
 
 Eight pages, one system, live at goldcoastcapm.com. My client can log into Keystatic and edit his own copy and images without calling me. When he wants a ninth page, it'll be built from the same tokens as the first eight, not a new stylesheet.
+
+<figure>
+
+![The finished goldcoastcapm.com homepage: a navy and gold Gold Coast Capital Management site with the headline "Independent Advice. Lower Fees. Trusted Long-Term Guidance," a Chicago skyline photo, and a row of figures reading 20 years experience, CFA charterholder, 100% client retention since founding, and a 0.50% advisory fee.](./hero-live-2026-07.png)
+
+<figcaption>The finished goldcoastcapm.com, built in Astro from the client's ChatGPT comps: his navy and gold, his exact copy. Captured 2026.</figcaption>
+
+</figure>
 
 The pitch for "alternatives to Squarespace" isn't that a page builder can't get you something that looks like your mockup. It's that a page builder stops at looks-like. It won't tell you a badge should stay inaccessible because it's decorative, or catch that your exact line break will break your own mobile visitors, or give you a system that still holds together the next time you want to change something. My client had the taste and the tools to design his own site down to the pixel. What he needed from me was judgment about which pixels to keep exactly as drawn and which ones to build so the site actually works.
