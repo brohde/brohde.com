@@ -84,7 +84,7 @@ The live gold-coast article (published, #218) uses only the firm's business iden
 
 **J6. Chat security-audit abuse roadmap.** **KEPT** per Brian - transparency is the point.
 
-**J7. Local `/Users/brian/...` paths.** **PARTIALLY DONE.** The client-project-directory paths (squarely covered by Brian's override) were rewritten. The remaining absolute paths point at Brian's OWN projects (his flagship, his legacy WordPress site) and at this repo's own worktrees; they expose only the OS username, which is already implied by the repo owner. Those were **FLAGGED, not rewritten** (not client dirs, not covered by an override); Brian can request the cheap tidy-up. Files: eight-angle-ml.md, facebook-newsroom.md, b2-phase1.md, twilio-signal-pong-draft.md, archive/.../legacy-site/README.md.
+**J7. Local home-directory paths.** **DONE.** The client-project-directory paths (squarely covered by Brian's override) were rewritten at the prune. The remaining absolute paths pointed at Brian's own projects and this repo's worktrees, exposing only the OS username; on Brian's follow-up order (2026-07-22, "kill /Users/brian from the docs") every one was rewritten to a home-relative `~/` form. Zero absolute home paths remain in docs/.
 
 **J8. Legacy personal photo (`me.jpg`).** **KEPT** per Brian.
 

@@ -1,6 +1,6 @@
 # Legacy brohde.com assets (recovered 2026-07-15)
 
-Source: Brian's legacy WordPress site codebase at `/Users/brian/Projects/brohde-com-wordpress` (wp-content/uploads + theme assets + full SQL dump). All content is Brian's own; usage rights are his.
+Source: Brian's legacy WordPress site codebase at `~/Projects/brohde-com-wordpress` (wp-content/uploads + theme assets + full SQL dump). All content is Brian's own; usage rights are his.
 
 | File                     | What it shows                                                                             | Case study                          |
 | ------------------------ | ----------------------------------------------------------------------------------------- | ----------------------------------- |

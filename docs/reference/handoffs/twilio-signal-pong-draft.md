@@ -1,7 +1,7 @@
 # Handoff: Twilio Signal pong build-story draft
 
 **Agent:** copywriter (Opus), fresh spawn per #137.
-**Worktree:** `/Users/brian/Projects/brohde.com/.claude/worktrees/agent-a108da2d6257a1225`
+**Worktree:** `~/Projects/brohde.com/.claude/worktrees/agent-a108da2d6257a1225`
 **Branch:** `worktree-agent-a108da2d6257a1225` (branched from `main`)
 **Status:** draft complete, `draft: true`, build + `astro check` green. Ready for Brian's review; lead merges.
 

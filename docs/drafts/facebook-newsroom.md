@@ -38,7 +38,7 @@ The site itself had a long run. It kept publishing under its own newsroom.fb.com
 
 ## Image candidates
 
-**RESOLVED 2026-07-15: original assets recovered from the legacy brohde.com WordPress codebase** (`/Users/brian/Projects/brohde-com-wordpress`). Screenshots staged in this repo at `assets/images/legacy-site/`:
+**RESOLVED 2026-07-15: original assets recovered from the legacy brohde.com WordPress codebase** (`~/Projects/brohde-com-wordpress`). Screenshots staged in this repo at `assets/images/legacy-site/`:
 
 1. **Timeline-Mobile.png**: the interactive "Our History" timeline component on mobile, the exact touch-capable feature the draft calls out as the hard piece of the build. Strongest single image for this article.
 2. **Homepage-Localized.png**: the Japanese Newsroom edition (ja.newsroom.fb.com), full homepage. Perfect visual for the internationalization beat. Content dates it July 2017.

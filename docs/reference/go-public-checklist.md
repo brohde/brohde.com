@@ -15,7 +15,7 @@ Work top to bottom. Each item is a gate, not a suggestion.
   - The resume PDF was removed from the repo outright (2026-07-22, Brian's order), which retires its personal phone number with it: confirm no tracked file matches `find . -iname '*resume*'`.
   - The DNS runbook's A-record IPs and mail-verify token: zero-hit verified at the prune merge (2026-07-22); re-check by reading the gutted docs/reference/brohde-com-dns-cutover.md.
   - The gold-coast client's personal name and the old repo codename: zero-hit verified at the prune merge. `git grep -n 'Anthony Thomas Galante'` may return hits; that name is public by consent and appears in the live article.
-  - `git grep -n '/Users/brian'` is reduced to whatever Brian accepted (the J7 local-path tidy-up).
+  - Absolute home-directory paths: zero-hit in docs/ since the J7 tidy-up (2026-07-22, all rewritten to `~/` forms).
 - [ ] **No live key on disk gets force-added.** Confirm `git check-ignore chat/.env` still reports it ignored, and `git ls-files chat/.env` is empty. The real Anthropic key lives only there and must never enter the tree.
 - [ ] **Chat keyed eval (optional).** If Brian supplies the Anthropic key, re-run the chat eval once (`chat/` harness) to confirm the frozen #61 behavior still passes after any prompt/facts apostrophe sweep. This is optional and does not block the flip on its own.
 - [ ] **Phoneless resume swapped in (if supplied).** If Brian regenerates `docs/reference/Brian-Rohde-Resume-2026.pdf` without the phone number (or decides to drop the PDF), swap the new file in before the cut. If he has not, the prune ruling on that PDF must be resolved first (it is a must-remove item).

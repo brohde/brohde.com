@@ -65,7 +65,7 @@ None. No reversals were warranted.
 Build (in the worktree):
 
 ```
-cd /Users/brian/Projects/brohde.com/.claude/worktrees/agent-a4511b6ca9e0f8125
+cd ~/Projects/brohde.com/.claude/worktrees/agent-a4511b6ca9e0f8125
 npm run build   # astro check && astro build -> 0 errors, 0 warnings, 12 pre-existing z hints; 10 pages
 ```
 
@@ -76,7 +76,7 @@ Rendered surface (browser via a Sonnet subagent only, per #82/#117 — never dri
 cd <worktree> && npx astro preview --port 4370
 # live chat replies on localhost need the POC bridge on 8787, started from the MAIN checkout
 # (the gitignored .env with the key lives only there; it modifies nothing):
-cd /Users/brian/Projects/brohde.com/poc/chat && npm start   # if 8787 is already up from another session, reuse it
+cd ~/Projects/brohde.com/poc/chat && npm start   # if 8787 is already up from another session, reuse it
 ```
 
 Then, at desktop (1280/1600) and mobile (390 if the tool allows; this run was floored at ~500px):

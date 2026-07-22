@@ -71,21 +71,21 @@ I built this alone: the iOS app, the ML pipeline and scraper, the marketing site
 
 Real screenshots and assets found in the eight-angle repo, worth pulling into the article (all read-only, none modified):
 
-1. `/Users/brian/Projects/eight-angle/web/public/eight-angle-yoga-practice-tracker-pose-detected.png`: live pose-detection screenshot (880x880), strongest hero/lead-image candidate.
-2. `/Users/brian/Projects/eight-angle/web/public/blog/images/comparison-downward-dog.jpg`: real side-by-side Vision vs. MediaPipe detection comparison on Downward Dog. Built for exactly the migration section.
-3. `/Users/brian/Projects/eight-angle/web/public/blog/images/comparison-crow.jpg`: same comparison format, Crow pose (the more dramatic gap: Vision found 10/19 joints, MediaPipe found 19/19).
-4. `/Users/brian/Projects/eight-angle/web/public/blog/images/comparison-headstand.jpg`: same format, Headstand. Useful specifically for the "honest regression" paragraph, since it's the one pose where Vision won.
-5. `/Users/brian/Projects/eight-angle/web/public/practice-overview.png`: practice/insights screen, good for the iOS engineering or growth section.
-6. `/Users/brian/Projects/eight-angle/web/public/practices.png`: practice history/timeline screen.
-7. `/Users/brian/Projects/eight-angle/web/public/my-practice.png`: profile/progress tab.
-8. `/Users/brian/Projects/eight-angle/web/public/yoga-practice-tracker-poses-available.png`: poses grid (ties to the "47 classes, 24 featured poses" framing).
-9. `/Users/brian/Projects/eight-angle/web/public/yoga-practice-tracker-poses-performed.png`: per-pose stats screen.
-10. `/Users/brian/Projects/eight-angle/web/public/og-image.png`: existing social card, small but usable if a lightweight header image is needed.
-11. `/Users/brian/Projects/eight-angle/web/public/logo.svg` and `/Users/brian/Projects/eight-angle/ios/EightAngle/Assets.xcassets/EightAngleLogo.imageset/EightAngleLogo.svg`: wordmark, if the article wants a brand mark rather than a screenshot.
+1. `~/Projects/eight-angle/web/public/eight-angle-yoga-practice-tracker-pose-detected.png`: live pose-detection screenshot (880x880), strongest hero/lead-image candidate.
+2. `~/Projects/eight-angle/web/public/blog/images/comparison-downward-dog.jpg`: real side-by-side Vision vs. MediaPipe detection comparison on Downward Dog. Built for exactly the migration section.
+3. `~/Projects/eight-angle/web/public/blog/images/comparison-crow.jpg`: same comparison format, Crow pose (the more dramatic gap: Vision found 10/19 joints, MediaPipe found 19/19).
+4. `~/Projects/eight-angle/web/public/blog/images/comparison-headstand.jpg`: same format, Headstand. Useful specifically for the "honest regression" paragraph, since it's the one pose where Vision won.
+5. `~/Projects/eight-angle/web/public/practice-overview.png`: practice/insights screen, good for the iOS engineering or growth section.
+6. `~/Projects/eight-angle/web/public/practices.png`: practice history/timeline screen.
+7. `~/Projects/eight-angle/web/public/my-practice.png`: profile/progress tab.
+8. `~/Projects/eight-angle/web/public/yoga-practice-tracker-poses-available.png`: poses grid (ties to the "47 classes, 24 featured poses" framing).
+9. `~/Projects/eight-angle/web/public/yoga-practice-tracker-poses-performed.png`: per-pose stats screen.
+10. `~/Projects/eight-angle/web/public/og-image.png`: existing social card, small but usable if a lightweight header image is needed.
+11. `~/Projects/eight-angle/web/public/logo.svg` and `~/Projects/eight-angle/ios/EightAngle/Assets.xcassets/EightAngleLogo.imageset/EightAngleLogo.svg`: wordmark, if the article wants a brand mark rather than a screenshot.
 
 **Needs a look before use (not yet visually verified by me, just located):**
 
-- `/Users/brian/Projects/eight-angle/ml/classifier/output/visualizations/downward_dog_000001.jpg` and `/Users/brian/Projects/eight-angle/ml/classifier/output/visualizations/downward_dog_confused.jpg`: appear to be joint-annotated training visualizations from the classifier tooling. Could be a strong, more technical alternative to the blog comparison images for the ML pipeline section, but I haven't opened them to confirm what they actually show.
+- `~/Projects/eight-angle/ml/classifier/output/visualizations/downward_dog_000001.jpg` and `~/Projects/eight-angle/ml/classifier/output/visualizations/downward_dog_confused.jpg`: appear to be joint-annotated training visualizations from the classifier tooling. Could be a strong, more technical alternative to the blog comparison images for the ML pipeline section, but I haven't opened them to confirm what they actually show.
 
 **Not real images, flagging in case useful anyway:** `docs/design/poses_page/`, `docs/design/practice_overview/`, `docs/design/onboarding/` contain interactive HTML mockups (design concept explorations), not static screenshots. They'd need to be screenshotted to use. Skipped for this draft.
 
