@@ -1684,7 +1684,8 @@ a.lentry:focus-visible .lttl {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 7px;
+  /* flat corners (Brian, 2026-07-22: "I want them flat"), the last of the
+     plate framing retired */
 }
 .prose figure.portrait > p:has(img) {
   max-width: 300px;
