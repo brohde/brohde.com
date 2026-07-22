@@ -30,7 +30,7 @@ A running subagent's model is fixed at spawn: if an agent dies on credits, check
 
 - The studio lead writes the brief; agents return work product, not questions to Brian (the lead surfaces open questions to Brian).
 - Parallelize independent workstreams (e.g., multiple design explorations, copy + engineering).
-- Recon/audit-style agents should be read-only where possible (scope tools to Read/Grep/Glob) so they can fan out in parallel safely — pattern proven in the dragan project.
+- Recon/audit-style agents should be read-only where possible (scope tools to Read/Grep/Glob) so they can fan out in parallel safely — pattern proven in a prior client project.
 - Every delegation gets a one-line entry in `docs/COMMS-LOG.md`: what was sent, what came back.
 - Audit work (`seo-a11y-auditor`) runs before anything ships, not after.
 - **Phased delivery (Brian, 2026-07-15)**: large work is briefed as numbered phases that land and get reviewed independently (agent review counts); never one monolithic build. Briefs state the phase boundaries up front.

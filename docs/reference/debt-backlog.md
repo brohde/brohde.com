@@ -28,7 +28,7 @@ IDs are for reference. Size = rough effort (S = under 30min, M = a focused sessi
 |----|------|--------|------|--------|
 | C1 | Unconfirmed numbers still live in published articles: eight-angle (71.2% / 97.4% / -12.2%), gold-coast (435 comments / 8 pages), atg (98-of-320 / 247.7 to 26.0MB / $20/mo SiteGround). Verified present in `src/content/`. Credibility risk on a public portfolio. | editorial-apply flag #2; DECISIONS #86; STATUS | M | OPEN |
 | C2 | ATG client consent open: `atg-llm-migration` is `draft:false` and names the client, old host, and $20 cost. | editorial-apply flag #3; interior-pages flag | S (legal) | OPEN |
-| C3 | Gold Coast client consent (Dragan) open: title is client-neutral but body line 15 names "Gold Coast Capital Management". | editorial-apply flag #3; interior-pages flag 3 | S (legal) | OPEN |
+| C3 | Gold Coast client consent open: title is client-neutral but body line 15 names "Gold Coast Capital Management". | editorial-apply flag #3; interior-pages flag 3 | S (legal) | OPEN |
 | C4 | ATG body opens "one morning... about five hours" while the title leads with "4 hours"; copy-echo reconciliation Brian deferred. | feedback-batch-2026-07-19 item 10; DECISIONS #180 | S | OPEN |
 | C5 | Cross-piece closer differentiation deferred: Facebook and Android articles land the same "build inside the platform" moral. | editorial-apply "Deferred / not applied" | M | OPEN |
 | C6 | Twilio Signal-pong draft (`draft:true`) awaiting Brian; 6 open questions unanswered; no public route. | STATUS; twilio-signal-pong-draft handoff | S/M | OPEN |

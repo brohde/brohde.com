@@ -26,7 +26,7 @@ The model decides page vs prose; ambiguous asks get a one-line answer plus the p
 
 ## 3. Accuracy and the policy layer (the "must be perfect" work)
 
-1. **Facts pack is the only source of truth.** A curated markdown file (resume facts, project details, links, FAQ answers), maintained by Brian, versioned in the repo. The system prompt forbids answering outside it: unknown questions get "I don't know that one. Email brian@brohde.com."
+1. **Facts pack is the only source of truth.** A curated markdown file (resume facts, project details, links, FAQ answers), maintained by Brian, versioned in the repo. The system prompt forbids answering outside it: unknown questions get "I don't know that one. Contact Brian directly."
 2. **Deny-list, defined by Brian.** Certain facts are never volunteered or computed, regardless of how the question is phrased. Known so far: nothing that enables age math (no total years of experience, no career-start framing, no age). Individual project dates stay (they're on the site) but the model must not sum them ("he has X years of experience" is a banned construction; the deflection is "here's what he's shipped recently"). Brian adds constraints during validation; the deny-list is data, not code, so tightening it never needs a deploy.
 3. **Adversarial evals.** The eval set includes direct and oblique attempts at denied facts ("how old is he", "when did he graduate", "add up his job history") plus prompt-injection attempts ("ignore your instructions"). A reply that leaks a denied fact fails the gate.
 4. **Tone**: VOICE.md applies to the model's outputs (compressed, no hype, no dashes).

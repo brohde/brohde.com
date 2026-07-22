@@ -1,117 +1,119 @@
-# Sensitivity prune list (Phase C, #202)
+# Sensitivity prune - audit record (Phase C, #202)
 
-_Compiled 2026-07-21 by the publish-program researcher. READ-ONLY sweep. **Nothing in this list has been changed.** The repo goes public WITH docs (Brian's call: the AI-studio process is part of the story), but the material below should be ruled on first. Brian decides per row: remove line / redact detail / rewrite / keep._
+_Compiled 2026-07-21 as a read-only sweep; **executed 2026-07-22** per decision #218 (Brian's "Make this repo ready to share") and his row-by-row overrides. This file is now the **audit record**: every row below carries its executed disposition (done / kept / flagged + where), so the public repo shows the prune was principled. The sensitive VALUES this list originally quoted have themselves been scrubbed from it - the audit describes what was removed without re-printing the very strings it pruned._
 
-Scope swept: `docs/**` (COMMS-LOG, DECISIONS, STATUS, CONTENT, drafts, reference incl. every handoff, design/lab, archive), `chat/**` (prompt, facts, evals, server), `.claude/agents/**` + `.claude/settings.json`. Method: ripgrep pattern battery (email, phone, IP, DNS/registrar/mail, API-key value patterns, budget/credit, client names, personal-life keywords) plus full reads of the dense files. Git-history secret scan (S1) run separately, results at the bottom.
+_Scope executed: `docs/**` only (this agent's fence). `chat/**`, `functions/**`, `src/**`, `public/**`, `tools/**`, and root files were out of scope for this pass; items that live there are flagged, not edited, and called out as such. The compile-time sweep also covered `chat/**` and `.claude/**`; those findings stand as recorded._
 
----
-
-## Summary
-
-- **MUST-remove / MUST-hold: 6 items.** A real personal phone number in the resume PDF; two infrastructure identifiers (IPs + a mail-verification token) in the DNS runbook; and two consent-pending client identities (Gold Coast / Dragan and ATG / Anthony) that Brian's own notes gate behind sign-off, plus the local-machine client paths that carry a private repo codename.
-- **Judgment-call: 12 clusters.** `brian@brohde.com` (the declared judgment call); the DNS/mail runbook as a whole; the resume timeline vs the chat deny-list (a coherence conflict); Fable budget percentages and misc spend figures; the chat security-audit abuse roadmap; a legacy personal photo; client characterizations even with names redacted; the deny-list making the age-guard explicit; Resend/SES infra records; and the untracked live API key on disk (not public, flagged for hygiene).
-- **Verified clean (S1):** No secret VALUES are committed anywhere. `git log --all -S 'sk-ant-api03'` is empty; `RESEND_API_KEY=` value scan is empty; the only real key on the machine is `chat/.env`, which is gitignored and has never appeared in history. Account / KV / gateway IDs are non-secret resource handles and are shown truncated in docs anyway.
-
-Counts: personal-contact 2, account-infra 5, client-private 5, budget 3, security 1, other 2.
+Method for the execution pass: for each pruned string, grep the whole `docs/` tree (including `docs/archive/**`) to catch every occurrence; edit the large append-only logs (COMMS-LOG, DECISIONS) surgically, line by line, never reflowing unrelated content; then verify each removed string returns zero hits across `docs/`.
 
 ---
 
-## MUST-REMOVE / MUST-HOLD
+## Summary of what was executed
+
+- **DNS runbook gutted.** `brohde-com-dns-cutover.md` reduced to a short factual what/when summary; the full record inventory, the step runbook, the vestigial legacy A-record IPs, the mail-verification token, the assigned nameserver identifiers, the SOA serial, and the DKIM host values were all removed.
+- **Gold Coast client personal name redacted repo-wide.** The client's full personal name (and the "CFA" personal styling) were removed everywhere in `docs/`; the consented business identity (the firm name and `goldcoastcapm.com`) was kept, matching the live public article, which never names him personally. The internal repo codename for that engagement (the client's first name, reused as a project/repo slug) was replaced with the neutral business-based slug `gold-coast` (or "a prior client project" in `TEAM.md`).
+- **Client local filesystem paths rewritten.** Absolute local paths pointing at the two client project directories (Gold Coast and the ATG migration repo) were rewritten to relative/generic references, dropping the OS username and local layout.
+- **Personal email redacted per instance.** Brian's personal email address was redacted to a neutral reference wherever it appeared as a contact fallback, a mail account, or a send/receive endpoint. It was deliberately KEPT in the handful of entries whose subject is the address being taken off every visitor surface (the #183 removal narrative), where naming it is the point. In `VOICE.md` the formatting example was swapped to a generic `name@example.com`.
+- **Fable budget usage percentage redacted** wherever it appeared in `docs/` (STATUS, DECISIONS #187, COMMS batch 131). The budget-mode narrative itself (lead thin, docs batched) was kept; only the numeric percentage was removed.
+- **Resume PDF: unchanged, phone flagged.** Per Brian, the resume stays as-is (dates and all); the personal mobile number stays in place, flagged for a phoneless export Brian will supply. No edit to the PDF.
+- **Security-audit language kept** (abuse roadmap etc.) - transparency is the point (Brian's call).
+- **Legacy personal photo kept** (`me.jpg`) - Brian's call.
+
+---
+
+## MUST-REMOVE / MUST-HOLD (executed)
 
 ### docs/reference/Brian-Rohde-Resume-2026.pdf (binary, tracked)
 
-| Location | Fragment | Category | Proposed disposition |
-| --- | --- | --- | --- |
-| Header contact line | `847-630-6829` (real personal mobile) | personal-contact | **Remove** the phone number from the PDF (regenerate the PDF without it), or drop the PDF from the public repo entirely. The site already carries NO resume download (#177/#198), so this file has no public-facing role; a public repo reader would still find it at this path. |
-| Experience dates | Beyond `Nov. 2013`, Stack Elevate `Jan. 2016`, Twilio `Nov. 2017`, etc. (full career timeline) | personal-contact / other | **Judgment (coherence):** see J3. The chat deny-list actively hides "when his career started"; this PDF hands a public reader the exact start date. Resolve together with the phone decision. |
+| Item | Category | Disposition executed |
+| --- | --- | --- |
+| A real personal mobile number in the header contact line | personal-contact | **FLAGGED, not changed.** Brian's override: the resume stays as-is; he will supply a phoneless export to swap in. The number was NOT copied into this audit record. |
+| Full career timeline / experience dates | personal-contact / other | **KEPT** per Brian ("the resume is fine"; early companies already trimmed). The coherence tension with the chat deny-list (J3) is resolved by #218, which relaxed the chat to answer project-completion dates while keeping the age/career-length guard. |
 
 ### docs/reference/brohde-com-dns-cutover.md
 
-| Line | Fragment | Category | Proposed disposition |
-| --- | --- | --- | --- |
-| 18 | `local 76.21.34.198`; `mysql 208.113.245.188` (vestigial DreamHost A-record IPs) | account-infra | **Redact** the IP values (the sentence can keep "two vestigial DreamHost A rows" without the addresses). |
-| 12 | `"hosted-email-verify=zzw7fdhu"` (Migadu domain-verification token) | account-infra | **Redact** the token value. |
-| whole file | full mail-record inventory, registrar, nameservers, SOA serial, cutover runbook | account-infra | See J2: recommend removing the runbook or reducing it to a one-line "DNS moved to Cloudflare" note. Ruled here as judgment, but the two rows above are must-redact regardless of that call. |
+| Item | Category | Disposition executed |
+| --- | --- | --- |
+| Vestigial legacy A-record IP values | account-infra | **DONE** - removed; the file no longer carries the addresses. |
+| Mail-provider domain-verification token value | account-infra | **DONE** - removed. |
+| Full mail-record inventory, registrar, nameserver identifiers, SOA serial, DKIM host values, step runbook | account-infra | **DONE** - the file was gutted to a factual what/when summary of the cutover; all account-specific values and the operational map were removed. |
 
-### Consent-pending client: Gold Coast / Dragan
+### Consent-pending client: Gold Coast (personal name + codename)
 
-Brian's own notes (`gold-coast.md` open questions, `editorial-review-r1.md`, `matrix-identities.md` #4) state this piece is **unpublished pending Dragan's consent**, including consent to reveal that he designed the site in ChatGPT. Publishing the docs exposes the full name and the characterization before that gate clears.
+The live gold-coast article (published, #218) uses only the firm's business identity and never names the client personally; `docs/` was brought into line with that.
 
-| File:line | Fragment | Category | Proposed disposition |
-| --- | --- | --- | --- |
-| docs/CONTENT.md:11 | `Gold Coast Capital Management (Dragan Mark Filipovic, CFA)` | client-private | **Redact** the personal name (keep "a wealth-management client" / firm-neutral) until consent lands. |
-| docs/drafts/gold-coast.md:79 | `Does Dragan Mark Filipovic know this project will be featured publicly` | client-private | **Redact** name; the consent question itself can stay. |
-| docs/reference/editorial-review-r1.md:47,132 | `Gold Coast Capital / Dragan`, "HOLD until client consent" | client-private | **Redact** name. |
-| docs/reference/handoffs/matrix-identities.md:60; coherence-pass.md:25 | "pending Dragan" | client-private | **Redact** name. |
-| docs/STATUS.md:85 | "Gold Coast pending Dragan's consent" | client-private | **Redact** name. |
+| File | Category | Disposition executed |
+| --- | --- | --- |
+| docs/CONTENT.md | client-private | **DONE** - personal-name parenthetical dropped; firm name kept. |
+| docs/drafts/gold-coast.md | client-private | **DONE** - personal name removed from the consent open-question (the question itself kept); client repo paths genericized. |
+| docs/reference/editorial-review-r1.md | client-private | **DONE** - personal name removed from both consent notes; firm reference kept where it read naturally. |
+| docs/reference/handoffs/matrix-identities.md; interior-pages.md | client-private | **DONE** - "pending <name>" changed to "pending the client's consent". |
+| docs/reference/debt-backlog.md | client-private | **DONE** - personal-name parenthetical dropped from the consent row. |
+| docs/STATUS.md | client-private | **DONE** - "pending <name>'s consent" changed to "pending the client's consent". |
+| docs/COMMS-LOG.md (multiple entries) | client-private | **DONE** - personal name and possessive forms redacted across the log, surgically. |
+| Codename (client first name reused as repo slug) in TEAM.md, prior-project-conventions.md, COMMS-LOG.md | client-private | **DONE** - replaced with `gold-coast` (business-based slug) or "a prior client project". |
 
-### Consent-pending client: ATG / Anthony
+### Consent-pending client: ATG (name / domain / host / cost)
 
-`#167` and STATUS:85 record ATG sign-off as still open; the draft's own open-question #6 flags the client's hosting spend as unresolved for publication.
+| Item | Category | Disposition executed |
+| --- | --- | --- |
+| Client full name + domain in docs/drafts/atg-llm-migration.md and other docs | client-private | **FLAGGED, not redacted (see note below).** Brian's overrides were explicit about the Gold Coast client only and silent on ATG. Decisively, the **live published article** (`src/content/articles/atg-llm-migration/index.md`, `draft:false`) already names the client, domain, old host, and cost in full - a `src/` surface outside this pass's docs-only fence. Redacting the docs while the deployed article names him would be theater, not protection, and would diverge docs from the live surface. This is a live-surface decision for Brian, not something a docs-only prune can resolve; it is the same exposure `editorial-review-r1.md` already flags. |
+| Quote from the client's private planning doc (its filename + a line from it) | client-private | **DONE** - the private-doc quote and filename were generalized to "your own planning notes"; the public host/cost facts (which are on the live article) were left. |
+| Client local filesystem paths (source repo, screenshots, session log, Claude projects dir) | client-private / other | **DONE** - all absolute client-project paths rewritten to relative/generic references. |
 
-| File:line | Fragment | Category | Proposed disposition |
-| --- | --- | --- | --- |
-| docs/drafts/atg-llm-migration.md:30,54 | `Anthony Thomas Galante is a New York fashion designer`; `anthonythomasgalante.com` | client-private | **Judgment / hold:** the published article had the client domain removed pending consent (#167); the draft still names him fully. Redact to "a fashion-designer client" until consent, or confirm consent covers the docs too. |
-| docs/drafts/atg-llm-migration.md:113 | `~$20/month, SiteGround`; quotes the client's private `MY_PLAN.md` ("I believe we pay $20 a month") | client-private | **Redact** the specific host + the quote from the client's private doc; generalize to "a paid host" per the draft's own flag. |
-| docs/drafts/atg-llm-migration.md:89 | `/Users/brian/Projects/anthony-thomas-galante/SESSION_LOG.txt` | client-private / other | **Rewrite** to a relative or generic reference (also see J7). |
+### Local-machine client paths + codename
 
-### Local-machine client paths + private repo codename
-
-| File:line | Fragment | Category | Proposed disposition |
-| --- | --- | --- | --- |
-| docs/drafts/gold-coast.md:5,54,56 | `/Users/brian/Projects/dragan`; `docs/from_client/` | client-private / other | **Rewrite** paths; "dragan" is the internal repo codename for the Gold Coast client (a second exposure of the person). |
-| docs/TEAM.md:33 | "pattern proven in the dragan project" | client-private | **Rewrite** to "a client project" (drops the codename). |
-
----
-
-## JUDGMENT-CALL
-
-**J1. `brian@brohde.com` throughout (the declared judgment call).** Appears in DECISIONS #57/#175/#183, COMMS 491/549/563, VOICE.md:48, chat-feasibility.md:41, llm-terminal-plan.md:29, contact-phase-b.md, and as live text inside the design/lab prototype HTML (aurora-terminal.html, build-log-v3.html). Category: personal-contact. Note: the site deliberately removed this address from every visitor surface (#183), yet it stays quotable across the docs and the lab prototypes. Disposition: **keep** (Brian's stated call that this is public-facing) OR sweep it from the docs to match the site posture. If keeping, no action; if matching the site, redact to "the contact flow".
-
-**J2. The DNS/mail runbook as a whole (`brohde-com-dns-cutover.md`, plus its echoes in DECISIONS #175/#176 and COMMS 549).** Category: account-infra. It maps Brian's personal registrar (DreamHost), mail provider (Migadu), full record set, nameservers (`alec`/`robin.ns.cloudflare.com`), and cutover procedure. All technically discoverable via `dig`, but compiled here as one operational map with no bearing on the AI-studio story. Disposition: **recommend removing the runbook file** (or cutting it to a one-line "DNS on Cloudflare, mail on Migadu"); at minimum apply the must-redactions above.
-
-**J3. Resume timeline vs the chat deny-list (coherence).** Category: other/personal. The chat's system prompt and eval fixtures guard age / birth year / graduation year / career-start. The resume PDF (public in the repo) states employment dates back to Nov 2013, from which career-start and approximate age are trivially inferred, defeating the guard for anyone who reads the repo. Disposition: **flag for Brian.** Either accept the inconsistency (the deny-list only governs the chat surface) or drop/redate the PDF.
-
-**J4. Fable budget percentages.** Category: budget. `64% used through 2026-07-23` in STATUS.md:9, DECISIONS #187, COMMS 131 (batch 129-131). Named explicitly in the brief as a category. Disposition: **judgment**, low stakes; redact the percentage or keep as color on the studio process.
-
-**J5. Misc spend figures.** Category: budget. `$20 credits added` (DECISIONS #47), `hard $5/month cap` (#159/ENGINEERING §8), per-reply `~$0.002` and eval `totalCost $0.1249` (chat/eval-review.html). Disposition: **keep** likely (all trivial, and the $5 cap is a reasonable-defense detail, not a weakness); listed for completeness.
-
-**J6. Chat security-audit abuse roadmap.** Category: security. `docs/reference/chat-security-audit.md` states plainly that at launch "there is currently no bot check at all: the endpoint is reachable by any non-browser client up to the KV rate limit" (H3), and that the KV limiter "is racy... a concurrent burst bypasses both windows" (M1). Together these are a recipe for burning the $5/month cap or degrading the live chat. The brief allows exact rate-limit tunables (already in public code); this doc goes further and narrates the exploit path. Disposition: **flag.** Keep for the transparency story, or soften the two sentences that read as an attack guide. (Note: the audit reflects the launch posture; confirm whether M1/H3 were since hardened before deciding.)
-
-**J7. Local `/Users/brian/...` paths.** Category: other. 26 hits across `atg-llm-migration.md`, `eight-angle-ml.md`, `gold-coast.md`, `facebook-newsroom.md`, `twilio-signal-pong-draft.md`, `b2-phase1.md`, `legacy-site/README.md`. Exposes the OS username and local project layout. Disposition: **rewrite** to relative paths (cheap tidy-up); the client-repo-name instances are covered under MUST above.
-
-**J8. Legacy personal photo.** `docs/archive/source-assets/images/legacy-site/me.jpg`. Category: other. A portrait of Brian, from his old public homepage. Low sensitivity (was already public), but it is a personal photo shipping in the archive. Disposition: **keep or drop**, Brian's taste call.
-
-**J9. Client characterizations (even with names redacted).** Category: client-private. The Gold Coast draft repeatedly frames the client as "not a designer", "never written CSS", "a non-technical founder" who "designed his site in ChatGPT" (gold-coast.md:22-28, editorial-review-r1.md). Complimentary in intent but personal; the draft itself flags this as consent-sensitive. Also in the Eight Angle draft: `resume-material.md` "deliberately excludes... revenue... no usage/revenue data included by choice" (eight-angle-ml.md:97) reveals a deliberate omission, and the hidden/decoy pose-class list `cobra, side_crow, non_yoga, kurmasana` (line 99) exposes the classifier's anti-gaming decoys. Disposition: **judgment**; soften tone / drop the decoy specifics if desired.
-
-**J10. Deny-list makes the age-guard explicit.** Category: other. `chat/system-prompt.md:9-13` and `chat/facts.md:8` spell out that age / birth year / graduation year are deliberately withheld; the eval fixtures (transcript.md, eval.mjs, eval-http.mjs, eval-review.html, verdicts-2026-07-15.md) include the probe questions ("how old is brian?", "is he married?", "what year was he born?"). Per the brief, "the deflection strategy itself is fine." Disposition: **keep** (it demonstrates the guard working); flagged only so Brian knows a public reader learns exactly which attribute is guarded, which mildly signals sensitivity about age. Pairs with J3.
-
-**J11. Resend / SES mail infra.** Category: account-infra. `send.brohde.com`, DKIM `resend._domainkey.send`, MX `feedback-smtp.us-east-1.amazonses.com`, SPF (COMMS 565; contact-phase-b.md:170; DECISIONS #192/#197). Mostly public DNS, low sensitivity. Disposition: **keep** likely; listed for completeness alongside J2.
-
-**J12. Untracked live API key on disk (hygiene, NOT public).** `chat/.env` line 2 holds a real `sk-ant-api03-...` key. The file is gitignored and has never been committed (verified, S1). It will NOT go public with the repo. Disposition: **no repo action needed**; flagged as a heads-up to rotate/guard the key and to make sure the reorg never force-adds `chat/.env`.
+| Item | Disposition executed |
+| --- | --- |
+| Absolute paths at the two client project directories | **DONE** - rewritten (see the two client sections above). |
+| "the <codename> project" in TEAM.md | **DONE** - rewritten to "a prior client project". |
 
 ---
 
-## Verified clean (no action)
+## JUDGMENT-CALL rows (dispositions)
 
-- **Secret values:** none committed. `git log --all -S 'sk-ant-api03'` returns nothing; every `sk-ant` history hit is a placeholder reference (`ANTHROPIC_API_KEY=sk-ant-...`) in docs/code. `RESEND_API_KEY=` value scan returns nothing. No `re_`-prefixed Resend key value anywhere in tracked content.
-- **`chat/.env`:** gitignored, `git ls-files` does not track it, `git log --all -- chat/ poc/chat/.env` shows it never existed in history. Safe.
-- **Resource handles:** the KV namespace id is shown truncated (`c3579b8f…`) in DECISIONS #83 / COMMS 263; account id, KV id, and gateway name live only in `wrangler.toml`, are non-secret identifiers (the file's own comment and audit-server.md:57 / chat-security-audit.md:125 confirm), and `ANTHROPIC_GATEWAY_TOKEN` / `TURNSTILE_SECRET` appear only as secret NAMES, never values.
-- **`.claude/agents/*` and `.claude/settings.json`:** no personal data, no secrets. (`.claude/settings.local.json` and `.claude/worktrees/` are untracked/gitignored and do not publish.)
-- **S1 git-history verification: PASS.** Keys were never committed; only current file contents needed review, and the public repo gets fresh history per #202 regardless.
+**J1. Personal email throughout.** **DONE, per-instance.** Redacted to a neutral reference where it functioned as a contact fallback / mail account / send-receive endpoint (DECISIONS #57 and #175, COMMS 491/549/581, chat-feasibility, llm-terminal-plan, contact-phase-b send + verify lines, the two design-lab prototype HTMLs). **KEPT** where the entry's subject is the address being removed from every visitor surface, where naming it is the point (DECISIONS #183 and #192, COMMS 563, contact-phase-b's "drop"/"removed" lines). `VOICE.md` example swapped to a generic address.
+
+**J2. DNS/mail runbook as a whole.** **DONE** - gutted (see MUST section). The DECISIONS/COMMS echoes of the cutover were kept as process narrative per the fence (Brian's override scoped the gut to the runbook file); the personal email within #175 was still redacted under J1.
+
+**J3. Resume timeline vs chat deny-list (coherence).** **RESOLVED by #218** - the chat may now answer project-completion dates; the age/career-length guard stays. Resume kept as-is per Brian.
+
+**J4. Fable budget percentage.** **DONE** - the usage percentage was redacted in STATUS, DECISIONS #187, and COMMS 131; budget-mode narrative kept.
+
+**J5. Misc spend figures (monthly cap, per-reply and eval costs, credits added).** **KEPT** - not in Brian's redaction override (which named the Fable usage percentage specifically); trivial and, for the cap, a reasonable-defense detail. Note: the cap and eval-cost figures live in `chat/**`, outside this pass's fence anyway.
+
+**J6. Chat security-audit abuse roadmap.** **KEPT** per Brian - transparency is the point.
+
+**J7. Local `/Users/brian/...` paths.** **PARTIALLY DONE.** The client-project-directory paths (squarely covered by Brian's override) were rewritten. The remaining absolute paths point at Brian's OWN projects (his flagship, his legacy WordPress site) and at this repo's own worktrees; they expose only the OS username, which is already implied by the repo owner. Those were **FLAGGED, not rewritten** (not client dirs, not covered by an override); Brian can request the cheap tidy-up. Files: eight-angle-ml.md, facebook-newsroom.md, b2-phase1.md, twilio-signal-pong-draft.md, archive/.../legacy-site/README.md.
+
+**J8. Legacy personal photo (`me.jpg`).** **KEPT** per Brian.
+
+**J9. Client characterizations + Eight Angle decoy specifics.** The Gold Coast characterizations ("non-technical founder", "never written CSS") are also in the live public article, so they were **KEPT** in the docs to match. The Eight Angle classifier decoy pose-class list and the deliberate revenue-omission note (Brian's own flagship, not a client) are **FLAGGED, not removed** - not covered by any override; Brian's taste call whether to soften.
+
+**J10. Deny-list makes the age-guard explicit.** **KEPT** (the guard demonstrating itself); these fixtures live in `chat/**` outside this fence regardless. Pairs with J3, now relaxed for project dates by #218.
+
+**J11. Resend / SES mail infra (send subdomain, DKIM, MX, SPF).** **KEPT** - mostly public DNS, low sensitivity; the sending subdomain is part of the shipped contact-flow story.
+
+**J12. Untracked live API key on disk (`chat/.env`).** **NO REPO ACTION** - gitignored, never committed (verified S1), will not publish. Heads-up to Brian to guard/rotate the key and ensure the reorg never force-adds it. Outside this docs-only fence.
 
 ---
 
-## Git-history spot-check log (S1)
+## Flagged during execution (beyond the original list)
 
-```
-git log --all --oneline -S 'sk-ant-api03'   -> (empty)
-git log --all --oneline -S 'RESEND_API_KEY=' -> (empty)
-git log --all --oneline -- chat/.env poc/chat/.env -> (empty)
-git check-ignore chat/.env -> chat/.env   (ignored, not tracked)
-```
-`-S 'sk-ant'` and `-S 're_'` return commits, but inspection shows only placeholder/text references (no real key material).
+- **A workers.dev staging URL** in `atg-llm-migration.md` embeds Brian's Cloudflare/workers handle alongside the client project name. Not a local path and not covered by an override; **flagged, not removed**. (The handle is the same public string as Brian's Cloudflare account slug.)
+- **The live ATG article** (`src/`, out of fence) names the consent-pending client in full; see the ATG row above. Flagged for Brian as a live-surface decision.
 
 ---
 
-_Nothing was changed by this pass. The repo remains as-is. This list awaits Brian's ruling; edits happen only after he rules row by row._
+## Verified clean (no action) - carried from the compile pass
+
+- **Secret values:** none committed. History scans for the API-key prefixes and the Resend key pattern returned no real key material (only placeholder/text references). `chat/.env` is gitignored and never appeared in history.
+- **Resource handles:** KV namespace id, account id, gateway name are non-secret identifiers, shown truncated in docs; secret NAMES appear without values.
+- **`.claude/agents/*` and `.claude/settings.json`:** no personal data, no secrets. `.claude/settings.local.json` and `.claude/worktrees/` are untracked/gitignored and do not publish.
+- **S1 git-history verification: PASS.** Keys were never committed; the public repo also gets fresh history per #202.
+
+---
+
+## Verification (execution pass)
+
+After the edits, each removed string was grepped across `docs/`. Zero hits for: the personal mobile number, both legacy A-record IPs, the mail-verification token, the client's full personal name, the client-first-name codename, and both client-project absolute paths. The personal email address remains only in the #183 "off every surface" narrative entries described under J1. The Fable usage percentage returns only an unrelated CSS bar width. Grep evidence is in the execution report accompanying this commit.

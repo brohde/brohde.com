@@ -69,7 +69,7 @@ All browser work via Sonnet subagents (#82), on the BUILT dist at localhost:4410
 
 1. **Squarespace line** (gold-coast, "The designs"): owner-stated per #134, one sentence, please read.
 2. **atg / goldcoast / twilio have no designed sky palettes** (the lab predates them): they ride the default sky; peak + mark carry the identity. If Brian wants fully themed skies for these three, that is a design-director round (palette + contrast audit), not an engineering gap.
-3. **Gold Coast consent** (Dragan) is still open per STATUS while the piece and now its identity are live; unchanged by this build, but the identity makes the page more branded, so worth resolving.
+3. **Gold Coast consent** is still open per STATUS while the piece and now its identity are live; unchanged by this build, but the identity makes the page more branded, so worth resolving.
 4. **Per-page GROUND identities (#74)** deliberately not done: changing grounds per page invalidates the measured pour floors (4.81:1 worst) and needs its own contrast audit.
 5. **Motion-spec items deliberately not built** (gated on Brian, #139/#112): wipe retirement, `<main>` view-transition, header `transition:persist`, micro-interactions, any hero band motion.
 6. **Human desktop pass** over localhost:4410 (or the deployed preview after merge): the five article pages at full width, one home->article->home navigation to watch the travel, and the `stats()` check above.
