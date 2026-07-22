@@ -1545,24 +1545,6 @@ a.lentry:focus-visible .lttl {
   /* 12px (from 8px) so the date clears the 40px title now the nav row is gone */
   margin: 0 0 12px;
 }
-/* "log" is the article's one top affordance: the archive-return link, back to
-   /#log. Standalone navigation in the quiet-link idiom (like .snav): rest dim
-   (7.19:1 night / 7.97:1 light on the ground), engage accent + 1px underline,
-   so G183's color-only trap does not bind (D1 call 5). */
-.adate a {
-  color: var(--dim);
-  text-decoration: none;
-  transition:
-    color 120ms ease,
-    text-decoration-color 120ms ease;
-}
-.adate a:hover,
-.adate a:focus-visible {
-  color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1px;
-}
 .atitle {
   font-family: var(--font-edit);
   font-weight: 700;
