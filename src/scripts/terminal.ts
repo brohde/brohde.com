@@ -300,10 +300,16 @@ function echo(t: string, replay = false) {
     record({ t: "echo", s: t });
     scrollToNewest();
   }
-  // Brian: once the thread holds visitor text the hint softens to the
-  // conversational "Write a message..."; the ORIGINAL invitation belongs to
-  // the pristine panel only (fresh arrival, or restored by [clear] below).
-  // Lives here so a session restore softens it too, not just a live send.
+  softenPlaceholder();
+}
+
+/* Brian: once the thread holds visitor text the hint softens to the
+   conversational "Write a message..."; the ORIGINAL invitation belongs to
+   the pristine panel only (fresh arrival, or restored by [clear] below).
+   Called from echo() so a session restore softens it too, and from
+   armContact() because the contact flow's ephemeral turns never pass
+   through echo() (Brian, 2026-07-21: an armed flow is an underway thread). */
+function softenPlaceholder() {
   const f = byId("in-chat") as HTMLTextAreaElement | null;
   if (f && f.placeholder !== ONGOING_PH) {
     f.dataset.ph ??= f.placeholder;
@@ -993,6 +999,7 @@ function contactLine(
 
 function armContact() {
   contact = { name: null, email: null, message: null, awaiting: "blob" };
+  softenPlaceholder();
 }
 
 /* Speak the greeting into `slot`, arm the flow, and append the [cancel] chip so
