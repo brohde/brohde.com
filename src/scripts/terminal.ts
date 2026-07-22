@@ -552,7 +552,7 @@ function toConsole(cmd: string, html: string, viaKb: boolean) {
  * {text, open_page, usage, cost}; errors are {error} bodies rendered
  * verbatim (400 validation, 429 rate limit, 502/503 upstream, all
  * sentence-cased server-side). On localhost the request goes to the local
- * POC server instead (poc/chat, http://localhost:8787), which speaks the
+ * POC server instead (chat/, http://localhost:8787), which speaks the
  * same shape; `wrangler pages dev dist` (port 8788) exercises the real
  * Function locally when parity matters.
  *

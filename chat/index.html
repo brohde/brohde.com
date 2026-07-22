@@ -141,7 +141,7 @@
       const history = [];
       if (location.protocol === "file:") {
         document.getElementById("log").innerHTML =
-          '<div class="msg err">This page needs its local server (it serves the /chat API that calls Haiku).<br><br>Run:<br><b>cd poc/chat && ANTHROPIC_API_KEY=sk-ant-... npm start</b><br><br>then open <b>http://localhost:8787</b> instead of the file:// path.</div>';
+          '<div class="msg err">This page needs its local server (it serves the /chat API that calls Haiku).<br><br>Run:<br><b>cd chat && ANTHROPIC_API_KEY=sk-ant-... npm start</b><br><br>then open <b>http://localhost:8787</b> instead of the file:// path.</div>';
       }
       function add(cls, html) {
         const d = document.createElement("div");

@@ -17,7 +17,5 @@
 # repeat views skip the download while a redeploy still lands promptly.
 /favicon.svg
   Cache-Control: public, max-age=604800, stale-while-revalidate=86400
-/og-default.svg
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
 /robots.txt
   Cache-Control: public, max-age=3600
