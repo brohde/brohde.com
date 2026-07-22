@@ -152,7 +152,7 @@ const CHAT_INPUT = "in-chat";
 
 /* Phase 4C motion timings (Brian veto knobs). */
 const PULSE_MS = 450; // brief thinking pulse before a deterministic response
-const CONTACT_PULSE_MS = 180; // the contact flow's own quicker pulse (asks,
+const CONTACT_PULSE_MS = 200; // the contact flow's own quicker pulse (asks,
 // greeting, edit re-asks, confirm nudge): the flow is a form, not a chat, so
 // the beat between turns is snappier than the 450ms general chat pulse.
 const CONTACT_Q = "How do I contact Brian?"; // the emulated contact question
@@ -1423,7 +1423,13 @@ function cancelContact() {
 function endContact(success: boolean) {
   contact = null;
   if (!success) {
-    contactLine("Cancelled. Ask me anything else, or type help.", null);
+    // Brian (2026-07-22): even deterministic lines get the brief thinking
+    // pulse, so no response ever pops in faster than the machine could think
+    pulseThen(
+      (slot) =>
+        contactLine("Cancelled. Ask me anything else, or type help.", slot),
+      CONTACT_PULSE_MS
+    );
   }
   byId(CHAT_INPUT)?.focus({ preventScroll: true });
 }
