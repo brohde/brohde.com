@@ -65,9 +65,16 @@ const profilePage = profilePageLd();
             the editorial body face and the accent-green link treatment, not
             the dim mono line it replaced. */
           }
+          {
+            /* Same behavior as the nav contact item (Brian, 2026-07-22): a
+            data-cmd button, so the click rides contactMoment() and plays the
+            typed-question emulation on /chat instead of the quieter /contact
+            route entry. .cmdlink inherits the prose face and accent link
+            treatment, so it reads identically to the anchor it replaced. */
+          }
           <p>
-            <a href="/contact"
-              >Contact me using my AI <span aria-hidden="true">&#8594;</span></a
+            <button type="button" class="cmdlink" data-cmd="contact"
+              >Contact me using my AI <span aria-hidden="true">&#8594;</span></button
             >
           </p>
         </article>
