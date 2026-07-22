@@ -1728,14 +1728,16 @@ a.lentry:focus-visible .lttl {
 .prose figure {
   margin: 26px 0;
 }
-.prose figure > p:has(img) {
+.prose figure > p:has(img),
+.prose figure > p:has(video) {
   margin: 0;
   border: 1px solid var(--line);
   background: var(--well);
   border-radius: 12px;
   padding: 10px;
 }
-.prose figure img {
+.prose figure img,
+.prose figure video {
   display: block;
   width: 100%;
   height: auto;

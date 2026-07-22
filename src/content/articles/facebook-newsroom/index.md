@@ -40,6 +40,14 @@ I also wrote the migration scripts that moved years of posts and media off Faceb
 
 ## The result
 
+<figure>
+
+<video src="/media/newsroom.mp4" poster="/media/newsroom-poster.jpg" controls preload="metadata" playsinline aria-label="Screen capture video of the shipped newsroom.fb.com"></video>
+
+<figcaption>The shipped newsroom in motion: a screen capture recorded in 2017, three years after launch, still running the theme I built in 2014.</figcaption>
+
+</figure>
+
 Newsroom.fb.com relaunched in mid-2014 as Facebook's first WordPress site, and the first responsive consumer site built on WordPress VIP. It held up well enough that it turned into a longer relationship rather than a one-off engagement: Beyond went on to build Year in Review and the Internet.org site for Facebook off the back of it.
 
 ## Postscript, 2026

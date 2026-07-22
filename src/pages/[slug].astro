@@ -81,13 +81,32 @@ const ARTICLE_IMAGES = import.meta.glob<{ default: ImageMetadata }>(
   "/src/content/articles/*/*.{png,jpg,jpeg,webp,gif}",
   { eager: true }
 );
-const stubFigs: { img: ImageMetadata; alt: string; caption: string }[] = [];
+type StubFig =
+  | { kind: "img"; img: ImageMetadata; alt: string; caption: string }
+  | { kind: "video"; src: string; poster?: string; label: string; caption: string };
+const stubFigs: StubFig[] = [];
 if (isStub && post.body) {
-  const figRe =
-    /!\[([^\]]*)\]\(\.\/([^)]+)\)\s*<figcaption>([\s\S]*?)<\/figcaption>/g;
-  for (const m of post.body.matchAll(figRe)) {
-    const mod = ARTICLE_IMAGES[`/src/content/articles/${post.id}/${m[2]}`];
-    if (mod) stubFigs.push({ img: mod.default, alt: m[1], caption: m[3].trim() });
+  for (const b of post.body.matchAll(/<figure>([\s\S]*?)<\/figure>/g)) {
+    const block = b[1];
+    const caption =
+      block.match(/<figcaption>([\s\S]*?)<\/figcaption>/)?.[1]?.trim() ?? "";
+    const img = block.match(/!\[([^\]]*)\]\(\.\/([^)]+)\)/);
+    if (img) {
+      const mod = ARTICLE_IMAGES[`/src/content/articles/${post.id}/${img[2]}`];
+      if (mod)
+        stubFigs.push({ kind: "img", img: mod.default, alt: img[1], caption });
+      continue;
+    }
+    const vid = block.match(/<video[^>]*\bsrc="([^"]+)"[^>]*>/);
+    if (vid) {
+      stubFigs.push({
+        kind: "video",
+        src: vid[1],
+        poster: block.match(/\bposter="([^"]+)"/)?.[1],
+        label: block.match(/\baria-label="([^"]+)"/)?.[1] ?? "",
+        caption,
+      });
+    }
   }
 }
 const { title, description, date, stats, theme } = post.data;
@@ -156,7 +175,18 @@ const articleLd = {
               <>
                 {stubFigs.map((f) => (
                   <figure>
-                    <Image src={f.img} alt={f.alt} />
+                    {f.kind === "img" ? (
+                      <Image src={f.img} alt={f.alt} />
+                    ) : (
+                      <video
+                        src={f.src}
+                        poster={f.poster}
+                        controls
+                        preload="metadata"
+                        playsinline
+                        aria-label={f.label}
+                      />
+                    )}
                     <figcaption>{f.caption}</figcaption>
                   </figure>
                 ))}
