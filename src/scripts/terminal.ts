@@ -92,7 +92,7 @@ const HELP_HTML =
 const HELLO_HTML =
   "Hello! Here’s what’s on the site:\n" +
   '<a href="/">Work</a>: the log, case studies of what I ship\n' +
-  '<a href="/about">About</a>: who I am in four paragraphs\n' +
+  '<a href="/about">About</a>: who I am and the career so far\n' +
   '<a href="/chat">Chat</a>: ask me anything\n' +
   '<button type="button" class="cmdlink" data-cmd="contact">Contact</button>: send Brian a message right here';
 
@@ -462,7 +462,37 @@ function coerceHistory(raw: unknown): { role: "user" | "assistant"; content: str
    values we ourselves ever produce. A tampered store falls back to inert text
    (out) or a plain label (redirect), never innerHTML or a live href. */
 const OUT_ALLOW = new Set([HELP_HTML, HELLO_HTML, OFFLINE_HTML]);
-const REDIRECT_HREFS = new Set(["/about", "/#log", "/eight-angle-ml"]);
+/* Every published article the model may navigate to (2026-07-22 chat audit):
+   model-facing slug -> route + the spoken name the countdown announces. The
+   tool enum (functions/api/chat.ts), the prompt's slug list, MD_LINK, and
+   SLUG_HREF below all derive from or mirror this table; adding an article
+   means adding one row here plus the enum + prompt entries. */
+const ARTICLE_DEST: Record<string, { href: string; name: string }> = {
+  "eight-angle": { href: "/eight-angle-ml", name: "the Eight Angle article" },
+  "facebook-newsroom": {
+    href: "/facebook-newsroom",
+    name: "the Facebook Newsroom article",
+  },
+  "google-android-for-work": {
+    href: "/google-android-for-work",
+    name: "the Android for Work article",
+  },
+  "twilio-signal-pong": {
+    href: "/twilio-signal-pong",
+    name: "the Twilio SIGNAL article",
+  },
+  "atg-llm-migration": {
+    href: "/atg-llm-migration",
+    name: "the WordPress to Astro replatform article",
+  },
+  "gold-coast": { href: "/gold-coast", name: "the Gold Coast article" },
+};
+
+const REDIRECT_HREFS = new Set([
+  "/about",
+  "/#log",
+  ...Object.values(ARTICLE_DEST).map((d) => d.href),
+]);
 
 function renderEntry(e: Entry) {
   if (e.t === "echo") echo(e.s, true);
@@ -592,13 +622,14 @@ const llmHistory: { role: "user" | "assistant"; content: string }[] = [];
 const SLUG_HREF: Record<string, string> = {
   about: "/about",
   work: "/#log",
-  // the article page exists again (#188 image-first stub), so the model's
-  // eight-angle slug is a real destination, not a no-op
-  "eight-angle": "/eight-angle-ml",
+  // every published article routes through ARTICLE_DEST (2026-07-22 audit)
+  ...Object.fromEntries(
+    Object.entries(ARTICLE_DEST).map(([s, d]) => [s, d.href])
+  ),
 };
 
 const MD_LINK =
-  /\[([^\]\n]{1,80})\]\(\/(about|work|eight-angle|contact|resume)\)/g;
+  /\[([^\]\n]{1,80})\]\(\/(about|work|eight-angle|contact|resume|facebook-newsroom|google-android-for-work|twilio-signal-pong|atg-llm-migration|gold-coast)\)/g;
 
 /** Model prose -> DOM. Text nodes only, plus allowlisted links; never HTML.
     Given a slot (the in-flight thinking line, #116), the reply fills that
@@ -697,10 +728,10 @@ function redirectDest(slug: string): { href: string; name: string } | null {
     return { href: "/about", name: "the about page" };
   if (slug === "work" && screen !== "home")
     return { href: "/#log", name: "the work log" };
-  // the Eight Angle article page exists again (#188 image-first stub), so the
-  // slug earns the same guarded countdown as any other navigation away.
-  if (slug === "eight-angle" && location.pathname !== "/eight-angle-ml")
-    return { href: "/eight-angle-ml", name: "the Eight Angle article" };
+  // any published article (ARTICLE_DEST, 2026-07-22 audit) earns the guarded
+  // countdown when the visitor is not already on it
+  const art = ARTICLE_DEST[slug];
+  if (art && location.pathname !== art.href) return art;
   return null;
 }
 

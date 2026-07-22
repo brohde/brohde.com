@@ -90,7 +90,17 @@ const tools = [
       properties: {
         slug: {
           type: "string",
-          enum: ["about", "work", "eight-angle", "contact", "resume"],
+          enum: [
+            "about",
+            "work",
+            "contact",
+            "eight-angle",
+            "facebook-newsroom",
+            "google-android-for-work",
+            "twilio-signal-pong",
+            "atg-llm-migration",
+            "gold-coast",
+          ],
         },
       },
       required: ["slug"],

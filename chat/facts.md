@@ -4,7 +4,7 @@ Curated by Brian. Edit freely; the server reloads this at boot. If a fact is not
 
 ## Identity
 
-- Brian Rohde. AI Product Engineer in San Francisco. Full-stack: he ships end to end, from training the model to shipping the app.
+- Brian Rohde. Full-stack engineer in San Francisco shipping AI products end to end, from training the model to shipping the app.
 - Studied at DePaul University. (The school is public; graduation year and any dates around his education stay behind the deny-list.)
 - Ships AI products end to end: model, app, and the infrastructure underneath.
 - Founder of Eight Angle. Open to full time roles, and available for freelance work.
@@ -24,9 +24,10 @@ Curated by Brian. Edit freely; the server reloads this at boot. If a fact is not
 ## Work history (individual roles; see policy: never aggregate into totals)
 
 - Gong (San Francisco, revenue AI platform): Staff Web Engineer. Built an LLM-powered translation workflow for the company website, later showcased in a public Gong and Sanity webinar. Led the website replatform end to end (Next.js, Sanity, Vercel, Cloudflare). Improved legacy site speed 4x.
-- Twilio (San Francisco): Technical Web Lead. Owned twilio.com's technical roadmap. Shipped the company's first global website and unified CMS; the global rollout included the first localized site, twilio.com/ja, and over 100 pages released in 6 locales. Earlier as Senior Web Engineer: deployed twilio.com's first CMS with substantial coverage, built a design system, redesigned the sign-up page. Co-authored Twilio's blog post "Re-Introducing the Hackpack v4: Twilio's Open Source Hardware Badge" (2018), about Twilio's open-source conference hardware badge: twilio.com/en-us/blog/archive/2018/open-source-hardware-badge-hackpack-v4
+- Twilio (San Francisco): Technical Web Lead. Owned twilio.com's technical roadmap. Shipped the company's first global website and unified CMS; the global rollout included the first localized site, twilio.com/ja, and over 100 pages released in 6 locales. Earlier as Senior Web Engineer: deployed twilio.com's first CMS with substantial coverage, built a design system, redesigned the sign-up page. Co-authored Twilio's blog post "Re-Introducing the Hackpack v4: Twilio's Open Source Hardware Badge" (2018), about Twilio's open-source conference hardware badge: twilio.com/en-us/blog/archive/2018/open-source-hardware-badge-hackpack-v4. For Twilio's SIGNAL user conference he built a multi-player pong game with React.js and Twilio Sync, played live on the conference floor alongside the Hackpack badge (case study on the site).
 - Beyond (San Francisco user-experience agency): Senior Front End Developer and team lead. Delivered projects FOR Facebook and Google as an agency engineer (he never worked AT Facebook or Google): Facebook Newsroom (2014, Facebook's first WordPress site and first responsive consumer site on WordPress VIP) and Google's Android for Work marketing site (2015). The Newsroom build proved the agency's WordPress capability, and Facebook returned with new business: Beyond went on to build Year in Review and the Internet.org site for Facebook off the back of it.
 - Freelance: built goldcoastcapm.com end to end for a banker (a registered investment adviser) who designed the site himself in ChatGPT and handed over PNG comps (design system, Astro, Keystatic CMS, client review loop via Pastel).
+- Freelance: replatformed anthonythomasgalante.com, a designer's portfolio, from WordPress to a static Astro build in about 4 hours using an LLM-driven content extraction, then redesigned the press page. Hosting went from roughly $20 a month to $0 (Cloudflare Pages plus Keystatic Cloud, both free), with the client editing content himself.
 
 ## How he works
 
