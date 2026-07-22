@@ -468,7 +468,7 @@ const OUT_ALLOW = new Set([HELP_HTML, HELLO_HTML, OFFLINE_HTML]);
    SLUG_HREF below all derive from or mirror this table; adding an article
    means adding one row here plus the enum + prompt entries. */
 const ARTICLE_DEST: Record<string, { href: string; name: string }> = {
-  "eight-angle": { href: "/eight-angle-ml", name: "the Eight Angle article" },
+  "eight-angle": { href: "/eight-angle", name: "the Eight Angle article" },
   "facebook-newsroom": {
     href: "/facebook-newsroom",
     name: "the Facebook Newsroom article",

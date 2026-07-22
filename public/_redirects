@@ -1,3 +1,5 @@
 # #179: article URLs dropped the /log prefix for bare root slugs. Anything
 # indexed or shared under the old prefix lands on the new home permanently.
 /log/* /:splat 301
+# 2026-07-22: the Eight Angle article moved to the cleaner bare slug.
+/eight-angle-ml /eight-angle 301

@@ -3,7 +3,7 @@ title: "Facebook Newsroom: Meta’s first WordPress site and a platform it conti
 description: "How I led the redesign and WordPress VIP replatform of Facebook’s global Newsroom, from legacy migration to launch in seven languages."
 date: 2014-07-01
 # Ledger-only ordering (see content.config.ts): places this deliberately
-# pre-dated 2014 piece directly after eight-angle-ml (2026-02-12) in the log,
+# pre-dated 2014 piece directly after eight-angle (2026-02-12) in the log,
 # without touching the displayed 2014 date. One day under its sibling.
 sortDate: 2026-02-11
 draft: false
