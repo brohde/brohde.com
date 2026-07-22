@@ -1,5 +1,5 @@
 ---
-title: "Building a multi-player game, hardware device, and React-based operating system for Twilio’s user conference"
+title: "Building a multi-player game, hardware badge, and React-based operating system for Twilio’s user conference"
 description: "How I designed and built Signal pong, a multiplayer game and device to showcase Twilio’s products on the conference floor."
 date: 2018-10-25
 draft: false
