@@ -177,7 +177,7 @@ html.cfocus .wm .caret {
 .snav :is(a, button):focus-visible {
   color: var(--accent);
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 0.28em; /* clears descenders at any size (2026-07-22) */
   text-decoration-thickness: 1px;
 }
 /* The chat, the machine's mouth on every page (D1 call 1): the ONE input
@@ -494,7 +494,7 @@ html.cfocus .wm .caret {
 .cco a {
   color: var(--accent);
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 0.28em; /* clears descenders at any size (2026-07-22) */
   text-decoration-thickness: 1px;
   text-decoration-color: var(--accent);
   text-decoration-color: color-mix(in srgb, var(--accent) 65%, transparent);
@@ -658,6 +658,9 @@ html.cfocus .wm .caret {
   font-size: 17px;
   line-height: 1.45;
   max-width: 56ch;
+  /* multi-line titles balance their lines (Brian, 2026-07-22: no single
+     orphaned word on the last line); heading best practice vs body `pretty` */
+  text-wrap: balance;
   padding-right: 24px;
   color: var(--bright);
   transition:
@@ -1222,7 +1225,7 @@ a.lentry:focus-visible .lttl {
 .out a,
 .reply a {
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 0.28em; /* clears descenders at any size (2026-07-22) */
 }
 /* a command styled as a link inside chat replies (e.g. contact, which has
    no page: activating it runs the deterministic command in place) */
@@ -1233,7 +1236,7 @@ a.lentry:focus-visible .lttl {
   font: inherit;
   color: var(--accent);
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 0.28em; /* clears descenders at any size (2026-07-22) */
   cursor: pointer;
 }
 
@@ -1340,7 +1343,7 @@ a.lentry:focus-visible .lttl {
   font: inherit;
   color: var(--accent);
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 0.28em; /* clears descenders at any size (2026-07-22) */
   cursor: pointer;
 }
 
@@ -1463,7 +1466,7 @@ a.lentry:focus-visible .lttl {
   /* explicit: Tailwind preflight strips the UA underline, and links inside
      body text need a non-color affordance (WCAG 1.4.1) */
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 0.28em; /* clears descenders at any size (2026-07-22) */
   text-decoration-thickness: 1px;
 }
 .prose ul,
