@@ -187,7 +187,8 @@ const articleLd = {
                         aria-label={f.label}
                       />
                     )}
-                    <figcaption>{f.caption}</figcaption>
+                    {/* captions are repo-authored markup (may carry links) */}
+                    <figcaption set:html={f.caption} />
                   </figure>
                 ))}
               </>

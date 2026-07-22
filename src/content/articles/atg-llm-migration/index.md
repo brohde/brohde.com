@@ -32,7 +32,7 @@ Same pattern on the collection pages: three structurally different hero treatmen
 
 ![The anthonythomasgalante.com homepage: the lowercase "anthony thomas galante" wordmark with Collections, Custom, Press, and About navigation, above a full-bleed, moody photograph of a green-topped rocky sea cliff with waves breaking on dark rocks below.](./hero-live-2026-07.png)
 
-<figcaption>anthonythomasgalante.com: the monochrome, full-bleed photography and restrained typography the migration kept intact. Captured 2026.</figcaption>
+<figcaption><a href="https://anthonythomasgalante.com" target="_blank" rel="noopener">anthonythomasgalante.com</a></figcaption>
 
 </figure>
 
