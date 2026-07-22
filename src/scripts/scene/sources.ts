@@ -19,7 +19,19 @@
  * mark small (the pose's 0.610 ink-to-frame ratio is the known-bad example,
  * f's 0.840 the good one), so marks trim toward the ink box with roughly an
  * 8% bottom safe area kept for the future hero band (#103 asset spec).
+ *
+ * VECTOR-DRIVEN MARKS (vector-marks handoff): the logo marks whose hand traces
+ * drifted from the real thing (twilio, logo/Eight Angle, gccm, atg) are now
+ * driven by their true vector sources. tools/build/build-marks.mjs rasterizes
+ * src/assets/marks/*.svg into this 480x300 frame at the #104 ink ratio, bakes a
+ * compact grayscale grid per mark into ./marks.generated.ts, and the runtime
+ * drawer (paintGrid) scales that grid into the frame synchronously (no fetch,
+ * no async, no flash) through the exact seam above. The hand-drawers below stay
+ * as the per-mark fallback if a grid is ever missing, and letterform marks
+ * (br, f) plus the drawn robot keep their hand-drawers on purpose.
  */
+
+import { MARKS, GRID_W, GRID_H } from "./marks.generated";
 
 export const SRC_W = 480;
 export const SRC_H = 300;
@@ -69,9 +81,10 @@ function drawEight(sctx: CanvasRenderingContext2D) {
   sctx.fillText("8", 240, 162);
 }
 
-/* the eight angle logo mark, traced bold and simplified from the live site
-   header (reference: docs/archive/source-assets/images/case-studies/
-   eight-angle/hero-live-2026-07.png): the A, the small ring at its hip, the big O */
+/* FALLBACK for the eight angle logo mark (the live mark now drives it via
+   src/assets/marks/logo.svg -> the generated grid; see the header note). This
+   earlier hand trace from the live site header stays as the drop-in fallback if
+   the grid is ever missing: the A, the small ring at its hip, the big O */
 function drawLogo(sctx: CanvasRenderingContext2D) {
   blank(sctx);
   capsule(sctx, 168, 52, 88, 248, 38);
@@ -184,10 +197,12 @@ function drawRobot(sctx: CanvasRenderingContext2D) {
   capsule(sctx, 284, 232, 284, 253, 46);
 }
 
-/* the Twilio mark for the twilio theme (Brian's explicit call): the red
-   ring with four dots inside, two upper, two lower. MARK ONLY, never the
-   wordmark or any text lockup. No page consumes this theme yet (the twilio
-   piece is an external entry); it lands dormant for future use. */
+/* FALLBACK for the Twilio mark (the official mark now drives it via
+   src/assets/marks/twilio.svg -> the generated grid, which fixes the dot
+   placement Brian flagged: the real mark clusters the four dots near center,
+   not out by the ring). This earlier hand trace stays as the drop-in fallback:
+   the ring with four dots inside, two upper, two lower. MARK ONLY, never the
+   wordmark or any text lockup. */
 function drawTwilio(sctx: CanvasRenderingContext2D) {
   blank(sctx);
   sctx.lineWidth = 38;
@@ -210,20 +225,61 @@ function drawTwilio(sctx: CanvasRenderingContext2D) {
   }
 }
 
+/* paint a generated grayscale grid (base64, GRID_W x GRID_H, 255 = ground,
+   0 = ink) into the 480x300 frame. The grid already bakes the #104 contain-fit
+   and 8% bottom safe area at build time, so this just scales it up over the
+   white ground with smoothing on: the output matches what a hand-drawer would
+   fill, and sample() in index.ts contain-fits the frame into the mark region as
+   usual. Synchronous, no async or network, so the tide never flashes. */
+function paintGrid(sctx: CanvasRenderingContext2D, b64: string) {
+  blank(sctx);
+  const bin = atob(b64);
+  const img = new ImageData(GRID_W, GRID_H);
+  for (let i = 0; i < GRID_W * GRID_H; i++) {
+    const gray = bin.charCodeAt(i);
+    img.data[i * 4] = gray;
+    img.data[i * 4 + 1] = gray;
+    img.data[i * 4 + 2] = gray;
+    img.data[i * 4 + 3] = 255;
+  }
+  const gc = document.createElement("canvas");
+  gc.width = GRID_W;
+  gc.height = GRID_H;
+  const gctx = gc.getContext("2d");
+  if (!gctx) return;
+  gctx.putImageData(img, 0, 0);
+  sctx.imageSmoothingEnabled = true;
+  sctx.imageSmoothingQuality = "high";
+  sctx.drawImage(gc, 0, 0, GRID_W, GRID_H, 0, 0, SRC_W, SRC_H);
+}
+
+/* a generated mark maps to a grid drawer; if its grid is missing (a partial or
+   skipped codegen), the hand-drawer fallback below keeps the mark working. The
+   loose index is deliberate so a dropped mark degrades at runtime instead of
+   breaking the type union. */
+const GEN = MARKS as Record<string, string | undefined>;
+function gridOr(
+  name: string,
+  fallback: (sctx: CanvasRenderingContext2D) => void
+): (sctx: CanvasRenderingContext2D) => void {
+  const b64 = GEN[name];
+  return b64 ? (sctx) => paintGrid(sctx, b64) : fallback;
+}
+
 export const DRAW: Record<
   SourceName,
   (sctx: CanvasRenderingContext2D) => void
 > = {
   eight: drawEight,
-  logo: drawLogo,
+  logo: gridOr("logo", drawLogo),
   pose: drawPose,
   f: (sctx) => drawLetter(sctx, "f", 320),
   g: (sctx) => drawLetter(sctx, "G", 280),
   br: (sctx) => drawWord(sctx, "BR", 330, 263, 26),
   robot: drawRobot,
-  gccm: (sctx) => drawWord(sctx, "GCCM", 180, 218, 16),
-  atg: (sctx) => drawWord(sctx, "atg", 238, 208, 22),
-  twilio: drawTwilio,
+  gccm: gridOr("gccm", (sctx) => drawWord(sctx, "GCCM", 180, 218, 16)),
+  atg: gridOr("atg", (sctx) => drawWord(sctx, "atg", 238, 208, 22)),
+  twilio: gridOr("twilio", drawTwilio),
 };
 
 export const SOURCES = Object.keys(DRAW) as SourceName[];

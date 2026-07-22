@@ -1,0 +1,18 @@
+<!--
+  Gold Coast Capital Management monogram: the five rising gold "skyline" peaks
+  from the live mark at goldcoastcapm.com (/favicon.svg), extracted as the
+  figure (the navy badge plate and the gold gradient are dropped; the tide
+  supplies the gold via PEAKS). This is a site Brian built (case study, consent
+  #203); the mark identifies that project. Replaces the earlier "GCCM"
+  four-letter block that read as four undifferentiated masses at gutter scale.
+  Solid black so the build reads coverage from alpha only.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" fill="#000000">
+  <g transform="translate(10 8)">
+    <polygon points="1,40 1,24 3.5,16 6,24 6,40"/>
+    <polygon points="9,40 9,16 12,6 15,16 15,40"/>
+    <polygon points="17,40 17,8 20,-1 23,8 23,40"/>
+    <polygon points="25,40 25,14 27.5,6 30,14 30,40"/>
+    <polygon points="32,40 32,22 34.5,15 37,22 37,40"/>
+  </g>
+</svg>
