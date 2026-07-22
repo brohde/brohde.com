@@ -735,6 +735,9 @@ a.lentry:focus-visible .lttl {
    The bottom padding clears the iOS home indicator now that a real touch
    target, not just text, ends the page. */
 .sfoot {
+  /* air above the rule (Brian, 2026-07-22, caught on mobile): the same 42px
+     beat as the Ask-panel-to-first-article gap, on every page. */
+  margin-top: 42px;
   border-top: 1px solid var(--line);
   padding: 18px 0 calc(28px + env(safe-area-inset-bottom, 0px));
 }
