@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from "astro:content";
+import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import HeroBand from "@/components/HeroBand.astro";
 import Scene from "@/components/Scene.astro";
@@ -63,6 +64,23 @@ const { post } = Astro.props;
 // a stub renders no body, so the content pipeline only runs for real articles
 const isStub = !post.data.published;
 const { Content } = isStub ? { Content: null } : await render(post);
+
+// Image assets publish ahead of the text (Brian, 2026-07-21): a stub shows
+// the article's own figures, sourced from the body's figure blocks so alt
+// text + captions stay single-sourced in the markdown.
+const ARTICLE_IMAGES = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/content/articles/*/*.{png,jpg,jpeg,webp,gif}",
+  { eager: true }
+);
+const stubFigs: { img: ImageMetadata; alt: string; caption: string }[] = [];
+if (isStub && post.body) {
+  const figRe =
+    /!\[([^\]]*)\]\(\.\/([^)]+)\)\s*<figcaption>([\s\S]*?)<\/figcaption>/g;
+  for (const m of post.body.matchAll(figRe)) {
+    const mod = ARTICLE_IMAGES[`/src/content/articles/${post.id}/${m[2]}`];
+    if (mod) stubFigs.push({ img: mod.default, alt: m[1], caption: m[3].trim() });
+  }
+}
 const { title, description, date, stats, theme } = post.data;
 
 const canonical = new URL(logHref(post.id), SITE.url).href;
@@ -126,7 +144,15 @@ const articleLd = {
 
           <div class="prose" style="margin-top:0">
             {isStub ? (
-              <p>Coming soon.</p>
+              <>
+                <p>Coming soon.</p>
+                {stubFigs.map((f) => (
+                  <figure>
+                    <Image src={f.img} alt={f.alt} />
+                    <figcaption>{f.caption}</figcaption>
+                  </figure>
+                ))}
+              </>
             ) : (
               <>
                 {description && <p>{description}</p>}
