@@ -6,6 +6,14 @@ draft: false
 theme: android
 ---
 
+<figure>
+
+<video src="/media/afw.mp4" poster="/media/afw-poster.jpg" controls autoplay muted loop preload="metadata" playsinline aria-label="Screen capture video of the shipped Android for Work site"></video>
+
+<figcaption>The shipped Android for Work site in motion: a screen capture recorded in 2017.</figcaption>
+
+</figure>
+
 In 2015, I built the marketing site for Android for Work, Google’s mobile management product for separating work and personal data on Android devices, aimed at enterprise IT. I was a front end developer and team lead at Beyond, an SF user experience agency, and Google was one of our two biggest clients at the time, alongside Facebook.
 
 ## The problem
@@ -27,14 +35,6 @@ The homepage centered on a guided, scroll-triggered animation sequence next to a
 </figure>
 
 ## The result
-
-<figure>
-
-<video src="/media/afw.mp4" poster="/media/afw-poster.jpg" controls preload="metadata" playsinline aria-label="Screen capture video of the shipped Android for Work site"></video>
-
-<figcaption>The shipped Android for Work site in motion: a screen capture recorded in 2017.</figcaption>
-
-</figure>
 
 The site shipped in mid 2015, live on google.com, meeting Google’s front end bar end to end. It’s a different kind of project than most agency work: I wasn’t choosing the stack. I was building inside someone else’s, on their infrastructure, to their review standards, for a product built around enterprise trust, which made the standards more than a formality.
 
