@@ -1,0 +1,28 @@
+#!/bin/sh
+# pre-commit: scan the staged diff for secrets before the commit lands.
+#
+# This hook is NOT installed automatically. Enable it for your clone with:
+#   git config core.hooksPath tools/git-hooks
+#
+# It runs `gitleaks protect --staged`, which scans only what is staged. On a
+# finding it blocks the commit (exit non-zero). If gitleaks is not installed it
+# warns and lets the commit through, so it never blocks a contributor who has
+# not set up the scanner.
+
+set -e
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  printf '%s\n' "warning: gitleaks not found on PATH, skipping the secret scan." >&2
+  printf '%s\n' "         install it (https://github.com/gitleaks/gitleaks) to enable pre-commit scanning." >&2
+  exit 0
+fi
+
+# --staged scans the staged diff; --redact keeps any finding out of the log output.
+if ! gitleaks protect --staged --redact --config .gitleaks.toml; then
+  printf '%s\n' "" >&2
+  printf '%s\n' "gitleaks found a potential secret in the staged changes. Commit blocked." >&2
+  printf '%s\n' "Review the finding above. If it is a false positive, allowlist its shape in .gitleaks.toml." >&2
+  exit 1
+fi
+
+exit 0

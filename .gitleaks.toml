@@ -1,0 +1,46 @@
+# gitleaks configuration for brohde.com
+#
+# This config extends gitleaks' built-in default ruleset (the maintained set of
+# secret detectors: cloud keys, generic API tokens, private keys, and so on) and
+# layers on an allowlist for the known, harmless placeholder shapes that live in
+# this repo's docs and code. The default rules do the detection; the allowlist
+# below only suppresses documented false positives, never real key material.
+#
+# NOTE ON PROVENANCE: gitleaks was not installed in the environment where this
+# file was authored, so the allowlist was built from the repo's own secret sweep
+# (docs/reference/prune-list.md, verified clean) rather than from a live scan.
+# Run `gitleaks detect --config .gitleaks.toml` once locally to confirm a clean
+# pass and to catch anything the static review missed.
+
+title = "brohde.com gitleaks config"
+
+# Start from the maintained default ruleset, then add the allowlist below.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known-safe placeholders and non-secret resource handles"
+
+# Paths that are documentation, examples, or lockfiles: never secret sources.
+# Real secrets live only in chat/.env, which is gitignored and never tracked.
+paths = [
+  '''package-lock\.json''',
+  '''chat/package-lock\.json''',
+  '''\.gitleaks\.toml''',
+  '''docs/reference/prune-list\.md''',
+  '''docs/reference/chat-security-audit\.md''',
+]
+
+# Regexes for placeholder / illustrative token shapes that appear in prose and
+# code samples. These match the DOCUMENTED, TRUNCATED, OR ELLIPSIZED forms only,
+# not a full real key. A genuine 100+ char Anthropic key would not match these.
+regexes = [
+  # Anthropic key placeholders: `sk-ant-...`, `sk-ant-api03-...`, `sk-ant-<...>`
+  '''sk-ant-(api03-)?(\.\.\.|<[^>]*>|xxx+|YOUR[_-]?KEY)''',
+  # Resend key placeholder: `re_...` / `re_<...>` (never a full key value)
+  '''re_(\.\.\.|<[^>]*>|xxx+|YOUR[_-]?KEY)''',
+  # Secret NAMES referenced without values (env-var identifiers in docs/config)
+  '''(ANTHROPIC_API_KEY|ANTHROPIC_GATEWAY_TOKEN|RESEND_API_KEY|TURNSTILE_SECRET)\s*[:=]\s*(<[^>]*>|\.\.\.|"?\$\{?[A-Z_]+\}?"?|sk-ant-\.\.\.)''',
+  # Truncated Cloudflare KV namespace id shown as a non-secret handle (e.g. c3579b8f…)
+  '''\b[0-9a-f]{8}(…|\.\.\.)''',
+]
