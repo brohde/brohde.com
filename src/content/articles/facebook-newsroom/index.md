@@ -1,6 +1,6 @@
 ---
 title: "Facebook Newsroom: Meta’s first WordPress site and a platform it continues to invest in today"
-description: "How I led the redesign and WordPress VIP replatform of Facebook’s global newsroom, from legacy migration to launch in seven languages."
+description: "How I led the redesign and WordPress VIP replatform of Facebook’s global Newsroom, from legacy migration to launch in seven languages."
 date: 2014-07-01
 # Ledger-only ordering (see content.config.ts): places this deliberately
 # pre-dated 2014 piece directly after eight-angle-ml (2026-02-12) in the log,
@@ -14,7 +14,7 @@ theme: news
 
 <video src="/media/newsroom.mp4" poster="/media/newsroom-poster.jpg" controls preload="metadata" playsinline aria-label="Screen capture video of the shipped newsroom.fb.com"></video>
 
-<figcaption>The shipped newsroom in motion: a screen capture recorded in 2017, three years after launch, still running the theme I built in 2014.</figcaption>
+<figcaption>The shipped Newsroom in motion: a screen capture recorded in 2017, three years after launch, still running the theme I built in 2014.</figcaption>
 
 </figure>
 
@@ -22,13 +22,13 @@ In 2014, I led the technical rebuild of Facebook’s press site, newsroom.fb.com
 
 ## The problem
 
-This wasn’t a greenfield build. Facebook already had a newsroom at that address, live since at least 2012, on a legacy ASP.NET publishing system with its own admin backend and page templates. It wasn’t responsive, and it didn’t fit how a global communications team actually worked: product news, executive statements, and press materials going out around the clock, in more than one language, to reporters checking from a phone as often as a desktop. A relaunch had to preserve years of press history, migrate it cleanly off that old platform, and clear WordPress VIP’s engineering bar (the enterprise WordPress platform Automattic runs for large publishers and media companies). And it had to do all that while still looking and behaving like Facebook, not a generic WordPress blog.
+This wasn’t a greenfield build. Facebook already had a Newsroom at that address, live since at least 2012, on a legacy ASP.NET publishing system with its own admin backend and page templates. It wasn’t responsive, and it didn’t fit how a global communications team actually worked: product news, executive statements, and press materials going out around the clock, in more than one language, to reporters checking from a phone as often as a desktop. A relaunch had to preserve years of press history, migrate it cleanly off that old platform, and clear WordPress VIP’s engineering bar (the enterprise WordPress platform Automattic runs for large publishers and media companies). And it had to do all that while still looking and behaving like Facebook, not a generic WordPress blog.
 
 ## The approach
 
-I was in the room from the sales conversation onward, giving technical input during the design and user research phases before any code got written, so the design team wasn’t handed constraints after the fact. Once we started building, I led all technical aspects of the redesign and replatform: a fully custom, responsive WordPress theme built from scratch, plus the custom plugins the newsroom needed on top of it. I built it alongside another front end engineer and a QA engineer, all of it held to WordPress VIP’s code standards. VIP runs its own code review before anything goes live on its infrastructure, so the bar wasn’t just "does it work," it was "does it pass someone else’s audit." One of the harder pieces of the build was an interactive timeline component with touch support that had to behave the same swiping on a phone as clicking on a desktop, a genuinely new interaction pattern for a corporate press site in 2014.
+I was in the room from the sales conversation onward, giving technical input during the design and user research phases before any code got written, so the design team wasn’t handed constraints after the fact. Once we started building, I led all technical aspects of the redesign and replatform: a fully custom, responsive WordPress theme built from scratch, plus the custom plugins the Newsroom needed on top of it. I built it alongside another front end engineer and a QA engineer, all of it held to WordPress VIP’s code standards. VIP runs its own code review before anything goes live on its infrastructure, so the bar wasn’t just "does it work," it was "does it pass someone else’s audit." One of the harder pieces of the build was an interactive timeline component with touch support that had to behave the same swiping on a phone as clicking on a desktop, a genuinely new interaction pattern for a corporate press site in 2014.
 
-I also wrote the migration scripts that moved years of posts and media off Facebook’s legacy platform into WordPress without losing anything: old press releases, executive statements, images, all of it had to land in the new system intact and still findable. After launch, I led the internationalization work, taking the newsroom into seven additional language editions (Portuguese, German, Spanish, French, Italian, Japanese, and Korean, each on its own subdomain) alongside the original English, eight languages total. The communications team needed to publish well beyond Menlo Park.
+I also wrote the migration scripts that moved years of posts and media off Facebook’s legacy platform into WordPress without losing anything: old press releases, executive statements, images, all of it had to land in the new system intact and still findable. After launch, I led the internationalization work, taking the Newsroom into seven additional language editions (Portuguese, German, Spanish, French, Italian, Japanese, and Korean, each on its own subdomain) alongside the original English, eight languages total. The communications team needed to publish well beyond Menlo Park.
 
 <figure>
 
