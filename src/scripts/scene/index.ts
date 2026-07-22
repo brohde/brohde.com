@@ -66,18 +66,29 @@ import {
   isSourceName,
   type SourceName,
 } from "./sources";
+import {
+  INKS,
+  PEAKS,
+  THEME_SOURCE,
+  isThemeName,
+  type GroundKey,
+  type SceneState,
+  type ThemeName,
+} from "./palettes";
+import {
+  PLACEMENTS,
+  CONTENT_SEL,
+  CONTENT_W,
+  MIN_GUTTER,
+  type PlacementName,
+  type PlacementSpec,
+  type Rect,
+} from "./placements";
 
-type GroundKey = "night" | "lite";
-type SceneState = "home" | "chat";
-type ThemeName =
-  | "default"
-  | "eight"
-  | "news"
-  | "android"
-  | "atg"
-  | "goldcoast"
-  | "twilio";
-type PlacementName = "ambient";
+/* the palette + placement data tables live in their own modules now (#106
+   extraction); isThemeName is re-exported here so the terminal.ts scene bridge
+   still imports it from "@/scripts/scene" as before. */
+export { isThemeName };
 
 /* ------------------------------------------------------------- constants -- */
 
@@ -127,187 +138,10 @@ const WAKE_HOLD_MS = 200; // wake crest holds as the canvas finishes fading in
 const WAKE_SETTLE_MS = 1500; // wake settles from crest to ambient
 const WAKE_DENSITY = 0.22; // additive lift on v at the first live frame
 
-/* the content column: measured live from the page (#120); the selector can
-   be overridden per page via data-scene-content. CONTENT_W is only the
-   no-column-found fallback, matching --scene-content-w in scene.css. */
-const CONTENT_SEL = ".wrap";
-const CONTENT_W = 760;
-/* narrower than this and the gutter cannot hold a mark: background mode */
-const MIN_GUTTER = 160;
-const MARK_PAD = 20;
-
-/* the three ink buckets: one calm text ramp shared by every theme, lerping
-   home-to-chat on the sky's clock (lab values, verbatim) */
-const INKS: Record<GroundKey, Record<SceneState, number[][]>> = {
-  night: {
-    home: [
-      [143, 167, 154, 0.4],
-      [214, 229, 220, 0.55],
-      [214, 229, 220, 0.8],
-    ],
-    chat: [
-      [167, 158, 143, 0.4],
-      [229, 223, 211, 0.55],
-      [233, 223, 205, 0.8],
-    ],
-  },
-  lite: {
-    home: [
-      [63, 83, 72, 0.4],
-      [20, 33, 26, 0.55],
-      [20, 33, 26, 0.8],
-    ],
-    chat: [
-      [90, 74, 55, 0.4],
-      [48, 35, 22, 0.55],
-      [48, 35, 22, 0.8],
-    ],
-  },
-};
-
-/* the peak bucket is the page theme's voice: [home, chat] per ground,
-   matching the sky palettes (lab values verbatim for the original four;
-   atg/goldcoast/twilio added per the #111 identity plan, contrast-checked
-   against both grounds: worst combo 5.44:1, above the existing floor of
-   4.84:1 = android lite/home). Chat peaks stay in the golden-hour amber
-   family under every theme, the house rule the lab set. */
-const PEAKS: Record<ThemeName, Record<GroundKey, number[][]>> = {
-  default: {
-    night: [
-      [126, 231, 135],
-      [245, 185, 104],
-    ],
-    lite: [
-      [8, 97, 72],
-      [138, 77, 15],
-    ],
-  },
-  eight: {
-    night: [
-      [70, 200, 174],
-      [239, 194, 114],
-    ],
-    lite: [
-      [14, 114, 99],
-      [138, 100, 40],
-    ],
-  },
-  news: {
-    night: [
-      [122, 167, 255],
-      [243, 199, 123],
-    ],
-    lite: [
-      [29, 78, 216],
-      [138, 90, 15],
-    ],
-  },
-  android: {
-    night: [
-      [61, 220, 132],
-      [252, 201, 52],
-    ],
-    lite: [
-      [24, 128, 56],
-      [154, 98, 7],
-    ],
-  },
-  /* ATG's warm monochrome identity: bone on night, umber on light */
-  atg: {
-    night: [
-      [224, 210, 189],
-      [240, 196, 130],
-    ],
-    lite: [
-      [97, 78, 55],
-      [130, 82, 24],
-    ],
-  },
-  /* Gold Coast gold, deepened on the light ground for contrast */
-  goldcoast: {
-    night: [
-      [233, 186, 64],
-      [248, 196, 92],
-    ],
-    lite: [
-      [136, 92, 6],
-      [140, 84, 14],
-    ],
-  },
-  /* Twilio red: the brand red lifts slightly on night (the literal
-     #F22F46 measures 4.64:1 there, under the 4.84 floor) and deepens on
-     light. DORMANT: no page consumes this theme yet (the twilio piece is
-     an external entry with no interior page). */
-  twilio: {
-    night: [
-      [246, 78, 94],
-      [244, 186, 105],
-    ],
-    lite: [
-      [186, 18, 42],
-      [136, 78, 18],
-    ],
-  },
-};
-
-/* each theme carries its page's mark: the tide draws what the page is
-   (#74/#111). The site default is the BR letterform; the 8 and the G
-   letterform stay drawable but unmapped (see sources.ts). Article pages
-   declare their theme in frontmatter (content.config.ts) and stamp it on
-   the [data-screen] section; the terminal.ts bridge travels the persisted
-   scene there on navigation. twilio is wired to the Signal pong piece,
-   which is draft: no public page consumes it until the draft flips. */
-const THEME_SOURCE: Record<ThemeName, SourceName> = {
-  default: "br",
-  eight: "logo",
-  news: "f",
-  android: "robot",
-  atg: "atg",
-  goldcoast: "gccm",
-  twilio: "twilio",
-};
-
-/** exported for the terminal.ts bridge: pages stamp data-scene-theme on
-    their fresh [data-screen] section (the persisted scene node keeps the
-    OLD page's dataset, so it can never be the source of truth) */
-export function isThemeName(v: string | undefined): v is ThemeName {
-  return !!v && v in PEAKS;
-}
-
-/* ------------------------------------------------------------ placements -- */
-
-interface Rect {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-
-interface PlacementSpec {
-  /** tide strength, the lab's slider as a 0..1 value */
-  intensity: number;
-  /** where the mark contain-fits, in canvas css px; edge = the MEASURED
-      right edge of the content column (#120). null = the full field
-      (background mode: whisper cap, the lab's phone fallback treatment,
-      #109/#114 mobile) */
-  markRect(w: number, h: number, edge: number): Rect | null;
-}
-
-const PLACEMENTS: Record<PlacementName, PlacementSpec> = {
-  /* #114/#120: full-width fixed layer, tide drifting across the whole
-     viewport; the mark centers (both axes) in the measured right gutter
-     and, being viewport-anchored, never scrolls. The lab's gutter voice. */
-  ambient: {
-    intensity: 0.7,
-    markRect(w, h, edge) {
-      const x = edge + MARK_PAD;
-      const wd = w - x - MARK_PAD;
-      if (wd < MIN_GUTTER - 2 * MARK_PAD) return null;
-      const iy = h * 0.08;
-      return { x, y: iy, w: wd, h: h - iy * 2 };
-    },
-  },
-};
+/* INKS, PEAKS, THEME_SOURCE, isThemeName -> ./palettes (#106 extraction).
+   PLACEMENTS, the Rect/PlacementSpec/PlacementName types, and the content-
+   column geometry (CONTENT_SEL, CONTENT_W, MIN_GUTTER, MARK_PAD) -> ./placements.
+   Both are imported at the top of this file; the engine reads them unchanged. */
 
 /* --------------------------------------------------------------- helpers -- */
 

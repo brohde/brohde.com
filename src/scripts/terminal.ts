@@ -37,6 +37,33 @@
  * only while a prompt input is focused, so page scrolling is never hijacked.
  */
 import { navigate } from "astro:transitions/client";
+import {
+  prefersReducedMotion,
+  autoGrow,
+  typeInto,
+} from "./terminal/typing";
+import {
+  byId,
+  currentScreen,
+  chatlog,
+  sink,
+  beginTurn,
+  removeGreeting,
+  scrollToNewest,
+  setActiveTurn,
+  setReplaying,
+} from "./terminal/dom";
+import {
+  announce,
+  hint,
+  roveEls,
+  isRove,
+  setRoveStop,
+  moveRove,
+  moveRoveEnd,
+  getRoveHinted,
+  setRoveHinted,
+} from "./terminal/a11y";
 
 /* Copy case (#76): human-language strings use sentence case; lowercase is
    reserved for literal terminal tokens (typed commands, file-ish names like
@@ -131,18 +158,8 @@ const CONTACT_PULSE_MS = 180; // the contact flow's own quicker pulse (asks,
 // the beat between turns is snappier than the 450ms general chat pulse.
 const CONTACT_Q = "How do I contact Brian?"; // the emulated contact question
 
-/* Typing humanization (Phase B item 4). The emulation jitters each keystroke,
-   pauses longer after spaces and punctuation, and occasionally hesitates, so it
-   reads like a person typing rather than a metronome. The base was lowered again
-   (20 to 14) with the contact-flow speed pass so the entry emulation lands
-   faster while keeping the human cadence. `prev` is the character just typed. */
-const TYPE_BASE = 14; // humanized per-character base (jittered + bonused below)
-const TYPE_SETTLE_MS = 120; // beat after the last keystroke before the emulated
-// send fires (shortened with the contact-flow speed pass so it resolves faster)
-
-function prefersReducedMotion(): boolean {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
+/* Typing humanization + TYPE_BASE/TYPE_SETTLE_MS, prefersReducedMotion, and the
+   composer auto-grow -> ./terminal/typing (Stage 1 extraction). */
 
 /* -------------------------------------------------- redirect countdown ---- */
 /* #143: when the model answers a QUESTION by choosing an open_page
@@ -183,37 +200,9 @@ const MAX_LLM = 12; // model-history entries stored; the send slices to 8, so a
 
 /* --------------------------------------------------------------- helpers --- */
 
-const byId = (id: string) => document.getElementById(id);
-
-/* Composer multi-line auto-grow (composer phase A item 2). The one .hchat
-   control is a TEXTAREA now: it rests at one line and grows with content to a
-   ~6-line cap, then scrolls internally. CSS `field-sizing: content` drives the
-   growth where supported; this scrollHeight fallback covers the rest (reset to
-   auto, then grow to the content height, capped at the CSS max-height). The
-   growth is a synchronous reflow, never an animation, so reduced motion needs
-   no special case. */
-const FIELD_SIZING =
-  typeof CSS !== "undefined" &&
-  typeof CSS.supports === "function" &&
-  CSS.supports("field-sizing", "content");
-const GROW_CAP = 160; // matches .hchat textarea max-height
-function autoGrow(el: HTMLTextAreaElement) {
-  if (FIELD_SIZING) return;
-  el.style.height = "auto";
-  el.style.height = Math.min(el.scrollHeight, GROW_CAP) + "px";
-}
-
-/* The page's OWN section (.screen) is the source of truth for the current
-   screen and its scene identity. The global header ALSO carries data-screen
-   since Phase 4 (it drives the large home wordmark + the /chat state) and it
-   renders BEFORE the section in BaseLayout, so a bare "[data-screen]" query
-   returns the persisted HEADER, whose value is "page" for every interior page
-   and which carries no data-scene-theme. Targeting .screen reads the real page
-   (the fix for the scene identity-travel bug: the theme stamp is read off this
-   fresh section by the #150 bridge below, never off the header). */
-function currentScreen(): string {
-  return document.querySelector(".screen")?.getAttribute("data-screen") ?? "";
-}
+/* byId, currentScreen, chatlog, sink, beginTurn, removeGreeting, and
+   scrollToNewest -> ./terminal/dom (Stage 1 extraction, the chat-log core).
+   autoGrow -> ./terminal/typing. Both are imported at the top of this file. */
 
 /* Header per-page state on the persisted node (#145/#150, amended by Phase 4).
    The header hides its chat input row on the pages that carry their own chat
@@ -256,33 +245,9 @@ function syncHeaderChat() {
   // wired here; the header input (#in-site) is no longer the /chat composer.
 }
 
-let announcer: HTMLElement | null = null;
-function announce(msg: string) {
-  if (!announcer) {
-    announcer = document.createElement("div");
-    announcer.className = "sr";
-    announcer.setAttribute("aria-live", "polite");
-    document.body.appendChild(announcer);
-  }
-  announcer.textContent = msg;
-}
-
-let hintTimer = 0;
-function hint(msg: string) {
-  announce(msg);
-  const el = byId("hint-top");
-  if (!el) return;
-  el.textContent = msg;
-  el.style.opacity = "1";
-  clearTimeout(hintTimer);
-  hintTimer = window.setTimeout(() => {
-    el.style.opacity = "0";
-    hintTimer = window.setTimeout(() => {
-      el.textContent = "";
-      el.style.opacity = "1";
-    }, 350);
-  }, 2600);
-}
+/* announce/hint (the polite live region + transient hint line) -> ./terminal/a11y
+   (Stage 1 extraction); the a11y module owns the announcer, and the render
+   paths here import announce back. */
 
 /* ------------------------------------------ route transitions (#150) ------ */
 /* Nothing to do in script. The tide carries you: the persistent scene is
@@ -293,114 +258,15 @@ function hint(msg: string) {
  * swap. Reduced motion collapses the column move to an instant swap through
  * the explicit view-transition override in global.css. */
 
-/* ------------------------------------------------- roving cursor (#63) ---- */
-/* One page cursor: the block caret rests on the wordmark; Tab reaches the
- * cursor group (a single tab stop) and the prompt; arrow keys walk every
- * interactive element (links, commands, log entries) terminal-style. The
- * highlight is the element's :focus-visible treatment, so it is always
- * visible and screen-reader semantics stay native (roles untouched;
- * tabindex=-1 keeps elements in the accessibility tree). Arrows are handled
- * only while focus is already ON a cursor element, so page scrolling is
- * never hijacked while the cursor is inactive or focus sits in an input.
- */
-const ROVE_SELECTOR = "a[href], button[data-cmd]";
-let roveHinted = false;
-
-function roveEls(): HTMLElement[] {
-  const screen = document.querySelector("[data-screen]");
-  if (!screen) return [];
-  return Array.from(screen.querySelectorAll<HTMLElement>(ROVE_SELECTOR));
-}
-
-function isRove(el: HTMLElement | null): el is HTMLElement {
-  return (
-    !!el && !!el.matches?.(ROVE_SELECTOR) && !!el.closest?.("[data-screen]")
-  );
-}
-
-/** roving tabindex: exactly one element in the group is the tab stop */
-function setRoveStop(target: HTMLElement, els?: HTMLElement[]) {
-  for (const el of els ?? roveEls()) {
-    el.tabIndex = el === target ? 0 : -1;
-  }
-}
-
-function moveRove(from: HTMLElement, dir: 1 | -1) {
-  const els = roveEls();
-  if (!els.length) return;
-  const i = els.indexOf(from);
-  const next = i === -1 ? els[0] : els[(i + dir + els.length) % els.length];
-  setRoveStop(next, els);
-  next.focus();
-}
-
-function moveRoveEnd(last: boolean) {
-  const els = roveEls();
-  if (!els.length) return;
-  const next = els[last ? els.length - 1 : 0];
-  setRoveStop(next, els);
-  next.focus();
-}
+/* The roving page cursor (#63): ROVE_SELECTOR, roveEls, isRove, setRoveStop,
+   moveRove, moveRoveEnd, and the once-per-load rove hint flag -> ./terminal/a11y
+   (Stage 1 extraction). The keydown/focusin glue below imports them. */
 
 /* ------------------------------------------------------------ chat output -- */
 
-function chatlog(): HTMLElement | null {
-  return byId("chatlog");
-}
-
-/* Newest-at-top transcript (#153, chat-top-spec Q1). The composer is the
-   strip docked sticky at the top of the /chat panel, so each user turn PREPENDS a
-   .turn block to the log: DOM order equals visual order equals newest first
-   (never column-reverse, which would split the two and invert within-turn
-   order). Within a turn the flow stays natural: echoed question, thinking,
-   reply, redirect line. The server-rendered intro .cmt lines sink to the
-   bottom as the oldest content. beginTurn runs once per user turn (askLive,
-   toConsole's run closure); every line builder appends through sink(), so
-   output lands in the active turn, or falls back to the log for a stale turn
-   left detached by a navigation. */
-let activeTurn: HTMLElement | null = null;
-/* Phase 4C send motion: live turns get the .turn-in entrance (echo lift +
-   reply settle in CSS); turns rebuilt from the stored transcript render
-   settled. rehydrateChat sets this around its replay. */
-let replaying = false;
-
-function beginTurn(): HTMLElement | null {
-  const log = chatlog();
-  if (!log) return null;
-  removeGreeting(); // the first real turn replaces the pristine greeting
-  const t = document.createElement("div");
-  t.className = replaying ? "turn" : "turn turn-in";
-  log.prepend(t);
-  activeTurn = t;
-  return t;
-}
-
-function sink(): HTMLElement | null {
-  if (activeTurn?.isConnected) return activeTurn;
-  return chatlog();
-}
-
-/* The composer sits at the top, the newest turn directly beneath it: after a
-   send the only scroll that can be needed is back UP to the newest turn, and
-   it is instant (no smooth behavior), so it is reduced-motion-safe by
-   construction. */
-function scrollToNewest() {
-  if (currentScreen() !== "chat") return;
-  // Caret-at-top fix: only pull the page to the very top when the composer has
-  // actually scrolled ABOVE the viewport (its sticky rest is now inset by
-  // --chat-pin-gap, so a rect.top below 0 means the composer, and the newest
-  // turn directly beneath it, are out of view up top). When the composer is
-  // already onscreen (its common state, natural or stuck at the gap) a new turn
-  // blooms right under it, so no scroll is needed: the caret keeps its resting
-  // gap below the panel border instead of jamming against the top. CLS 0: this
-  // only ever scrolls, it never changes layout.
-  const composer = document.querySelector<HTMLElement>(
-    ".slab-chat > .chatcomposer"
-  );
-  if (composer && composer.getBoundingClientRect().top < 0) {
-    window.scrollTo({ top: 0 });
-  }
-}
+/* chatlog, the turn state (active turn + replay flag) with its accessors,
+   beginTurn, sink, and scrollToNewest -> ./terminal/dom (Stage 1 extraction,
+   the chat-log core). The line builders below still render through sink(). */
 
 /* The `replay` flag (#144) means "this line is being rebuilt from the stored
    transcript on a /chat rehydrate": build the DOM, but do not re-record it,
@@ -471,7 +337,7 @@ function clearChat() {
   // standing greeting, if the visitor cleared before typing) leaves it bare.
   for (const t of log.querySelectorAll(":scope > .turn")) t.remove();
   removeGreeting();
-  activeTurn = null;
+  setActiveTurn(null);
   contact = null; // clear also exits an in-progress contact flow
   llmHistory.length = 0; // clear wipes the model's context too
   purgeChat(); // #144: and the persisted session, so a cleared chat stays cleared
@@ -515,9 +381,9 @@ function showGreeting() {
   log.appendChild(d);
 }
 
-function removeGreeting() {
-  chatlog()?.querySelector(".greeting")?.remove();
-}
+/* removeGreeting (drop the pristine greeting node) -> ./terminal/dom, beside
+   the log core beginTurn calls it from; showGreeting stays here (it builds the
+   greeting text). */
 
 /* -------------------------------------------- persistence + rehydrate ----- */
 /* #144. Save on every recorded line; rehydrate the /chat page from module
@@ -559,7 +425,7 @@ function purgeChat() {
 function dropThread() {
   purgeChat();
   llmHistory.length = 0;
-  activeTurn = null;
+  setActiveTurn(null);
   contact = null; // leaving /chat also cancels an in-progress contact flow
 }
 
@@ -638,13 +504,13 @@ function rehydrateChat() {
   // message, and beginTurn prepends, so replaying oldest to newest lands the
   // newest turn on top with natural order kept within each turn. Entries
   // before the first echo (rare) fall through sink() to the log itself.
-  activeTurn = null;
-  replaying = true; // rebuilt turns render settled (no send-motion entrance)
+  setActiveTurn(null);
+  setReplaying(true); // rebuilt turns render settled (no send-motion entrance)
   for (const e of transcript) {
     if (e.t === "echo") beginTurn();
     renderEntry(e);
   }
-  replaying = false;
+  setReplaying(false);
   scrollToNewest();
 }
 
@@ -1083,32 +949,8 @@ function storageBlocked(): boolean {
   }
 }
 
-/* Typing humanization (item 4). Each keystroke gets its own jittered delay, a
-   longer pause after a space (a word boundary), a longer one still after
-   punctuation, and an occasional micro-hesitation. Centered a hair below the old
-   flat 35ms so those bonuses keep the total within about 20% of the flat
-   duration. `prev` is the character just typed (the pause happens after it). */
-function humanDelay(prev: string | undefined): number {
-  let d = TYPE_BASE * (0.7 + Math.random() * 0.6); // jitter 0.7x..1.3x
-  if (prev === " ") d += 45 + Math.random() * 40; // longer after a word
-  else if (prev && /[.,!?;:]/.test(prev)) d += 70 + Math.random() * 60; // after punctuation
-  if (Math.random() < 0.05) d += 90 + Math.random() * 110; // occasional hesitation
-  return d;
-}
-
-/* Type `text` into the composer character by character on the humanized clock,
-   then run `done` after a short beat. Applies to all emulated typing. */
-function typeInto(input: HTMLTextAreaElement, text: string, done: () => void) {
-  let i = 0;
-  const step = () => {
-    i += 1;
-    input.value = text.slice(0, i);
-    autoGrow(input); // keep the fallback height in step with the typed value
-    if (i < text.length) window.setTimeout(step, humanDelay(text[i - 1]));
-    else window.setTimeout(done, TYPE_SETTLE_MS); // a beat, then submit
-  };
-  window.setTimeout(step, humanDelay(undefined));
-}
+/* humanDelay + typeInto (the humanized keystroke emulation) -> ./terminal/typing
+   (Stage 1 extraction); playContactEmulation below imports typeInto. */
 
 /* The flow's opening line (Brian's copy, #182): the time-of-day word matches
    the pristine /chat greeting. */
@@ -1825,8 +1667,8 @@ function setupOnce() {
     document.documentElement.classList.toggle("cfocus", live);
     if (isRove(t)) {
       setRoveStop(t);
-      if (!roveHinted && t.matches(":focus-visible")) {
-        roveHinted = true;
+      if (!getRoveHinted() && t.matches(":focus-visible")) {
+        setRoveHinted(true);
         hint("# Arrows move the cursor · enter opens");
       }
     }
