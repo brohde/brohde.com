@@ -40,7 +40,7 @@ A model nobody installs is a research project. Everything a stranger sees first,
 
 ![The eightangle.com marketing homepage: the Eight Angle wordmark above the line "Yoga practice and pose tracker" and the headline "Make the most of your yoga practice," with a "Download for iOS" button and three iPhone mockups showing a practice review screen, a list of logged practices with their detected poses, and a personal-stats profile.](./hero-live-2026-07.png)
 
-<figcaption><a href="https://eightangle.com" target="_blank" rel="noopener">I built a native iOS SwiftUI app with a custom yoga pose detection model that runs on-device.</a></figcaption>
+<figcaption>I built a native iOS SwiftUI app with a custom yoga pose detection model that runs on-device. <a href="https://eightangle.com" target="_blank" rel="noopener">eightangle.com</a></figcaption>
 
 </figure>
 

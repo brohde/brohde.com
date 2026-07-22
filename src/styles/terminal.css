@@ -647,11 +647,16 @@ html.cfocus .wm .caret {
   white-space: nowrap;
   transition: color 120ms ease;
 }
+/* Titles read at a controlled measure (Brian, 2026-07-21: "more readable,
+   add some margin right"): a wrap ceiling well short of the column edge plus
+   breathing room on the right, and a step up from the old 15.5px. */
 .lttl {
   font-family: var(--font-edit);
   font-weight: 400;
-  font-size: 15.5px;
-  line-height: 1.5;
+  font-size: 17px;
+  line-height: 1.45;
+  max-width: 56ch;
+  padding-right: 24px;
   color: var(--bright);
   transition:
     color 120ms ease,
@@ -678,14 +683,6 @@ a.lentry:focus-visible .lttl {
 /* Item 11: unpublished entries list as plain text with a quiet [coming soon]
    status token, in the site's bracket-token family (like [clear]; #76 keeps
    these lowercase). Dim mono, one non-wrapping unit trailing the title. */
-.lsoon {
-  display: inline-block;
-  margin-left: 8px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--dim);
-  white-space: nowrap;
-}
 /* #141: external entries carry their destination domain with the arrow,
    small and lighter than the title, never underlined (#68: inline-block
    keeps underlines out). One non-wrapping unit so a narrow viewport wraps

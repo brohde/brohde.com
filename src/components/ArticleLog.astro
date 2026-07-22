@@ -60,29 +60,15 @@ const domainOf = (url: string) => new URL(url).hostname.replace(/^www\./, "");
           </span>
         </a>
       ) : (
-        /* #188 supersedes the item-11 plain row: unpublished internal entries
-           LINK again, to their "Coming soon" stub (the page exists so the
-           scene identity travel is live), keeping the quiet [coming soon]
-           token; brackets are decoration. */
-        <a
-          class:list={[
-            "lentry",
-            { "lentry-soon": !post.data.published },
-          ]}
-          href={logHref(post.id)}
-        >
+        /* Unpublished internal entries link to their stub like any other row
+           (the page exists, image-first, so the scene identity travel is
+           live); the coming-soon status token is retired (Brian, 2026-07-21). */
+        <a class="lentry" href={logHref(post.id)}>
           <time class="lts" datetime={isoDate(post.data.date)}>
             {isoDate(post.data.date)}
           </time>
           <span class="lttl">
             {post.data.title}
-            {!post.data.published && (
-              <span class="lsoon">
-                <span aria-hidden="true">[</span>coming soon<span
-                  aria-hidden="true"
-                >]</span>
-              </span>
-            )}
           </span>
         </a>
       )
