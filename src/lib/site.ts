@@ -56,6 +56,3 @@ export function isoDate(d: Date): string {
 }
 
 /** Homepage / log timestamp format: [YYYY-MM-DD]. */
-export function logStamp(d: Date): string {
-  return `[${isoDate(d)}]`;
-}

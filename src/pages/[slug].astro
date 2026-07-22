@@ -4,7 +4,7 @@ import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Scene from "@/components/Scene.astro";
 import ArticleNav from "@/components/ArticleNav.astro";
-import { SITE, logHref, logStamp, isoDate } from "@/lib/site";
+import { SITE, logHref, isoDate } from "@/lib/site";
 import { articleLd, breadcrumbLd } from "@/lib/schema";
 import { articleChain, neighborsOf } from "@/lib/articles";
 
@@ -145,7 +145,7 @@ const breadcrumbSchema = breadcrumbLd({ title, canonical });
       <main id="main">
         <article>
           <p class="adate">
-            <time datetime={isoDate(date)}>{logStamp(date)}</time>
+            <time datetime={isoDate(date)}>{isoDate(date)}</time>
           </p>
           <h1 class="atitle">{title}</h1>
 
