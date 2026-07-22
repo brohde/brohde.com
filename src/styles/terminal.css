@@ -1672,13 +1672,12 @@ a.lentry:focus-visible .lttl {
 .prose figure {
   margin: 26px 0;
 }
+/* The plate treatment (bordered well + padding) is retired (Brian,
+   2026-07-22: "remove the borders / framing"): media sits directly on the
+   page ground, keeping only a soft corner radius. */
 .prose figure > p:has(img),
 .prose figure > p:has(video) {
   margin: 0;
-  border: 1px solid var(--line);
-  background: var(--well);
-  border-radius: 12px;
-  padding: 10px;
 }
 .prose figure img,
 .prose figure video {
@@ -1686,7 +1685,6 @@ a.lentry:focus-visible .lttl {
   width: 100%;
   height: auto;
   border-radius: 7px;
-  border: 1px solid var(--line);
 }
 .prose figure.portrait > p:has(img) {
   max-width: 300px;
