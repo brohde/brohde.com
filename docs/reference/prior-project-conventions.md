@@ -2,6 +2,8 @@
 
 Research brief from 2026-07-15 session (researcher agent reviewed both repos read-only). Both are Astro + Tailwind v4 + Keystatic client sites. This file preserves what's worth copying into brohde.com; adoption status tracked here.
 
+> **Statuses are historical (pre-scaffold).** This is a day-one research snapshot: the "🔜 scaffold / adopt in Phase 3" markers reflect the plan *before* the Astro scaffold and `/styleguide` shipped. Most of these practices have since landed. Read the status column as intent captured at the start, not current state; the live source of truth is the codebase.
+
 ## Documentation / workflow practices
 
 | # | Practice | Source | Status |

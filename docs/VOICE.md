@@ -40,7 +40,7 @@ Brian is going for FULL TIME ROLES as well as showcasing work for freelance clie
 
 ## Capitalization: sentence case, not console-lowercase (decision #76, binding, supersedes prior lowercase guidance)
 
-The site moved off an all-lowercase "console" aesthetic. **Human-language copy uses normal English capitalization** (sentence case; proper nouns capitalized): the wordmark, bio lines, profile link labels, the hello tour, hint/comment lines, placeholders, the status footer, chat screen copy, 404 copy, HELP command *descriptions*, and every page `<title>`.
+The site moved off an all-lowercase "console" aesthetic. **Human-language copy uses normal English capitalization** (sentence case; proper nouns capitalized): bio lines, profile link labels, the hello tour, hint/comment lines, placeholders, the status footer, chat screen copy, 404 copy, HELP command *descriptions*, and every page `<title>`.
 
 Lowercase is preserved ONLY for literal terminal tokens, i.e. things the visitor would actually type or that are literally rendered as a filename/address:
 - Typed commands and their bracket-menu labels: `work`, `about`, `chat`, `clear`, `help`, `contact`, `resume`, `hello` (and the HELP list's command column)
@@ -48,3 +48,5 @@ Lowercase is preserved ONLY for literal terminal tokens, i.e. things the visitor
 - URLs, email addresses, domains (e.g. `brohde.com`, `brian@brohde.com`)
 
 When a sentence needs to reference one of those tokens inline, the token itself still stays lowercase even though the sentence around it is capitalized (e.g. "Type `help` for commands").
+
+**The wordmark is a deliberate lowercase exception (decision #115): "brian rohde", always lowercase.** It is the one piece of human-language copy that does not take sentence case, settled after the console-lowercase retreat above.

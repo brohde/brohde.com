@@ -13,9 +13,18 @@ Claude (studio lead) orchestrates; these reusable experts live in `.claude/agent
 | `copywriter`        | Voice & content               | sonnet | About copy, article titles/descriptions, case-study narratives, microcopy — bound by `docs/VOICE.md` |
 | `seo-a11y-auditor`  | Standards & discoverability   | sonnet | SEO/meta/structured data review, WCAG accessibility audits, LLM-readability checks                   |
 
-## Model policy (decision #14, amended by #46, re-amended by #50)
+## Model policy (canonical: decision #130, supersedes #14/#46/#50/#96/#117)
 
-Brian, 2026-07-15: "We need a perfect build for a long running product." The studio lead delegates across the full range per task: **Fable for core product engineering** (terminal interaction layer, theme system, boot sequence, chat integration, anything visitors touch every day), **Opus for general implementation** (scaffolding, ports, config, plumbing), **Sonnet for content/audits/routine**, haiku for mechanical. frontend-engineer defaults to fable; explicitly downgrade per spawn for routine chores.
+**This section is the single source of truth for subagent model selection.** Other docs reference it rather than restating it; if the policy changes, it changes here (and a dated line lands in `docs/DECISIONS.md`). The per-agent `Model` column above is the default for each role; this policy governs when to depart from it.
+
+Current policy (Brian, decision #130, plus the persistent-memory refinements):
+
+- **All subagents default to Opus or lower** unless Brian specifies otherwise. Opus for substantive implementation and design/critique; Sonnet for content, audits, and routine work; Haiku for mechanical tasks. Always consider degrading a spawn to save credits.
+- **Fable is a frontend-only ceiling for substantial builds**, with mandatory per-spawn degrade consideration: tweaks, minor updates, and rote chores never get Fable. Fable spawns only on a genuinely substantial frontend build (and are called out as such); when in doubt, start lower.
+- **Browser validation always runs on a Sonnet or Opus subagent, never the Fable lead** (decision #82). The lead stays thin and delegates the substantive work.
+- **Context budgets**: never feed one agent past its wrap. Opus agents wrap ~450K (hard cap 500K); other models wrap ~150K/180K (never past ~200K per #123). Fan follow-up work out to fresh, tightly-briefed agents rather than growing one long-running agent; each writes a handoff to `docs/reference/handoffs/` and is freed on completion (#127).
+
+A running subagent's model is fixed at spawn: if an agent dies on credits, check the agent definition's `model` first (see `.claude/agents/`).
 
 ## Working rules
 

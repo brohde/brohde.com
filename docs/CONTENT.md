@@ -21,7 +21,7 @@ Article pipeline for brohde.com. Homepage lists title + publish date (descriptio
 
 | # | Working title | Notes | Status |
 |---|---|---|---|
-| 9 | Luxe and affordable getaway: Hawaii | Travel piece from Brian's Substack ideas | Idea |
+| 11 | Luxe and affordable getaway: Hawaii | Travel piece from Brian's Substack ideas | Idea |
 
 ## Open content questions (for Brian)
 
