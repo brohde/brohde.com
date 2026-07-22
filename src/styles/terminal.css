@@ -1242,6 +1242,11 @@ a.lentry:focus-visible .lttl {
   text-underline-offset: 0.28em; /* clears descenders at any size (2026-07-22) */
   cursor: pointer;
 }
+/* the About closing CTA hugs its underline tighter (Brian, 2026-07-22:
+   2px on the CTA); the in-chat cmdlinks keep the descender-clearing offset */
+.prose .cmdlink {
+  text-underline-offset: 2px;
+}
 
 /* --------------------- contact flow (Phase B item 1) --------------------- */
 /* The invalid or missing email notice tints the assistant rail with the --warn
