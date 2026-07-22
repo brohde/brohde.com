@@ -1869,6 +1869,17 @@ function setupOnce() {
   document.addEventListener("astro:after-swap", syncHeaderChat);
   document.addEventListener("astro:page-load", syncHeaderChat);
 
+  // Article videos arrive DEAD after a client-side navigation: ClientRouter
+  // parses the next page with DOMParser, and a media element created in an
+  // inactive document never runs resource selection, so it sits at
+  // readyState 0 with working controls that do nothing (Brian: "I cannot
+  // interact with any video!"). load() re-runs resource selection on the
+  // adopted element. Hard loads never need this; after-swap only fires on
+  // client-side navigations.
+  document.addEventListener("astro:after-swap", () => {
+    document.querySelectorAll("video").forEach((v) => v.load());
+  });
+
   // per-page setup, on initial load and every VT navigation
   document.addEventListener("astro:page-load", initPage);
 
