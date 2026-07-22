@@ -18,16 +18,15 @@ I owned both halves: the game and the device it ran on. Designing and building b
 
 ## The result
 
-Signal pong ran at Twilio’s customer conference, on the show floor, for attendees to play. There is a video of it in action.
+Signal pong ran at Twilio’s customer conference, on the show floor, for attendees to play.
 
-<!--
-  FIGURE SLOT (reserved): B-roll video of Signal pong running at the conference.
-  Asset PENDING. The B-roll is being cropped and encoded separately (studio lead,
-  local ffmpeg; see decision #137). It must respect Cloudflare Pages' 25 MiB
-  per-file limit or move to external hosting per repo precedent.
-  When ready, place the <video> (poster + captions) or an external-link figure
-  here with a provenance caption. Do NOT ship a broken reference.
--->
+<figure>
+
+<video src="/media/signal-pong.mp4" poster="/media/signal-pong-poster.jpg" controls preload="metadata" playsinline aria-label="Video of Signal pong and the Hackpack in action at Twilio SIGNAL"></video>
+
+<figcaption>Signal pong and the Hackpack in action on the SIGNAL conference floor.</figcaption>
+
+</figure>
 
 It was a different kind of build from the marketing pages I shipped the rest of that year. The same conference is where Twilio hands out the Hackpack, its open-source hardware badge; I co-authored the [launch post for the v4](https://www.twilio.com/en-us/blog/archive/2018/open-source-hardware-badge-hackpack-v4).
 
