@@ -30,7 +30,7 @@ Nothing about the brand changed. Anthony’s site was already monochrome, full-b
 
 ![The refreshed press page at anthonythomasgalante.com: the lowercase wordmark with Collections, Custom, Press, and About navigation above the line "25 features & appearances in the press," and a masonry grid of press plates including Playbill, SwatchOn, Mutual Aid NYC, Cool Hunting, Photobook Magazine, and the Art Directors Guild Awards, each with its numbered entry printed beneath.](./press-live-2026-07.png)
 
-<figcaption><a href="https://anthonythomasgalante.com/press/" target="_blank" rel="noopener">Press page</a> was redesigned to bring Anthony’s impressive designs and clients to the foreground. <a href="https://anthonythomasgalante.com" target="_blank" rel="noopener">anthonythomasgalante.com</a></figcaption>
+<figcaption><a href="https://anthonythomasgalante.com/press/" target="_blank" rel="noopener">Press page</a> was redesigned to bring Anthony’s impressive designs and clients to the foreground.</figcaption>
 
 </figure>
 
