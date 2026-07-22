@@ -152,7 +152,7 @@ const CHAT_INPUT = "in-chat";
 
 /* Phase 4C motion timings (Brian veto knobs). */
 const PULSE_MS = 450; // brief thinking pulse before a deterministic response
-const CONTACT_PULSE_MS = 200; // the contact flow's own quicker pulse (asks,
+const CONTACT_PULSE_MS = 380; // the contact flow's own quicker pulse (asks,
 // greeting, edit re-asks, confirm nudge): the flow is a form, not a chat, so
 // the beat between turns is snappier than the 450ms general chat pulse.
 const CONTACT_Q = "How do I contact Brian?"; // the emulated contact question
