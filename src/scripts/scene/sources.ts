@@ -70,8 +70,8 @@ function drawEight(sctx: CanvasRenderingContext2D) {
 }
 
 /* the eight angle logo mark, traced bold and simplified from the live site
-   header (reference: assets/images/case-studies/eight-angle/
-   hero-live-2026-07.png): the A, the small ring at its hip, the big O */
+   header (reference: docs/archive/source-assets/images/case-studies/
+   eight-angle/hero-live-2026-07.png): the A, the small ring at its hip, the big O */
 function drawLogo(sctx: CanvasRenderingContext2D) {
   blank(sctx);
   capsule(sctx, 168, 52, 88, 248, 38);

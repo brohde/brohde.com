@@ -7,7 +7,6 @@ dist/
 node_modules/
 docs/
 chat/
-assets/
 .claude/
 PLAN.md
 CLAUDE.md
