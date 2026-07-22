@@ -67,6 +67,8 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  imageMeta?: { width: number; height: number; type?: string; alt?: string };
+  video?: { url: string; type?: string; width: number; height: number };
   ogType?: "website" | "article" | "profile";
   noindex?: boolean;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];

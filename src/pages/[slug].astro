@@ -134,6 +134,47 @@ const { title, description, date, stats, theme } = post.data;
 
 const canonical = new URL(logHref(post.id), SITE.url).href;
 
+// Per-article social share media. Two paths, keyed off the FIRST <video> in
+// the body (works for both full-prose articles and stubs, whose figure blocks
+// wrap the same <video>):
+//   video article -> og:video (playable in iMessage/Facebook) + the poster as
+//                    og:image (the universal fallback X/LinkedIn actually use).
+//   no-video      -> the generated 1200x630 glyph card at /share/<slug>.png.
+// Video pixel dimensions come from ffprobe and are kept HERE because the
+// Cloudflare build machine has no ffprobe and the freshness check stays pure
+// node; a new video must add its entry (keyed by media filename). The poster
+// carries no og:image dimension metadata: a poster is not guaranteed to share
+// the video's aspect, and og:image alone unfurls fine.
+const SHARE_VIDEO_META: Record<string, { width: number; height: number }> = {
+  newsroom: { width: 1440, height: 1048 },
+  afw: { width: 1440, height: 1070 },
+  "signal-pong": { width: 1440, height: 810 },
+};
+
+const firstVideo = post.body?.match(/<video[^>]*\bsrc="([^"]+)"[^>]*>/);
+let shareImage = `/share/${post.id}.png`;
+let shareImageMeta:
+  | { width: number; height: number; type?: string; alt?: string }
+  | undefined = {
+  width: 1200,
+  height: 630,
+  type: "image/png",
+  alt: `${title}, rendered as the article's terminal glyph card`,
+};
+let shareVideo:
+  | { url: string; type?: string; width: number; height: number }
+  | undefined;
+
+if (firstVideo) {
+  const src = firstVideo[1];
+  const poster = firstVideo[0].match(/\bposter="([^"]+)"/)?.[1];
+  if (poster) shareImage = poster;
+  shareImageMeta = undefined; // poster brings no dimension metadata (see above)
+  const base = src.replace(/^.*\//, "").replace(/\.[^.]+$/, "");
+  const dims = SHARE_VIDEO_META[base];
+  if (dims) shareVideo = { url: src, width: dims.width, height: dims.height };
+}
+
 // JSON-LD (src/lib/schema.ts). BlogPosting always; BreadcrumbList (A2: home >
 // this article) alongside it. Both ship only on real articles; stubs stay
 // JSON-LD-free and noindex (see the jsonLd prop gate below).
@@ -145,6 +186,9 @@ const breadcrumbSchema = breadcrumbLd({ title, canonical });
   title={title}
   description={description ?? SITE.description}
   ogType="article"
+  image={shareImage}
+  imageMeta={shareImageMeta}
+  video={shareVideo}
   jsonLd={isStub ? undefined : [articleSchema, breadcrumbSchema]}
   noindex={isStub}
 >
