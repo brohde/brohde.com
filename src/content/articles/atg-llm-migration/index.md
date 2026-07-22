@@ -1,5 +1,5 @@
 ---
-title: "Full replatform in 4 hours: how I upgraded a $20-a-month WordPress site and moved it to free hosting"
+title: "Full replatform and refresh in 4 hours: From WordPress to Astro plus free hosting"
 description: "A 13-page WordPress-to-Astro migration run through Claude Code: nothing lost, a UI refresh that kept the look, and hosting plus a Keystatic CMS for $0 a month."
 date: 2026-07-11
 draft: false
