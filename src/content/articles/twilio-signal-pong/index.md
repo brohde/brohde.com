@@ -24,7 +24,7 @@ Signal pong ran at Twilio’s customer conference, on the show floor, for attend
 
 <video src="/media/signal-pong.mp4" poster="/media/signal-pong-poster.jpg" controls preload="metadata" playsinline aria-label="Video of Signal pong and the Hackpack in action at Twilio SIGNAL"></video>
 
-<figcaption>Signal pong and the Hackpack in action on the SIGNAL conference floor.</figcaption>
+<figcaption>Multi-player pong built with React.js and <a href="https://www.twilio.com/docs/sync" target="_blank" rel="noopener">Twilio Sync</a> and the <a href="https://www.twilio.com/en-us/blog/archive/2018/open-source-hardware-badge-hackpack-v4" target="_blank" rel="noopener">Hackpack</a> in action.</figcaption>
 
 </figure>
 
