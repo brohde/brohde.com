@@ -46,6 +46,14 @@ A model nobody installs is a research project. Everything a stranger sees first,
 
 <figure class="portrait">
 
+![The Eight Angle Practices screen on an iPhone: a list of logged practices under a Practices heading, each with a video thumbnail, time, duration, and the poses detected (Low Lunge, Plank, Warrior 2, Chaturanga), above a Practice daily for 10 minutes goal, Try something new pose suggestions, and a teal Start practice button.](./practices-phone-2026-07.png)
+
+<figcaption>Every practice logged pose by pose, with a video to scrub back through.</figcaption>
+
+</figure>
+
+<figure class="portrait">
+
 ![The Eight Angle App Store listing on an iPhone: the mint app icon beside "Eight Angle: Yoga Pose Tracker, Practice Smarter on Your Mat" with a Get button, a 5.0 star rating, a 4+ age rating, and the Health & Fitness category, above screenshot cards showing the Eight Angle wordmark over a yogi practicing in a plant-filled room and a bronze Crow Explorer achievement.](./appstore-phone-2026-07.png)
 
 <figcaption><a href="https://apps.apple.com/us/app/eight-angle-yoga-pose-tracker/id6760512056" target="_blank" rel="noopener">Eight Angle on the App Store</a></figcaption>
