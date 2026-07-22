@@ -88,9 +88,17 @@ const CELL_CAP = 6000; // see PERF note above; measured on dist, see B1 report
 const RAMP = [" ", ".", "·", ":", "~", "+", "x", "8", "#"];
 const TICK_MS = 110; // 9fps, the lab cadence
 const CLOCK_MS = 2600; // the one scene clock: state tint, theme travel, sky
-const OUT_MS = 1400; // mark travel envelope (out, hold, in)
+const OUT_MS = 1400; // mark travel envelope (out, hold, in): the ambient clock
 const HOLD_MS = 900;
 const IN_MS = 1400;
+/* the navigation envelope (#150 Phase 3): a page crossing whose destination
+   theme differs compresses the MARK travel so the mark dissolves and reforms
+   inside the reading-column swap window, while the sky and peak stay on the
+   slow 2.6s clock. navTravel swaps the mutable outMs/holdMs/inMs to these for
+   one crossing; reaching idle resets them to the ambient values above. */
+const NAV_OUT_MS = 200;
+const NAV_HOLD_MS = 140;
+const NAV_IN_MS = 300;
 
 /* mobile ambient presence (#186 part 3): the background-mode intensity cap.
    Raising it lifts BOTH the tide density and, through applyAlpha (which keys
@@ -350,7 +358,12 @@ export interface SceneStats {
 
 export interface SceneHandle {
   el: HTMLElement;
+  /** the live page theme, for the #150 per-nav gate */
+  getTheme(): ThemeName;
   setTheme(name: ThemeName): void;
+  /** #150 Phase 3: choreographed cross-theme page travel (compressed mark
+      envelope + nav surge). Call ONLY when the destination theme differs. */
+  navTravel(name: ThemeName): void;
   setMark(name: SourceName): void;
   setState(state: SceneState): void;
   /** #186 part 1: swell the field on a navigation (the nav surge preset).
@@ -413,6 +426,13 @@ function mount(container: HTMLElement): SceneHandle {
   let phase: "idle" | "out" | "hold" | "in" = "idle";
   let m = 1; // mark envelope: 1 fully formed, 0 pure tide
   let holdT = 0;
+  /* the mark travel envelope durations, mutable so a navigation can compress
+     the crossing (navTravel, #150 Phase 3); advance() reads these and resets
+     them to the ambient lab values on reaching idle, so only the crossing that
+     armed them runs compressed. */
+  let outMs = OUT_MS;
+  let holdMs = HOLD_MS;
+  let inMs = IN_MS;
   let mix = 0; // state tint: 0 home, 1 chat
   let target = state === "chat" ? 1 : 0;
   mix = target;
@@ -598,7 +618,7 @@ function mount(container: HTMLElement): SceneHandle {
         target > mix ? Math.min(target, mix + dc) : Math.max(target, mix - dc);
     }
     if (phase === "out") {
-      m -= dt / OUT_MS;
+      m -= dt / outMs;
       if (m <= 0) {
         m = 0;
         cur = pending ?? cur;
@@ -608,12 +628,16 @@ function mount(container: HTMLElement): SceneHandle {
       }
     } else if (phase === "hold") {
       holdT += dt;
-      if (holdT >= HOLD_MS) phase = "in";
+      if (holdT >= holdMs) phase = "in";
     } else if (phase === "in") {
-      m += dt / IN_MS;
+      m += dt / inMs;
       if (m >= 1) {
         m = 1;
         phase = "idle";
+        // the crossing is over: back to the ambient clock for any future travel
+        outMs = OUT_MS;
+        holdMs = HOLD_MS;
+        inMs = IN_MS;
       }
     }
   }
@@ -704,6 +728,10 @@ function mount(container: HTMLElement): SceneHandle {
     holdT = 0;
     mix = target;
     tmix = 1;
+    // a snap lands at idle: any compressed nav envelope returns to ambient too
+    outMs = OUT_MS;
+    holdMs = HOLD_MS;
+    inMs = IN_MS;
     /* the settled still carries no swell: disarm any in-flight surge so the
        reduced-motion path and the paused frame land at ambient density */
     surgeArmed = false;
@@ -913,41 +941,82 @@ function mount(container: HTMLElement): SceneHandle {
     }, 300);
   }, 300);
 
+  /* the whole scene travel for one theme (lab setTheme4): the incoming sky
+     slot crossfades on the scene clock, the peak lerps inside the tide, and the
+     mark travels through the source envelope (snap under reduced motion or while
+     paused). Shared by setTheme (guarded on same-theme) and navTravel (only ever
+     called when themes differ, so unguarded). Page GROUND identities (#74) ride
+     :root tokens and belong to B3. */
+  function travelTheme(name: ThemeName) {
+    theme = name;
+    container.dataset.sceneTheme = name;
+    slotB ??= buildSkySlot(name, false);
+    if (!slotB.parentNode) slotA.after(slotB);
+    const incoming = slotA.classList.contains("on") ? slotB : slotA;
+    const outgoing = incoming === slotA ? slotB : slotA;
+    incoming.dataset.sky = name;
+    outgoing.classList.remove("on");
+    incoming.classList.add("on");
+    const tk = ease(tmix);
+    themeFrom = {
+      night: [
+        lerp3(themeFrom.night[0], themeTo.night[0], tk),
+        lerp3(themeFrom.night[1], themeTo.night[1], tk),
+      ],
+      lite: [
+        lerp3(themeFrom.lite[0], themeTo.lite[0], tk),
+        lerp3(themeFrom.lite[1], themeTo.lite[1], tk),
+      ],
+    };
+    themeTo = PEAKS[name];
+    tmix = 0;
+    request(THEME_SOURCE[name], reduced() || !running);
+    if (!running) staticFrame();
+  }
+
   /* ------------------------------ handle API ----------------------------- */
 
   return {
     el: container,
 
-    /** one press changes the whole scene (lab setTheme4): the incoming sky
-        slot crossfades on the scene clock, the peak lerps inside the tide,
-        and the mark travels through the source envelope. Page GROUND
-        identities (#74) ride :root tokens and belong to B3. */
+    /** the current page theme (#150 bridge: the per-nav gate compares this to
+        the destination's stamp to decide whether the crossing choreographs) */
+    getTheme(): ThemeName {
+      return theme;
+    },
+
+    /** one press changes the whole scene: crossfades the sky, lerps the peak,
+        and travels the mark on the ambient clock. No-op on the same theme. */
     setTheme(name: ThemeName) {
       if (name === theme) return;
-      theme = name;
-      container.dataset.sceneTheme = name;
-      slotB ??= buildSkySlot(name, false);
-      if (!slotB.parentNode) slotA.after(slotB);
-      const incoming = slotA.classList.contains("on") ? slotB : slotA;
-      const outgoing = incoming === slotA ? slotB : slotA;
-      incoming.dataset.sky = name;
-      outgoing.classList.remove("on");
-      incoming.classList.add("on");
-      const tk = ease(tmix);
-      themeFrom = {
-        night: [
-          lerp3(themeFrom.night[0], themeTo.night[0], tk),
-          lerp3(themeFrom.night[1], themeTo.night[1], tk),
-        ],
-        lite: [
-          lerp3(themeFrom.lite[0], themeTo.lite[0], tk),
-          lerp3(themeFrom.lite[1], themeTo.lite[1], tk),
-        ],
-      };
-      themeTo = PEAKS[name];
-      tmix = 0;
-      request(THEME_SOURCE[name], reduced() || !running);
-      if (!running) staticFrame();
+      travelTheme(name);
+    },
+
+    /** #150 Phase 3: a page crossing whose destination theme DIFFERS. Compresses
+        the mark envelope so the mark dissolves and reforms inside the reading-
+        column swap window (the sky and peak stay on the slow clock), and fires
+        the nav surge once. Only ever called when themes differ (the terminal.ts
+        gate guarantees it), so it needs no force/same-theme machinery. Under
+        reduced motion or while paused it snaps: travelTheme's request() takes the
+        settle path and armSurge no-ops, so the crossing lands instantly. */
+    navTravel(name: ThemeName) {
+      if (reduced() || !running) {
+        travelTheme(name); // snaps: request(snap) + settle land it at rest
+        return;
+      }
+      // compress the MARK envelope for this one crossing (advance() reads these;
+      // reaching idle resets them to ambient). The sky/peak keep the 2.6s clock.
+      outMs = NAV_OUT_MS;
+      holdMs = NAV_HOLD_MS;
+      inMs = NAV_IN_MS;
+      travelTheme(name);
+      // the existing nav surge preset, fired once for the crossing
+      armSurge(
+        NAV_SURGE_ATTACK_MS,
+        NAV_SURGE_PEAK_MS,
+        NAV_SURGE_RELEASE_MS,
+        NAV_SURGE_DENSITY
+      );
     },
 
     setMark(name: SourceName) {
