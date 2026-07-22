@@ -1639,6 +1639,105 @@ a.lentry:focus-visible .lttl {
   margin: 14px 0 0;
 }
 
+/* ------------------ article prev/next log navigation --------------------- */
+/* Chained hops between adjacent LOG PAGES (ArticleNav.astro, fed by
+   neighborsOf in src/lib/articles). "Newer" = the entry above in the ledger,
+   "older" = below; external entries own no page and are skipped upstream. A
+   slot renders only when it exists (no disabled controls at the ends). All
+   static, no images: CLS 0.
+
+   TOP (.anavtop): compact secondary row of bracket chips near the date line,
+   the ledger's [coming soon]/[clear] token family, quiet-link grammar (rest
+   dim, engage accent). Titles live in an sr suffix so the header stays
+   uncluttered while a screen reader still hears each destination. */
+.anavtop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 14px;
+  margin: 0 0 18px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+.anavtop .anavchip {
+  color: var(--dim);
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+.anavtop .anavchip .br {
+  color: var(--dim);
+  transition: color 120ms ease; /* rides the chip's dim-to-accent, like the ledger */
+}
+.anavtop .anavchip:hover,
+.anavtop .anavchip:focus-visible,
+.anavtop .anavchip:hover .br,
+.anavtop .anavchip:focus-visible .br {
+  color: var(--accent);
+}
+
+/* BOTTOM (.anavmore): the primary nav landmark. Two slots, newer LEFT / older
+   RIGHT (the ledger reads top-down newest-first, so "back toward newest" sits
+   at the line start and "deeper/older" advances rightward). Explicit grid
+   columns keep each slot on its own side even when the other is absent (first
+   article: no newer; last: no older). Full titles wrap naturally, no clamp or
+   ellipsis, so a long headline never truncates. Ledger-style hairline top. */
+.anavmore {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 28px;
+  margin-top: 36px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.anavmore .anavlink {
+  display: block;
+  text-decoration: none;
+}
+.anavmore .navnewer {
+  grid-column: 1;
+  text-align: left;
+}
+.anavmore .navolder {
+  grid-column: 2;
+  text-align: right;
+}
+.anavmore .navdir {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--dim);
+  margin-bottom: 4px;
+  transition: color 120ms ease;
+}
+.anavmore .navttl {
+  display: block;
+  font-family: var(--font-edit);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--bright);
+  text-wrap: pretty;
+  transition: color 120ms ease;
+}
+.anavmore .anavlink:hover .navdir,
+.anavmore .anavlink:focus-visible .navdir,
+.anavmore .anavlink:hover .navttl,
+.anavmore .anavlink:focus-visible .navttl {
+  color: var(--accent);
+}
+/* Narrow widths: stack the two slots (newer above older) so a long title
+   never fights a ~170px column. Both go left-aligned in the single column. */
+@media (max-width: 560px) {
+  .anavmore {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .anavmore .navnewer,
+  .anavmore .navolder {
+    grid-column: 1;
+    text-align: left;
+  }
+}
+
 /* ------------------- article figures (article-visuals lab) ---------------- */
 /* The material rule: a screenshot or archival still is evidence the writer
    is showing you, so it is a PAPER object on an editorial plate that follows

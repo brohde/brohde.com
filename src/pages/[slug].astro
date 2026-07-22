@@ -1,9 +1,11 @@
 ---
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
 import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Scene from "@/components/Scene.astro";
+import ArticleNav from "@/components/ArticleNav.astro";
 import { SITE, logHref, logStamp, isoDate } from "@/lib/site";
+import { articleChain, neighborsOf } from "@/lib/articles";
 
 /**
  * Article page, #67 C variant: editorial reading surface (Circular via
@@ -33,10 +35,9 @@ export async function getStaticPaths() {
   // "Coming soon" stub wearing the article's full scene identity, so the
   // matrix travel is live end to end while the writing stays offline. Stubs
   // are noindex and carry no JSON-LD; RSS stays published-only.
-  const posts = await getCollection(
-    "articles",
-    ({ data }) => !data.draft && !data.external
-  );
+  // The generated set and the prev/next chain are the SAME list (both are
+  // internal, non-draft articles in ledger order), so they can never drift.
+  const chain = await articleChain();
   // #179: articles serve at bare root slugs, so an article slug must never
   // shadow a real page. Fail the build loudly instead of silently winning or
   // losing the route race. "log" stays reserved for the /log/* 301s.
@@ -51,17 +52,23 @@ export async function getStaticPaths() {
     "api",
     "log",
   ]);
-  for (const post of posts) {
+  for (const post of chain) {
     if (RESERVED.has(post.id) || post.id.includes("/")) {
       throw new Error(
         `Article slug "${post.id}" collides with a reserved route (#179 bare-slug URLs). Rename the article folder.`
       );
     }
   }
-  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+  // Prev/next neighbors ride along as props: "newer" = the entry above in the
+  // ledger, "older" = below (null at the ends). External entries never enter
+  // the chain, so a hop over one lands on the next real page.
+  return chain.map((post) => {
+    const { newer, older } = neighborsOf(chain, post.id);
+    return { params: { slug: post.id }, props: { post, newer, older } };
+  });
 }
 
-const { post } = Astro.props;
+const { post, newer, older } = Astro.props;
 // a stub renders no body, so the content pipeline only runs for real articles
 const isStub = !post.data.published;
 const { Content } = isStub ? { Content: null } : await render(post);
@@ -126,6 +133,8 @@ const articleLd = {
             <time datetime={isoDate(date)}>{logStamp(date)}</time>{" "}
             <span aria-hidden="true">·</span> log
           </p>
+          {/* Compact secondary hop, header-level (not a second landmark). */}
+          <ArticleNav variant="top" newer={newer} older={older} />
           <h1 class="atitle">{title}</h1>
 
           {
@@ -160,6 +169,10 @@ const articleLd = {
             )}
           </div>
         </article>
+
+        {/* Primary prev/next nav: full titles, between the body and the
+            home/log footer chips. */}
+        <ArticleNav variant="bottom" newer={newer} older={older} />
 
         <footer class="aend">
           <a class="homechip" href="/">

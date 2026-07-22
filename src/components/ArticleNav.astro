@@ -1,0 +1,69 @@
+---
+/**
+ * Prev/next navigation between adjacent LOG PAGES. Two placements, one data
+ * source (newer/older, from src/lib/articles neighborsOf via [slug].astro):
+ *
+ *   variant="top"    compact secondary row of [newer] / [older] bracket chips
+ *                    near the date line, in the site's bracket-token grammar
+ *                    (like [coming soon]); NO titles so the header stays
+ *                    uncluttered. Treated as part of the article header, NOT a
+ *                    second nav landmark (avoids duplicate-landmark confusion);
+ *                    each chip carries an sr-only ": <title>" so a screen
+ *                    reader still hears the destination.
+ *
+ *   variant="bottom" the primary nav: a <nav aria-label="More from the log">
+ *                    with the full destination titles, quiet-link grammar (rest
+ *                    dim/ink, engage accent), a ledger-style hairline top.
+ *
+ * "Newer" = the entry above in ledger order, "older" = below. A slot renders
+ * only when it exists, so the first article shows no newer and the last no
+ * older (no disabled controls). External entries own no page and are already
+ * skipped upstream in the chain. Static markup, no images: CLS 0.
+ *
+ * Copy rule (VOICE.md, #18): no en/em dashes anywhere a reader sees.
+ */
+import type { CollectionEntry } from "astro:content";
+import { logHref } from "@/lib/site";
+
+interface Props {
+  variant: "top" | "bottom";
+  newer?: CollectionEntry<"articles"> | null;
+  older?: CollectionEntry<"articles"> | null;
+}
+const { variant, newer = null, older = null } = Astro.props;
+---
+
+{
+  (newer || older) &&
+    (variant === "top" ? (
+      <div class="anavtop">
+        {newer && (
+          <a class="anavchip" href={logHref(newer.id)}>
+            <span class="br" aria-hidden="true">[</span>newer<span class="br" aria-hidden="true">]</span>
+            <span class="sr">: {newer.data.title}</span>
+          </a>
+        )}
+        {older && (
+          <a class="anavchip" href={logHref(older.id)}>
+            <span class="br" aria-hidden="true">[</span>older<span class="br" aria-hidden="true">]</span>
+            <span class="sr">: {older.data.title}</span>
+          </a>
+        )}
+      </div>
+    ) : (
+      <nav class="anavmore" aria-label="More from the log">
+        {newer && (
+          <a class="anavlink navnewer" href={logHref(newer.id)}>
+            <span class="navdir">Newer</span>
+            <span class="navttl">{newer.data.title}</span>
+          </a>
+        )}
+        {older && (
+          <a class="anavlink navolder" href={logHref(older.id)}>
+            <span class="navdir">Older</span>
+            <span class="navttl">{older.data.title}</span>
+          </a>
+        )}
+      </nav>
+    ))
+}
