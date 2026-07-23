@@ -28,7 +28,7 @@ _The definition of done for the current program. Any session or loop measures ag
 ### D. Chat hygiene
 
 - [x] Eval fixtures relabeled (Q7, rode #198); chat facts/prompt current per the 2026-07-22 audit (#228: all case-study slugs, ATG + SIGNAL facts)
-- [ ] chat/ apostrophe + vocabulary sweep (Q3) WITH the keyed eval re-run: one command, spends API credit; note the account holds $18.02 with auto-reload off, so Brian tops up first or accepts the spend
+- [x] chat/ apostrophe + vocabulary sweep (Q3) DONE with the keyed eval re-run (2026-07-22, Opus): 23 typographic apostrophes, terminal-aesthetic phrase retired, eval 36/38 = baseline held, all 9 deny-list + 3 injection rows pass, $0.14 spent
 
 ### E. Sensitivity prune + publish mechanics
 
