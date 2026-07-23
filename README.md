@@ -32,7 +32,7 @@ The meaningful directories. Full architecture lives in [`docs/ENGINEERING.md`](d
 
 | Path | Purpose |
 | --- | --- |
-| `src/` | The Astro site: `pages/` (routes), `layouts/`, `components/`, `scripts/` (the client controller and the ambient canvas scene), `styles/`, `content/articles/` (one folder per article), `lib/` (site constants, article ordering, JSON-LD builders), `assets/fonts/`. |
+| `src/` | The Astro site: `pages/` (routes), `layouts/`, `components/`, `scripts/` (the client controller and the ambient canvas scene), `styles/`, `content/articles/` (one folder per article), `lib/` (site constants, article ordering, JSON-LD builders). |
 | `chat/` | Source of truth for the chat model behavior: the system prompt, the facts pack, a local dev bridge, and the eval harness. The build bundles the prompt and facts into the chat Function. |
 | `functions/api/` | Cloudflare Pages Functions, the only server surface: `chat.ts` (`POST /api/chat`), `contact.ts` (`POST /api/contact`), and `_shared.ts` (shared helpers; a leading underscore means not routed). |
 | `tools/` | Build and asset tooling: `build/` (prompt codegen, vector-mark rasterizer, share-card freshness check), `share-cards/` (the local share-image generator), `og/` (the OG card renderer), `git-hooks/` (the gitleaks pre-commit hook). |
@@ -56,6 +56,8 @@ npm run preview      # serve the built ./dist locally
 npm run check        # astro check alone (typecheck + Astro diagnostics)
 npm run format       # prettier --write .
 ```
+
+The licensed LL Circular webfonts are not in the repo (see the `LICENSE` scope note): `public/fonts/` is gitignored and populated at build time by `tools/build/fetch-fonts.mjs` when `FONTS_BASE_URL` is set. Without it the build still succeeds and the site renders with the metric-tuned fallback face, zero layout shift. This degrade is deliberate: clone-and-build works for everyone without redistributing licensed font files.
 
 `npm run build` runs a prompt codegen step first: `tools/build/build-chat-prompt.mjs` bundles `chat/system-prompt.md` and `chat/facts.md` into a generated TypeScript module the chat Function imports. That generated file is gitignored and rebuilt on every build, locally and on Cloudflare. Edit the prompt or facts in `chat/`, never the generated output.
 

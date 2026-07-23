@@ -36,3 +36,5 @@ npm-debug.log*
 
 # local capture scratch (screenshots + scripts), never ships
 .captures/
+# licensed webfonts (LL Circular): fetched at deploy via FONTS_BASE_URL, never committed
+public/fonts/*.woff2

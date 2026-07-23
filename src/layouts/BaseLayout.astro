@@ -10,8 +10,12 @@ import "@/styles/global.css";
 // global.css resolve to; imported here so the preloads below can't drift
 // from the CSS. Book + Bold are preloaded (used above the fold on every
 // page); Medium loads on demand behind the metric-tuned fallback.
-import circularBook from "@/assets/fonts/circular-book.woff2?url";
-import circularBold from "@/assets/fonts/circular-bold.woff2?url";
+/* The licensed webfonts are NOT in the repo (LICENSE scope note): they live
+   in public/fonts/, gitignored, fetched at deploy by tools/build/fetch-fonts.mjs
+   when FONTS_BASE_URL is set. Absent files cost nothing: the preloads 404
+   quietly and Circular Fallback (metric-tuned Arial) renders with zero CLS. */
+const circularBook = "/fonts/circular-book.woff2";
+const circularBold = "/fonts/circular-bold.woff2";
 
 /* ============================================================================
    PERCEIVED-LOAD CONTRACT  (decision #62): read before adding to the shell.
