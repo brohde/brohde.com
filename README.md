@@ -12,9 +12,14 @@ The personal portfolio and writing site for Brian Rohde, live at [brohde.com](ht
 
 This site is built by a [Claude Code](https://claude.com/claude-code) studio process, and that process is part of what the repo shows. Claude acts as studio lead and delegates to specialist sub-agents (design, engineering, copy, SEO and accessibility). Every decision, every conversation with Brian, and the running project status are checked in and public by design, so any reader can see how the site was actually made, not just the finished result.
 
+**It started with one prompt.** [`PLAN.md`](PLAN.md) is Brian's kickoff prompt to Claude, preserved verbatim, typos included. It names the studio model, the reusable expert sub-agents, the decision log, the session-continuity rule, and the partnership posture ("don't be afraid to push back") that the rest of this repo operationalizes. Read it first and everything else here is legible as that one prompt, executed.
+
 If you want to understand the working model before the code, read these:
 
-- [`CLAUDE.md`](CLAUDE.md): the working agreement. The process rules the studio runs under.
+- [`CLAUDE.md`](CLAUDE.md): the working agreement. The standing prompt the studio lead runs under every session.
+- [`.claude/agents/`](.claude/agents/): the system prompts for the studio's experts (design director, frontend engineer, copywriter, SEO and accessibility auditor). These are the "reusable subagents" PLAN.md asked for.
+- [`chat/system-prompt.md`](chat/system-prompt.md) and [`chat/facts.md`](chat/facts.md): the complete brain of the site's visitor-facing chat, prompt and knowledge both, public on purpose. What it deflects and how is part of the design.
+- [`docs/VOICE.md`](docs/VOICE.md): the writing style guide every published word passes through; in practice, a standing prompt for the copywriter.
 - [`docs/DECISIONS.md`](docs/DECISIONS.md): every decision made, with date and rationale.
 - [`docs/COMMS-LOG.md`](docs/COMMS-LOG.md): the running log of communications and delegated sub-agent work.
 - [`docs/TEAM.md`](docs/TEAM.md): the studio roster of expert roles and the model policy.
@@ -30,12 +35,12 @@ The meaningful directories. Full architecture lives in [`docs/ENGINEERING.md`](d
 | `src/` | The Astro site: `pages/` (routes), `layouts/`, `components/`, `scripts/` (the client controller and the ambient canvas scene), `styles/`, `content/articles/` (one folder per article), `lib/` (site constants, article ordering, JSON-LD builders), `assets/fonts/`. |
 | `chat/` | Source of truth for the chat model behavior: the system prompt, the facts pack, a local dev bridge, and the eval harness. The build bundles the prompt and facts into the chat Function. |
 | `functions/api/` | Cloudflare Pages Functions, the only server surface: `chat.ts` (`POST /api/chat`), `contact.ts` (`POST /api/contact`), and `_shared.ts` (shared helpers; a leading underscore means not routed). |
-| `tools/` | Build and asset tooling: `build/build-chat-prompt.mjs` (the prompt codegen, see below) and `og/` (the on-demand Open Graph card renderer). |
+| `tools/` | Build and asset tooling: `build/` (prompt codegen, vector-mark rasterizer, share-card freshness check), `share-cards/` (the local share-image generator), `og/` (the OG card renderer), `git-hooks/` (the gitleaks pre-commit hook). |
 | `public/` | Static assets served as-is: `_headers` (CSP and security headers), `_redirects`, `robots.txt`, favicons, `media/` (case-study video), `og.png`. |
 | `docs/` | The studio process and reference material: `STATUS.md`, `DECISIONS.md`, `COMMS-LOG.md`, `ENGINEERING.md`, `TEAM.md`, `VOICE.md`, plus `reference/`, `drafts/`, `design/`, and `archive/`. |
 | `.claude/agents/` | Reusable sub-agent definitions for the studio experts. |
 
-Top-level config: `astro.config.mjs`, `wrangler.toml` (Cloudflare Pages config-as-code), `package.json`, `PLAN.md` (the original brief), and `CLAUDE.md`.
+Top-level config: `astro.config.mjs`, `wrangler.toml` (Cloudflare Pages config-as-code), `package.json`, `PLAN.md` (the verbatim kickoff prompt, see above), and `CLAUDE.md`.
 
 ## About the article dates
 
