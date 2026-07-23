@@ -2,6 +2,9 @@
 title: "Building a multi-player game, hardware badge, and React-based operating system for Twilio’s user conference"
 description: "How I designed and built SIGNAL Pong, a multiplayer game and device to showcase Twilio’s products on the conference floor."
 date: 2018-10-25
+# pre-dated piece; sortDate places it in the ledger narrative (above Newsroom,
+# under Eight Angle, Brian 2026-07-22); the display date stays the real 2018
+sortDate: 2026-02-11
 draft: false
 theme: twilio
 ---

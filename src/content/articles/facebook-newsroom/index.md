@@ -5,7 +5,7 @@ date: 2014-07-01
 # Ledger-only ordering (see content.config.ts): places this deliberately
 # pre-dated 2014 piece directly after eight-angle (2026-02-12) in the log,
 # without touching the displayed 2014 date. One day under its sibling.
-sortDate: 2026-02-11
+sortDate: 2026-02-10
 draft: false
 theme: news
 ---
