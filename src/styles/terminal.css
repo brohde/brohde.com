@@ -1552,6 +1552,13 @@ a.lentry:focus-visible .lttl {
   padding: 0;
   font-size: inherit;
 }
+/* Prose text inside a figure's pre WRAPS (Brian, 2026-07-22: the kickoff
+   prompt on the build-story article reads as prose, not a scroll pit). Bare
+   .prose pre keeps nowrap + overflow-x for actual code/ASCII diagrams. */
+.prose figure pre {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
 
 /* ----------------------- article pages (#67 C variant) ------------------- */
 /* B2 Phase 1: the .atop chrome bar ([home] chip + path label) is retired;
