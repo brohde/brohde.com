@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-23T01:01:57.697Z",
+  "generatedAt": "2026-07-23T01:10:07.537Z",
   "cards": {
     "atg-llm-migration": {
       "title": "Full replatform and refresh in 4 hours: From WordPress to Astro plus free hosting",
@@ -17,7 +17,7 @@
       "glyphHash": "80e42b17e783e6264974f5277daebb124ba402259b8d0ab96ba0e99a75268e1f"
     },
     "how-this-website-was-built": {
-      "title": "How this website was built with Claude Code",
+      "title": "How this website was built",
       "theme": "default",
       "glyphHash": "80e42b17e783e6264974f5277daebb124ba402259b8d0ab96ba0e99a75268e1f"
     }

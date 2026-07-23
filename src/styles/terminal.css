@@ -754,6 +754,23 @@ a.lentry:focus-visible .lttl {
   font-size: 13.5px;
   color: var(--dim);
 }
+/* the footer's quiet text link (the build-story CTA, 2026-07-22): the
+   dimlink grammar on the footer ground, rest dim, engage accent */
+.sfoot a {
+  color: var(--dim);
+  text-decoration: underline;
+  text-underline-offset: 0.28em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--dim);
+  transition:
+    color 120ms ease,
+    text-decoration-color 120ms ease;
+}
+.sfoot a:hover,
+.sfoot a:focus-visible {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
 .homepad {
   padding-top: 4px;
   padding-bottom: 36px;
