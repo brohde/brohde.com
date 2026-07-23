@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-22T22:40:24.228Z",
+  "generatedAt": "2026-07-23T01:01:57.697Z",
   "cards": {
     "atg-llm-migration": {
       "title": "Full replatform and refresh in 4 hours: From WordPress to Astro plus free hosting",
@@ -14,6 +14,11 @@
     "gold-coast": {
       "title": "Wealth management client uses ChatGPT to write and design his own website",
       "theme": "goldcoast",
+      "glyphHash": "80e42b17e783e6264974f5277daebb124ba402259b8d0ab96ba0e99a75268e1f"
+    },
+    "how-this-website-was-built": {
+      "title": "How this website was built with Claude Code",
+      "theme": "default",
       "glyphHash": "80e42b17e783e6264974f5277daebb124ba402259b8d0ab96ba0e99a75268e1f"
     }
   }
