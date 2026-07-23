@@ -1,12 +1,12 @@
 ---
 title: "Building a multi-player game, hardware badge, and React-based operating system for Twilio’s user conference"
-description: "How I designed and built Signal pong, a multiplayer game and device to showcase Twilio’s products on the conference floor."
+description: "How I designed and built SIGNAL Pong, a multiplayer game and device to showcase Twilio’s products on the conference floor."
 date: 2018-10-25
 draft: false
 theme: twilio
 ---
 
-Most of what I did at Twilio was the website: the company’s first CMS, a design system, the marketing pages behind it. This project was the exception. For Twilio’s customer conference, I designed and built a multiplayer game and a device to show off what Twilio’s products could do. It’s called Signal pong.
+Most of what I did at Twilio was the website: the company’s first CMS, a design system, the marketing pages behind it. This project was the exception. For Twilio’s customer conference, I designed and built a multiplayer game and a device to show off what Twilio’s products could do. It’s called SIGNAL Pong.
 
 ## The problem
 
@@ -14,17 +14,17 @@ A conference booth can only demonstrate so much. You can put an API on a screen,
 
 ## The approach
 
-I owned both halves: the game and the device it ran on. Designing and building both meant Signal pong had to be a real, working object on the floor, something a person could walk up to and play against someone else, not a demo video of an idea. Because it was built around Twilio’s products, the gameplay was the pitch. Playing it was the demonstration.
+I owned both halves: the game and the device it ran on. Designing and building both meant SIGNAL Pong had to be a real, working object on the floor, something a person could walk up to and play against someone else, not a demo video of an idea. Because it was built around Twilio’s products, the gameplay was the pitch. Playing it was the demonstration.
 
 ## The result
 
-Signal pong ran at Twilio’s customer conference, on the show floor, for attendees to play.
+SIGNAL Pong ran at Twilio’s customer conference, on the show floor, for attendees to play.
 
 <figure>
 
-<video src="/media/signal-pong.mp4" poster="/media/signal-pong-poster.jpg" controls preload="metadata" playsinline aria-label="Video of Signal pong and the Hackpack in action at Twilio SIGNAL"></video>
+<video src="/media/signal-pong.mp4" poster="/media/signal-pong-poster.jpg" controls preload="metadata" playsinline aria-label="Video of SIGNAL Pong and the Hackpack in action at Twilio SIGNAL"></video>
 
-<figcaption>Multi-player pong built with React.js and <a href="https://www.twilio.com/docs/sync" target="_blank" rel="noopener">Twilio Sync</a>, and the <a href="https://www.twilio.com/en-us/blog/archive/2018/open-source-hardware-badge-hackpack-v4" target="_blank" rel="noopener">Hackpack</a> in action.</figcaption>
+<figcaption>Multi-player Pong built with React.js and <a href="https://www.twilio.com/docs/sync" target="_blank" rel="noopener">Twilio Sync</a>, and the <a href="https://www.twilio.com/en-us/blog/archive/2018/open-source-hardware-badge-hackpack-v4" target="_blank" rel="noopener">Hackpack</a> in action. BLE presence detection let attendees join automatically as they approached the installation. The Hackpack, a hackable hardware conference badge, served as a game controller over WiFi and communicated with the game board through Twilio Sync. Up to 6 attendees could play simultaneously in a 3v3 match. Gameplay ran continuously, with a computer player holding the board when nobody was playing. Attendees could redeem points earned through Pong at the swag store.</figcaption>
 
 </figure>
 
