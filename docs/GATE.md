@@ -16,14 +16,14 @@ _The definition of done for the current program. Any session or loop measures ag
 - [x] ENGINEERING.md rewritten against current source (debt D1, merged 222cd9d)
 - [x] Docs quick-win cluster closed (D2-D7, D12, D13; merged 898b5a2)
 - [x] Scene doc (D8, docs/reference/scene.md), docs index (reorg), model policy single-sourced (D10), STATUS slimmed + archived (D11)
-- [ ] The CLAUDE.md reading-path line (D9): a working-agreement edit, Brian approves and adds the drafted line himself (draft in go-public-checklist.md section D)
+- [x] The CLAUDE.md reading-path line (D9): APPROVED by Brian 2026-07-22 ("D9 - add it"); the public-by-construction rule is in CLAUDE.md
 
 ### C. Content
 
 - [x] Publish state SETTLED by #219: articles ship as image-first stubs with captions carrying the story (Brian's standing "We only want the images and minimal text"; full texts return only on his re-order). The gate's original per-article publish flips are superseded.
 - [x] The #206 taste flags: overtaken by Brian's own retitle wave (ATG "in 4 hours" title, google "Website" casing, twilio titles all dictated by him 2026-07-22)
 - [x] Eight Angle mark rebuilt from his live logomark (vector marks merge 8a297f7; a dedicated master SVG from Brian remains a nice-to-have, not a gate)
-- [ ] nownow.mp4 + platform-surfaces.mp4 identified by Brian: place or archive (2017 captures, found in the legacy WordPress theme)
+- [x] nownow.mp4 + platform-surfaces.mp4: ARCHIVED per Brian 2026-07-22; they stay in the legacy WordPress backup only, no article placement
 
 ### D. Chat hygiene
 
@@ -37,7 +37,7 @@ _The definition of done for the current program. Any session or loop measures ag
 - [x] Fresh-history cut PREPARED (exact commands staged in go-public-checklist.md section B); execution is one order away
 - [x] Public README (with the pre-dating disclosure, the prompt-artifact reading list, PLAN.md framed as the verbatim kickoff prompt)
 - [x] Final repo sweep run (2026-07-22): tracked tree clean of pruned patterns, secret grep clean, deps 0 vulnerabilities, 26 stale worktrees removed, live smoke green (301, og:video, glyph cards, chat navigating new slugs)
-- [ ] **THE FLIP**: Brian says the word -> lead runs the fresh-history cut (destructive to remote history) -> Brian flips visibility + GitHub settings (secret scanning, push protection, branch protection AFTER the push) -> lead verifies Pages redeploy + live site -> license decision (options in checklist section D)
+- [ ] **THE FLIP**: Brian says the word -> lead runs the fresh-history cut (destructive to remote history) -> Brian flips visibility + GitHub settings (secret scanning, push protection, branch protection AFTER the push) -> lead verifies Pages redeploy + live site -> license DONE (MIT code / all-rights content + media, Brian's "add it" on the recommended split)
 
 ## Standing quality bars (every merge, not steps)
 

@@ -18,6 +18,7 @@ Portfolio + blog-style site for Brian Rohde (brohde.com). Audience: potential cl
 - **Delegate + parallelize**: run work through the studio sub-agents (`.claude/agents/`, roster in `docs/TEAM.md`) concurrently where it genuinely helps. Pick model/effort appropriate to the task.
 - **Phase large work**: break big builds/designs into systematic phases (Phase 1, 2, 3...) that land and get reviewed independently, instead of one huge chunk that consumes massive context. The review between phases can be an agent review, not necessarily Brian; the point is progressive, checkable delivery.
 - **Be a partner**: challenge Brian's asks when there's a better path; surface unknown unknowns; recommend, don't just comply.
+- **Public by construction**: `docs/` is part of the public repo. Write `COMMS-LOG.md`, `DECISIONS.md`, and `STATUS.md` public-first: accurate and candid, but with no secret values, no unconsented client identities, and no personal contact details that the site itself withholds.
 
 ## Tech + platform decisions (settled)
 

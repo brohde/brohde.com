@@ -87,4 +87,4 @@ With the hook enabled, each commit runs `gitleaks protect --staged` against the 
 
 ## License
 
-None yet. This code is source-visible for reading and learning. All rights reserved. No reuse license is granted at this time, and there is no `LICENSE` file in the repo. Do not assume any permission to reuse, redistribute, or create derivative works from the code or the written content until a license is published here.
+Split posture, on purpose. The **source code** is licensed under the [MIT License](LICENSE): reuse it, learn from it, build on it. The **written content and media are not**: the articles (`src/content/articles/`), the studio process docs (`docs/`), and the images and video (`public/media/` and per-article assets) remain all rights reserved. The plain-language scope note at the bottom of the `LICENSE` file states the same boundary.
