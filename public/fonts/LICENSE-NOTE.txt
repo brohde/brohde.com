@@ -1,0 +1,6 @@
+The LL Circular webfont files in this directory are licensed by Lineto to
+Brian Rohde for use on brohde.com only. They are in this repository solely so
+the site builds and deploys. They are NOT covered by the repository LICENSE
+and no right to copy, reuse, or redistribute them is granted. If you fork
+this repo, replace or remove them; the build falls back to a metric-matched
+system face with zero layout shift.

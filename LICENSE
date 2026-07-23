@@ -27,8 +27,10 @@ covers the SOURCE CODE of this repository. It does not cover the written
 content or media: the articles (src/content/articles/), the studio process
 docs (docs/), and the images and video (public/media/ and per-article assets)
 are (c) Brian Rohde, all rights reserved. Also excluded from the MIT grant:
-the licensed webfonts (src/assets/fonts/, LL Circular by Lineto, used under
-its own license) and third-party brand marks (src/assets/marks/ and any
+the licensed webfonts (public/fonts/, LL Circular by Lineto): they are
+included ONLY so this site builds and deploys, are licensed to Brian Rohde
+for brohde.com alone, and no right to copy, reuse, or redistribute them is
+granted; if you fork this repo, replace or remove them. Also excluded: and third-party brand marks (src/assets/marks/ and any
 logo appearing in captures), which remain the property of their respective
 owners and appear here under nominative use. Read and learn from everything;
 reuse the code freely under MIT; do not republish the writing, the media,

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "node tools/build/fetch-fonts.mjs && node tools/build/build-chat-prompt.mjs && node tools/build/build-marks.mjs && node tools/build/check-share-cards.mjs && astro check && astro build",
+    "build": "node tools/build/build-chat-prompt.mjs && node tools/build/build-marks.mjs && node tools/build/check-share-cards.mjs && astro check && astro build",
     "share-cards": "node tools/share-cards/capture.cjs",
     "preview": "astro preview",
     "astro": "astro",

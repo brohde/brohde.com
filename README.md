@@ -57,7 +57,7 @@ npm run check        # astro check alone (typecheck + Astro diagnostics)
 npm run format       # prettier --write .
 ```
 
-The licensed LL Circular webfonts are not in the repo (see the `LICENSE` scope note): `public/fonts/` is gitignored and populated at build time by `tools/build/fetch-fonts.mjs` when `FONTS_BASE_URL` is set. Without it the build still succeeds and the site renders with the metric-tuned fallback face, zero layout shift. This degrade is deliberate: clone-and-build works for everyone without redistributing licensed font files.
+The LL Circular webfonts in `public/fonts/` are licensed to Brian for brohde.com only and are not covered by the repo license (see the `LICENSE` scope note and `public/fonts/LICENSE-NOTE.txt`). They are present so the site builds and deploys; if you fork this repo, replace or remove them, and the site falls back to a metric-matched system face with zero layout shift.
 
 `npm run build` runs a prompt codegen step first: `tools/build/build-chat-prompt.mjs` bundles `chat/system-prompt.md` and `chat/facts.md` into a generated TypeScript module the chat Function imports. That generated file is gitignored and rebuilt on every build, locally and on Cloudflare. Edit the prompt or facts in `chat/`, never the generated output.
 
