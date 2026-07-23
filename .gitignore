@@ -33,3 +33,6 @@ chat/eval-http-transcript.md
 .DS_Store
 *.log
 npm-debug.log*
+
+# local capture scratch (screenshots + scripts), never ships
+.captures/
