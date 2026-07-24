@@ -1,7 +1,10 @@
 ---
 /**
- * PostHog wiring (E7, decision #11). Ships only when PUBLIC_POSTHOG_KEY is set,
- * so local dev and the current keyless state are a clean no-op.
+ * PostHog wiring (E7, decision #11). The project key for the brohde.com
+ * PostHog project is committed as the default (Brian, 2026-07-24): phc_ project
+ * keys are public by design and ship in the page HTML regardless, so an env
+ * var adds a dashboard step without hiding anything. PUBLIC_POSTHOG_KEY still
+ * overrides when set (and setting it empty turns analytics off).
  *
  * View Transitions gotcha (verified in prod on the dragan project): with the
  * ClientRouter active, PostHog's automatic $pageview double-counts. Fix here:
@@ -9,7 +12,9 @@
  * one $pageview per view from astro:page-load, which runs on the initial load
  * AND after every client-side navigation.
  */
-const key = import.meta.env.PUBLIC_POSTHOG_KEY;
+const key =
+  import.meta.env.PUBLIC_POSTHOG_KEY ??
+  "phc_y9M8bYUJu6oQRUdmRzwzKgYG3pXYwVA8QXjhzDrgWWEL";
 const host = import.meta.env.PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
 ---
 
