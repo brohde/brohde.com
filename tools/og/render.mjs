@@ -30,8 +30,8 @@ const CHROME =
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const PORT = 4421;
 
-const FONT_BOLD = resolve(REPO, "src/assets/fonts/circular-bold.woff2");
-const FONT_BOOK = resolve(REPO, "src/assets/fonts/circular-book.woff2");
+const FONT_BOLD = resolve(REPO, "public/fonts/circular-bold.woff2");
+const FONT_BOOK = resolve(REPO, "public/fonts/circular-book.woff2");
 const TEMPLATE = resolve(__dirname, "og.html");
 const OUT = resolve(REPO, "public/og.png");
 

@@ -4,7 +4,7 @@ Curated by Brian. Edit freely; the server reloads this at boot. If a fact is not
 
 ## Identity
 
-- Brian Rohde. Full-stack engineer in San Francisco shipping AI products end to end, from training the model to shipping the app.
+- Brian Rohde. Design Engineer in San Francisco: front-end craft plus full-stack engineering, shipping products end to end, from training the model to shipping the app.
 - Studied at DePaul University. (The school is public; graduation year and any dates around his education stay behind the deny-list.)
 - Ships AI products end to end: model, app, and the infrastructure underneath.
 - Founder of Eight Angle. Open to full time roles, and available for freelance work.

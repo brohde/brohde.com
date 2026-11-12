@@ -10,11 +10,12 @@
 export const SITE = {
   name: "brohde.com",
   url: "https://brohde.com",
-  /* #77: "AI Product Engineer" is the title identity; "full-stack" stays as
-     a supporting keyword in descriptions only (copywriter's phrasing). */
-  title: "Brian Rohde: AI Product Engineer",
+  /* #241 (2026-11-12, supersedes #77): "Design Engineer" is the title identity
+     for the Design Engineer roles Brian is targeting; "full-stack" stays a
+     supporting keyword in descriptions only. */
+  title: "Brian Rohde: Design Engineer",
   description:
-    "Brian Rohde is an AI Product Engineer in San Francisco who ships full-stack AI products end to end. Project deep dives and notes on AI-assisted engineering.",
+    "Brian Rohde is a Design Engineer in San Francisco who designs and ships full-stack products end to end. Project deep dives and notes on AI-assisted engineering.",
   author: "Brian Rohde",
   locale: "en_US",
   lang: "en",

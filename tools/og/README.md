@@ -16,7 +16,7 @@ Chrome path with `CHROME_BIN=/path/to/chrome` if it isn't at the macOS default.
 - `og.html` composites the whole card in `<canvas>` (deterministic: fixed tide
   phases, no randomness), so a re-render is byte-stable.
 - `render.mjs` inlines the site's Circular woff2 subsets
-  (`src/assets/fonts/circular-{bold,book}.woff2`) as base64 `data:` URIs, then
+  (`public/fonts/circular-{bold,book}.woff2`) as base64 `data:` URIs, then
   drives headless Chrome over the DevTools Protocol to screenshot the 1200x630
   canvas. No npm install, no Puppeteer. Temp artifacts go to the OS temp dir.
 

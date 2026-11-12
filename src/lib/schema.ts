@@ -15,7 +15,7 @@ import { SITE, LINKS, COMPANIES, isoDate } from "@/lib/site";
 
 /** The one job-title string (#77). Was duplicated across the homepage Person,
     the about ProfilePage Person, and nowhere else it should drift. */
-export const JOB_TITLE = "AI Product Engineer";
+export const JOB_TITLE = "Design Engineer";
 
 /** Shared sameAs profile list (identical order in both Person blocks). */
 const SAME_AS = [LINKS.linkedin, LINKS.x, COMPANIES.eightAngle];
