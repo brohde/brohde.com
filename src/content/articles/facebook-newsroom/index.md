@@ -1,5 +1,5 @@
 ---
-title: "Facebook Newsroom: Meta’s first WordPress site and a platform it continues to invest in today"
+title: "Facebook Newsroom: Meta’s first WordPress site, a platform the company still builds on today"
 description: "How I led the front end of Facebook’s Newsroom redesign at Beyond: a custom WordPress VIP theme, a timeline built for touch, and eight language editions."
 date: 2014-07-01
 # Ledger-only ordering (see content.config.ts): places this deliberately
