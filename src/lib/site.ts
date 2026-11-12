@@ -15,7 +15,7 @@ export const SITE = {
      supporting keyword in descriptions only. */
   title: "Brian Rohde: Design Engineer",
   description:
-    "Brian Rohde is a Design Engineer in San Francisco who designs and ships full-stack products end to end. Project deep dives and notes on AI-assisted engineering.",
+    "Brian Rohde is a Design Engineer in San Francisco: front-end craft, design systems, and full-stack builds, from Twilio and Gong to his own iOS app.",
   author: "Brian Rohde",
   locale: "en_US",
   lang: "en",

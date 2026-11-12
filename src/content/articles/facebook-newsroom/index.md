@@ -1,6 +1,6 @@
 ---
 title: "Facebook Newsroom: Meta’s first WordPress site and a platform it continues to invest in today"
-description: "How I led the redesign and WordPress VIP replatform of Facebook’s global Newsroom, from legacy migration to launch in seven languages."
+description: "How I led the front end of Facebook’s Newsroom redesign at Beyond: a custom WordPress VIP theme, a timeline built for touch, and eight language editions."
 date: 2014-07-01
 # Ledger-only ordering (see content.config.ts): places this deliberately
 # pre-dated 2014 piece directly after eight-angle (2026-02-12) in the log,

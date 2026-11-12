@@ -2,7 +2,7 @@
 
 ## What this project is
 
-Portfolio + blog-style site for Brian Rohde (brohde.com). Audience: potential clients. Content: thought-leadership articles (AI workflows, tips) and project deep dives (goldcoastcapm.com, WordPress→Astro migration, older big-name client work). Original brief: `PLAN.md`.
+Portfolio + blog-style site for Brian Rohde (brohde.com). Audience: hiring managers for Design Engineer roles first (decision #241, 2026-11-12), potential clients second. Content: thought-leadership articles (AI workflows, tips) and project deep dives (goldcoastcapm.com, WordPress→Astro migration, older big-name client work). Original brief: `PLAN.md`.
 
 ## Read these first, every session
 

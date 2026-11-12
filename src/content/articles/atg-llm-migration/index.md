@@ -1,6 +1,6 @@
 ---
 title: "Full replatform and refresh in 4 hours: From WordPress to Astro plus free hosting"
-description: "A 13-page WordPress-to-Astro migration run through Claude Code: nothing lost, a UI refresh that kept the look, and hosting plus a Keystatic CMS for $0 a month."
+description: "A fashion designer’s 13-page site moved off WordPress with his brand intact: three clickable concepts per redesign, a rebuilt press page, and $0 hosting."
 date: 2026-07-11
 draft: false
 theme: atg
