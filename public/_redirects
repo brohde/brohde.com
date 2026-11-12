@@ -3,3 +3,6 @@
 /log/* /:splat 301
 # 2026-07-22: the Eight Angle article moved to the cleaner bare slug.
 /eight-angle-ml /eight-angle 301
+# 2026-11-12: the build-story article was retired; anything that linked it
+# lands on the source it pointed at.
+/how-this-website-was-built https://github.com/brohde/brohde.com 301

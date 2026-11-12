@@ -76,18 +76,20 @@ const Wm = isHome ? "h1" : "p";
       </nav>
       {
         /* The GitHub mark sits in the far-right icon cluster beside the theme
-        toggle (Brian, 2026-07-22) and links the how-it-was-built ARTICLE, not
-        github.com: the story page carries the View code link out. The
-        accessible name is the CTA. Quiet icon grammar matching .themetgl
-        (rest dim, engage accent); the SVG is decoration (a11y pattern from
+        toggle (Brian, 2026-07-22) and links straight to the public repo
+        (2026-11-12: the build-story article is gone; "view source" in the
+        footer is its text twin). The accessible name is the CTA. Quiet icon
+        grammar matching .themetgl (rest dim, engage accent); the SVG is decoration (a11y pattern from
         ProfileLinks.astro). This .ghlink owns the margin-left:auto push;
         ThemeToggle no longer carries it. */
       }
       <a
         class="ghlink"
-        href="/how-this-website-was-built"
-        aria-label="See how this website is built"
-        title="See how this website is built"
+        href="https://github.com/brohde/brohde.com"
+        target="_blank"
+        rel="noopener"
+        aria-label="View source on GitHub"
+        title="View source on GitHub"
       >
         <svg
           viewBox="0 0 24 24"
