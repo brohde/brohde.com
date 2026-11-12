@@ -1,5 +1,5 @@
 ---
-title: "Building a multi-player game, hardware badge, and React-based operating system for Twilio’s user conference"
+title: "SIGNAL Pong: a multiplayer game played with a hardware badge on Twilio’s conference floor"
 description: "Designing SIGNAL Pong for Twilio’s conference floor: a 3v3 React game attendees joined by walking up, with their hardware badge as the controller."
 date: 2018-10-25
 # pre-dated piece; sortDate places it in the ledger narrative (above Newsroom,
